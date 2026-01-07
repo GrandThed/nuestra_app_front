@@ -11,23 +11,15 @@ import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.d
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 
 /// Login screen with Google and Apple sign-in options
-class LoginScreen extends ConsumerStatefulWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authNotifierProvider);
+    final isLoading = authState is AuthStateLoading;
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _listenToAuthState();
-    });
-  }
-
-  void _listenToAuthState() {
+    // Listen for auth state changes
     ref.listen<AuthState>(authNotifierProvider, (previous, next) {
       next.when(
         initial: () {},
@@ -53,12 +45,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         },
       );
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final authState = ref.watch(authNotifierProvider);
-    final isLoading = authState is AuthStateLoading;
 
     return Scaffold(
       body: SafeArea(
@@ -135,7 +121,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // Dev login (only for development)
               TextButton(
-                onPressed: isLoading ? null : () => _showDevLoginDialog(context),
+                onPressed: isLoading ? null : () => _showDevLoginDialog(context, ref),
                 child: const Text('Dev Login (Testing)'),
               ),
               const SizedBox(height: AppSizes.lg),
@@ -146,7 +132,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  void _showDevLoginDialog(BuildContext context) {
+  void _showDevLoginDialog(BuildContext context, WidgetRef ref) {
     final emailController = TextEditingController();
 
     showDialog(

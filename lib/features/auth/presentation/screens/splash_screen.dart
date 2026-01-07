@@ -8,24 +8,12 @@ import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.d
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 
 /// Splash screen shown while checking auth status
-class SplashScreen extends ConsumerStatefulWidget {
+class SplashScreen extends ConsumerWidget {
   const SplashScreen({super.key});
 
   @override
-  ConsumerState<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends ConsumerState<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Listen for auth state changes after build
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _handleAuthState();
-    });
-  }
-
-  void _handleAuthState() {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Listen for auth state changes
     ref.listen<AuthState>(authNotifierProvider, (previous, next) {
       next.when(
         initial: () {},
@@ -46,10 +34,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         },
       );
     });
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.primary,
       body: Center(
