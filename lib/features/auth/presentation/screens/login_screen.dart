@@ -26,7 +26,7 @@ class LoginScreen extends ConsumerWidget {
         loading: () {},
         authenticated: (user) {
           // Navigate based on household membership
-          if (user.householdMembers?.isNotEmpty == true) {
+          if (user.households?.isNotEmpty == true) {
             context.go(AppRoutes.home);
           } else {
             context.go(AppRoutes.householdSetup);

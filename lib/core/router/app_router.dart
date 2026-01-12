@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nuestra_app/core/network/api_interceptor.dart';
+import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.dart';
+import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 import 'package:nuestra_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:nuestra_app/features/household/presentation/screens/household_setup_screen.dart';
+import 'package:nuestra_app/features/household/presentation/screens/household_settings_screen.dart';
 import 'package:nuestra_app/shared/widgets/main_shell.dart';
 
-// Feature screens (will be created later)
+// Feature screens
 import 'package:nuestra_app/features/boards/presentation/screens/boards_screen.dart';
+import 'package:nuestra_app/features/boards/presentation/screens/board_detail_screen.dart';
 import 'package:nuestra_app/features/recipes/presentation/screens/recipes_screen.dart';
 import 'package:nuestra_app/features/menus/presentation/screens/menus_screen.dart';
 import 'package:nuestra_app/features/wishlists/presentation/screens/wishlists_screen.dart';
@@ -24,6 +28,7 @@ class AppRoutes {
 
   // Household
   static const String householdSetup = '/household-setup';
+  static const String householdSettings = '/household-settings';
 
   // Main tabs
   static const String home = '/';
@@ -53,6 +58,7 @@ final shellNavigatorKey = GlobalKey<NavigatorState>();
 /// Provider for GoRouter
 final routerProvider = Provider<GoRouter>((ref) {
   final authToken = ref.watch(authTokenProvider);
+  final authState = ref.watch(authNotifierProvider);
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
@@ -74,8 +80,20 @@ final routerProvider = Provider<GoRouter>((ref) {
         return AppRoutes.home;
       }
 
-      // TODO: Check if user has a household, if not redirect to setup
-      // This will be implemented when we have household state
+      // Check if user has a household, if not redirect to setup
+      if (authState is AuthStateAuthenticated) {
+        final hasHousehold = authState.user.households?.isNotEmpty ?? false;
+
+        // If user has no household and not already on setup, redirect to setup
+        if (!hasHousehold && !isSettingUpHousehold) {
+          return AppRoutes.householdSetup;
+        }
+
+        // If user has household but is on setup page, redirect to home
+        if (hasHousehold && isSettingUpHousehold) {
+          return AppRoutes.home;
+        }
+      }
 
       return null; // No redirect
     },
@@ -90,6 +108,21 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.householdSetup,
         builder: (context, state) => const HouseholdSetupScreen(),
+      ),
+
+      // Household settings (no shell, accessible from main app)
+      GoRoute(
+        path: AppRoutes.householdSettings,
+        builder: (context, state) => const HouseholdSettingsScreen(),
+      ),
+
+      // Board detail (no shell)
+      GoRoute(
+        path: AppRoutes.boardDetail,
+        builder: (context, state) {
+          final boardId = state.pathParameters['id']!;
+          return BoardDetailScreen(boardId: boardId);
+        },
       ),
 
       // Main app with bottom navigation shell

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:nuestra_app/core/constants/auth_config.dart';
 import 'package:nuestra_app/core/errors/exceptions.dart';
 import 'package:nuestra_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
@@ -49,8 +50,10 @@ class AuthNotifier extends _$AuthNotifier {
     state = const AuthState.loading();
 
     try {
+      // serverClientId is required to get the idToken for backend authentication
       final googleSignIn = GoogleSignIn(
         scopes: ['email', 'profile'],
+        serverClientId: AuthConfig.googleWebClientId,
       );
 
       final account = await googleSignIn.signIn();
@@ -67,8 +70,10 @@ class AuthNotifier extends _$AuthNotifier {
         return;
       }
 
-      final response = await _authRepository.signInWithGoogle(idToken);
-      state = AuthState.authenticated(response.user);
+      await _authRepository.signInWithGoogle(idToken);
+      // Fetch full user data with households
+      final user = await _authRepository.getCurrentUser();
+      state = AuthState.authenticated(user);
     } on AppException catch (e) {
       state = AuthState.error(e.message);
     } catch (e) {
@@ -96,8 +101,10 @@ class AuthNotifier extends _$AuthNotifier {
     state = const AuthState.loading();
 
     try {
-      final response = await _authRepository.devLogin(email);
-      state = AuthState.authenticated(response.user);
+      await _authRepository.devLogin(email);
+      // Fetch full user data with households
+      final user = await _authRepository.getCurrentUser();
+      state = AuthState.authenticated(user);
     } on AppException catch (e) {
       state = AuthState.error(e.message);
     } catch (e) {
@@ -125,5 +132,16 @@ class AuthNotifier extends _$AuthNotifier {
   /// Clear error and go back to unauthenticated
   void clearError() {
     state = const AuthState.unauthenticated();
+  }
+
+  /// Refresh user data (e.g., after creating/joining a household)
+  Future<void> refreshUser() async {
+    try {
+      final user = await _authRepository.getCurrentUser();
+      state = AuthState.authenticated(user);
+    } catch (e) {
+      debugPrint('Error refreshing user: $e');
+      // Don't change state on error, keep current auth state
+    }
   }
 }

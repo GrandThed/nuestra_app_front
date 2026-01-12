@@ -73,13 +73,13 @@ class AuthRepository {
     return authResponse;
   }
 
-  /// Get current authenticated user
+  /// Get current authenticated user with household info
   Future<UserModel> getCurrentUser() async {
     final response = await _dioClient.get<Map<String, dynamic>>(
       ApiConstants.authMe,
     );
 
-    return UserModel.fromJson(response['data']);
+    return UserModel.fromJson(response['data']['user']);
   }
 
   /// Sign out - clear stored token

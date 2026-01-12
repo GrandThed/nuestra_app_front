@@ -10,9 +10,7 @@ sealed class UserModel with _$UserModel {
     required String email,
     required String name,
     String? avatarUrl,
-    required String provider,
-    required DateTime createdAt,
-    List<HouseholdMembershipModel>? householdMembers,
+    List<HouseholdMembershipModel>? households,
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -22,25 +20,11 @@ sealed class UserModel with _$UserModel {
 @freezed
 sealed class HouseholdMembershipModel with _$HouseholdMembershipModel {
   const factory HouseholdMembershipModel({
-    required String oderId,
-    required String odehouseholdId,
+    required String id,
+    required String name,
     required String role,
-    double? monthlyIncome,
-    required DateTime joinedAt,
-    HouseholdBasicModel? household,
   }) = _HouseholdMembershipModel;
 
   factory HouseholdMembershipModel.fromJson(Map<String, dynamic> json) =>
       _$HouseholdMembershipModelFromJson(json);
-}
-
-@freezed
-sealed class HouseholdBasicModel with _$HouseholdBasicModel {
-  const factory HouseholdBasicModel({
-    required String id,
-    required String name,
-  }) = _HouseholdBasicModel;
-
-  factory HouseholdBasicModel.fromJson(Map<String, dynamic> json) =>
-      _$HouseholdBasicModelFromJson(json);
 }

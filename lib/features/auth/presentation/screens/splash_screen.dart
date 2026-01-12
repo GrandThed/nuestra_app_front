@@ -20,7 +20,7 @@ class SplashScreen extends ConsumerWidget {
         loading: () {},
         authenticated: (user) {
           // Check if user has a household
-          if (user.householdMembers?.isNotEmpty == true) {
+          if (user.households?.isNotEmpty == true) {
             context.go(AppRoutes.home);
           } else {
             context.go(AppRoutes.householdSetup);
