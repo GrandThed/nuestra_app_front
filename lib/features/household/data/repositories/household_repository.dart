@@ -29,7 +29,7 @@ class HouseholdRepository {
       },
     );
 
-    return HouseholdModel.fromJson(response['data']);
+    return HouseholdModel.fromJson(response['data']['household']);
   }
 
   /// Get a household by ID
@@ -38,7 +38,7 @@ class HouseholdRepository {
       ApiConstants.household(id),
     );
 
-    return HouseholdModel.fromJson(response['data']);
+    return HouseholdModel.fromJson(response['data']['household']);
   }
 
   /// Generate an invite code for a household

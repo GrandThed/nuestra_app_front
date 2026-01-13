@@ -21,13 +21,13 @@ sealed class HouseholdModel with _$HouseholdModel {
 sealed class MemberModel with _$MemberModel {
   const factory MemberModel({
     required String id,
-    required String oderId,
+    required String userId,
     required String name,
     required String email,
     String? avatarUrl,
     required String role,
     double? income,
-    required DateTime createdAt,
+    DateTime? createdAt,
   }) = _MemberModel;
 
   factory MemberModel.fromJson(Map<String, dynamic> json) =>

@@ -37,6 +37,9 @@ class HouseholdNotifier extends _$HouseholdNotifier {
     required String name,
     required String hemisphere,
   }) async {
+    // Prevent double-submission
+    if (state is HouseholdStateLoading) return null;
+
     state = const HouseholdState.loading();
 
     try {
@@ -64,6 +67,9 @@ class HouseholdNotifier extends _$HouseholdNotifier {
 
   /// Join an existing household
   Future<HouseholdModel?> joinHousehold(String inviteCode) async {
+    // Prevent double-submission
+    if (state is HouseholdStateLoading) return null;
+
     state = const HouseholdState.loading();
 
     try {

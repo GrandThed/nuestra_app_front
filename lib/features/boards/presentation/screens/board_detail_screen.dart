@@ -1,11 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/constants/app_strings.dart';
+import 'package:nuestra_app/core/services/image_picker_service.dart';
 import 'package:nuestra_app/features/boards/data/models/board_model.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_notifier.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_state.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Screen to display board items in a grid
 class BoardDetailScreen extends ConsumerWidget {
@@ -232,14 +236,91 @@ class BoardDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddPhotoOptions(BuildContext context, WidgetRef ref) {
-    // TODO: Implement photo picker with image_picker package
-    ScaffoldMessenger.of(context).showSnackBar(
+  void _showAddPhotoOptions(BuildContext context, WidgetRef ref) async {
+    final source = await ImagePickerService.showImageSourcePicker(context);
+    if (source == null || !context.mounted) return;
+
+    final imagePickerService = ImagePickerService();
+    final photo = await imagePickerService.pickImage(source: source);
+
+    if (photo == null || !context.mounted) return;
+
+    // Show optional title dialog
+    final titleController = TextEditingController();
+    final shouldAdd = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Agregar foto'),
+        content: TextField(
+          controller: titleController,
+          decoration: const InputDecoration(
+            labelText: 'Título (opcional)',
+            hintText: 'Describe la foto',
+            prefixIcon: Icon(Icons.title),
+          ),
+          textCapitalization: TextCapitalization.sentences,
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text(AppStrings.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.boards,
+            ),
+            child: const Text('Agregar'),
+          ),
+        ],
+      ),
+    );
+
+    if (shouldAdd != true || !context.mounted) return;
+
+    // Show loading
+    final messenger = ScaffoldMessenger.of(context);
+    messenger.showSnackBar(
       const SnackBar(
-        content: Text('Función de fotos próximamente'),
+        content: Row(
+          children: [
+            SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            ),
+            SizedBox(width: 16),
+            Text('Subiendo foto...'),
+          ],
+        ),
+        duration: Duration(seconds: 30),
         backgroundColor: AppColors.info,
       ),
     );
+
+    final item = await ref
+        .read(boardDetailNotifierProvider(boardId).notifier)
+        .addPhotoItem(
+          photo: photo,
+          title: titleController.text.trim().isEmpty
+              ? null
+              : titleController.text.trim(),
+        );
+
+    messenger.hideCurrentSnackBar();
+
+    if (context.mounted) {
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(item != null ? 'Foto agregada' : 'Error al subir foto'),
+          backgroundColor: item != null ? AppColors.success : AppColors.error,
+        ),
+      );
+    }
   }
 
   void _showItemDetail(BuildContext context, WidgetRef ref, BoardItemModel item) {
@@ -271,9 +352,12 @@ class BoardDetailScreen extends ConsumerWidget {
               ListTile(
                 leading: const Icon(Icons.open_in_browser),
                 title: const Text('Abrir enlace'),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(sheetContext);
-                  // TODO: Open URL with url_launcher
+                  final url = Uri.parse(item.url!);
+                  if (await canLaunchUrl(url)) {
+                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  }
                 },
               ),
             if (item.type == 'photo')
@@ -444,12 +528,17 @@ class _BoardItemCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Image
+            // Image with caching and shimmer
             if (imageUrl != null)
-              Image.network(
-                imageUrl,
+              CachedNetworkImage(
+                imageUrl: imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: AppColors.shimmerBase,
+                  highlightColor: AppColors.shimmerHighlight,
+                  child: Container(color: Colors.white),
+                ),
+                errorWidget: (context, url, error) => _buildPlaceholder(),
               )
             else
               _buildPlaceholder(),
@@ -494,7 +583,7 @@ class _BoardItemCard extends StatelessWidget {
               ),
 
             // Photo back indicator
-            if (item.type == 'photo' && item.photoBack != null)
+            if (item.type == 'photo' && _hasPhotoBack)
               Positioned(
                 top: AppSizes.xs,
                 left: AppSizes.xs,
@@ -517,9 +606,15 @@ class _BoardItemCard extends StatelessWidget {
     );
   }
 
+  bool get _hasPhotoBack {
+    final back = item.photoBack;
+    if (back == null) return false;
+    return back.text != null || back.date != null || back.place != null || back.drawingUrl != null;
+  }
+
   Widget _buildPlaceholder() {
     return Container(
-      color: AppColors.background,
+      color: AppColors.surfaceVariant,
       child: Center(
         child: Icon(
           item.type == 'photo' ? Icons.photo : Icons.link,
@@ -575,11 +670,28 @@ class _ItemDetailSheet extends StatelessWidget {
           if (imageUrl != null)
             ClipRRect(
               borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              child: Image.network(
-                imageUrl,
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
                 fit: BoxFit.cover,
                 height: 250,
                 width: double.infinity,
+                placeholder: (context, url) => Shimmer.fromColors(
+                  baseColor: AppColors.shimmerBase,
+                  highlightColor: AppColors.shimmerHighlight,
+                  child: Container(
+                    height: 250,
+                    color: Colors.white,
+                  ),
+                ),
+                errorWidget: (context, url, error) => Container(
+                  height: 250,
+                  color: AppColors.surfaceVariant,
+                  child: const Icon(
+                    Icons.broken_image,
+                    size: 48,
+                    color: AppColors.textTertiary,
+                  ),
+                ),
               ),
             ),
 

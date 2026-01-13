@@ -38,7 +38,7 @@ class BoardRepository {
       ApiConstants.board(id),
     );
 
-    return BoardModel.fromJson(response['data']);
+    return BoardModel.fromJson(response['data']['board']);
   }
 
   /// Create a new board
@@ -54,7 +54,7 @@ class BoardRepository {
       },
     );
 
-    return BoardModel.fromJson(response['data']);
+    return BoardModel.fromJson(response['data']['board']);
   }
 
   /// Update a board
@@ -69,7 +69,7 @@ class BoardRepository {
       },
     );
 
-    return BoardModel.fromJson(response['data']);
+    return BoardModel.fromJson(response['data']['board']);
   }
 
   /// Delete a board
@@ -95,7 +95,7 @@ class BoardRepository {
       },
     );
 
-    return BoardItemModel.fromJson(response['data']);
+    return BoardItemModel.fromJson(response['data']['item']);
   }
 
   /// Add a photo item to a board
@@ -120,7 +120,7 @@ class BoardRepository {
       options: Options(contentType: 'multipart/form-data'),
     );
 
-    return BoardItemModel.fromJson(response.data!['data']);
+    return BoardItemModel.fromJson(response.data!['data']['item']);
   }
 
   /// Update a board item
@@ -145,7 +145,7 @@ class BoardRepository {
       },
     );
 
-    return BoardItemModel.fromJson(response['data']);
+    return BoardItemModel.fromJson(response['data']['item']);
   }
 
   /// Update a photo item's back drawing
@@ -167,7 +167,7 @@ class BoardRepository {
       options: Options(contentType: 'multipart/form-data'),
     );
 
-    return BoardItemModel.fromJson(response.data!['data']);
+    return BoardItemModel.fromJson(response.data!['data']['item']);
   }
 
   /// Delete a board item

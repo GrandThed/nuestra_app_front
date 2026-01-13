@@ -13,7 +13,10 @@ import 'package:nuestra_app/shared/widgets/main_shell.dart';
 import 'package:nuestra_app/features/boards/presentation/screens/boards_screen.dart';
 import 'package:nuestra_app/features/boards/presentation/screens/board_detail_screen.dart';
 import 'package:nuestra_app/features/recipes/presentation/screens/recipes_screen.dart';
+import 'package:nuestra_app/features/recipes/presentation/screens/recipe_detail_screen.dart';
+import 'package:nuestra_app/features/recipes/presentation/screens/recipe_form_screen.dart';
 import 'package:nuestra_app/features/menus/presentation/screens/menus_screen.dart';
+import 'package:nuestra_app/features/menus/presentation/screens/add_meal_screen.dart';
 import 'package:nuestra_app/features/wishlists/presentation/screens/wishlists_screen.dart';
 import 'package:nuestra_app/features/expenses/presentation/screens/expenses_screen.dart';
 import 'package:nuestra_app/features/calendar/presentation/screens/calendar_screen.dart';
@@ -42,7 +45,11 @@ class AppRoutes {
   // Detail screens
   static const String boardDetail = '/boards/:id';
   static const String recipeDetail = '/recipes/:id';
+  static const String recipeNew = '/recipes/new';
+  static const String recipeEdit = '/recipes/:id/edit';
   static const String menuDetail = '/menus/:id';
+  static const String menuAddMeal = '/menus/:id/add-meal';
+  static const String menuEditMeal = '/menus/:id/meals/:mealId/edit';
   static const String expenseDetail = '/expenses/:id';
   static const String eventDetail = '/calendar/:id';
 
@@ -122,6 +129,57 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final boardId = state.pathParameters['id']!;
           return BoardDetailScreen(boardId: boardId);
+        },
+      ),
+
+      // Recipe new (no shell) - must be before detail to match first
+      GoRoute(
+        path: AppRoutes.recipeNew,
+        builder: (context, state) => const RecipeFormScreen(),
+      ),
+
+      // Recipe edit (no shell)
+      GoRoute(
+        path: AppRoutes.recipeEdit,
+        builder: (context, state) {
+          final recipeId = state.pathParameters['id']!;
+          return RecipeFormScreen(recipeId: recipeId);
+        },
+      ),
+
+      // Recipe detail (no shell)
+      GoRoute(
+        path: AppRoutes.recipeDetail,
+        builder: (context, state) {
+          final recipeId = state.pathParameters['id']!;
+          return RecipeDetailScreen(recipeId: recipeId);
+        },
+      ),
+
+      // Menu add meal (no shell)
+      GoRoute(
+        path: AppRoutes.menuAddMeal,
+        builder: (context, state) {
+          final menuId = state.pathParameters['id']!;
+          final dateStr = state.uri.queryParameters['date'];
+          final initialDate = dateStr != null ? DateTime.tryParse(dateStr) : null;
+          return AddMealScreen(
+            menuId: menuId,
+            initialDate: initialDate,
+          );
+        },
+      ),
+
+      // Menu edit meal (no shell)
+      GoRoute(
+        path: AppRoutes.menuEditMeal,
+        builder: (context, state) {
+          final menuId = state.pathParameters['id']!;
+          final mealId = state.pathParameters['mealId']!;
+          return AddMealScreen(
+            menuId: menuId,
+            mealItemId: mealId,
+          );
         },
       ),
 

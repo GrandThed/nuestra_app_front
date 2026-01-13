@@ -29,25 +29,28 @@ Map<String, dynamic> _$HouseholdModelToJson(_HouseholdModel instance) =>
 
 _MemberModel _$MemberModelFromJson(Map<String, dynamic> json) => _MemberModel(
   id: json['id'] as String,
-  oderId: json['oderId'] as String,
+  userId: json['userId'] as String,
   name: json['name'] as String,
   email: json['email'] as String,
   avatarUrl: json['avatarUrl'] as String?,
   role: json['role'] as String,
   income: (json['income'] as num?)?.toDouble(),
-  createdAt: DateTime.parse(json['createdAt'] as String),
+  createdAt:
+      json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
 );
 
 Map<String, dynamic> _$MemberModelToJson(_MemberModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'oderId': instance.oderId,
+      'userId': instance.userId,
       'name': instance.name,
       'email': instance.email,
       'avatarUrl': instance.avatarUrl,
       'role': instance.role,
       'income': instance.income,
-      'createdAt': instance.createdAt.toIso8601String(),
+      'createdAt': instance.createdAt?.toIso8601String(),
     };
 
 _HouseholdInviteModel _$HouseholdInviteModelFromJson(

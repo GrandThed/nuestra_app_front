@@ -48,4 +48,12 @@ class AppColors {
   // Divider
   static const Color divider = Color(0xFFE5E7EB);
   static const Color dividerDark = Color(0xFF374151);
+
+  // Surface variants
+  static const Color surfaceVariant = Color(0xFFF3F4F6);
+  static const Color surfaceVariantDark = Color(0xFF374151);
+
+  // Shimmer colors
+  static const Color shimmerBase = Color(0xFFE5E7EB);
+  static const Color shimmerHighlight = Color(0xFFF9FAFB);
 }
