@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/constants/app_strings.dart';
@@ -237,55 +240,33 @@ class BoardDetailScreen extends ConsumerWidget {
   }
 
   void _showAddPhotoOptions(BuildContext context, WidgetRef ref) async {
-    final source = await ImagePickerService.showImageSourcePicker(context);
-    if (source == null || !context.mounted) return;
+    final choice = await ImagePickerService.showImageSourcePicker(context);
+    if (choice == null || !context.mounted) return;
 
     final imagePickerService = ImagePickerService();
-    final photo = await imagePickerService.pickImage(source: source);
+    List<File> photos = [];
 
-    if (photo == null || !context.mounted) return;
+    if (choice == ImagePickerChoice.galleryMultiple) {
+      photos = await imagePickerService.pickMultipleImages();
+    } else {
+      final source = choice == ImagePickerChoice.camera
+          ? ImageSource.camera
+          : ImageSource.gallery;
+      final photo = await imagePickerService.pickImage(source: source);
+      if (photo != null) {
+        photos = [photo];
+      }
+    }
 
-    // Show optional title dialog
-    final titleController = TextEditingController();
-    final shouldAdd = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Agregar foto'),
-        content: TextField(
-          controller: titleController,
-          decoration: const InputDecoration(
-            labelText: 'Título (opcional)',
-            hintText: 'Describe la foto',
-            prefixIcon: Icon(Icons.title),
-          ),
-          textCapitalization: TextCapitalization.sentences,
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text(AppStrings.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.boards,
-            ),
-            child: const Text('Agregar'),
-          ),
-        ],
-      ),
-    );
-
-    if (shouldAdd != true || !context.mounted) return;
+    if (photos.isEmpty || !context.mounted) return;
 
     // Show loading
     final messenger = ScaffoldMessenger.of(context);
     messenger.showSnackBar(
-      const SnackBar(
+      SnackBar(
         content: Row(
           children: [
-            SizedBox(
+            const SizedBox(
               width: 20,
               height: 20,
               child: CircularProgressIndicator(
@@ -293,31 +274,35 @@ class BoardDetailScreen extends ConsumerWidget {
                 color: Colors.white,
               ),
             ),
-            SizedBox(width: 16),
-            Text('Subiendo foto...'),
+            const SizedBox(width: 16),
+            Text('Subiendo ${photos.length} foto${photos.length > 1 ? 's' : ''}...'),
           ],
         ),
-        duration: Duration(seconds: 30),
+        duration: const Duration(seconds: 60),
         backgroundColor: AppColors.info,
       ),
     );
 
-    final item = await ref
-        .read(boardDetailNotifierProvider(boardId).notifier)
-        .addPhotoItem(
-          photo: photo,
-          title: titleController.text.trim().isEmpty
-              ? null
-              : titleController.text.trim(),
-        );
+    int successCount = 0;
+    for (final photo in photos) {
+      final item = await ref
+          .read(boardDetailNotifierProvider(boardId).notifier)
+          .addPhotoItem(photo: photo);
+      if (item != null) successCount++;
+    }
 
     messenger.hideCurrentSnackBar();
 
     if (context.mounted) {
+      final allSuccess = successCount == photos.length;
       messenger.showSnackBar(
         SnackBar(
-          content: Text(item != null ? 'Foto agregada' : 'Error al subir foto'),
-          backgroundColor: item != null ? AppColors.success : AppColors.error,
+          content: Text(
+            allSuccess
+                ? '${photos.length} foto${photos.length > 1 ? 's' : ''} agregada${photos.length > 1 ? 's' : ''}'
+                : '$successCount de ${photos.length} fotos subidas',
+          ),
+          backgroundColor: allSuccess ? AppColors.success : AppColors.warning,
         ),
       );
     }

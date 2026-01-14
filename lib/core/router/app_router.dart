@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nuestra_app/core/network/api_interceptor.dart';
+import 'package:nuestra_app/core/services/share_intent_service.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 import 'package:nuestra_app/features/auth/presentation/screens/login_screen.dart';
@@ -12,6 +13,7 @@ import 'package:nuestra_app/shared/widgets/main_shell.dart';
 // Feature screens
 import 'package:nuestra_app/features/boards/presentation/screens/boards_screen.dart';
 import 'package:nuestra_app/features/boards/presentation/screens/board_detail_screen.dart';
+import 'package:nuestra_app/features/boards/presentation/screens/share_to_board_screen.dart';
 import 'package:nuestra_app/features/recipes/presentation/screens/recipes_screen.dart';
 import 'package:nuestra_app/features/recipes/presentation/screens/recipe_detail_screen.dart';
 import 'package:nuestra_app/features/recipes/presentation/screens/recipe_form_screen.dart';
@@ -44,6 +46,7 @@ class AppRoutes {
 
   // Detail screens
   static const String boardDetail = '/boards/:id';
+  static const String shareToBoard = '/share-to-board';
   static const String recipeDetail = '/recipes/:id';
   static const String recipeNew = '/recipes/new';
   static const String recipeEdit = '/recipes/:id/edit';
@@ -62,13 +65,16 @@ class AppRoutes {
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 final shellNavigatorKey = GlobalKey<NavigatorState>();
 
-/// Listenable that notifies GoRouter when auth state changes
+/// Listenable that notifies GoRouter when auth state changes or shared content arrives
 class AuthChangeNotifier extends ChangeNotifier {
   AuthChangeNotifier(this._ref) {
     _ref.listen(authNotifierProvider, (_, __) {
       notifyListeners();
     });
     _ref.listen(authTokenProvider, (_, __) {
+      notifyListeners();
+    });
+    _ref.listen(sharedContentProvider, (_, __) {
       notifyListeners();
     });
   }
@@ -122,6 +128,13 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (hasHousehold && isSettingUpHousehold) {
           return AppRoutes.home;
         }
+
+        // Check for shared content - redirect to share-to-board screen
+        final sharedContent = ref.read(sharedContentProvider);
+        final isOnShareScreen = state.matchedLocation == AppRoutes.shareToBoard;
+        if (sharedContent != null && !sharedContent.isEmpty && !isOnShareScreen) {
+          return AppRoutes.shareToBoard;
+        }
       }
 
       return null; // No redirect
@@ -143,6 +156,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.householdSettings,
         builder: (context, state) => const HouseholdSettingsScreen(),
+      ),
+
+      // Share to board (no shell, for receiving shared content)
+      GoRoute(
+        path: AppRoutes.shareToBoard,
+        builder: (context, state) => const ShareToBoardScreen(),
       ),
 
       // Board detail (no shell)

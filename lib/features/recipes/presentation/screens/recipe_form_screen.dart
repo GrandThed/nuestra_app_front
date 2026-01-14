@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/services/image_picker_service.dart';
@@ -416,10 +417,16 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
   }
 
   Future<void> _pickImage() async {
-    final source = await ImagePickerService.showImageSourcePicker(context);
-    if (source == null) return;
+    final choice = await ImagePickerService.showImageSourcePicker(
+      context,
+      allowMultiple: false,
+    );
+    if (choice == null) return;
 
     final imagePickerService = ImagePickerService();
+    final source = choice == ImagePickerChoice.camera
+        ? ImageSource.camera
+        : ImageSource.gallery;
     final image = await imagePickerService.pickImage(source: source);
 
     if (image != null) {
