@@ -62,16 +62,38 @@ class AppRoutes {
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 final shellNavigatorKey = GlobalKey<NavigatorState>();
 
+/// Listenable that notifies GoRouter when auth state changes
+class AuthChangeNotifier extends ChangeNotifier {
+  AuthChangeNotifier(this._ref) {
+    _ref.listen(authNotifierProvider, (_, __) {
+      notifyListeners();
+    });
+    _ref.listen(authTokenProvider, (_, __) {
+      notifyListeners();
+    });
+  }
+
+  final Ref _ref;
+}
+
+/// Provider for the auth change notifier
+final authChangeNotifierProvider = Provider<AuthChangeNotifier>((ref) {
+  return AuthChangeNotifier(ref);
+});
+
 /// Provider for GoRouter
 final routerProvider = Provider<GoRouter>((ref) {
-  final authToken = ref.watch(authTokenProvider);
-  final authState = ref.watch(authNotifierProvider);
+  final authChangeNotifier = ref.watch(authChangeNotifierProvider);
 
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.home,
     debugLogDiagnostics: true,
+    refreshListenable: authChangeNotifier,
     redirect: (context, state) {
+      final authToken = ref.read(authTokenProvider);
+      final authState = ref.read(authNotifierProvider);
+
       final isLoggedIn = authToken != null;
       final isLoggingIn = state.matchedLocation == AppRoutes.login;
       final isSettingUpHousehold =
@@ -233,14 +255,6 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.expenses,
             pageBuilder: (context, state) => const NoTransitionPage(
               child: ExpensesScreen(),
-            ),
-          ),
-
-          // Calendar
-          GoRoute(
-            path: AppRoutes.calendar,
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: CalendarScreen(),
             ),
           ),
         ],

@@ -51,7 +51,7 @@ class HouseholdRepository {
       data: {'expiresInDays': expiresInDays},
     );
 
-    return HouseholdInviteModel.fromJson(response['data']);
+    return HouseholdInviteModel.fromJson(response['data']['invite']);
   }
 
   /// Join a household using an invite code

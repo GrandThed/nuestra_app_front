@@ -19,12 +19,12 @@ class MenuRepository {
 
   /// Get all menu plans for a household
   Future<List<MenuPlanModel>> getMenuPlans(String householdId) async {
-    final response = await _dioClient.get(
+    final response = await _dioClient.get<Map<String, dynamic>>(
       ApiConstants.menus,
       queryParameters: {'householdId': householdId},
     );
-    final List<dynamic> data = response.data['data'] ?? [];
-    return data.map((json) => MenuPlanModel.fromJson(json)).toList();
+    final List<dynamic> data = response['data']['menuPlans'] ?? [];
+    return data.map((json) => MenuPlanModel.fromJson(json as Map<String, dynamic>)).toList();
   }
 
   /// Get upcoming meals for a date range
@@ -33,7 +33,7 @@ class MenuRepository {
     required DateTime from,
     required DateTime to,
   }) async {
-    final response = await _dioClient.get(
+    final response = await _dioClient.get<Map<String, dynamic>>(
       ApiConstants.menusUpcoming,
       queryParameters: {
         'householdId': householdId,
@@ -41,8 +41,8 @@ class MenuRepository {
         'to': to.toIso8601String().split('T')[0],
       },
     );
-    final List<dynamic> data = response.data['data'] ?? [];
-    return data.map((json) => MenuItemModel.fromJson(json)).toList();
+    final List<dynamic> data = response['data']['items'] ?? [];
+    return data.map((json) => MenuItemModel.fromJson(json as Map<String, dynamic>)).toList();
   }
 
   /// Create a new menu plan
@@ -50,20 +50,20 @@ class MenuRepository {
     required String householdId,
     String? name,
   }) async {
-    final response = await _dioClient.post(
+    final response = await _dioClient.post<Map<String, dynamic>>(
       ApiConstants.menus,
       data: {
         'householdId': householdId,
         if (name != null) 'name': name,
       },
     );
-    return MenuPlanModel.fromJson(response.data['data']);
+    return MenuPlanModel.fromJson(response['data']['menuPlan'] as Map<String, dynamic>);
   }
 
   /// Get a single menu plan with items
   Future<MenuPlanModel> getMenuPlan(String id) async {
-    final response = await _dioClient.get(ApiConstants.menu(id));
-    return MenuPlanModel.fromJson(response.data['data']);
+    final response = await _dioClient.get<Map<String, dynamic>>(ApiConstants.menu(id));
+    return MenuPlanModel.fromJson(response['data']['menuPlan'] as Map<String, dynamic>);
   }
 
   /// Delete a menu plan
@@ -79,7 +79,7 @@ class MenuRepository {
     required String mealType,
     Map<String, dynamic>? substitutions,
   }) async {
-    final response = await _dioClient.post(
+    final response = await _dioClient.post<Map<String, dynamic>>(
       ApiConstants.menuItems(menuId),
       data: {
         'recipeId': recipeId,
@@ -88,7 +88,7 @@ class MenuRepository {
         if (substitutions != null) 'substitutions': substitutions,
       },
     );
-    return MenuItemModel.fromJson(response.data['data']);
+    return MenuItemModel.fromJson(response['data']['item'] as Map<String, dynamic>);
   }
 
   /// Update a menu item
@@ -100,7 +100,7 @@ class MenuRepository {
     String? recipeId,
     Map<String, dynamic>? substitutions,
   }) async {
-    final response = await _dioClient.patch(
+    final response = await _dioClient.patch<Map<String, dynamic>>(
       ApiConstants.menuItem(menuId, itemId),
       data: {
         if (date != null) 'date': date.toIso8601String().split('T')[0],
@@ -109,7 +109,7 @@ class MenuRepository {
         if (substitutions != null) 'substitutions': substitutions,
       },
     );
-    return MenuItemModel.fromJson(response.data['data']);
+    return MenuItemModel.fromJson(response['data']['item'] as Map<String, dynamic>);
   }
 
   /// Delete a menu item
@@ -125,12 +125,12 @@ class MenuRepository {
     required String menuId,
     double servingsMultiplier = 1.0,
   }) async {
-    final response = await _dioClient.post(
+    final response = await _dioClient.post<Map<String, dynamic>>(
       ApiConstants.menuGenerateShopping(menuId),
       data: {
         'servingsMultiplier': servingsMultiplier,
       },
     );
-    return ShoppingListResultModel.fromJson(response.data['data']);
+    return ShoppingListResultModel.fromJson(response['data']['shoppingList'] as Map<String, dynamic>);
   }
 }

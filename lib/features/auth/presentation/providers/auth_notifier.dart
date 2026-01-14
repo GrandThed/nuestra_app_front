@@ -5,6 +5,8 @@ import 'package:nuestra_app/core/constants/auth_config.dart';
 import 'package:nuestra_app/core/errors/exceptions.dart';
 import 'package:nuestra_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
+import 'package:nuestra_app/features/auth/data/models/user_model.dart';
+import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
 
 part 'auth_notifier.g.dart';
 
@@ -31,6 +33,7 @@ class AuthNotifier extends _$AuthNotifier {
           await _authRepository.storeToken(token);
           // Verify token is still valid
           final user = await _authRepository.getCurrentUser();
+          _setCurrentHouseholdFromUser(user);
           state = AuthState.authenticated(user);
         } else {
           state = const AuthState.unauthenticated();
@@ -42,6 +45,14 @@ class AuthNotifier extends _$AuthNotifier {
       // Token invalid or expired
       await _authRepository.signOut();
       state = const AuthState.unauthenticated();
+    }
+  }
+
+  /// Set the current household ID from user's households
+  void _setCurrentHouseholdFromUser(UserModel user) {
+    final households = user.households;
+    if (households != null && households.isNotEmpty) {
+      ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(households.first.id);
     }
   }
 
@@ -73,6 +84,7 @@ class AuthNotifier extends _$AuthNotifier {
       await _authRepository.signInWithGoogle(idToken);
       // Fetch full user data with households
       final user = await _authRepository.getCurrentUser();
+      _setCurrentHouseholdFromUser(user);
       state = AuthState.authenticated(user);
     } on AppException catch (e) {
       state = AuthState.error(e.message);
@@ -104,6 +116,7 @@ class AuthNotifier extends _$AuthNotifier {
       await _authRepository.devLogin(email);
       // Fetch full user data with households
       final user = await _authRepository.getCurrentUser();
+      _setCurrentHouseholdFromUser(user);
       state = AuthState.authenticated(user);
     } on AppException catch (e) {
       state = AuthState.error(e.message);
@@ -122,9 +135,11 @@ class AuthNotifier extends _$AuthNotifier {
       }
 
       await _authRepository.signOut();
+      ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(null);
       state = const AuthState.unauthenticated();
     } catch (e) {
       debugPrint('Error signing out: $e');
+      ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(null);
       state = const AuthState.unauthenticated();
     }
   }
