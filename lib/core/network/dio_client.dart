@@ -100,7 +100,7 @@ class DioClient {
   }
 
   /// DELETE request
-  Future<T> delete<T>(
+  Future<T?> delete<T>(
     String path, {
     dynamic data,
     Map<String, dynamic>? queryParameters,
@@ -113,6 +113,10 @@ class DioClient {
         queryParameters: queryParameters,
         options: options,
       );
+      // Handle 204 No Content responses
+      if (response.statusCode == 204 || response.data == null) {
+        return null;
+      }
       return _handleResponse(response);
     } on DioException catch (e) {
       throw _handleDioError(e);

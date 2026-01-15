@@ -12,6 +12,7 @@ import 'package:nuestra_app/features/home/presentation/widgets/shopping_list_car
 import 'package:nuestra_app/features/home/presentation/widgets/expenses_summary_card.dart';
 import 'package:nuestra_app/features/home/presentation/widgets/upcoming_events_card.dart';
 import 'package:nuestra_app/features/home/presentation/widgets/quick_actions_fab.dart';
+import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
 import 'package:nuestra_app/features/menus/presentation/providers/menus_notifier.dart';
 import 'package:nuestra_app/features/wishlists/presentation/providers/wishlists_notifier.dart';
 
@@ -28,18 +29,52 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   void initState() {
     super.initState();
     // Load data using microtask to avoid calling during build
-    Future.microtask(() {
-      // Load today's meals
-      final today = DateTime.now();
-      final weekStart = DateTime(today.year, today.month, today.day);
-      ref.read(upcomingMealsNotifierProvider.notifier).loadWeekIfNeeded(weekStart);
+    Future.microtask(() => _loadDataWhenReady());
+  }
 
-      // Load menu plans for the FAB
-      ref.read(menuPlansNotifierProvider.notifier).loadMenuPlansIfNeeded();
+  /// Wait for household ID to be available, then load data
+  Future<void> _loadDataWhenReady() async {
+    // Check if household ID is already available
+    var householdId = ref.read(currentHouseholdIdProvider);
 
-      // Load wishlists for the shopping list card
-      ref.read(wishlistsNotifierProvider.notifier).loadWishlistsIfNeeded();
-    });
+    // If not available, wait for auth to finish loading
+    if (householdId == null) {
+      // Listen for changes to currentHouseholdIdProvider
+      await for (final id in _waitForHouseholdId()) {
+        householdId = id;
+        break;
+      }
+    }
+
+    if (householdId != null) {
+      _loadAllData();
+    }
+  }
+
+  /// Stream that emits when household ID becomes available
+  Stream<String> _waitForHouseholdId() async* {
+    // Poll for household ID with timeout
+    for (var i = 0; i < 50; i++) { // Max 5 seconds (50 * 100ms)
+      await Future.delayed(const Duration(milliseconds: 100));
+      final id = ref.read(currentHouseholdIdProvider);
+      if (id != null) {
+        yield id;
+        return;
+      }
+    }
+  }
+
+  void _loadAllData() {
+    // Load today's meals
+    final today = DateTime.now();
+    final weekStart = DateTime(today.year, today.month, today.day);
+    ref.read(upcomingMealsNotifierProvider.notifier).loadWeekIfNeeded(weekStart);
+
+    // Load menu plans for the FAB
+    ref.read(menuPlansNotifierProvider.notifier).loadMenuPlansIfNeeded();
+
+    // Load wishlists for the shopping list card
+    ref.read(wishlistsNotifierProvider.notifier).loadWishlistsIfNeeded();
   }
 
   @override
@@ -153,6 +188,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _refreshAll() async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null) return;
+
     final today = DateTime.now();
     final weekStart = DateTime(today.year, today.month, today.day);
 
