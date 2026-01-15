@@ -3,6 +3,22 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'wishlist_model.freezed.dart';
 part 'wishlist_model.g.dart';
 
+/// Converter for Decimal fields that may come as String or num from Prisma
+class DecimalConverter implements JsonConverter<double?, Object?> {
+  const DecimalConverter();
+
+  @override
+  double? fromJson(Object? json) {
+    if (json == null) return null;
+    if (json is num) return json.toDouble();
+    if (json is String) return double.tryParse(json);
+    return null;
+  }
+
+  @override
+  Object? toJson(double? object) => object;
+}
+
 /// Model for a wishlist category
 @freezed
 sealed class WishlistCategoryModel with _$WishlistCategoryModel {
@@ -31,9 +47,9 @@ sealed class WishlistItemModel with _$WishlistItemModel {
     String? userId,
     WishlistItemUserModel? user,
     String? url,
-    double? price,
+    @DecimalConverter() double? price,
     String? preferenceEmoji,
-    double? quantity,
+    @DecimalConverter() double? quantity,
     String? unit,
     WishlistCategoryRefModel? category,
     WishlistSourceRecipeModel? sourceRecipe,

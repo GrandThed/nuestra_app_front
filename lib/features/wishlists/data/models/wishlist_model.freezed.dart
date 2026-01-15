@@ -287,7 +287,7 @@ as int,
 mixin _$WishlistItemModel {
 
  String get id; String get householdId; String get categoryId; String get name; String get ownerType;// 'shared' | 'personal'
- bool get checked; String? get userId; WishlistItemUserModel? get user; String? get url; double? get price; String? get preferenceEmoji; double? get quantity; String? get unit; WishlistCategoryRefModel? get category; WishlistSourceRecipeModel? get sourceRecipe; DateTime? get createdAt;
+ bool get checked; String? get userId; WishlistItemUserModel? get user; String? get url;@DecimalConverter() double? get price; String? get preferenceEmoji;@DecimalConverter() double? get quantity; String? get unit; WishlistCategoryRefModel? get category; WishlistSourceRecipeModel? get sourceRecipe; DateTime? get createdAt;
 /// Create a copy of WishlistItemModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -320,7 +320,7 @@ abstract mixin class $WishlistItemModelCopyWith<$Res>  {
   factory $WishlistItemModelCopyWith(WishlistItemModel value, $Res Function(WishlistItemModel) _then) = _$WishlistItemModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String householdId, String categoryId, String name, String ownerType, bool checked, String? userId, WishlistItemUserModel? user, String? url, double? price, String? preferenceEmoji, double? quantity, String? unit, WishlistCategoryRefModel? category, WishlistSourceRecipeModel? sourceRecipe, DateTime? createdAt
+ String id, String householdId, String categoryId, String name, String ownerType, bool checked, String? userId, WishlistItemUserModel? user, String? url,@DecimalConverter() double? price, String? preferenceEmoji,@DecimalConverter() double? quantity, String? unit, WishlistCategoryRefModel? category, WishlistSourceRecipeModel? sourceRecipe, DateTime? createdAt
 });
 
 
@@ -473,7 +473,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String householdId,  String categoryId,  String name,  String ownerType,  bool checked,  String? userId,  WishlistItemUserModel? user,  String? url,  double? price,  String? preferenceEmoji,  double? quantity,  String? unit,  WishlistCategoryRefModel? category,  WishlistSourceRecipeModel? sourceRecipe,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String householdId,  String categoryId,  String name,  String ownerType,  bool checked,  String? userId,  WishlistItemUserModel? user,  String? url, @DecimalConverter()  double? price,  String? preferenceEmoji, @DecimalConverter()  double? quantity,  String? unit,  WishlistCategoryRefModel? category,  WishlistSourceRecipeModel? sourceRecipe,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WishlistItemModel() when $default != null:
 return $default(_that.id,_that.householdId,_that.categoryId,_that.name,_that.ownerType,_that.checked,_that.userId,_that.user,_that.url,_that.price,_that.preferenceEmoji,_that.quantity,_that.unit,_that.category,_that.sourceRecipe,_that.createdAt);case _:
@@ -494,7 +494,7 @@ return $default(_that.id,_that.householdId,_that.categoryId,_that.name,_that.own
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String householdId,  String categoryId,  String name,  String ownerType,  bool checked,  String? userId,  WishlistItemUserModel? user,  String? url,  double? price,  String? preferenceEmoji,  double? quantity,  String? unit,  WishlistCategoryRefModel? category,  WishlistSourceRecipeModel? sourceRecipe,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String householdId,  String categoryId,  String name,  String ownerType,  bool checked,  String? userId,  WishlistItemUserModel? user,  String? url, @DecimalConverter()  double? price,  String? preferenceEmoji, @DecimalConverter()  double? quantity,  String? unit,  WishlistCategoryRefModel? category,  WishlistSourceRecipeModel? sourceRecipe,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _WishlistItemModel():
 return $default(_that.id,_that.householdId,_that.categoryId,_that.name,_that.ownerType,_that.checked,_that.userId,_that.user,_that.url,_that.price,_that.preferenceEmoji,_that.quantity,_that.unit,_that.category,_that.sourceRecipe,_that.createdAt);}
@@ -511,7 +511,7 @@ return $default(_that.id,_that.householdId,_that.categoryId,_that.name,_that.own
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String householdId,  String categoryId,  String name,  String ownerType,  bool checked,  String? userId,  WishlistItemUserModel? user,  String? url,  double? price,  String? preferenceEmoji,  double? quantity,  String? unit,  WishlistCategoryRefModel? category,  WishlistSourceRecipeModel? sourceRecipe,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String householdId,  String categoryId,  String name,  String ownerType,  bool checked,  String? userId,  WishlistItemUserModel? user,  String? url, @DecimalConverter()  double? price,  String? preferenceEmoji, @DecimalConverter()  double? quantity,  String? unit,  WishlistCategoryRefModel? category,  WishlistSourceRecipeModel? sourceRecipe,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _WishlistItemModel() when $default != null:
 return $default(_that.id,_that.householdId,_that.categoryId,_that.name,_that.ownerType,_that.checked,_that.userId,_that.user,_that.url,_that.price,_that.preferenceEmoji,_that.quantity,_that.unit,_that.category,_that.sourceRecipe,_that.createdAt);case _:
@@ -526,7 +526,7 @@ return $default(_that.id,_that.householdId,_that.categoryId,_that.name,_that.own
 @JsonSerializable()
 
 class _WishlistItemModel implements WishlistItemModel {
-  const _WishlistItemModel({required this.id, required this.householdId, required this.categoryId, required this.name, required this.ownerType, this.checked = false, this.userId, this.user, this.url, this.price, this.preferenceEmoji, this.quantity, this.unit, this.category, this.sourceRecipe, this.createdAt});
+  const _WishlistItemModel({required this.id, required this.householdId, required this.categoryId, required this.name, required this.ownerType, this.checked = false, this.userId, this.user, this.url, @DecimalConverter() this.price, this.preferenceEmoji, @DecimalConverter() this.quantity, this.unit, this.category, this.sourceRecipe, this.createdAt});
   factory _WishlistItemModel.fromJson(Map<String, dynamic> json) => _$WishlistItemModelFromJson(json);
 
 @override final  String id;
@@ -539,9 +539,9 @@ class _WishlistItemModel implements WishlistItemModel {
 @override final  String? userId;
 @override final  WishlistItemUserModel? user;
 @override final  String? url;
-@override final  double? price;
+@override@DecimalConverter() final  double? price;
 @override final  String? preferenceEmoji;
-@override final  double? quantity;
+@override@DecimalConverter() final  double? quantity;
 @override final  String? unit;
 @override final  WishlistCategoryRefModel? category;
 @override final  WishlistSourceRecipeModel? sourceRecipe;
@@ -580,7 +580,7 @@ abstract mixin class _$WishlistItemModelCopyWith<$Res> implements $WishlistItemM
   factory _$WishlistItemModelCopyWith(_WishlistItemModel value, $Res Function(_WishlistItemModel) _then) = __$WishlistItemModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String householdId, String categoryId, String name, String ownerType, bool checked, String? userId, WishlistItemUserModel? user, String? url, double? price, String? preferenceEmoji, double? quantity, String? unit, WishlistCategoryRefModel? category, WishlistSourceRecipeModel? sourceRecipe, DateTime? createdAt
+ String id, String householdId, String categoryId, String name, String ownerType, bool checked, String? userId, WishlistItemUserModel? user, String? url,@DecimalConverter() double? price, String? preferenceEmoji,@DecimalConverter() double? quantity, String? unit, WishlistCategoryRefModel? category, WishlistSourceRecipeModel? sourceRecipe, DateTime? createdAt
 });
 
 

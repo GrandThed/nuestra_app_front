@@ -34,34 +34,33 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   /// Wait for household ID to be available, then load data
   Future<void> _loadDataWhenReady() async {
-    // Check if household ID is already available
-    var householdId = ref.read(currentHouseholdIdProvider);
+    if (!mounted) return;
 
-    // If not available, wait for auth to finish loading
-    if (householdId == null) {
-      // Listen for changes to currentHouseholdIdProvider
-      await for (final id in _waitForHouseholdId()) {
-        householdId = id;
-        break;
-      }
-    }
+    // Check if household ID is already available, or wait for it
+    final householdId =
+        ref.read(currentHouseholdIdProvider) ?? await _waitForHouseholdId();
+
+    if (!mounted) return;
 
     if (householdId != null) {
       _loadAllData();
     }
   }
 
-  /// Stream that emits when household ID becomes available
-  Stream<String> _waitForHouseholdId() async* {
+  /// Wait for household ID to become available (with timeout)
+  Future<String?> _waitForHouseholdId() async {
     // Poll for household ID with timeout
-    for (var i = 0; i < 50; i++) { // Max 5 seconds (50 * 100ms)
+    for (var i = 0; i < 50; i++) {
+      // Max 5 seconds (50 * 100ms)
       await Future.delayed(const Duration(milliseconds: 100));
+      if (!mounted) return null;
+
       final id = ref.read(currentHouseholdIdProvider);
       if (id != null) {
-        yield id;
-        return;
+        return id;
       }
     }
+    return null;
   }
 
   void _loadAllData() {

@@ -42,9 +42,9 @@ _WishlistItemModel _$WishlistItemModelFromJson(Map<String, dynamic> json) =>
                 json['user'] as Map<String, dynamic>,
               ),
       url: json['url'] as String?,
-      price: (json['price'] as num?)?.toDouble(),
+      price: const DecimalConverter().fromJson(json['price']),
       preferenceEmoji: json['preferenceEmoji'] as String?,
-      quantity: (json['quantity'] as num?)?.toDouble(),
+      quantity: const DecimalConverter().fromJson(json['quantity']),
       unit: json['unit'] as String?,
       category:
           json['category'] == null
@@ -75,9 +75,9 @@ Map<String, dynamic> _$WishlistItemModelToJson(_WishlistItemModel instance) =>
       'userId': instance.userId,
       'user': instance.user,
       'url': instance.url,
-      'price': instance.price,
+      'price': const DecimalConverter().toJson(instance.price),
       'preferenceEmoji': instance.preferenceEmoji,
-      'quantity': instance.quantity,
+      'quantity': const DecimalConverter().toJson(instance.quantity),
       'unit': instance.unit,
       'category': instance.category,
       'sourceRecipe': instance.sourceRecipe,

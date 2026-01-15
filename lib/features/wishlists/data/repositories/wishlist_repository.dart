@@ -189,6 +189,6 @@ class WishlistRepository {
       queryParameters: queryParams,
     );
 
-    return response['data']['deletedCount'] as int? ?? 0;
+    return response?['data']?['deletedCount'] as int? ?? 0;
   }
 }
