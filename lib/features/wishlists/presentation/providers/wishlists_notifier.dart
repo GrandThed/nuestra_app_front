@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:nuestra_app/core/errors/exceptions.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
@@ -332,7 +333,7 @@ class WishlistsNotifier extends _$WishlistsNotifier {
 
 /// Provider for unchecked items count (for home dashboard)
 @riverpod
-int uncheckedWishlistItemsCount(UncheckedWishlistItemsCountRef ref) {
+int uncheckedWishlistItemsCount(Ref ref) {
   final state = ref.watch(wishlistsNotifierProvider);
   if (state is WishlistsStateLoaded) {
     return state.items.where((i) => !i.checked).length;
@@ -343,7 +344,7 @@ int uncheckedWishlistItemsCount(UncheckedWishlistItemsCountRef ref) {
 /// Provider for items filtered by category
 @riverpod
 List<WishlistItemModel> wishlistItemsByCategory(
-  WishlistItemsByCategoryRef ref,
+  Ref ref,
   String? categoryId,
 ) {
   final state = ref.watch(wishlistsNotifierProvider);
@@ -358,14 +359,14 @@ List<WishlistItemModel> wishlistItemsByCategory(
 
 /// Provider for checked items count in a category
 @riverpod
-int checkedItemsCount(CheckedItemsCountRef ref, String? categoryId) {
+int checkedItemsCount(Ref ref, String? categoryId) {
   final items = ref.watch(wishlistItemsByCategoryProvider(categoryId));
   return items.where((i) => i.checked).length;
 }
 
 /// Provider for unchecked items count in a category
 @riverpod
-int uncheckedItemsCount(UncheckedItemsCountRef ref, String? categoryId) {
+int uncheckedItemsCount(Ref ref, String? categoryId) {
   final items = ref.watch(wishlistItemsByCategoryProvider(categoryId));
   return items.where((i) => !i.checked).length;
 }

@@ -13,6 +13,7 @@ import 'package:nuestra_app/features/home/presentation/widgets/expenses_summary_
 import 'package:nuestra_app/features/home/presentation/widgets/upcoming_events_card.dart';
 import 'package:nuestra_app/features/home/presentation/widgets/quick_actions_fab.dart';
 import 'package:nuestra_app/features/menus/presentation/providers/menus_notifier.dart';
+import 'package:nuestra_app/features/wishlists/presentation/providers/wishlists_notifier.dart';
 
 /// Home dashboard screen
 class HomeScreen extends ConsumerStatefulWidget {
@@ -35,6 +36,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       // Load menu plans for the FAB
       ref.read(menuPlansNotifierProvider.notifier).loadMenuPlansIfNeeded();
+
+      // Load wishlists for the shopping list card
+      ref.read(wishlistsNotifierProvider.notifier).loadWishlistsIfNeeded();
     });
   }
 
@@ -152,7 +156,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final today = DateTime.now();
     final weekStart = DateTime(today.year, today.month, today.day);
 
-    await ref.read(upcomingMealsNotifierProvider.notifier).loadWeek(weekStart);
-    await ref.read(menuPlansNotifierProvider.notifier).loadMenuPlans();
+    await Future.wait([
+      ref.read(upcomingMealsNotifierProvider.notifier).loadWeek(weekStart),
+      ref.read(menuPlansNotifierProvider.notifier).loadMenuPlans(),
+      ref.read(wishlistsNotifierProvider.notifier).loadWishlists(),
+    ]);
   }
 }

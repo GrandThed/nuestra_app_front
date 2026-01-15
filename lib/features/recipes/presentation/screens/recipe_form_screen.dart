@@ -34,6 +34,10 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
   final _ingredientQuantityController = TextEditingController();
   final _ingredientUnitController = TextEditingController();
 
+  // FocusNodes for ingredient field navigation
+  final _ingredientNameFocus = FocusNode();
+  final _ingredientQuantityFocus = FocusNode();
+
   // Inline instruction input controller
   final _instructionController = TextEditingController();
 
@@ -83,6 +87,8 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
     _ingredientNameController.dispose();
     _ingredientQuantityController.dispose();
     _ingredientUnitController.dispose();
+    _ingredientNameFocus.dispose();
+    _ingredientQuantityFocus.dispose();
     _instructionController.dispose();
     super.dispose();
   }
@@ -306,6 +312,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                 child: Column(
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           flex: 3,
@@ -318,6 +325,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                               border: OutlineInputBorder(),
                             ),
                             textCapitalization: TextCapitalization.sentences,
+                            textInputAction: TextInputAction.next,
                           ),
                         ),
                         const SizedBox(width: 8),
@@ -332,19 +340,66 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                               border: OutlineInputBorder(),
                             ),
                             keyboardType: TextInputType.number,
+                            textInputAction: TextInputAction.next,
                           ),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          flex: 1,
-                          child: TextField(
-                            controller: _ingredientUnitController,
-                            decoration: const InputDecoration(
-                              hintText: 'Unid.',
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                              border: OutlineInputBorder(),
-                            ),
+                          flex: 2,
+                          child: Autocomplete<String>(
+                            optionsBuilder: (textEditingValue) {
+                              return _getUnitSuggestions(textEditingValue.text);
+                            },
+                            onSelected: (selection) {
+                              _ingredientUnitController.text = selection;
+                            },
+                            initialValue: TextEditingValue(text: _ingredientUnitController.text),
+                            fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                              return TextField(
+                                controller: controller,
+                                focusNode: focusNode,
+                                decoration: const InputDecoration(
+                                  hintText: 'Unidad',
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  border: OutlineInputBorder(),
+                                ),
+                                textInputAction: TextInputAction.done,
+                                onSubmitted: (_) {
+                                  _ingredientUnitController.text = controller.text;
+                                  onFieldSubmitted();
+                                  _saveIngredientEdit();
+                                },
+                                onChanged: (value) {
+                                  _ingredientUnitController.text = value;
+                                },
+                              );
+                            },
+                            optionsViewBuilder: (context, onSelected, options) {
+                              return Align(
+                                alignment: Alignment.topLeft,
+                                child: Material(
+                                  elevation: 4,
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(maxHeight: 200, maxWidth: 150),
+                                    child: ListView.builder(
+                                      padding: EdgeInsets.zero,
+                                      shrinkWrap: true,
+                                      itemCount: options.length,
+                                      itemBuilder: (context, index) {
+                                        final option = options.elementAt(index);
+                                        return ListTile(
+                                          dense: true,
+                                          title: Text(option),
+                                          onTap: () => onSelected(option),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -409,11 +464,13 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
         if (_editingIngredientIndex == -1) ...[
           const SizedBox(height: 4),
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
                 flex: 3,
                 child: TextField(
                   controller: _ingredientNameController,
+                  focusNode: _ingredientNameFocus,
                   decoration: const InputDecoration(
                     hintText: 'Ingrediente',
                     isDense: true,
@@ -421,6 +478,8 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                     border: OutlineInputBorder(),
                   ),
                   textCapitalization: TextCapitalization.sentences,
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: (_) => _ingredientQuantityFocus.requestFocus(),
                 ),
               ),
               const SizedBox(width: 8),
@@ -428,6 +487,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                 flex: 1,
                 child: TextField(
                   controller: _ingredientQuantityController,
+                  focusNode: _ingredientQuantityFocus,
                   decoration: const InputDecoration(
                     hintText: 'Cant.',
                     isDense: true,
@@ -435,19 +495,72 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                     border: OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
+                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                flex: 1,
-                child: TextField(
-                  controller: _ingredientUnitController,
-                  decoration: const InputDecoration(
-                    hintText: 'Unid.',
-                    isDense: true,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                    border: OutlineInputBorder(),
-                  ),
+                flex: 2,
+                child: Autocomplete<String>(
+                  optionsBuilder: (textEditingValue) {
+                    return _getUnitSuggestions(textEditingValue.text);
+                  },
+                  onSelected: (selection) {
+                    _ingredientUnitController.text = selection;
+                  },
+                  fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                    // Sync with our controller
+                    if (controller.text != _ingredientUnitController.text) {
+                      controller.text = _ingredientUnitController.text;
+                    }
+                    _ingredientUnitController.addListener(() {
+                      if (controller.text != _ingredientUnitController.text) {
+                        controller.text = _ingredientUnitController.text;
+                      }
+                    });
+                    return TextField(
+                      controller: controller,
+                      focusNode: focusNode,
+                      decoration: const InputDecoration(
+                        hintText: 'Unidad',
+                        isDense: true,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        border: OutlineInputBorder(),
+                      ),
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) {
+                        _ingredientUnitController.text = controller.text;
+                        onFieldSubmitted();
+                        _addIngredient();
+                      },
+                    );
+                  },
+                  optionsViewBuilder: (context, onSelected, options) {
+                    return Align(
+                      alignment: Alignment.topLeft,
+                      child: Material(
+                        elevation: 4,
+                        borderRadius: BorderRadius.circular(8),
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxHeight: 200, maxWidth: 150),
+                          child: ListView.builder(
+                            padding: EdgeInsets.zero,
+                            shrinkWrap: true,
+                            itemCount: options.length,
+                            itemBuilder: (context, index) {
+                              final option = options.elementAt(index);
+                              return ListTile(
+                                dense: true,
+                                title: Text(option),
+                                onTap: () => onSelected(option),
+                              );
+                            },
+                          ),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -732,6 +845,46 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
     _ingredientNameController.clear();
     _ingredientQuantityController.clear();
     _ingredientUnitController.clear();
+  }
+
+  /// Returns unit suggestions ordered by relevance based on quantity
+  List<String> _getUnitSuggestions(String query) {
+    final quantity = double.tryParse(_ingredientQuantityController.text.trim());
+
+    // Base units list
+    final List<String> allUnits = [
+      'gr', 'kg', 'ml', 'l', 'unidad', 'unidades',
+      'paquete', 'paquetes', 'taza', 'tazas',
+      'cucharada', 'cucharadas', 'cucharadita', 'cucharaditas',
+      'diente', 'dientes', 'rodaja', 'rodajas',
+      'pizca', 'pizcas', 'puñado', 'puñados',
+    ];
+
+    // Smart ordering based on quantity
+    List<String> orderedUnits;
+    if (quantity != null && quantity > 10) {
+      // For quantities > 10, suggest gramos first
+      orderedUnits = ['gr', 'ml', 'unidades', 'paquetes', 'kg', 'l', ...allUnits];
+    } else if (quantity != null && quantity <= 9) {
+      // For quantities <= 9, suggest paquetes, kilos first
+      orderedUnits = ['paquete', 'paquetes', 'kg', 'unidad', 'unidades', 'l', 'taza', 'tazas', ...allUnits];
+    } else {
+      orderedUnits = allUnits;
+    }
+
+    // Remove duplicates while preserving order
+    final seen = <String>{};
+    orderedUnits = orderedUnits.where((unit) => seen.add(unit)).toList();
+
+    // Filter by query if provided
+    if (query.isEmpty) {
+      return orderedUnits.take(8).toList();
+    }
+
+    return orderedUnits
+        .where((unit) => unit.toLowerCase().contains(query.toLowerCase()))
+        .take(8)
+        .toList();
   }
 
   // Instruction inline methods

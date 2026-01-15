@@ -7,7 +7,7 @@ part of 'wishlists_notifier.dart';
 // **************************************************************************
 
 String _$uncheckedWishlistItemsCountHash() =>
-    r'8962a6d026097a846b6dedea99ff53525ede3d5a';
+    r'cba83180de532ff9ded3912741a5acfcca446d5e';
 
 /// Provider for unchecked items count (for home dashboard)
 ///
@@ -28,7 +28,7 @@ final uncheckedWishlistItemsCountProvider = AutoDisposeProvider<int>.internal(
 // ignore: unused_element
 typedef UncheckedWishlistItemsCountRef = AutoDisposeProviderRef<int>;
 String _$wishlistItemsByCategoryHash() =>
-    r'51596421ff26185a71ea6f023a84ae070f701bc5';
+    r'38c83ae4473a32cf04130a3209b9a7774c4b7a3f';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -190,7 +190,7 @@ class _WishlistItemsByCategoryProviderElement
       (origin as WishlistItemsByCategoryProvider).categoryId;
 }
 
-String _$checkedItemsCountHash() => r'ce564a6b6bcf4ba1204d66a75c093339b44d7572';
+String _$checkedItemsCountHash() => r'415bba1226a56a1747eb7b881b2234eaf1438bb0';
 
 /// Provider for checked items count in a category
 ///
@@ -321,7 +321,7 @@ class _CheckedItemsCountProviderElement extends AutoDisposeProviderElement<int>
 }
 
 String _$uncheckedItemsCountHash() =>
-    r'fa0b38abb390c32211225d8fc61ffaefda5ec2f9';
+    r'6faf4a87c9d6c0ed1640c1de11edf16aa9e1cee4';
 
 /// Provider for unchecked items count in a category
 ///

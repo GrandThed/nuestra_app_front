@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
+import 'package:nuestra_app/features/wishlists/presentation/providers/wishlists_notifier.dart';
 
 /// Card showing shopping list quick access on the home dashboard
 class ShoppingListCard extends ConsumerWidget {
@@ -11,9 +12,7 @@ class ShoppingListCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Connect to real wishlist data when implemented
-    // final uncheckedCount = ref.watch(uncheckedWishlistItemsCountProvider);
-    const uncheckedCount = 0;
+    final uncheckedCount = ref.watch(uncheckedWishlistItemsCountProvider);
 
     return Card(
       elevation: 0,
@@ -31,7 +30,7 @@ class ShoppingListCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(AppSizes.sm),
                 decoration: BoxDecoration(
-                  color: AppColors.wishlists.withOpacity(0.1),
+                  color: AppColors.wishlists.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
                 child: const Icon(
@@ -54,7 +53,7 @@ class ShoppingListCard extends ConsumerWidget {
                     const SizedBox(height: AppSizes.xs),
                     Text(
                       uncheckedCount > 0
-                          ? '$uncheckedCount items pendientes'
+                          ? '$uncheckedCount item${uncheckedCount > 1 ? 's' : ''} pendiente${uncheckedCount > 1 ? 's' : ''}'
                           : 'Lista vacia',
                       style: TextStyle(
                         color: AppColors.textSecondary,
