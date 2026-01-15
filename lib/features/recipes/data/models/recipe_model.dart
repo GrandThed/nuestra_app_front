@@ -8,7 +8,7 @@ part 'recipe_model.g.dart';
 sealed class RecipeModel with _$RecipeModel {
   const factory RecipeModel({
     required String id,
-    required String householdId,
+    String? householdId,
     required String title,
     List<IngredientModel>? ingredients,
     List<String>? instructions,

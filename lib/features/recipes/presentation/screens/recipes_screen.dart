@@ -51,9 +51,9 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(recipesNotifierProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Recetas'),
         backgroundColor: AppColors.recipes,
@@ -70,7 +70,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
           // Search bar
           Container(
             padding: const EdgeInsets.all(16),
-            color: AppColors.surface,
+            color: colorScheme.surface,
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
@@ -87,18 +87,18 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                     : null,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: BorderSide(color: colorScheme.outline),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.border),
+                  borderSide: BorderSide(color: colorScheme.outline),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: AppColors.recipes, width: 2),
                 ),
                 filled: true,
-                fillColor: AppColors.surfaceVariant,
+                fillColor: colorScheme.surfaceContainerHighest,
               ),
               onSubmitted: (_) => _onSearch(),
             ),
@@ -108,7 +108,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
           if (_selectedSeason != null)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              color: AppColors.surface,
+              color: colorScheme.surface,
               child: Row(
                 children: [
                   Chip(
@@ -163,6 +163,8 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
   }
 
   Widget _buildEmptyState() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -173,18 +175,18 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
             color: AppColors.recipes.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'No hay recetas',
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Agrega tu primera receta',
-            style: TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: colorScheme.onSurfaceVariant),
           ),
         ],
       ),
@@ -296,6 +298,8 @@ class _RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -332,10 +336,10 @@ class _RecipeCard extends StatelessWidget {
                   children: [
                     Text(
                       recipe.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
+                        color: colorScheme.onSurface,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -344,13 +348,13 @@ class _RecipeCard extends StatelessWidget {
                     if (recipe.servings != null)
                       Row(
                         children: [
-                          const Icon(Icons.people, size: 16, color: AppColors.textSecondary),
+                          Icon(Icons.people, size: 16, color: colorScheme.onSurfaceVariant),
                           const SizedBox(width: 4),
                           Text(
                             '${recipe.servings} porciones',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: AppColors.textSecondary,
+                              color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -360,9 +364,9 @@ class _RecipeCard extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
                           '${recipe.ingredients!.length} ingredientes',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 12,
-                            color: AppColors.textSecondary,
+                            color: colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
@@ -373,7 +377,7 @@ class _RecipeCard extends StatelessWidget {
 
             // Delete button
             IconButton(
-              icon: const Icon(Icons.delete_outline, color: AppColors.textSecondary),
+              icon: Icon(Icons.delete_outline, color: colorScheme.onSurfaceVariant),
               onPressed: onDelete,
             ),
           ],

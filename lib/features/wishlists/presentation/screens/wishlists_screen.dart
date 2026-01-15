@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/constants/app_strings.dart';
@@ -18,14 +19,42 @@ class WishlistsScreen extends ConsumerStatefulWidget {
 }
 
 class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
+  static const _collapsedKey = 'wishlist_collapsed_categories';
+
   String? _selectedCategoryId;
+  Set<String> _collapsedCategories = {};
 
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       ref.read(wishlistsNotifierProvider.notifier).loadWishlistsIfNeeded();
+      _loadCollapsedState();
     });
+  }
+
+  Future<void> _loadCollapsedState() async {
+    final prefs = await SharedPreferences.getInstance();
+    final collapsed = prefs.getStringList(_collapsedKey) ?? [];
+    if (mounted) {
+      setState(() {
+        _collapsedCategories = collapsed.toSet();
+      });
+    }
+  }
+
+  Future<void> _toggleCategoryCollapsed(String categoryId) async {
+    setState(() {
+      if (_collapsedCategories.contains(categoryId)) {
+        _collapsedCategories.remove(categoryId);
+      } else {
+        _collapsedCategories.add(categoryId);
+      }
+    });
+
+    // Persist to local storage
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList(_collapsedKey, _collapsedCategories.toList());
   }
 
   Future<void> _onRefresh() async {
@@ -171,9 +200,11 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
     List<WishlistCategoryModel> categories,
     List<WishlistItemModel> items,
   ) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
-      color: AppColors.surface,
+      color: colorScheme.surface,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
@@ -213,13 +244,20 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
     List<WishlistCategoryModel> categories,
     List<WishlistItemModel> items,
   ) {
-    // Filter items by selected category
-    final filteredItems = _selectedCategoryId == null
-        ? items
-        : items.where((i) => i.category?.id == _selectedCategoryId).toList();
+    // If a category is selected, show flat list
+    if (_selectedCategoryId != null) {
+      return _buildFlatItemsList(
+        items.where((i) => i.category?.id == _selectedCategoryId).toList(),
+      );
+    }
 
+    // For "All" tab, group by category
+    return _buildGroupedItemsList(categories, items);
+  }
+
+  Widget _buildFlatItemsList(List<WishlistItemModel> items) {
     // Sort: unchecked first, then by name
-    final sortedItems = List<WishlistItemModel>.from(filteredItems)
+    final sortedItems = List<WishlistItemModel>.from(items)
       ..sort((a, b) {
         if (a.checked != b.checked) {
           return a.checked ? 1 : -1;
@@ -227,7 +265,37 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
         return a.name.compareTo(b.name);
       });
 
-    if (sortedItems.isEmpty) {
+    return ListView(
+      padding: const EdgeInsets.all(AppSizes.md),
+      children: [
+        ...sortedItems.map((item) => _WishlistItemTile(
+              item: item,
+              onToggle: () => _toggleItem(item),
+              onEdit: () => _editItem(item),
+              onDelete: () => _confirmDeleteItem(item),
+            )),
+        // Quick add at the bottom
+        _QuickAddItem(
+          categoryId: _selectedCategoryId!,
+          onAdd: _quickAddItem,
+        ),
+      ],
+    );
+  }
+
+  Future<void> _quickAddItem(String categoryId, String name) async {
+    await ref.read(wishlistsNotifierProvider.notifier).createItem(
+          categoryId: categoryId,
+          name: name,
+        );
+  }
+
+  Widget _buildGroupedItemsList(
+    List<WishlistCategoryModel> categories,
+    List<WishlistItemModel> items,
+  ) {
+    if (items.isEmpty) {
+      final colorScheme = Theme.of(context).colorScheme;
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -239,12 +307,10 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
             ),
             const SizedBox(height: 16),
             Text(
-              _selectedCategoryId != null
-                  ? 'No hay items en esta categoria'
-                  : 'Lista vacia',
-              style: const TextStyle(
+              'Lista vacia',
+              style: TextStyle(
                 fontSize: 16,
-                color: AppColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ),
           ],
@@ -252,22 +318,53 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
       );
     }
 
+    // Group items by category
+    final itemsByCategory = <String, List<WishlistItemModel>>{};
+    for (final item in items) {
+      final categoryId = item.category?.id ?? 'uncategorized';
+      itemsByCategory.putIfAbsent(categoryId, () => []).add(item);
+    }
+
+    // Sort items within each category: unchecked first, then by name
+    for (final categoryItems in itemsByCategory.values) {
+      categoryItems.sort((a, b) {
+        if (a.checked != b.checked) {
+          return a.checked ? 1 : -1;
+        }
+        return a.name.compareTo(b.name);
+      });
+    }
+
+    // Build list of category sections (only categories with items)
+    final categoriesWithItems = categories
+        .where((c) => itemsByCategory.containsKey(c.id))
+        .toList();
+
     return ListView.builder(
       padding: const EdgeInsets.all(AppSizes.md),
-      itemCount: sortedItems.length,
+      itemCount: categoriesWithItems.length,
       itemBuilder: (context, index) {
-        final item = sortedItems[index];
-        return _WishlistItemTile(
-          item: item,
-          onToggle: () => _toggleItem(item),
-          onEdit: () => _editItem(item),
-          onDelete: () => _confirmDeleteItem(item),
+        final category = categoriesWithItems[index];
+        final categoryItems = itemsByCategory[category.id] ?? [];
+
+        return _CategorySection(
+          categoryId: category.id,
+          categoryName: category.name,
+          items: categoryItems,
+          isCollapsed: _collapsedCategories.contains(category.id),
+          onToggleCollapsed: () => _toggleCategoryCollapsed(category.id),
+          onToggleItem: _toggleItem,
+          onEditItem: _editItem,
+          onDeleteItem: _confirmDeleteItem,
+          onQuickAdd: _quickAddItem,
         );
       },
     );
   }
 
   Widget _buildEmptyState() {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -278,18 +375,18 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
             color: AppColors.wishlists.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             AppStrings.emptyWishlists,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
+              color: colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'Crea una categoria para empezar',
-            style: TextStyle(color: AppColors.textSecondary),
+            style: TextStyle(color: colorScheme.onSurfaceVariant),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
@@ -323,7 +420,17 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
     );
   }
 
+  void _deleteItem(WishlistItemModel item) {
+    ref.read(wishlistsNotifierProvider.notifier).deleteItem(item.id);
+  }
+
   void _confirmDeleteItem(WishlistItemModel item) {
+    // If item is checked, delete without confirmation
+    if (item.checked) {
+      _deleteItem(item);
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -337,7 +444,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              ref.read(wishlistsNotifierProvider.notifier).deleteItem(item.id);
+              _deleteItem(item);
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: const Text('Eliminar'),
@@ -473,6 +580,8 @@ class _CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return GestureDetector(
       onLongPress: onLongPress,
       child: FilterChip(
@@ -485,7 +594,7 @@ class _CategoryChip extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: isSelected ? Colors.white : AppColors.wishlists,
+                  color: isSelected ? colorScheme.surface : AppColors.wishlists,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -493,7 +602,7 @@ class _CategoryChip extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: isSelected ? AppColors.wishlists : Colors.white,
+                    color: isSelected ? AppColors.wishlists : colorScheme.surface,
                   ),
                 ),
               ),
@@ -503,13 +612,131 @@ class _CategoryChip extends StatelessWidget {
         selected: isSelected,
         onSelected: (_) => onTap(),
         selectedColor: AppColors.wishlists,
-        backgroundColor: AppColors.surfaceVariant,
+        backgroundColor: colorScheme.surfaceContainerHighest,
         labelStyle: TextStyle(
-          color: isSelected ? Colors.white : AppColors.textPrimary,
+          color: isSelected ? colorScheme.surface : colorScheme.onSurface,
         ),
-        checkmarkColor: Colors.white,
+        checkmarkColor: colorScheme.surface,
         showCheckmark: false,
       ),
+    );
+  }
+}
+
+class _CategorySection extends StatelessWidget {
+  final String categoryId;
+  final String categoryName;
+  final List<WishlistItemModel> items;
+  final bool isCollapsed;
+  final VoidCallback onToggleCollapsed;
+  final void Function(WishlistItemModel) onToggleItem;
+  final void Function(WishlistItemModel) onEditItem;
+  final void Function(WishlistItemModel) onDeleteItem;
+  final Future<void> Function(String categoryId, String name) onQuickAdd;
+
+  const _CategorySection({
+    required this.categoryId,
+    required this.categoryName,
+    required this.items,
+    required this.isCollapsed,
+    required this.onToggleCollapsed,
+    required this.onToggleItem,
+    required this.onEditItem,
+    required this.onDeleteItem,
+    required this.onQuickAdd,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final uncheckedCount = items.where((i) => !i.checked).length;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Category header (tappable to collapse/expand)
+        GestureDetector(
+          onTap: onToggleCollapsed,
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.md,
+              vertical: AppSizes.sm,
+            ),
+            margin: const EdgeInsets.only(bottom: AppSizes.sm),
+            decoration: BoxDecoration(
+              color: AppColors.wishlists.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+            ),
+            child: Row(
+              children: [
+                // Expand/collapse icon
+                AnimatedRotation(
+                  turns: isCollapsed ? -0.25 : 0,
+                  duration: const Duration(milliseconds: 200),
+                  child: const Icon(
+                    Icons.expand_more,
+                    color: AppColors.wishlists,
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: AppSizes.xs),
+                Expanded(
+                  child: Text(
+                    categoryName,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.wishlists,
+                    ),
+                  ),
+                ),
+                if (uncheckedCount > 0)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.wishlists,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      uncheckedCount.toString(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        ),
+        // Items in this category (animated collapse)
+        AnimatedCrossFade(
+          firstChild: Column(
+            children: [
+              ...items.map((item) => _WishlistItemTile(
+                    item: item,
+                    onToggle: () => onToggleItem(item),
+                    onEdit: () => onEditItem(item),
+                    onDelete: () => onDeleteItem(item),
+                  )),
+              // Quick add at the bottom of each category
+              _QuickAddItem(
+                categoryId: categoryId,
+                onAdd: onQuickAdd,
+              ),
+            ],
+          ),
+          secondChild: const SizedBox.shrink(),
+          crossFadeState:
+              isCollapsed ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          duration: const Duration(milliseconds: 200),
+        ),
+        const SizedBox(height: AppSizes.md),
+      ],
     );
   }
 }
@@ -529,83 +756,97 @@ class _WishlistItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppSizes.sm),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Dismissible(
+      key: Key(item.id),
+      direction: DismissDirection.endToStart,
+      onDismissed: (_) => onDelete(),
+      background: Container(
+        margin: const EdgeInsets.only(bottom: AppSizes.sm),
+        decoration: BoxDecoration(
+          color: AppColors.error,
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: AppSizes.md),
+        child: const Icon(
+          Icons.delete_outline,
+          color: Colors.white,
+        ),
       ),
-      child: InkWell(
-        onTap: onToggle,
-        onLongPress: onEdit,
-        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSizes.sm,
-            vertical: AppSizes.xs,
-          ),
-          child: Row(
-            children: [
-              // Checkbox
-              Checkbox(
-                value: item.checked,
-                onChanged: (_) => onToggle(),
-                activeColor: AppColors.wishlists,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4),
+      child: Card(
+        margin: const EdgeInsets.only(bottom: AppSizes.sm),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+        ),
+        child: InkWell(
+          onTap: onToggle,
+          onLongPress: onEdit,
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSizes.sm,
+              vertical: AppSizes.xs,
+            ),
+            child: Row(
+              children: [
+                // Checkbox
+                Checkbox(
+                  value: item.checked,
+                  onChanged: (_) => onToggle(),
+                  activeColor: AppColors.wishlists,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(4),
+                  ),
                 ),
-              ),
-              // Item info
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        if (item.preferenceEmoji != null) ...[
-                          Text(
-                            item.preferenceEmoji!,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(width: 4),
-                        ],
-                        Expanded(
-                          child: Text(
-                            item.name,
-                            style: TextStyle(
-                              fontSize: 16,
-                              decoration: item.checked
-                                  ? TextDecoration.lineThrough
-                                  : null,
-                              color: item.checked
-                                  ? AppColors.textTertiary
-                                  : AppColors.textPrimary,
+                // Item info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          if (item.preferenceEmoji != null) ...[
+                            Text(
+                              item.preferenceEmoji!,
+                              style: const TextStyle(fontSize: 16),
                             ),
+                            const SizedBox(width: 4),
+                          ],
+                          Expanded(
+                            child: Text(
+                              item.name,
+                              style: TextStyle(
+                                fontSize: 16,
+                                decoration: item.checked
+                                    ? TextDecoration.lineThrough
+                                    : null,
+                                color: item.checked
+                                    ? colorScheme.onSurface.withValues(alpha: 0.5)
+                                    : colorScheme.onSurface,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (_hasSubtitle) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          _buildSubtitle(),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: item.checked
+                                ? colorScheme.onSurface.withValues(alpha: 0.4)
+                                : colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
-                    ),
-                    if (_hasSubtitle) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        _buildSubtitle(),
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: item.checked
-                              ? AppColors.textTertiary
-                              : AppColors.textSecondary,
-                        ),
-                      ),
                     ],
-                  ],
+                  ),
                 ),
-              ),
-              // Actions
-              IconButton(
-                icon: const Icon(Icons.delete_outline, size: 20),
-                color: AppColors.textTertiary,
-                onPressed: onDelete,
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -629,5 +870,108 @@ class _WishlistItemTile extends StatelessWidget {
       parts.add(item.category!.name);
     }
     return parts.join(' • ');
+  }
+}
+
+class _QuickAddItem extends StatefulWidget {
+  final String categoryId;
+  final Future<void> Function(String categoryId, String name) onAdd;
+
+  const _QuickAddItem({
+    required this.categoryId,
+    required this.onAdd,
+  });
+
+  @override
+  State<_QuickAddItem> createState() => _QuickAddItemState();
+}
+
+class _QuickAddItemState extends State<_QuickAddItem> {
+  final _controller = TextEditingController();
+  final _focusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _focusNode.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final name = _controller.text.trim();
+    if (name.isEmpty) return;
+
+    // Optimistic - fire and forget
+    widget.onAdd(widget.categoryId, name);
+
+    _controller.clear();
+    // Keep focus for adding another item
+    _focusNode.requestFocus();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: AppSizes.sm),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.sm,
+          vertical: AppSizes.xs,
+        ),
+        child: Row(
+          children: [
+            // Add icon (same position as checkbox)
+            const SizedBox(
+              width: 48,
+              height: 48,
+              child: Icon(
+                Icons.add_circle_outline,
+                color: AppColors.wishlists,
+              ),
+            ),
+            // Text field
+            Expanded(
+              child: TextField(
+                controller: _controller,
+                focusNode: _focusNode,
+                decoration: InputDecoration(
+                  hintText: 'Agregar item...',
+                  hintStyle: TextStyle(color: colorScheme.onSurfaceVariant),
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                    borderSide: BorderSide.none,
+                  ),
+                  isDense: true,
+                  contentPadding: const EdgeInsets.only(
+                    left: AppSizes.sm,
+                    top: 12,
+                    bottom: 12,
+                  ),
+                ),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: colorScheme.onSurface,
+                ),
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) => _submit(),
+              ),
+            ),
+            // Submit button
+            IconButton(
+              icon: const Icon(Icons.check, size: 20),
+              color: AppColors.wishlists,
+              onPressed: _submit,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

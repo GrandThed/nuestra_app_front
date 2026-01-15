@@ -31,7 +31,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     super.initState();
     // Load board only if not already loaded
     Future.microtask(() {
-      ref.read(boardDetailNotifierProvider(widget.boardId).notifier).loadBoardIfNeeded();
+      ref
+          .read(boardDetailNotifierProvider(widget.boardId).notifier)
+          .loadBoardIfNeeded();
     });
   }
 
@@ -53,7 +55,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              ref.read(boardDetailNotifierProvider(boardId).notifier).loadBoard();
+              ref
+                  .read(boardDetailNotifierProvider(boardId).notifier)
+                  .loadBoard();
             },
           ),
         ],
@@ -61,9 +65,11 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
       body: boardState.when(
         initial: () => const Center(child: CircularProgressIndicator()),
         loading: () => const Center(child: CircularProgressIndicator()),
-        loaded: (board) => board.items?.isEmpty ?? true
-            ? _buildEmptyState(context)
-            : _buildItemsGrid(context, board),
+        loaded:
+            (board) =>
+                board.items?.isEmpty ?? true
+                    ? _buildEmptyState(context)
+                    : _buildItemsGrid(context, board),
         error: (message) => _buildErrorState(context, message),
       ),
       floatingActionButton: FloatingActionButton(
@@ -107,7 +113,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           const SizedBox(height: AppSizes.md),
           ElevatedButton(
             onPressed: () {
-              ref.read(boardDetailNotifierProvider(boardId).notifier).loadBoard();
+              ref
+                  .read(boardDetailNotifierProvider(boardId).notifier)
+                  .loadBoard();
             },
             child: const Text(AppStrings.retry),
           ),
@@ -121,15 +129,15 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.read(boardDetailNotifierProvider(boardId).notifier).loadBoard();
+        await ref
+            .read(boardDetailNotifierProvider(boardId).notifier)
+            .loadBoard();
       },
       child: GridView.builder(
         padding: const EdgeInsets.all(AppSizes.paddingMd),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: AppSizes.sm,
-          mainAxisSpacing: AppSizes.sm,
-          childAspectRatio: 0.8,
+          childAspectRatio: 1.0,
         ),
         itemCount: items.length,
         itemBuilder: (context, index) {
@@ -147,41 +155,44 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
   void _showAddItemOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(AppSizes.paddingMd),
-              child: Text(
-                'Agregar al tablero',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+      builder:
+          (sheetContext) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.all(AppSizes.paddingMd),
+                  child: Text(
+                    'Agregar al tablero',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                 ),
-              ),
+                ListTile(
+                  leading: const Icon(Icons.link, color: AppColors.boards),
+                  title: const Text('Agregar link'),
+                  subtitle: const Text('Pega un enlace de cualquier sitio'),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showAddLinkDialog(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.photo_camera,
+                    color: AppColors.boards,
+                  ),
+                  title: const Text('Agregar foto'),
+                  subtitle: const Text(
+                    'Toma una foto o selecciona de la galería',
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showAddPhotoOptions(context);
+                  },
+                ),
+              ],
             ),
-            ListTile(
-              leading: const Icon(Icons.link, color: AppColors.boards),
-              title: const Text('Agregar link'),
-              subtitle: const Text('Pega un enlace de cualquier sitio'),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _showAddLinkDialog(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.photo_camera, color: AppColors.boards),
-              title: const Text('Agregar foto'),
-              subtitle: const Text('Toma una foto o selecciona de la galería'),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _showAddPhotoOptions(context);
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -191,68 +202,70 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Agregar link'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: urlController,
-              decoration: const InputDecoration(
-                labelText: 'URL',
-                hintText: 'https://...',
-                prefixIcon: Icon(Icons.link),
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Text('Agregar link'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: urlController,
+                  decoration: const InputDecoration(
+                    labelText: 'URL',
+                    hintText: 'https://...',
+                    prefixIcon: Icon(Icons.link),
+                  ),
+                  keyboardType: TextInputType.url,
+                  autofocus: true,
+                ),
+                const SizedBox(height: AppSizes.md),
+                TextField(
+                  controller: titleController,
+                  decoration: const InputDecoration(
+                    labelText: 'Título (opcional)',
+                    hintText: 'Describe el enlace',
+                    prefixIcon: Icon(Icons.title),
+                  ),
+                  textCapitalization: TextCapitalization.sentences,
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text(AppStrings.cancel),
               ),
-              keyboardType: TextInputType.url,
-              autofocus: true,
-            ),
-            const SizedBox(height: AppSizes.md),
-            TextField(
-              controller: titleController,
-              decoration: const InputDecoration(
-                labelText: 'Título (opcional)',
-                hintText: 'Describe el enlace',
-                prefixIcon: Icon(Icons.title),
+              ElevatedButton(
+                onPressed: () async {
+                  final url = urlController.text.trim();
+                  if (url.isNotEmpty) {
+                    Navigator.pop(dialogContext);
+                    final item = await ref
+                        .read(boardDetailNotifierProvider(boardId).notifier)
+                        .addLinkItem(
+                          url: url,
+                          title:
+                              titleController.text.trim().isEmpty
+                                  ? null
+                                  : titleController.text.trim(),
+                        );
+                    if (item != null && context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Link agregado'),
+                          backgroundColor: AppColors.success,
+                        ),
+                      );
+                    }
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.boards,
+                ),
+                child: const Text('Agregar'),
               ),
-              textCapitalization: TextCapitalization.sentences,
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(AppStrings.cancel),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () async {
-              final url = urlController.text.trim();
-              if (url.isNotEmpty) {
-                Navigator.pop(dialogContext);
-                final item = await ref
-                    .read(boardDetailNotifierProvider(boardId).notifier)
-                    .addLinkItem(
-                      url: url,
-                      title: titleController.text.trim().isEmpty
-                          ? null
-                          : titleController.text.trim(),
-                    );
-                if (item != null && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Link agregado'),
-                      backgroundColor: AppColors.success,
-                    ),
-                  );
-                }
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.boards,
-            ),
-            child: const Text('Agregar'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -266,9 +279,10 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     if (choice == ImagePickerChoice.galleryMultiple) {
       photos = await imagePickerService.pickMultipleImages();
     } else {
-      final source = choice == ImagePickerChoice.camera
-          ? ImageSource.camera
-          : ImageSource.gallery;
+      final source =
+          choice == ImagePickerChoice.camera
+              ? ImageSource.camera
+              : ImageSource.gallery;
       final photo = await imagePickerService.pickImage(source: source);
       if (photo != null) {
         photos = [photo];
@@ -292,7 +306,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
               ),
             ),
             const SizedBox(width: 16),
-            Text('Subiendo ${photos.length} foto${photos.length > 1 ? 's' : ''}...'),
+            Text(
+              'Subiendo ${photos.length} foto${photos.length > 1 ? 's' : ''}...',
+            ),
           ],
         ),
         duration: const Duration(seconds: 60),
@@ -329,60 +345,69 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (sheetContext) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
-        maxChildSize: 0.95,
-        expand: false,
-        builder: (_, scrollController) => _ItemDetailSheet(
-          item: item,
-          scrollController: scrollController,
-          onClose: () => Navigator.pop(sheetContext),
-        ),
-      ),
+      builder:
+          (sheetContext) => DraggableScrollableSheet(
+            initialChildSize: 0.7,
+            minChildSize: 0.5,
+            maxChildSize: 0.95,
+            expand: false,
+            builder:
+                (_, scrollController) => _ItemDetailSheet(
+                  item: item,
+                  scrollController: scrollController,
+                  onClose: () => Navigator.pop(sheetContext),
+                ),
+          ),
     );
   }
 
   void _showItemOptions(BuildContext context, BoardItemModel item) {
     showModalBottomSheet(
       context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (item.type == 'link' && item.url != null)
-              ListTile(
-                leading: const Icon(Icons.open_in_browser),
-                title: const Text('Abrir enlace'),
-                onTap: () async {
-                  Navigator.pop(sheetContext);
-                  final url = Uri.parse(item.url!);
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url, mode: LaunchMode.externalApplication);
-                  }
-                },
-              ),
-            if (item.type == 'photo')
-              ListTile(
-                leading: const Icon(Icons.flip),
-                title: const Text('Ver reverso'),
-                subtitle: const Text('Editar notas, fecha y lugar'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  _showPhotoBack(context, item);
-                },
-              ),
-            ListTile(
-              leading: const Icon(Icons.delete, color: AppColors.error),
-              title: const Text('Eliminar', style: TextStyle(color: AppColors.error)),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _showDeleteConfirmation(context, item);
-              },
+      builder:
+          (sheetContext) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (item.type == 'link' && item.url != null)
+                  ListTile(
+                    leading: const Icon(Icons.open_in_browser),
+                    title: const Text('Abrir enlace'),
+                    onTap: () async {
+                      Navigator.pop(sheetContext);
+                      final url = Uri.parse(item.url!);
+                      if (await canLaunchUrl(url)) {
+                        await launchUrl(
+                          url,
+                          mode: LaunchMode.externalApplication,
+                        );
+                      }
+                    },
+                  ),
+                if (item.type == 'photo')
+                  ListTile(
+                    leading: const Icon(Icons.flip),
+                    title: const Text('Ver reverso'),
+                    subtitle: const Text('Editar notas, fecha y lugar'),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      _showPhotoBack(context, item);
+                    },
+                  ),
+                ListTile(
+                  leading: const Icon(Icons.delete, color: AppColors.error),
+                  title: const Text(
+                    'Eliminar',
+                    style: TextStyle(color: AppColors.error),
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showDeleteConfirmation(context, item);
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -393,113 +418,118 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Reverso de la foto'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: textController,
-                decoration: const InputDecoration(
-                  labelText: 'Nota',
-                  hintText: 'Escribe algo sobre esta foto',
-                  prefixIcon: Icon(Icons.note),
-                ),
-                maxLines: 3,
-                textCapitalization: TextCapitalization.sentences,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Text('Reverso de la foto'),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: textController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nota',
+                      hintText: 'Escribe algo sobre esta foto',
+                      prefixIcon: Icon(Icons.note),
+                    ),
+                    maxLines: 3,
+                    textCapitalization: TextCapitalization.sentences,
+                  ),
+                  const SizedBox(height: AppSizes.md),
+                  TextField(
+                    controller: dateController,
+                    decoration: const InputDecoration(
+                      labelText: 'Fecha',
+                      hintText: '2024-01-15',
+                      prefixIcon: Icon(Icons.calendar_today),
+                    ),
+                  ),
+                  const SizedBox(height: AppSizes.md),
+                  TextField(
+                    controller: placeController,
+                    decoration: const InputDecoration(
+                      labelText: 'Lugar',
+                      hintText: 'Buenos Aires, Argentina',
+                      prefixIcon: Icon(Icons.place),
+                    ),
+                    textCapitalization: TextCapitalization.words,
+                  ),
+                ],
               ),
-              const SizedBox(height: AppSizes.md),
-              TextField(
-                controller: dateController,
-                decoration: const InputDecoration(
-                  labelText: 'Fecha',
-                  hintText: '2024-01-15',
-                  prefixIcon: Icon(Icons.calendar_today),
-                ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text(AppStrings.cancel),
               ),
-              const SizedBox(height: AppSizes.md),
-              TextField(
-                controller: placeController,
-                decoration: const InputDecoration(
-                  labelText: 'Lugar',
-                  hintText: 'Buenos Aires, Argentina',
-                  prefixIcon: Icon(Icons.place),
-                ),
-                textCapitalization: TextCapitalization.words,
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(dialogContext);
+                  await ref
+                      .read(boardDetailNotifierProvider(boardId).notifier)
+                      .updateItem(
+                        itemId: item.id,
+                        photoBack: PhotoBackModel(
+                          text:
+                              textController.text.trim().isEmpty
+                                  ? null
+                                  : textController.text.trim(),
+                          date:
+                              dateController.text.trim().isEmpty
+                                  ? null
+                                  : dateController.text.trim(),
+                          place:
+                              placeController.text.trim().isEmpty
+                                  ? null
+                                  : placeController.text.trim(),
+                        ),
+                      );
+                },
+                child: const Text(AppStrings.save),
               ),
             ],
           ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(AppStrings.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              await ref
-                  .read(boardDetailNotifierProvider(boardId).notifier)
-                  .updateItem(
-                    itemId: item.id,
-                    photoBack: PhotoBackModel(
-                      text: textController.text.trim().isEmpty
-                          ? null
-                          : textController.text.trim(),
-                      date: dateController.text.trim().isEmpty
-                          ? null
-                          : dateController.text.trim(),
-                      place: placeController.text.trim().isEmpty
-                          ? null
-                          : placeController.text.trim(),
-                    ),
-                  );
-            },
-            child: const Text(AppStrings.save),
-          ),
-        ],
-      ),
     );
   }
 
-  void _showDeleteConfirmation(
-      BuildContext context, BoardItemModel item) {
+  void _showDeleteConfirmation(BuildContext context, BoardItemModel item) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Eliminar item'),
-        content: const Text('¿Estás seguro que deseas eliminar este item?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(AppStrings.cancel),
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Text('Eliminar item'),
+            content: const Text('¿Estás seguro que deseas eliminar este item?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text(AppStrings.cancel),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(dialogContext);
+                  final success = await ref
+                      .read(boardDetailNotifierProvider(boardId).notifier)
+                      .deleteItem(item.id);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          success ? 'Item eliminado' : 'Error al eliminar',
+                        ),
+                        backgroundColor:
+                            success ? AppColors.success : AppColors.error,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text(AppStrings.delete),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              final success = await ref
-                  .read(boardDetailNotifierProvider(boardId).notifier)
-                  .deleteItem(item.id);
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      success ? 'Item eliminado' : 'Error al eliminar',
-                    ),
-                    backgroundColor: success ? AppColors.success : AppColors.error,
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: Colors.white,
-            ),
-            child: const Text(AppStrings.delete),
-          ),
-        ],
-      ),
     );
   }
 }
@@ -518,11 +548,15 @@ class _BoardItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = item.type == 'photo'
-        ? item.thumbnailUrl ?? item.url
-        : item.linkPreviewImage ?? item.thumbnailUrl;
+    final imageUrl =
+        item.type == 'photo'
+            ? item.thumbnailUrl ?? item.url
+            : item.linkPreviewImage ?? item.thumbnailUrl;
 
     return Card(
+      margin: EdgeInsets.all(2),
+
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
@@ -535,15 +569,16 @@ class _BoardItemCard extends StatelessWidget {
               CachedNetworkImage(
                 imageUrl: imageUrl,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Shimmer.fromColors(
-                  baseColor: AppColors.shimmerBase,
-                  highlightColor: AppColors.shimmerHighlight,
-                  child: Container(color: Colors.white),
-                ),
-                errorWidget: (context, url, error) => _buildPlaceholder(),
+                placeholder:
+                    (context, url) => Shimmer.fromColors(
+                      baseColor: AppColors.shimmerBase,
+                      highlightColor: AppColors.shimmerHighlight,
+                      child: Container(color: Colors.white),
+                    ),
+                errorWidget: (context, url, error) => _buildPlaceholder(context),
               )
             else
-              _buildPlaceholder(),
+              _buildPlaceholder(context),
 
             // Type indicator
             Positioned(
@@ -574,10 +609,7 @@ class _BoardItemCard extends StatelessWidget {
                   color: Colors.black54,
                   child: Text(
                     item.title!,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                    ),
+                    style: const TextStyle(color: Colors.white, fontSize: 12),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -595,11 +627,7 @@ class _BoardItemCard extends StatelessWidget {
                     color: AppColors.boards,
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Icon(
-                    Icons.flip,
-                    size: 16,
-                    color: Colors.white,
-                  ),
+                  child: const Icon(Icons.flip, size: 16, color: Colors.white),
                 ),
               ),
           ],
@@ -611,17 +639,22 @@ class _BoardItemCard extends StatelessWidget {
   bool get _hasPhotoBack {
     final back = item.photoBack;
     if (back == null) return false;
-    return back.text != null || back.date != null || back.place != null || back.drawingUrl != null;
+    return back.text != null ||
+        back.date != null ||
+        back.place != null ||
+        back.drawingUrl != null;
   }
 
-  Widget _buildPlaceholder() {
+  Widget _buildPlaceholder(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Container(
-      color: AppColors.surfaceVariant,
+      color: colorScheme.surfaceContainerHighest,
       child: Center(
         child: Icon(
           item.type == 'photo' ? Icons.photo : Icons.link,
           size: 32,
-          color: AppColors.textTertiary,
+          color: colorScheme.onSurfaceVariant,
         ),
       ),
     );
@@ -640,27 +673,31 @@ class _ItemDetailSheet extends StatelessWidget {
     required this.onClose,
   });
 
-  void _openFullScreenPhoto(BuildContext context, String imageUrl, String? title) {
+  void _openFullScreenPhoto(
+    BuildContext context,
+    String imageUrl,
+    String? title,
+  ) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => _FullScreenPhotoViewer(
-          imageUrl: imageUrl,
-          title: title,
-        ),
+        builder:
+            (_) => _FullScreenPhotoViewer(imageUrl: imageUrl, title: title),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = item.type == 'photo'
-        ? item.url
-        : item.linkPreviewImage ?? item.thumbnailUrl;
+    final colorScheme = Theme.of(context).colorScheme;
+    final imageUrl =
+        item.type == 'photo'
+            ? item.url
+            : item.linkPreviewImage ?? item.thumbnailUrl;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
       ),
       child: ListView(
         controller: scrollController,
@@ -673,7 +710,7 @@ class _ItemDetailSheet extends StatelessWidget {
               height: 4,
               margin: const EdgeInsets.only(bottom: AppSizes.md),
               decoration: BoxDecoration(
-                color: AppColors.border,
+                color: colorScheme.outline,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -682,9 +719,11 @@ class _ItemDetailSheet extends StatelessWidget {
           // Image (tappable for photos to open full-screen viewer)
           if (imageUrl != null)
             GestureDetector(
-              onTap: item.type == 'photo'
-                  ? () => _openFullScreenPhoto(context, imageUrl, item.title)
-                  : null,
+              onTap:
+                  item.type == 'photo'
+                      ? () =>
+                          _openFullScreenPhoto(context, imageUrl, item.title)
+                      : null,
               child: Stack(
                 children: [
                   ClipRRect(
@@ -694,23 +733,22 @@ class _ItemDetailSheet extends StatelessWidget {
                       fit: BoxFit.cover,
                       height: 250,
                       width: double.infinity,
-                      placeholder: (context, url) => Shimmer.fromColors(
-                        baseColor: AppColors.shimmerBase,
-                        highlightColor: AppColors.shimmerHighlight,
-                        child: Container(
-                          height: 250,
-                          color: Colors.white,
-                        ),
-                      ),
-                      errorWidget: (context, url, error) => Container(
-                        height: 250,
-                        color: AppColors.surfaceVariant,
-                        child: const Icon(
-                          Icons.broken_image,
-                          size: 48,
-                          color: AppColors.textTertiary,
-                        ),
-                      ),
+                      placeholder:
+                          (context, url) => Shimmer.fromColors(
+                            baseColor: colorScheme.surfaceContainerHighest,
+                            highlightColor: colorScheme.surface,
+                            child: Container(height: 250, color: colorScheme.surface),
+                          ),
+                      errorWidget:
+                          (context, url, error) => Container(
+                            height: 250,
+                            color: colorScheme.surfaceContainerHighest,
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 48,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
                     ),
                   ),
                   // Zoom hint for photos
@@ -725,7 +763,9 @@ class _ItemDetailSheet extends StatelessWidget {
                         ),
                         decoration: BoxDecoration(
                           color: Colors.black54,
-                          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                          borderRadius: BorderRadius.circular(
+                            AppSizes.radiusSm,
+                          ),
                         ),
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
@@ -734,7 +774,10 @@ class _ItemDetailSheet extends StatelessWidget {
                             SizedBox(width: 4),
                             Text(
                               'Ampliar',
-                              style: TextStyle(color: Colors.white, fontSize: 12),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
                           ],
                         ),
@@ -748,10 +791,7 @@ class _ItemDetailSheet extends StatelessWidget {
 
           // Title
           if (item.title != null)
-            Text(
-              item.title!,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
+            Text(item.title!, style: Theme.of(context).textTheme.titleLarge),
 
           // Description
           if (item.description != null) ...[
@@ -759,8 +799,8 @@ class _ItemDetailSheet extends StatelessWidget {
             Text(
               item.description!,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
 
@@ -770,8 +810,8 @@ class _ItemDetailSheet extends StatelessWidget {
             Text(
               item.url!,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.primary,
-                  ),
+                color: colorScheme.primary,
+              ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -817,8 +857,8 @@ class _ItemDetailSheet extends StatelessWidget {
             Text(
               'Agregado por ${item.createdBy!.name}',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textTertiary,
-                  ),
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ],
@@ -832,10 +872,7 @@ class _FullScreenPhotoViewer extends StatelessWidget {
   final String imageUrl;
   final String? title;
 
-  const _FullScreenPhotoViewer({
-    required this.imageUrl,
-    this.title,
-  });
+  const _FullScreenPhotoViewer({required this.imageUrl, this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -853,27 +890,31 @@ class _FullScreenPhotoViewer extends StatelessWidget {
         maxScale: PhotoViewComputedScale.covered * 3,
         initialScale: PhotoViewComputedScale.contained,
         backgroundDecoration: const BoxDecoration(color: Colors.black),
-        loadingBuilder: (context, event) => Center(
-          child: CircularProgressIndicator(
-            value: event == null
-                ? null
-                : event.cumulativeBytesLoaded / (event.expectedTotalBytes ?? 1),
-            color: Colors.white,
-          ),
-        ),
-        errorBuilder: (context, error, stackTrace) => const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.broken_image, size: 64, color: Colors.white54),
-              SizedBox(height: 16),
-              Text(
-                'No se pudo cargar la imagen',
-                style: TextStyle(color: Colors.white54),
+        loadingBuilder:
+            (context, event) => Center(
+              child: CircularProgressIndicator(
+                value:
+                    event == null
+                        ? null
+                        : event.cumulativeBytesLoaded /
+                            (event.expectedTotalBytes ?? 1),
+                color: Colors.white,
               ),
-            ],
-          ),
-        ),
+            ),
+        errorBuilder:
+            (context, error, stackTrace) => const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.broken_image, size: 64, color: Colors.white54),
+                  SizedBox(height: 16),
+                  Text(
+                    'No se pudo cargar la imagen',
+                    style: TextStyle(color: Colors.white54),
+                  ),
+                ],
+              ),
+            ),
       ),
     );
   }

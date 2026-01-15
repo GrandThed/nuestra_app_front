@@ -37,6 +37,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
   // FocusNodes for ingredient field navigation
   final _ingredientNameFocus = FocusNode();
   final _ingredientQuantityFocus = FocusNode();
+  FocusNode? _ingredientUnitFocus;
 
   // Inline instruction input controller
   final _instructionController = TextEditingController();
@@ -496,7 +497,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                   ),
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
-                  onSubmitted: (_) => FocusScope.of(context).nextFocus(),
+                  onSubmitted: (_) => _ingredientUnitFocus?.requestFocus(),
                 ),
               ),
               const SizedBox(width: 8),
@@ -510,6 +511,8 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                     _ingredientUnitController.text = selection;
                   },
                   fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                    // Store reference to Autocomplete's focus node
+                    _ingredientUnitFocus = focusNode;
                     // Sync with our controller
                     if (controller.text != _ingredientUnitController.text) {
                       controller.text = _ingredientUnitController.text;
@@ -800,6 +803,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
     });
 
     _clearIngredientFields();
+    _ingredientNameFocus.requestFocus();
   }
 
   void _startEditingIngredient(int index) {

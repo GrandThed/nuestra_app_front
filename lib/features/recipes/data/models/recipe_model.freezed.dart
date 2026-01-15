@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RecipeModel {
 
- String get id; String get householdId; String get title; List<IngredientModel>? get ingredients; List<String>? get instructions; String? get imageUrl; int? get servings; String? get sourceUrl; RecipeCreatorModel? get createdBy; DateTime? get createdAt; DateTime? get updatedAt;
+ String get id; String? get householdId; String get title; List<IngredientModel>? get ingredients; List<String>? get instructions; String? get imageUrl; int? get servings; String? get sourceUrl; RecipeCreatorModel? get createdBy; DateTime? get createdAt; DateTime? get updatedAt;
 /// Create a copy of RecipeModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $RecipeModelCopyWith<$Res>  {
   factory $RecipeModelCopyWith(RecipeModel value, $Res Function(RecipeModel) _then) = _$RecipeModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String householdId, String title, List<IngredientModel>? ingredients, List<String>? instructions, String? imageUrl, int? servings, String? sourceUrl, RecipeCreatorModel? createdBy, DateTime? createdAt, DateTime? updatedAt
+ String id, String? householdId, String title, List<IngredientModel>? ingredients, List<String>? instructions, String? imageUrl, int? servings, String? sourceUrl, RecipeCreatorModel? createdBy, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -65,11 +65,11 @@ class _$RecipeModelCopyWithImpl<$Res>
 
 /// Create a copy of RecipeModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? householdId = null,Object? title = null,Object? ingredients = freezed,Object? instructions = freezed,Object? imageUrl = freezed,Object? servings = freezed,Object? sourceUrl = freezed,Object? createdBy = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? householdId = freezed,Object? title = null,Object? ingredients = freezed,Object? instructions = freezed,Object? imageUrl = freezed,Object? servings = freezed,Object? sourceUrl = freezed,Object? createdBy = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,householdId: null == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,householdId: freezed == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
+as String?,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,ingredients: freezed == ingredients ? _self.ingredients : ingredients // ignore: cast_nullable_to_non_nullable
 as List<IngredientModel>?,instructions: freezed == instructions ? _self.instructions : instructions // ignore: cast_nullable_to_non_nullable
 as List<String>?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
@@ -172,7 +172,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RecipeModel() when $default != null:
 return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.instructions,_that.imageUrl,_that.servings,_that.sourceUrl,_that.createdBy,_that.createdAt,_that.updatedAt);case _:
@@ -193,7 +193,7 @@ return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.i
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _RecipeModel():
 return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.instructions,_that.imageUrl,_that.servings,_that.sourceUrl,_that.createdBy,_that.createdAt,_that.updatedAt);}
@@ -210,7 +210,7 @@ return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.i
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _RecipeModel() when $default != null:
 return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.instructions,_that.imageUrl,_that.servings,_that.sourceUrl,_that.createdBy,_that.createdAt,_that.updatedAt);case _:
@@ -225,11 +225,11 @@ return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.i
 @JsonSerializable()
 
 class _RecipeModel implements RecipeModel {
-  const _RecipeModel({required this.id, required this.householdId, required this.title, final  List<IngredientModel>? ingredients, final  List<String>? instructions, this.imageUrl, this.servings, this.sourceUrl, this.createdBy, this.createdAt, this.updatedAt}): _ingredients = ingredients,_instructions = instructions;
+  const _RecipeModel({required this.id, this.householdId, required this.title, final  List<IngredientModel>? ingredients, final  List<String>? instructions, this.imageUrl, this.servings, this.sourceUrl, this.createdBy, this.createdAt, this.updatedAt}): _ingredients = ingredients,_instructions = instructions;
   factory _RecipeModel.fromJson(Map<String, dynamic> json) => _$RecipeModelFromJson(json);
 
 @override final  String id;
-@override final  String householdId;
+@override final  String? householdId;
 @override final  String title;
  final  List<IngredientModel>? _ingredients;
 @override List<IngredientModel>? get ingredients {
@@ -289,7 +289,7 @@ abstract mixin class _$RecipeModelCopyWith<$Res> implements $RecipeModelCopyWith
   factory _$RecipeModelCopyWith(_RecipeModel value, $Res Function(_RecipeModel) _then) = __$RecipeModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String householdId, String title, List<IngredientModel>? ingredients, List<String>? instructions, String? imageUrl, int? servings, String? sourceUrl, RecipeCreatorModel? createdBy, DateTime? createdAt, DateTime? updatedAt
+ String id, String? householdId, String title, List<IngredientModel>? ingredients, List<String>? instructions, String? imageUrl, int? servings, String? sourceUrl, RecipeCreatorModel? createdBy, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -306,11 +306,11 @@ class __$RecipeModelCopyWithImpl<$Res>
 
 /// Create a copy of RecipeModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? householdId = null,Object? title = null,Object? ingredients = freezed,Object? instructions = freezed,Object? imageUrl = freezed,Object? servings = freezed,Object? sourceUrl = freezed,Object? createdBy = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? householdId = freezed,Object? title = null,Object? ingredients = freezed,Object? instructions = freezed,Object? imageUrl = freezed,Object? servings = freezed,Object? sourceUrl = freezed,Object? createdBy = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_RecipeModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,householdId: null == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
-as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,householdId: freezed == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
+as String?,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
 as String,ingredients: freezed == ingredients ? _self._ingredients : ingredients // ignore: cast_nullable_to_non_nullable
 as List<IngredientModel>?,instructions: freezed == instructions ? _self._instructions : instructions // ignore: cast_nullable_to_non_nullable
 as List<String>?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable

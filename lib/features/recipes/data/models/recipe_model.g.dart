@@ -8,7 +8,7 @@ part of 'recipe_model.dart';
 
 _RecipeModel _$RecipeModelFromJson(Map<String, dynamic> json) => _RecipeModel(
   id: json['id'] as String,
-  householdId: json['householdId'] as String,
+  householdId: json['householdId'] as String?,
   title: json['title'] as String,
   ingredients:
       (json['ingredients'] as List<dynamic>?)
