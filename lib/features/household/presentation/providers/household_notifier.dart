@@ -92,17 +92,33 @@ class HouseholdNotifier extends _$HouseholdNotifier {
     }
   }
 
+  /// Load household only if not already loaded
+  Future<void> loadHouseholdIfNeeded(String id) async {
+    if (state is HouseholdStateInitial || state is HouseholdStateError) {
+      await loadHousehold(id);
+    }
+  }
+
   /// Load a household by ID
-  Future<void> loadHousehold(String id) async {
-    state = const HouseholdState.loading();
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> loadHousehold(String id, {bool forceLoading = false}) async {
+    final hasData = state is HouseholdStateLoaded;
+
+    if (!hasData || forceLoading) {
+      state = const HouseholdState.loading();
+    }
 
     try {
       final household = await _repository.getHousehold(id);
       state = HouseholdState.loaded(household);
     } on AppException catch (e) {
-      state = HouseholdState.error(e.message);
+      if (!hasData) {
+        state = HouseholdState.error(e.message);
+      }
     } catch (e) {
-      state = HouseholdState.error('Error al cargar el hogar: $e');
+      if (!hasData) {
+        state = HouseholdState.error('Error al cargar el hogar: $e');
+      }
     }
   }
 

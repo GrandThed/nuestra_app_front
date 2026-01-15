@@ -11,17 +11,34 @@ import 'package:nuestra_app/core/services/image_picker_service.dart';
 import 'package:nuestra_app/features/boards/data/models/board_model.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_notifier.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_state.dart';
+import 'package:photo_view/photo_view.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 /// Screen to display board items in a grid
-class BoardDetailScreen extends ConsumerWidget {
+class BoardDetailScreen extends ConsumerStatefulWidget {
   final String boardId;
 
   const BoardDetailScreen({super.key, required this.boardId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<BoardDetailScreen> createState() => _BoardDetailScreenState();
+}
+
+class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load board only if not already loaded
+    Future.microtask(() {
+      ref.read(boardDetailNotifierProvider(widget.boardId).notifier).loadBoardIfNeeded();
+    });
+  }
+
+  String get boardId => widget.boardId;
+
+  @override
+  Widget build(BuildContext context) {
     final boardState = ref.watch(boardDetailNotifierProvider(boardId));
 
     return Scaffold(
@@ -46,11 +63,11 @@ class BoardDetailScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         loaded: (board) => board.items?.isEmpty ?? true
             ? _buildEmptyState(context)
-            : _buildItemsGrid(context, ref, board),
-        error: (message) => _buildErrorState(context, ref, message),
+            : _buildItemsGrid(context, board),
+        error: (message) => _buildErrorState(context, message),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddItemOptions(context, ref),
+        onPressed: () => _showAddItemOptions(context),
         backgroundColor: AppColors.boards,
         child: const Icon(Icons.add),
       ),
@@ -79,7 +96,7 @@ class BoardDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, WidgetRef ref, String message) {
+  Widget _buildErrorState(BuildContext context, String message) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -99,7 +116,7 @@ class BoardDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildItemsGrid(BuildContext context, WidgetRef ref, BoardModel board) {
+  Widget _buildItemsGrid(BuildContext context, BoardModel board) {
     final items = board.items ?? [];
 
     return RefreshIndicator(
@@ -119,15 +136,15 @@ class BoardDetailScreen extends ConsumerWidget {
           final item = items[index];
           return _BoardItemCard(
             item: item,
-            onTap: () => _showItemDetail(context, ref, item),
-            onLongPress: () => _showItemOptions(context, ref, item),
+            onTap: () => _showItemDetail(context, item),
+            onLongPress: () => _showItemOptions(context, item),
           );
         },
       ),
     );
   }
 
-  void _showAddItemOptions(BuildContext context, WidgetRef ref) {
+  void _showAddItemOptions(BuildContext context) {
     showModalBottomSheet(
       context: context,
       builder: (sheetContext) => SafeArea(
@@ -150,7 +167,7 @@ class BoardDetailScreen extends ConsumerWidget {
               subtitle: const Text('Pega un enlace de cualquier sitio'),
               onTap: () {
                 Navigator.pop(sheetContext);
-                _showAddLinkDialog(context, ref);
+                _showAddLinkDialog(context);
               },
             ),
             ListTile(
@@ -159,7 +176,7 @@ class BoardDetailScreen extends ConsumerWidget {
               subtitle: const Text('Toma una foto o selecciona de la galería'),
               onTap: () {
                 Navigator.pop(sheetContext);
-                _showAddPhotoOptions(context, ref);
+                _showAddPhotoOptions(context);
               },
             ),
           ],
@@ -168,7 +185,7 @@ class BoardDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddLinkDialog(BuildContext context, WidgetRef ref) {
+  void _showAddLinkDialog(BuildContext context) {
     final urlController = TextEditingController();
     final titleController = TextEditingController();
 
@@ -239,7 +256,7 @@ class BoardDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddPhotoOptions(BuildContext context, WidgetRef ref) async {
+  void _showAddPhotoOptions(BuildContext context) async {
     final choice = await ImagePickerService.showImageSourcePicker(context);
     if (choice == null || !context.mounted) return;
 
@@ -308,7 +325,7 @@ class BoardDetailScreen extends ConsumerWidget {
     }
   }
 
-  void _showItemDetail(BuildContext context, WidgetRef ref, BoardItemModel item) {
+  void _showItemDetail(BuildContext context, BoardItemModel item) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -326,7 +343,7 @@ class BoardDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showItemOptions(BuildContext context, WidgetRef ref, BoardItemModel item) {
+  void _showItemOptions(BuildContext context, BoardItemModel item) {
     showModalBottomSheet(
       context: context,
       builder: (sheetContext) => SafeArea(
@@ -352,7 +369,7 @@ class BoardDetailScreen extends ConsumerWidget {
                 subtitle: const Text('Editar notas, fecha y lugar'),
                 onTap: () {
                   Navigator.pop(sheetContext);
-                  _showPhotoBack(context, ref, item);
+                  _showPhotoBack(context, item);
                 },
               ),
             ListTile(
@@ -360,7 +377,7 @@ class BoardDetailScreen extends ConsumerWidget {
               title: const Text('Eliminar', style: TextStyle(color: AppColors.error)),
               onTap: () {
                 Navigator.pop(sheetContext);
-                _showDeleteConfirmation(context, ref, item);
+                _showDeleteConfirmation(context, item);
               },
             ),
           ],
@@ -369,7 +386,7 @@ class BoardDetailScreen extends ConsumerWidget {
     );
   }
 
-  void _showPhotoBack(BuildContext context, WidgetRef ref, BoardItemModel item) {
+  void _showPhotoBack(BuildContext context, BoardItemModel item) {
     final textController = TextEditingController(text: item.photoBack?.text);
     final dateController = TextEditingController(text: item.photoBack?.date);
     final placeController = TextEditingController(text: item.photoBack?.place);
@@ -447,7 +464,7 @@ class BoardDetailScreen extends ConsumerWidget {
   }
 
   void _showDeleteConfirmation(
-      BuildContext context, WidgetRef ref, BoardItemModel item) {
+      BuildContext context, BoardItemModel item) {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -623,6 +640,17 @@ class _ItemDetailSheet extends StatelessWidget {
     required this.onClose,
   });
 
+  void _openFullScreenPhoto(BuildContext context, String imageUrl, String? title) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => _FullScreenPhotoViewer(
+          imageUrl: imageUrl,
+          title: title,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final imageUrl = item.type == 'photo'
@@ -651,32 +679,68 @@ class _ItemDetailSheet extends StatelessWidget {
             ),
           ),
 
-          // Image
+          // Image (tappable for photos to open full-screen viewer)
           if (imageUrl != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-              child: CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.cover,
-                height: 250,
-                width: double.infinity,
-                placeholder: (context, url) => Shimmer.fromColors(
-                  baseColor: AppColors.shimmerBase,
-                  highlightColor: AppColors.shimmerHighlight,
-                  child: Container(
-                    height: 250,
-                    color: Colors.white,
+            GestureDetector(
+              onTap: item.type == 'photo'
+                  ? () => _openFullScreenPhoto(context, imageUrl, item.title)
+                  : null,
+              child: Stack(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                    child: CachedNetworkImage(
+                      imageUrl: imageUrl,
+                      fit: BoxFit.cover,
+                      height: 250,
+                      width: double.infinity,
+                      placeholder: (context, url) => Shimmer.fromColors(
+                        baseColor: AppColors.shimmerBase,
+                        highlightColor: AppColors.shimmerHighlight,
+                        child: Container(
+                          height: 250,
+                          color: Colors.white,
+                        ),
+                      ),
+                      errorWidget: (context, url, error) => Container(
+                        height: 250,
+                        color: AppColors.surfaceVariant,
+                        child: const Icon(
+                          Icons.broken_image,
+                          size: 48,
+                          color: AppColors.textTertiary,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                errorWidget: (context, url, error) => Container(
-                  height: 250,
-                  color: AppColors.surfaceVariant,
-                  child: const Icon(
-                    Icons.broken_image,
-                    size: 48,
-                    color: AppColors.textTertiary,
-                  ),
-                ),
+                  // Zoom hint for photos
+                  if (item.type == 'photo')
+                    Positioned(
+                      bottom: AppSizes.sm,
+                      right: AppSizes.sm,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSizes.sm,
+                          vertical: AppSizes.xs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                        ),
+                        child: const Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.zoom_in, size: 16, color: Colors.white),
+                            SizedBox(width: 4),
+                            Text(
+                              'Ampliar',
+                              style: TextStyle(color: Colors.white, fontSize: 12),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
 
@@ -758,6 +822,58 @@ class _ItemDetailSheet extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+/// Full-screen photo viewer with pinch-to-zoom
+class _FullScreenPhotoViewer extends StatelessWidget {
+  final String imageUrl;
+  final String? title;
+
+  const _FullScreenPhotoViewer({
+    required this.imageUrl,
+    this.title,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
+        title: title != null ? Text(title!) : null,
+        elevation: 0,
+      ),
+      body: PhotoView(
+        imageProvider: CachedNetworkImageProvider(imageUrl),
+        minScale: PhotoViewComputedScale.contained,
+        maxScale: PhotoViewComputedScale.covered * 3,
+        initialScale: PhotoViewComputedScale.contained,
+        backgroundDecoration: const BoxDecoration(color: Colors.black),
+        loadingBuilder: (context, event) => Center(
+          child: CircularProgressIndicator(
+            value: event == null
+                ? null
+                : event.cumulativeBytesLoaded / (event.expectedTotalBytes ?? 1),
+            color: Colors.white,
+          ),
+        ),
+        errorBuilder: (context, error, stackTrace) => const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.broken_image, size: 64, color: Colors.white54),
+              SizedBox(height: 16),
+              Text(
+                'No se pudo cargar la imagen',
+                style: TextStyle(color: Colors.white54),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

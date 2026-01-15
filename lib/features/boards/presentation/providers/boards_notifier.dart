@@ -21,23 +21,40 @@ class BoardsNotifier extends _$BoardsNotifier {
     return const BoardsState.initial();
   }
 
+  /// Load boards only if not already loaded (for screen init)
+  Future<void> loadBoardsIfNeeded() async {
+    if (state is BoardsStateInitial || state is BoardsStateError) {
+      await loadBoards();
+    }
+  }
+
   /// Load all boards for current household
-  Future<void> loadBoards() async {
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> loadBoards({bool forceLoading = false}) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) {
       state = const BoardsState.error('No hay hogar seleccionado');
       return;
     }
 
-    state = const BoardsState.loading();
+    // Only show loading spinner if no data exists yet or forced
+    final hasData = state is BoardsStateLoaded;
+    if (!hasData || forceLoading) {
+      state = const BoardsState.loading();
+    }
 
     try {
       final boards = await _repository.getBoards(householdId);
       state = BoardsState.loaded(boards);
     } on AppException catch (e) {
-      state = BoardsState.error(e.message);
+      // Only show error if we don't have existing data
+      if (!hasData) {
+        state = BoardsState.error(e.message);
+      }
     } catch (e) {
-      state = BoardsState.error('Error al cargar tableros: $e');
+      if (!hasData) {
+        state = BoardsState.error('Error al cargar tableros: $e');
+      }
     }
   }
 
@@ -106,29 +123,43 @@ class BoardsNotifier extends _$BoardsNotifier {
 }
 
 /// Notifier for single board detail operations
-@riverpod
+@Riverpod(keepAlive: true)
 class BoardDetailNotifier extends _$BoardDetailNotifier {
   late final BoardRepository _repository;
 
   @override
   BoardDetailState build(String boardId) {
     _repository = ref.watch(boardRepositoryProvider);
-    // Auto-load when created
-    Future.microtask(() => loadBoard());
-    return const BoardDetailState.loading();
+    return const BoardDetailState.initial();
+  }
+
+  /// Load board only if not already loaded
+  Future<void> loadBoardIfNeeded() async {
+    if (state is BoardDetailStateInitial || state is BoardDetailStateError) {
+      await loadBoard();
+    }
   }
 
   /// Load board detail
-  Future<void> loadBoard() async {
-    state = const BoardDetailState.loading();
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> loadBoard({bool forceLoading = false}) async {
+    final hasData = state is BoardDetailStateLoaded;
+
+    if (!hasData || forceLoading) {
+      state = const BoardDetailState.loading();
+    }
 
     try {
       final board = await _repository.getBoard(boardId);
       state = BoardDetailState.loaded(board);
     } on AppException catch (e) {
-      state = BoardDetailState.error(e.message);
+      if (!hasData) {
+        state = BoardDetailState.error(e.message);
+      }
     } catch (e) {
-      state = BoardDetailState.error('Error al cargar tablero: $e');
+      if (!hasData) {
+        state = BoardDetailState.error('Error al cargar tablero: $e');
+      }
     }
   }
 

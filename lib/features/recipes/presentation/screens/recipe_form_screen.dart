@@ -29,11 +29,23 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
   final _servingsController = TextEditingController();
   final _sourceUrlController = TextEditingController();
 
+  // Inline ingredient input controllers
+  final _ingredientNameController = TextEditingController();
+  final _ingredientQuantityController = TextEditingController();
+  final _ingredientUnitController = TextEditingController();
+
+  // Inline instruction input controller
+  final _instructionController = TextEditingController();
+
   List<IngredientModel> _ingredients = [];
   List<String> _instructions = [];
   File? _selectedImage;
   String? _existingImageUrl;
   bool _isLoading = false;
+
+  // Index for editing existing items (-1 means adding new)
+  int _editingIngredientIndex = -1;
+  int _editingInstructionIndex = -1;
 
   @override
   void initState() {
@@ -68,6 +80,10 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
     _titleController.dispose();
     _servingsController.dispose();
     _sourceUrlController.dispose();
+    _ingredientNameController.dispose();
+    _ingredientQuantityController.dispose();
+    _ingredientUnitController.dispose();
+    _instructionController.dispose();
     super.dispose();
   }
 
@@ -262,62 +278,194 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Ingredientes',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextButton.icon(
-              onPressed: _addIngredient,
-              icon: const Icon(Icons.add),
-              label: const Text('Agregar'),
-              style: TextButton.styleFrom(foregroundColor: AppColors.recipes),
-            ),
-          ],
+        const Text(
+          'Ingredientes',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: AppSizes.sm),
-        if (_ingredients.isEmpty)
-          Container(
-            padding: const EdgeInsets.all(AppSizes.paddingMd),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceVariant,
-              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-            ),
-            child: const Center(
-              child: Text(
-                'No hay ingredientes',
-                style: TextStyle(color: AppColors.textSecondary),
-              ),
-            ),
-          )
-        else
+
+        // List of existing ingredients
+        if (_ingredients.isNotEmpty)
           ...List.generate(_ingredients.length, (index) {
             final ingredient = _ingredients[index];
+            final isEditing = _editingIngredientIndex == index;
+
+            if (isEditing) {
+              // Inline editing mode
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.recipes.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                  border: Border.all(color: AppColors.recipes),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: TextField(
+                            controller: _ingredientNameController,
+                            decoration: const InputDecoration(
+                              hintText: 'Ingrediente',
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              border: OutlineInputBorder(),
+                            ),
+                            textCapitalization: TextCapitalization.sentences,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            controller: _ingredientQuantityController,
+                            decoration: const InputDecoration(
+                              hintText: 'Cant.',
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              border: OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          flex: 1,
+                          child: TextField(
+                            controller: _ingredientUnitController,
+                            decoration: const InputDecoration(
+                              hintText: 'Unid.',
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: _cancelIngredientEdit,
+                          child: const Text('Cancelar'),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          onPressed: _saveIngredientEdit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.recipes,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                          ),
+                          child: const Text('Guardar'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // Display mode
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
-                leading: const Icon(Icons.restaurant, color: AppColors.recipes),
+                dense: true,
                 title: Text(ingredient.name),
                 subtitle: ingredient.quantity != null || ingredient.unit != null
                     ? Text('${ingredient.quantity?.toString() ?? ''} ${ingredient.unit ?? ''}'.trim())
                     : null,
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                  onPressed: () {
-                    setState(() {
-                      _ingredients.removeAt(index);
-                    });
-                  },
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit_outlined, size: 20),
+                      onPressed: () => _startEditingIngredient(index),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 20, color: AppColors.error),
+                      onPressed: () {
+                        setState(() {
+                          _ingredients.removeAt(index);
+                        });
+                      },
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ],
                 ),
-                onTap: () => _editIngredient(index),
               ),
             );
           }),
+
+        // Inline input for new ingredient (only show when not editing an existing one)
+        if (_editingIngredientIndex == -1) ...[
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Expanded(
+                flex: 3,
+                child: TextField(
+                  controller: _ingredientNameController,
+                  decoration: const InputDecoration(
+                    hintText: 'Ingrediente',
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    border: OutlineInputBorder(),
+                  ),
+                  textCapitalization: TextCapitalization.sentences,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 1,
+                child: TextField(
+                  controller: _ingredientQuantityController,
+                  decoration: const InputDecoration(
+                    hintText: 'Cant.',
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    border: OutlineInputBorder(),
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                flex: 1,
+                child: TextField(
+                  controller: _ingredientUnitController,
+                  decoration: const InputDecoration(
+                    hintText: 'Unid.',
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _addIngredient,
+              icon: const Icon(Icons.add),
+              label: const Text('Agregar ingrediente'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.recipes,
+                side: const BorderSide(color: AppColors.recipes),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -326,92 +474,174 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              'Instrucciones',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            TextButton.icon(
-              onPressed: _addInstruction,
-              icon: const Icon(Icons.add),
-              label: const Text('Agregar'),
-              style: TextButton.styleFrom(foregroundColor: AppColors.recipes),
-            ),
-          ],
+        const Text(
+          'Instrucciones',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         const SizedBox(height: AppSizes.sm),
-        if (_instructions.isEmpty)
-          Container(
-            padding: const EdgeInsets.all(AppSizes.paddingMd),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceVariant,
-              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-            ),
-            child: const Center(
-              child: Text(
-                'No hay instrucciones',
-                style: TextStyle(color: AppColors.textSecondary),
-              ),
-            ),
-          )
-        else
-          ReorderableListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _instructions.length,
-            onReorder: (oldIndex, newIndex) {
-              setState(() {
-                if (newIndex > oldIndex) newIndex--;
-                final item = _instructions.removeAt(oldIndex);
-                _instructions.insert(newIndex, item);
-              });
-            },
-            itemBuilder: (context, index) {
-              final instruction = _instructions[index];
-              return Card(
-                key: ValueKey('instruction_$index'),
+
+        // List of existing instructions
+        if (_instructions.isNotEmpty)
+          ...List.generate(_instructions.length, (index) {
+            final instruction = _instructions[index];
+            final isEditing = _editingInstructionIndex == index;
+
+            if (isEditing) {
+              // Inline editing mode
+              return Container(
                 margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: AppColors.recipes,
-                    foregroundColor: Colors.white,
-                    radius: 14,
-                    child: Text(
-                      '${index + 1}',
-                      style: const TextStyle(fontSize: 12),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.recipes.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                  border: Border.all(color: AppColors.recipes),
+                ),
+                child: Column(
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: AppColors.recipes,
+                          foregroundColor: Colors.white,
+                          radius: 14,
+                          child: Text(
+                            '${index + 1}',
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextField(
+                            controller: _instructionController,
+                            decoration: const InputDecoration(
+                              hintText: 'Describe el paso...',
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              border: OutlineInputBorder(),
+                            ),
+                            textCapitalization: TextCapitalization.sentences,
+                            maxLines: 3,
+                            minLines: 1,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  title: Text(
-                    instruction,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit_outlined, color: AppColors.textSecondary),
-                        onPressed: () => _editInstruction(index),
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.delete_outline, color: AppColors.error),
-                        onPressed: () {
-                          setState(() {
-                            _instructions.removeAt(index);
-                          });
-                        },
-                      ),
-                    ],
-                  ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: _cancelInstructionEdit,
+                          child: const Text('Cancelar'),
+                        ),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          onPressed: _saveInstructionEdit,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.recipes,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                          ),
+                          child: const Text('Guardar'),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               );
-            },
+            }
+
+            // Display mode
+            return Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                dense: true,
+                leading: CircleAvatar(
+                  backgroundColor: AppColors.recipes,
+                  foregroundColor: Colors.white,
+                  radius: 14,
+                  child: Text(
+                    '${index + 1}',
+                    style: const TextStyle(fontSize: 12),
+                  ),
+                ),
+                title: Text(
+                  instruction,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit_outlined, size: 20),
+                      onPressed: () => _startEditingInstruction(index),
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close, size: 20, color: AppColors.error),
+                      onPressed: () {
+                        setState(() {
+                          _instructions.removeAt(index);
+                        });
+                      },
+                      visualDensity: VisualDensity.compact,
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }),
+
+        // Inline input for new instruction (only show when not editing an existing one)
+        if (_editingInstructionIndex == -1) ...[
+          const SizedBox(height: 4),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                backgroundColor: AppColors.recipes.withValues(alpha: 0.3),
+                foregroundColor: Colors.white,
+                radius: 14,
+                child: Text(
+                  '${_instructions.length + 1}',
+                  style: const TextStyle(fontSize: 12),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  controller: _instructionController,
+                  decoration: const InputDecoration(
+                    hintText: 'Describe el paso...',
+                    isDense: true,
+                    contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    border: OutlineInputBorder(),
+                  ),
+                  textCapitalization: TextCapitalization.sentences,
+                  maxLines: 3,
+                  minLines: 1,
+                ),
+              ),
+            ],
           ),
+          const SizedBox(height: 8),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _addInstruction,
+              icon: const Icon(Icons.add),
+              label: const Text('Agregar paso'),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: AppColors.recipes,
+                side: const BorderSide(color: AppColors.recipes),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -437,155 +667,109 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
     }
   }
 
+  // Ingredient inline methods
   void _addIngredient() {
-    _showIngredientDialog();
-  }
+    final name = _ingredientNameController.text.trim();
+    if (name.isEmpty) return;
 
-  void _editIngredient(int index) {
-    _showIngredientDialog(
-      existingIngredient: _ingredients[index],
-      index: index,
+    final ingredient = IngredientModel(
+      name: name,
+      quantity: _ingredientQuantityController.text.trim().isEmpty
+          ? null
+          : double.tryParse(_ingredientQuantityController.text.trim()),
+      unit: _ingredientUnitController.text.trim().isEmpty
+          ? null
+          : _ingredientUnitController.text.trim(),
     );
+
+    setState(() {
+      _ingredients.add(ingredient);
+    });
+
+    _clearIngredientFields();
   }
 
-  void _showIngredientDialog({IngredientModel? existingIngredient, int? index}) {
-    final nameController = TextEditingController(text: existingIngredient?.name ?? '');
-    final quantityController = TextEditingController(text: existingIngredient?.quantity?.toString() ?? '');
-    final unitController = TextEditingController(text: existingIngredient?.unit ?? '');
+  void _startEditingIngredient(int index) {
+    final ingredient = _ingredients[index];
+    _ingredientNameController.text = ingredient.name;
+    _ingredientQuantityController.text = ingredient.quantity?.toString() ?? '';
+    _ingredientUnitController.text = ingredient.unit ?? '';
+    setState(() {
+      _editingIngredientIndex = index;
+    });
+  }
 
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(existingIngredient != null ? 'Editar ingrediente' : 'Agregar ingrediente'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nombre *',
-                hintText: 'Ej: Harina',
-              ),
-              textCapitalization: TextCapitalization.sentences,
-              autofocus: true,
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: quantityController,
-                    decoration: const InputDecoration(
-                      labelText: 'Cantidad',
-                      hintText: 'Ej: 250',
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextField(
-                    controller: unitController,
-                    decoration: const InputDecoration(
-                      labelText: 'Unidad',
-                      hintText: 'Ej: gr',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final name = nameController.text.trim();
-              if (name.isEmpty) return;
+  void _saveIngredientEdit() {
+    final name = _ingredientNameController.text.trim();
+    if (name.isEmpty) return;
 
-              final ingredient = IngredientModel(
-                name: name,
-                quantity: quantityController.text.trim().isEmpty
-                    ? null
-                    : double.tryParse(quantityController.text.trim()),
-                unit: unitController.text.trim().isEmpty
-                    ? null
-                    : unitController.text.trim(),
-              );
-
-              setState(() {
-                if (index != null) {
-                  _ingredients[index] = ingredient;
-                } else {
-                  _ingredients.add(ingredient);
-                }
-              });
-
-              Navigator.pop(dialogContext);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.recipes),
-            child: const Text('Guardar'),
-          ),
-        ],
-      ),
+    final ingredient = IngredientModel(
+      name: name,
+      quantity: _ingredientQuantityController.text.trim().isEmpty
+          ? null
+          : double.tryParse(_ingredientQuantityController.text.trim()),
+      unit: _ingredientUnitController.text.trim().isEmpty
+          ? null
+          : _ingredientUnitController.text.trim(),
     );
+
+    setState(() {
+      _ingredients[_editingIngredientIndex] = ingredient;
+      _editingIngredientIndex = -1;
+    });
+
+    _clearIngredientFields();
   }
 
+  void _cancelIngredientEdit() {
+    setState(() {
+      _editingIngredientIndex = -1;
+    });
+    _clearIngredientFields();
+  }
+
+  void _clearIngredientFields() {
+    _ingredientNameController.clear();
+    _ingredientQuantityController.clear();
+    _ingredientUnitController.clear();
+  }
+
+  // Instruction inline methods
   void _addInstruction() {
-    _showInstructionDialog();
+    final text = _instructionController.text.trim();
+    if (text.isEmpty) return;
+
+    setState(() {
+      _instructions.add(text);
+    });
+
+    _instructionController.clear();
   }
 
-  void _editInstruction(int index) {
-    _showInstructionDialog(existingInstruction: _instructions[index], index: index);
+  void _startEditingInstruction(int index) {
+    _instructionController.text = _instructions[index];
+    setState(() {
+      _editingInstructionIndex = index;
+    });
   }
 
-  void _showInstructionDialog({String? existingInstruction, int? index}) {
-    final controller = TextEditingController(text: existingInstruction ?? '');
+  void _saveInstructionEdit() {
+    final text = _instructionController.text.trim();
+    if (text.isEmpty) return;
 
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(existingInstruction != null
-            ? 'Editar paso ${(index ?? 0) + 1}'
-            : 'Agregar paso ${_instructions.length + 1}'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(
-            labelText: 'Instrucción',
-            hintText: 'Describe el paso...',
-          ),
-          textCapitalization: TextCapitalization.sentences,
-          maxLines: 3,
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final text = controller.text.trim();
-              if (text.isEmpty) return;
+    setState(() {
+      _instructions[_editingInstructionIndex] = text;
+      _editingInstructionIndex = -1;
+    });
 
-              setState(() {
-                if (index != null) {
-                  _instructions[index] = text;
-                } else {
-                  _instructions.add(text);
-                }
-              });
+    _instructionController.clear();
+  }
 
-              Navigator.pop(dialogContext);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.recipes),
-            child: const Text('Guardar'),
-          ),
-        ],
-      ),
-    );
+  void _cancelInstructionEdit() {
+    setState(() {
+      _editingInstructionIndex = -1;
+    });
+    _instructionController.clear();
   }
 
   Future<void> _saveRecipe() async {

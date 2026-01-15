@@ -21,9 +21,9 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
   @override
   void initState() {
     super.initState();
-    // Load boards on init
+    // Load boards only if not already loaded
     Future.microtask(() {
-      ref.read(boardsNotifierProvider.notifier).loadBoards();
+      ref.read(boardsNotifierProvider.notifier).loadBoardsIfNeeded();
     });
   }
 

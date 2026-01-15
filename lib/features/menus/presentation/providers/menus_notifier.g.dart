@@ -6,7 +6,7 @@ part of 'menus_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$menuPlansNotifierHash() => r'4a5eb8b707267f359fde6db7377dbb0c34537184';
+String _$menuPlansNotifierHash() => r'2c05f8dd8f9635353442960ea3bb7bca9a701d9b';
 
 /// Notifier for menu plans list
 ///
@@ -26,29 +26,27 @@ final menuPlansNotifierProvider =
 
 typedef _$MenuPlansNotifier = Notifier<MenuPlansState>;
 String _$upcomingMealsNotifierHash() =>
-    r'341fed43de92830d8637071c59ab2299e712f3f5';
+    r'3aa1aa0b3c5b621c1880210b46d6fea3ea660171';
 
 /// Notifier for upcoming meals (weekly view)
 ///
 /// Copied from [UpcomingMealsNotifier].
 @ProviderFor(UpcomingMealsNotifier)
-final upcomingMealsNotifierProvider = AutoDisposeNotifierProvider<
-  UpcomingMealsNotifier,
-  UpcomingMealsState
->.internal(
-  UpcomingMealsNotifier.new,
-  name: r'upcomingMealsNotifierProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$upcomingMealsNotifierHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
+final upcomingMealsNotifierProvider =
+    NotifierProvider<UpcomingMealsNotifier, UpcomingMealsState>.internal(
+      UpcomingMealsNotifier.new,
+      name: r'upcomingMealsNotifierProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$upcomingMealsNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
 
-typedef _$UpcomingMealsNotifier = AutoDisposeNotifier<UpcomingMealsState>;
+typedef _$UpcomingMealsNotifier = Notifier<UpcomingMealsState>;
 String _$menuPlanDetailNotifierHash() =>
-    r'92c56fd568b92efacb078fcf4d3d7e5c8aa1dd68';
+    r'476bd281653b7a94bad2b72809f675c809e4a7b6';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -72,7 +70,7 @@ class _SystemHash {
 }
 
 abstract class _$MenuPlanDetailNotifier
-    extends BuildlessAutoDisposeNotifier<MenuPlanDetailState> {
+    extends BuildlessNotifier<MenuPlanDetailState> {
   late final String menuId;
 
   MenuPlanDetailState build(String menuId);
@@ -126,11 +124,7 @@ class MenuPlanDetailNotifierFamily extends Family<MenuPlanDetailState> {
 ///
 /// Copied from [MenuPlanDetailNotifier].
 class MenuPlanDetailNotifierProvider
-    extends
-        AutoDisposeNotifierProviderImpl<
-          MenuPlanDetailNotifier,
-          MenuPlanDetailState
-        > {
+    extends NotifierProviderImpl<MenuPlanDetailNotifier, MenuPlanDetailState> {
   /// Notifier for single menu plan detail
   ///
   /// Copied from [MenuPlanDetailNotifier].
@@ -185,10 +179,7 @@ class MenuPlanDetailNotifierProvider
   }
 
   @override
-  AutoDisposeNotifierProviderElement<
-    MenuPlanDetailNotifier,
-    MenuPlanDetailState
-  >
+  NotifierProviderElement<MenuPlanDetailNotifier, MenuPlanDetailState>
   createElement() {
     return _MenuPlanDetailNotifierProviderElement(this);
   }
@@ -209,18 +200,13 @@ class MenuPlanDetailNotifierProvider
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin MenuPlanDetailNotifierRef
-    on AutoDisposeNotifierProviderRef<MenuPlanDetailState> {
+mixin MenuPlanDetailNotifierRef on NotifierProviderRef<MenuPlanDetailState> {
   /// The parameter `menuId` of this provider.
   String get menuId;
 }
 
 class _MenuPlanDetailNotifierProviderElement
-    extends
-        AutoDisposeNotifierProviderElement<
-          MenuPlanDetailNotifier,
-          MenuPlanDetailState
-        >
+    extends NotifierProviderElement<MenuPlanDetailNotifier, MenuPlanDetailState>
     with MenuPlanDetailNotifierRef {
   _MenuPlanDetailNotifierProviderElement(super.provider);
 

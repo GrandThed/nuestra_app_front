@@ -22,7 +22,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
     super.initState();
     Future.microtask(() {
       final weekStart = ref.read(selectedWeekStartProvider);
-      ref.read(upcomingMealsNotifierProvider.notifier).loadWeek(weekStart);
+      ref.read(upcomingMealsNotifierProvider.notifier).loadWeekIfNeeded(weekStart);
     });
   }
 

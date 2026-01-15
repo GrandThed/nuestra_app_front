@@ -6,7 +6,7 @@ part of 'recipes_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$recipesNotifierHash() => r'58749d905cd6e1322db648708011e8dcde189016';
+String _$recipesNotifierHash() => r'6e833063fb200cb338c0ade761a6998cbfb5b5a2';
 
 /// Notifier for recipes list operations
 ///
@@ -26,7 +26,7 @@ final recipesNotifierProvider =
 
 typedef _$RecipesNotifier = Notifier<RecipesState>;
 String _$recipeDetailNotifierHash() =>
-    r'e62f2acfd31b52fd77c51fbc662db374aa68ec90';
+    r'9e055a1353ddd9b13b136c757b28ecb9d2f4ca54';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -50,7 +50,7 @@ class _SystemHash {
 }
 
 abstract class _$RecipeDetailNotifier
-    extends BuildlessAutoDisposeNotifier<RecipeDetailState> {
+    extends BuildlessNotifier<RecipeDetailState> {
   late final String recipeId;
 
   RecipeDetailState build(String recipeId);
@@ -104,11 +104,7 @@ class RecipeDetailNotifierFamily extends Family<RecipeDetailState> {
 ///
 /// Copied from [RecipeDetailNotifier].
 class RecipeDetailNotifierProvider
-    extends
-        AutoDisposeNotifierProviderImpl<
-          RecipeDetailNotifier,
-          RecipeDetailState
-        > {
+    extends NotifierProviderImpl<RecipeDetailNotifier, RecipeDetailState> {
   /// Notifier for single recipe detail operations
   ///
   /// Copied from [RecipeDetailNotifier].
@@ -161,7 +157,7 @@ class RecipeDetailNotifierProvider
   }
 
   @override
-  AutoDisposeNotifierProviderElement<RecipeDetailNotifier, RecipeDetailState>
+  NotifierProviderElement<RecipeDetailNotifier, RecipeDetailState>
   createElement() {
     return _RecipeDetailNotifierProviderElement(this);
   }
@@ -182,18 +178,13 @@ class RecipeDetailNotifierProvider
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin RecipeDetailNotifierRef
-    on AutoDisposeNotifierProviderRef<RecipeDetailState> {
+mixin RecipeDetailNotifierRef on NotifierProviderRef<RecipeDetailState> {
   /// The parameter `recipeId` of this provider.
   String get recipeId;
 }
 
 class _RecipeDetailNotifierProviderElement
-    extends
-        AutoDisposeNotifierProviderElement<
-          RecipeDetailNotifier,
-          RecipeDetailState
-        >
+    extends NotifierProviderElement<RecipeDetailNotifier, RecipeDetailState>
     with RecipeDetailNotifierRef {
   _RecipeDetailNotifierProviderElement(super.provider);
 

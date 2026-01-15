@@ -21,15 +21,26 @@ class RecipesNotifier extends _$RecipesNotifier {
     return const RecipesState.initial();
   }
 
+  /// Load recipes only if not already loaded (for screen init)
+  Future<void> loadRecipesIfNeeded() async {
+    if (state is RecipesStateInitial || state is RecipesStateError) {
+      await loadRecipes();
+    }
+  }
+
   /// Load all recipes for current household
-  Future<void> loadRecipes({String? search, String? season}) async {
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> loadRecipes({String? search, String? season, bool forceLoading = false}) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) {
       state = const RecipesState.error('No hay hogar seleccionado');
       return;
     }
 
-    state = const RecipesState.loading();
+    final hasData = state is RecipesStateLoaded;
+    if (!hasData || forceLoading) {
+      state = const RecipesState.loading();
+    }
 
     try {
       final recipes = await _repository.getRecipes(
@@ -39,9 +50,13 @@ class RecipesNotifier extends _$RecipesNotifier {
       );
       state = RecipesState.loaded(recipes);
     } on AppException catch (e) {
-      state = RecipesState.error(e.message);
+      if (!hasData) {
+        state = RecipesState.error(e.message);
+      }
     } catch (e) {
-      state = RecipesState.error('Error al cargar recetas: $e');
+      if (!hasData) {
+        state = RecipesState.error('Error al cargar recetas: $e');
+      }
     }
   }
 
@@ -122,29 +137,43 @@ class RecipesNotifier extends _$RecipesNotifier {
 }
 
 /// Notifier for single recipe detail operations
-@riverpod
+@Riverpod(keepAlive: true)
 class RecipeDetailNotifier extends _$RecipeDetailNotifier {
   late final RecipeRepository _repository;
 
   @override
   RecipeDetailState build(String recipeId) {
     _repository = ref.watch(recipeRepositoryProvider);
-    // Auto-load when created
-    Future.microtask(() => loadRecipe());
-    return const RecipeDetailState.loading();
+    return const RecipeDetailState.initial();
+  }
+
+  /// Load recipe only if not already loaded
+  Future<void> loadRecipeIfNeeded() async {
+    if (state is RecipeDetailStateInitial || state is RecipeDetailStateError) {
+      await loadRecipe();
+    }
   }
 
   /// Load recipe detail
-  Future<void> loadRecipe() async {
-    state = const RecipeDetailState.loading();
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> loadRecipe({bool forceLoading = false}) async {
+    final hasData = state is RecipeDetailStateLoaded;
+
+    if (!hasData || forceLoading) {
+      state = const RecipeDetailState.loading();
+    }
 
     try {
       final recipe = await _repository.getRecipe(recipeId);
       state = RecipeDetailState.loaded(recipe);
     } on AppException catch (e) {
-      state = RecipeDetailState.error(e.message);
+      if (!hasData) {
+        state = RecipeDetailState.error(e.message);
+      }
     } catch (e) {
-      state = RecipeDetailState.error('Error al cargar receta: $e');
+      if (!hasData) {
+        state = RecipeDetailState.error('Error al cargar receta: $e');
+      }
     }
   }
 

@@ -19,23 +19,38 @@ class MenuPlansNotifier extends _$MenuPlansNotifier {
     return const MenuPlansState.initial();
   }
 
+  /// Load menu plans only if not already loaded (for screen init)
+  Future<void> loadMenuPlansIfNeeded() async {
+    if (state is MenuPlansStateInitial || state is MenuPlansStateError) {
+      await loadMenuPlans();
+    }
+  }
+
   /// Load all menu plans for current household
-  Future<void> loadMenuPlans() async {
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> loadMenuPlans({bool forceLoading = false}) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) {
       state = const MenuPlansState.error('No hay hogar seleccionado');
       return;
     }
 
-    state = const MenuPlansState.loading();
+    final hasData = state is MenuPlansStateLoaded;
+    if (!hasData || forceLoading) {
+      state = const MenuPlansState.loading();
+    }
 
     try {
       final plans = await _repository.getMenuPlans(householdId);
       state = MenuPlansState.loaded(plans);
     } on AppException catch (e) {
-      state = MenuPlansState.error(e.message);
+      if (!hasData) {
+        state = MenuPlansState.error(e.message);
+      }
     } catch (e) {
-      state = MenuPlansState.error('Error al cargar menús: $e');
+      if (!hasData) {
+        state = MenuPlansState.error('Error al cargar menús: $e');
+      }
     }
   }
 
@@ -104,7 +119,7 @@ class MenuPlansNotifier extends _$MenuPlansNotifier {
 }
 
 /// Notifier for upcoming meals (weekly view)
-@riverpod
+@Riverpod(keepAlive: true)
 class UpcomingMealsNotifier extends _$UpcomingMealsNotifier {
   late final MenuRepository _repository;
 
@@ -114,15 +129,31 @@ class UpcomingMealsNotifier extends _$UpcomingMealsNotifier {
     return const UpcomingMealsState.initial();
   }
 
+  /// Load week only if not already loaded or if week changed
+  Future<void> loadWeekIfNeeded(DateTime weekStart) async {
+    final currentState = state;
+    if (currentState is UpcomingMealsStateLoaded) {
+      // Check if same week
+      if (currentState.weekStart == weekStart) return;
+    }
+    if (state is UpcomingMealsStateInitial || state is UpcomingMealsStateError) {
+      await loadWeek(weekStart);
+    }
+  }
+
   /// Load upcoming meals for a week
-  Future<void> loadWeek(DateTime weekStart) async {
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> loadWeek(DateTime weekStart, {bool forceLoading = false}) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) {
       state = const UpcomingMealsState.error('No hay hogar seleccionado');
       return;
     }
 
-    state = const UpcomingMealsState.loading();
+    final hasData = state is UpcomingMealsStateLoaded;
+    if (!hasData || forceLoading) {
+      state = const UpcomingMealsState.loading();
+    }
 
     try {
       final weekEnd = weekStart.add(const Duration(days: 6));
@@ -133,9 +164,13 @@ class UpcomingMealsNotifier extends _$UpcomingMealsNotifier {
       );
       state = UpcomingMealsState.loaded(items, weekStart);
     } on AppException catch (e) {
-      state = UpcomingMealsState.error(e.message);
+      if (!hasData) {
+        state = UpcomingMealsState.error(e.message);
+      }
     } catch (e) {
-      state = UpcomingMealsState.error('Error al cargar comidas: $e');
+      if (!hasData) {
+        state = UpcomingMealsState.error('Error al cargar comidas: $e');
+      }
     }
   }
 
@@ -185,29 +220,43 @@ class UpcomingMealsNotifier extends _$UpcomingMealsNotifier {
 }
 
 /// Notifier for single menu plan detail
-@riverpod
+@Riverpod(keepAlive: true)
 class MenuPlanDetailNotifier extends _$MenuPlanDetailNotifier {
   late final MenuRepository _repository;
 
   @override
   MenuPlanDetailState build(String menuId) {
     _repository = ref.watch(menuRepositoryProvider);
-    // Auto-load when created
-    Future.microtask(() => loadMenuPlan());
-    return const MenuPlanDetailState.loading();
+    return const MenuPlanDetailState.initial();
+  }
+
+  /// Load menu plan only if not already loaded
+  Future<void> loadMenuPlanIfNeeded() async {
+    if (state is MenuPlanDetailStateInitial || state is MenuPlanDetailStateError) {
+      await loadMenuPlan();
+    }
   }
 
   /// Load menu plan detail
-  Future<void> loadMenuPlan() async {
-    state = const MenuPlanDetailState.loading();
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> loadMenuPlan({bool forceLoading = false}) async {
+    final hasData = state is MenuPlanDetailStateLoaded;
+
+    if (!hasData || forceLoading) {
+      state = const MenuPlanDetailState.loading();
+    }
 
     try {
       final plan = await _repository.getMenuPlan(menuId);
       state = MenuPlanDetailState.loaded(plan);
     } on AppException catch (e) {
-      state = MenuPlanDetailState.error(e.message);
+      if (!hasData) {
+        state = MenuPlanDetailState.error(e.message);
+      }
     } catch (e) {
-      state = MenuPlanDetailState.error('Error al cargar menú: $e');
+      if (!hasData) {
+        state = MenuPlanDetailState.error('Error al cargar menú: $e');
+      }
     }
   }
 

@@ -6,7 +6,7 @@ part of 'boards_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$boardsNotifierHash() => r'ff9a587bc82da5c0ab1279eac05520e1213f474d';
+String _$boardsNotifierHash() => r'50cba617baacd430dc764d0bdb89cf1a8e4c12b5';
 
 /// Notifier for boards list operations
 ///
@@ -26,7 +26,7 @@ final boardsNotifierProvider =
 
 typedef _$BoardsNotifier = Notifier<BoardsState>;
 String _$boardDetailNotifierHash() =>
-    r'80e14d7fdee486ccef3e5994396c1d7139fb2fcc';
+    r'45d733727ffaab1688edec17d9e1a3e0f92f4d45';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -50,7 +50,7 @@ class _SystemHash {
 }
 
 abstract class _$BoardDetailNotifier
-    extends BuildlessAutoDisposeNotifier<BoardDetailState> {
+    extends BuildlessNotifier<BoardDetailState> {
   late final String boardId;
 
   BoardDetailState build(String boardId);
@@ -104,8 +104,7 @@ class BoardDetailNotifierFamily extends Family<BoardDetailState> {
 ///
 /// Copied from [BoardDetailNotifier].
 class BoardDetailNotifierProvider
-    extends
-        AutoDisposeNotifierProviderImpl<BoardDetailNotifier, BoardDetailState> {
+    extends NotifierProviderImpl<BoardDetailNotifier, BoardDetailState> {
   /// Notifier for single board detail operations
   ///
   /// Copied from [BoardDetailNotifier].
@@ -158,7 +157,7 @@ class BoardDetailNotifierProvider
   }
 
   @override
-  AutoDisposeNotifierProviderElement<BoardDetailNotifier, BoardDetailState>
+  NotifierProviderElement<BoardDetailNotifier, BoardDetailState>
   createElement() {
     return _BoardDetailNotifierProviderElement(this);
   }
@@ -179,18 +178,13 @@ class BoardDetailNotifierProvider
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-mixin BoardDetailNotifierRef
-    on AutoDisposeNotifierProviderRef<BoardDetailState> {
+mixin BoardDetailNotifierRef on NotifierProviderRef<BoardDetailState> {
   /// The parameter `boardId` of this provider.
   String get boardId;
 }
 
 class _BoardDetailNotifierProviderElement
-    extends
-        AutoDisposeNotifierProviderElement<
-          BoardDetailNotifier,
-          BoardDetailState
-        >
+    extends NotifierProviderElement<BoardDetailNotifier, BoardDetailState>
     with BoardDetailNotifierRef {
   _BoardDetailNotifierProviderElement(super.provider);
 

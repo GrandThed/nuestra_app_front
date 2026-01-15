@@ -24,7 +24,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(recipesNotifierProvider.notifier).loadRecipes();
+      ref.read(recipesNotifierProvider.notifier).loadRecipesIfNeeded();
     });
   }
 
