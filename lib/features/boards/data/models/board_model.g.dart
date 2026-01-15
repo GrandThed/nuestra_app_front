@@ -16,6 +16,11 @@ _BoardModel _$BoardModelFromJson(Map<String, dynamic> json) => _BoardModel(
       (json['items'] as List<dynamic>?)
           ?.map((e) => BoardItemModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+  previewItems:
+      (json['previewItems'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$BoardModelToJson(_BoardModel instance) =>
@@ -26,6 +31,7 @@ Map<String, dynamic> _$BoardModelToJson(_BoardModel instance) =>
       'itemCount': instance.itemCount,
       'createdAt': instance.createdAt.toIso8601String(),
       'items': instance.items,
+      'previewItems': instance.previewItems,
     };
 
 _BoardItemModel _$BoardItemModelFromJson(Map<String, dynamic> json) =>

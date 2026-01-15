@@ -21,7 +21,7 @@ import 'package:nuestra_app/features/menus/presentation/screens/menus_screen.dar
 import 'package:nuestra_app/features/menus/presentation/screens/add_meal_screen.dart';
 import 'package:nuestra_app/features/wishlists/presentation/screens/wishlists_screen.dart';
 import 'package:nuestra_app/features/expenses/presentation/screens/expenses_screen.dart';
-import 'package:nuestra_app/features/calendar/presentation/screens/calendar_screen.dart';
+import 'package:nuestra_app/features/home/presentation/screens/home_screen.dart';
 
 /// Route names
 class AppRoutes {
@@ -229,11 +229,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         navigatorKey: shellNavigatorKey,
         builder: (context, state, child) => MainShell(child: child),
         routes: [
-          // Home / Calendar (default tab)
+          // Home (dashboard)
           GoRoute(
             path: AppRoutes.home,
             pageBuilder: (context, state) => const NoTransitionPage(
-              child: CalendarScreen(),
+              child: HomeScreen(),
             ),
           ),
 

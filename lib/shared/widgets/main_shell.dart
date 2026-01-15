@@ -28,8 +28,8 @@ class _BottomNavBar extends StatelessWidget {
       onDestinationSelected: (index) => _onItemTapped(context, index),
       destinations: const [
         NavigationDestination(
-          icon: Icon(Icons.calendar_today_outlined),
-          selectedIcon: Icon(Icons.calendar_today),
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(Icons.home),
           label: AppStrings.home,
         ),
         NavigationDestination(
@@ -61,7 +61,7 @@ class _BottomNavBar extends StatelessWidget {
     if (location.startsWith(AppRoutes.recipes)) return 2;
     if (location.startsWith(AppRoutes.wishlists)) return 3;
     if (location.startsWith(AppRoutes.expenses)) return 4;
-    return 0; // Home/Calendar
+    return 0; // Home
   }
 
   void _onItemTapped(BuildContext context, int index) {

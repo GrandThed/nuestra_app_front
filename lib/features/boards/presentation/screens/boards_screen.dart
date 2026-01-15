@@ -117,11 +117,11 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
         await ref.read(boardsNotifierProvider.notifier).loadBoards();
       },
       child: GridView.builder(
-        padding: const EdgeInsets.all(AppSizes.paddingMd),
+        padding: const EdgeInsets.all(AppSizes.paddingSm),
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          crossAxisSpacing: AppSizes.md,
-          mainAxisSpacing: AppSizes.md,
+          crossAxisSpacing: AppSizes.sm,
+          mainAxisSpacing: AppSizes.sm,
           childAspectRatio: 1.0,
         ),
         itemCount: boards.length,
@@ -297,7 +297,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
   }
 }
 
-/// Card widget for displaying a board
+/// Card widget for displaying a board with 2x2 preview grid
 class _BoardCard extends StatelessWidget {
   final BoardModel board;
   final VoidCallback onTap;
@@ -319,15 +319,8 @@ class _BoardCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Cover image or placeholder
-            if (board.coverUrl != null)
-              Image.network(
-                board.coverUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _buildPlaceholder(),
-              )
-            else
-              _buildPlaceholder(),
+            // Preview grid or placeholder
+            _buildPreviewGrid(),
 
             // Gradient overlay
             Positioned.fill(
@@ -380,6 +373,33 @@ class _BoardCard extends StatelessWidget {
     );
   }
 
+  Widget _buildPreviewGrid() {
+    final previews = board.previewItems;
+
+    if (previews.isEmpty) {
+      return _buildPlaceholder();
+    }
+
+    // 2x2 grid layout
+    return GridView.count(
+      crossAxisCount: 2,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.zero,
+      mainAxisSpacing: 1,
+      crossAxisSpacing: 1,
+      children: List.generate(4, (index) {
+        if (index < previews.length) {
+          return Image.network(
+            previews[index],
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _buildGridPlaceholder(),
+          );
+        }
+        return _buildGridPlaceholder();
+      }),
+    );
+  }
+
   Widget _buildPlaceholder() {
     return Container(
       color: AppColors.boards.withValues(alpha: 0.2),
@@ -390,6 +410,12 @@ class _BoardCard extends StatelessWidget {
           color: AppColors.boards.withValues(alpha: 0.5),
         ),
       ),
+    );
+  }
+
+  Widget _buildGridPlaceholder() {
+    return Container(
+      color: AppColors.boards.withValues(alpha: 0.15),
     );
   }
 }

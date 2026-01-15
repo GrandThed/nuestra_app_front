@@ -12,6 +12,7 @@ sealed class BoardModel with _$BoardModel {
     @Default(0) int itemCount,
     required DateTime createdAt,
     List<BoardItemModel>? items,
+    @Default([]) List<String> previewItems,
   }) = _BoardModel;
 
   factory BoardModel.fromJson(Map<String, dynamic> json) =>
