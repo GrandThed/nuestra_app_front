@@ -37,7 +37,7 @@ class TodaysMenuCard extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(AppSizes.sm),
                     decoration: BoxDecoration(
-                      color: AppColors.menus.withOpacity(0.1),
+                      color: AppColors.menus.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                     ),
                     child: const Icon(

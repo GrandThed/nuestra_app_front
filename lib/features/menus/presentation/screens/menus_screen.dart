@@ -32,7 +32,6 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
     final state = ref.watch(upcomingMealsNotifierProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Menú Semanal'),
         backgroundColor: AppColors.menus,

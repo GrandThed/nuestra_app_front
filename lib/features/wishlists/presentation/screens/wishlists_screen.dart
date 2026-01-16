@@ -121,7 +121,6 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
     final state = ref.watch(wishlistsNotifierProvider);
 
     return Scaffold(
-      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text(AppStrings.wishlists),
         backgroundColor: AppColors.wishlists,

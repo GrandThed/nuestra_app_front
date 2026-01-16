@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
+import 'package:nuestra_app/core/router/app_router.dart';
+import 'package:nuestra_app/features/calendar/presentation/providers/calendar_notifier.dart';
 
 /// Card showing upcoming events on the home dashboard
 class UpcomingEventsCard extends ConsumerWidget {
@@ -9,9 +12,7 @@ class UpcomingEventsCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Connect to real calendar data when implemented
-    // final events = ref.watch(upcomingEventsProvider);
-    const hasEvents = false;
+    final eventsCount = ref.watch(upcomingEventsCountProvider);
 
     return Card(
       elevation: 0,
@@ -20,15 +21,7 @@ class UpcomingEventsCard extends ConsumerWidget {
         side: BorderSide(color: AppColors.border),
       ),
       child: InkWell(
-        onTap: () {
-          // TODO: Navigate to calendar when implemented
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Calendario proximamente disponible'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        },
+        onTap: () => context.go(AppRoutes.calendar),
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         child: Padding(
           padding: const EdgeInsets.all(AppSizes.paddingMd),
@@ -37,7 +30,7 @@ class UpcomingEventsCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(AppSizes.sm),
                 decoration: BoxDecoration(
-                  color: AppColors.calendar.withOpacity(0.1),
+                  color: AppColors.calendar.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
                 child: const Icon(
@@ -59,12 +52,16 @@ class UpcomingEventsCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: AppSizes.xs),
                     Text(
-                      hasEvents
-                          ? 'Tienes eventos pendientes'
+                      eventsCount > 0
+                          ? '$eventsCount evento${eventsCount > 1 ? 's' : ''} esta semana'
                           : 'Sin eventos proximos',
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: eventsCount > 0
+                            ? AppColors.textPrimary
+                            : AppColors.textSecondary,
                         fontSize: AppSizes.fontSm,
+                        fontWeight:
+                            eventsCount > 0 ? FontWeight.w500 : FontWeight.normal,
                       ),
                     ),
                   ],

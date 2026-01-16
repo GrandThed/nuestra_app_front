@@ -21,6 +21,12 @@ import 'package:nuestra_app/features/menus/presentation/screens/menus_screen.dar
 import 'package:nuestra_app/features/menus/presentation/screens/add_meal_screen.dart';
 import 'package:nuestra_app/features/wishlists/presentation/screens/wishlists_screen.dart';
 import 'package:nuestra_app/features/expenses/presentation/screens/expenses_screen.dart';
+import 'package:nuestra_app/features/expenses/presentation/screens/add_expense_screen.dart';
+import 'package:nuestra_app/features/expenses/presentation/screens/expense_detail_screen.dart';
+import 'package:nuestra_app/features/expenses/presentation/screens/expense_summary_screen.dart';
+import 'package:nuestra_app/features/calendar/presentation/screens/calendar_screen.dart';
+import 'package:nuestra_app/features/calendar/presentation/screens/add_event_screen.dart';
+import 'package:nuestra_app/features/calendar/presentation/screens/event_detail_screen.dart';
 import 'package:nuestra_app/features/home/presentation/screens/home_screen.dart';
 
 /// Route names
@@ -53,8 +59,17 @@ class AppRoutes {
   static const String menuDetail = '/menus/:id';
   static const String menuAddMeal = '/menus/:id/add-meal';
   static const String menuEditMeal = '/menus/:id/meals/:mealId/edit';
-  static const String expenseDetail = '/expenses/:id';
-  static const String eventDetail = '/calendar/:id';
+
+  // Expense routes
+  static const String addExpense = '/expenses/new';
+  static const String expenseSummary = '/expenses/summary';
+  static const String _expenseDetail = '/expenses/:id';
+  static String expenseDetail(String id) => '/expenses/$id';
+
+  // Calendar/Event routes
+  static const String addEvent = '/calendar/new';
+  static const String _eventDetail = '/calendar/:id';
+  static String eventDetail(String id) => '/calendar/$id';
 
   // Settings
   static const String settings = '/settings';
@@ -224,6 +239,42 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
+      // Expense add (no shell) - must be before detail to match first
+      GoRoute(
+        path: AppRoutes.addExpense,
+        builder: (context, state) => const AddExpenseScreen(),
+      ),
+
+      // Expense summary (no shell)
+      GoRoute(
+        path: AppRoutes.expenseSummary,
+        builder: (context, state) => const ExpenseSummaryScreen(),
+      ),
+
+      // Expense detail (no shell)
+      GoRoute(
+        path: AppRoutes._expenseDetail,
+        builder: (context, state) {
+          final expenseId = state.pathParameters['id']!;
+          return ExpenseDetailScreen(expenseId: expenseId);
+        },
+      ),
+
+      // Calendar add event (no shell) - must be before detail to match first
+      GoRoute(
+        path: AppRoutes.addEvent,
+        builder: (context, state) => const AddEventScreen(),
+      ),
+
+      // Calendar event detail (no shell)
+      GoRoute(
+        path: AppRoutes._eventDetail,
+        builder: (context, state) {
+          final eventId = state.pathParameters['id']!;
+          return EventDetailScreen(eventId: eventId);
+        },
+      ),
+
       // Main app with bottom navigation shell
       ShellRoute(
         navigatorKey: shellNavigatorKey,
@@ -274,6 +325,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.expenses,
             pageBuilder: (context, state) => const NoTransitionPage(
               child: ExpensesScreen(),
+            ),
+          ),
+
+          // Calendar
+          GoRoute(
+            path: AppRoutes.calendar,
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: CalendarScreen(),
             ),
           ),
         ],

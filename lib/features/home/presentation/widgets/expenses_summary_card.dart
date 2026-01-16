@@ -34,7 +34,7 @@ class ExpensesSummaryCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(AppSizes.sm),
                 decoration: BoxDecoration(
-                  color: AppColors.expenses.withOpacity(0.1),
+                  color: AppColors.expenses.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
                 child: const Icon(
