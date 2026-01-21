@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/features/expenses/data/models/expense_model.dart';
+import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_state.dart';
 
@@ -41,6 +42,14 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
     await ref.read(expensesNotifierProvider.notifier).settleExpense(
           id: expense.id,
           settled: !expense.allSettled,
+        );
+  }
+
+  Future<void> _toggleSplitSettled(ExpenseModel expense, ExpenseSplitModel split) async {
+    await ref.read(expensesNotifierProvider.notifier).settleExpense(
+          id: expense.id,
+          userId: split.userId,
+          settled: !split.settled,
         );
   }
 
@@ -103,6 +112,11 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
         backgroundColor: AppColors.expenses,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Editar',
+            onPressed: () => context.push(AppRoutes.expenseEdit(expense.id)),
+          ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
             tooltip: 'Eliminar',
@@ -187,13 +201,25 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
           const SizedBox(height: AppSizes.lg),
 
           // Splits section
-          Text(
-            'División de gastos',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.onSurface,
-            ),
+          Row(
+            children: [
+              Text(
+                'Division de gastos',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              const Spacer(),
+              Text(
+                'Toca para cambiar estado',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: AppSizes.sm),
           Card(
@@ -207,59 +233,77 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
 
                   return Column(
                     children: [
-                      Row(
-                        children: [
-                          // User avatar/initial
-                          CircleAvatar(
-                            radius: 18,
-                            backgroundColor: AppColors.expenses.withValues(alpha: 0.2),
-                            child: Text(
-                              split.user?.name.substring(0, 1).toUpperCase() ?? '?',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.expenses,
+                      InkWell(
+                        onTap: () => _toggleSplitSettled(expense, split),
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
+                          child: Row(
+                            children: [
+                              // User avatar/initial
+                              CircleAvatar(
+                                radius: 18,
+                                backgroundColor: AppColors.expenses.withValues(alpha: 0.2),
+                                child: Text(
+                                  split.user?.name.substring(0, 1).toUpperCase() ?? '?',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.expenses,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          const SizedBox(width: AppSizes.md),
-                          // Name
-                          Expanded(
-                            child: Text(
-                              split.user?.name ?? 'Usuario',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          // Amount
-                          Text(
-                            _currencyFormat.format(split.amount),
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(width: AppSizes.sm),
-                          // Settled badge
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: split.settled
-                                  ? Colors.green.withValues(alpha: 0.1)
-                                  : Colors.orange.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              split.settled ? 'Saldado' : 'Pendiente',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                color: split.settled ? Colors.green : Colors.orange,
+                              const SizedBox(width: AppSizes.md),
+                              // Name
+                              Expanded(
+                                child: Text(
+                                  split.user?.name ?? 'Usuario',
+                                  style: const TextStyle(fontSize: 16),
+                                ),
                               ),
-                            ),
+                              // Amount
+                              Text(
+                                _currencyFormat.format(split.amount),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(width: AppSizes.sm),
+                              // Settled badge (tappable indicator)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: split.settled
+                                      ? Colors.green.withValues(alpha: 0.1)
+                                      : Colors.orange.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      split.settled ? Icons.check_circle : Icons.pending,
+                                      size: 14,
+                                      color: split.settled ? Colors.green : Colors.orange,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      split.settled ? 'Saldado' : 'Pendiente',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w500,
+                                        color: split.settled ? Colors.green : Colors.orange,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
                       if (!isLast) const Divider(),
                     ],

@@ -9,13 +9,31 @@ import 'package:nuestra_app/features/recipes/presentation/providers/recipes_stat
 import 'package:nuestra_app/shared/widgets/app_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class RecipeDetailScreen extends ConsumerWidget {
+class RecipeDetailScreen extends ConsumerStatefulWidget {
   final String recipeId;
 
   const RecipeDetailScreen({super.key, required this.recipeId});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<RecipeDetailScreen> createState() => _RecipeDetailScreenState();
+}
+
+class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Load recipe only if not already loaded
+    Future.microtask(() {
+      ref
+          .read(recipeDetailNotifierProvider(widget.recipeId).notifier)
+          .loadRecipeIfNeeded();
+    });
+  }
+
+  String get recipeId => widget.recipeId;
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(recipeDetailNotifierProvider(recipeId));
 
     return Scaffold(
@@ -26,13 +44,13 @@ class RecipeDetailScreen extends ConsumerWidget {
         RecipeDetailStateLoading() => const Center(
             child: CircularProgressIndicator(color: AppColors.recipes),
           ),
-        RecipeDetailStateError(:final message) => _buildErrorState(context, ref, message),
-        RecipeDetailStateLoaded(:final recipe) => _buildContent(context, ref, recipe),
+        RecipeDetailStateError(:final message) => _buildErrorState(context, message),
+        RecipeDetailStateLoaded(:final recipe) => _buildContent(context, recipe),
       },
     );
   }
 
-  Widget _buildErrorState(BuildContext context, WidgetRef ref, String message) {
+  Widget _buildErrorState(BuildContext context, String message) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Error'),
@@ -59,7 +77,7 @@ class RecipeDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildContent(BuildContext context, WidgetRef ref, RecipeModel recipe) {
+  Widget _buildContent(BuildContext context, RecipeModel recipe) {
     return CustomScrollView(
       slivers: [
         // App bar with image
@@ -88,7 +106,7 @@ class RecipeDetailScreen extends ConsumerWidget {
             PopupMenuButton<String>(
               onSelected: (value) {
                 if (value == 'delete') {
-                  _confirmDelete(context, ref, recipe);
+                  _confirmDelete(context, recipe);
                 }
               },
               itemBuilder: (context) => [
@@ -223,7 +241,7 @@ class RecipeDetailScreen extends ConsumerWidget {
     }
   }
 
-  void _confirmDelete(BuildContext context, WidgetRef ref, RecipeModel recipe) {
+  void _confirmDelete(BuildContext context, RecipeModel recipe) {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(

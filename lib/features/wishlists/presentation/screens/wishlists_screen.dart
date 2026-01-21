@@ -22,6 +22,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
   static const _collapsedKey = 'wishlist_collapsed_categories';
 
   String? _selectedCategoryId;
+  String? _ownerTypeFilter; // null = all, 'shared', 'personal'
   Set<String> _collapsedCategories = {};
 
   @override
@@ -179,16 +180,73 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
       return _buildEmptyState();
     }
 
+    // Filter items by owner type
+    final filteredItems = _ownerTypeFilter == null
+        ? items
+        : items.where((i) => i.ownerType == _ownerTypeFilter).toList();
+
     return RefreshIndicator(
       onRefresh: _onRefresh,
       color: AppColors.wishlists,
       child: Column(
         children: [
           // Category tabs
-          _buildCategoryTabs(categories, items),
+          _buildCategoryTabs(categories, filteredItems),
+          // Owner type filter
+          _buildOwnerTypeFilter(items),
           // Items list
           Expanded(
-            child: _buildItemsList(categories, items),
+            child: _buildItemsList(categories, filteredItems),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOwnerTypeFilter(List<WishlistItemModel> allItems) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final sharedCount = allItems.where((i) => i.ownerType == 'shared' && !i.checked).length;
+    final personalCount = allItems.where((i) => i.ownerType == 'personal' && !i.checked).length;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: AppSizes.xs),
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        border: Border(
+          bottom: BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.3)),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.filter_list, size: 18, color: colorScheme.onSurfaceVariant),
+          const SizedBox(width: AppSizes.sm),
+          Text(
+            'Tipo:',
+            style: TextStyle(
+              fontSize: 12,
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(width: AppSizes.sm),
+          _OwnerTypeChip(
+            label: 'Todos',
+            count: null,
+            isSelected: _ownerTypeFilter == null,
+            onTap: () => setState(() => _ownerTypeFilter = null),
+          ),
+          const SizedBox(width: AppSizes.xs),
+          _OwnerTypeChip(
+            label: 'Compartidos',
+            count: sharedCount,
+            isSelected: _ownerTypeFilter == 'shared',
+            onTap: () => setState(() => _ownerTypeFilter = 'shared'),
+          ),
+          const SizedBox(width: AppSizes.xs),
+          _OwnerTypeChip(
+            label: 'Personales',
+            count: personalCount,
+            isSelected: _ownerTypeFilter == 'personal',
+            onTap: () => setState(() => _ownerTypeFilter = 'personal'),
           ),
         ],
       ),
@@ -869,6 +927,68 @@ class _WishlistItemTile extends StatelessWidget {
       parts.add(item.category!.name);
     }
     return parts.join(' • ');
+  }
+}
+
+class _OwnerTypeChip extends StatelessWidget {
+  final String label;
+  final int? count;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _OwnerTypeChip({
+    required this.label,
+    required this.count,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? AppColors.wishlists.withValues(alpha: 0.2)
+              : colorScheme.surfaceContainerHighest,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected
+                ? AppColors.wishlists
+                : colorScheme.outlineVariant.withValues(alpha: 0.5),
+          ),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                color: isSelected ? AppColors.wishlists : colorScheme.onSurfaceVariant,
+              ),
+            ),
+            if (count != null && count! > 0) ...[
+              const SizedBox(width: 4),
+              Text(
+                '($count)',
+                style: TextStyle(
+                  fontSize: 11,
+                  color: isSelected
+                      ? AppColors.wishlists.withValues(alpha: 0.8)
+                      : colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
   }
 }
 

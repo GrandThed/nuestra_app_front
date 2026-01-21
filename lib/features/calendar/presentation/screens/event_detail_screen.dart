@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
+import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/features/calendar/data/models/calendar_model.dart';
 import 'package:nuestra_app/features/calendar/presentation/providers/calendar_notifier.dart';
 import 'package:nuestra_app/features/calendar/presentation/providers/calendar_state.dart';
@@ -139,6 +140,11 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         backgroundColor: AppColors.calendar,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: 'Editar',
+            onPressed: () => context.push(AppRoutes.eventEdit(event.id)),
+          ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
             tooltip: 'Eliminar',

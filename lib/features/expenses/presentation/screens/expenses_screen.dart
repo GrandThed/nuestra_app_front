@@ -20,6 +20,9 @@ class ExpensesScreen extends ConsumerStatefulWidget {
 
 class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   final _currencyFormat = NumberFormat.currency(locale: 'es_AR', symbol: '\$');
+  final _searchController = TextEditingController();
+  bool _isSearching = false;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -27,6 +30,32 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     Future.microtask(() {
       ref.read(expensesNotifierProvider.notifier).loadExpensesIfNeeded();
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _toggleSearch() {
+    setState(() {
+      _isSearching = !_isSearching;
+      if (!_isSearching) {
+        _searchController.clear();
+        _searchQuery = '';
+      }
+    });
+  }
+
+  List<ExpenseModel> _filterExpenses(List<ExpenseModel> expenses) {
+    if (_searchQuery.isEmpty) return expenses;
+    final query = _searchQuery.toLowerCase();
+    return expenses.where((e) {
+      return e.description.toLowerCase().contains(query) ||
+          (e.category?.name.toLowerCase().contains(query) ?? false) ||
+          e.paidBy.name.toLowerCase().contains(query);
+    }).toList();
   }
 
   Future<void> _onRefresh() async {
@@ -64,6 +93,208 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     context.push(AppRoutes.expenseSummary);
   }
 
+  void _showCategoryOptions(ExpenseCategoryModel category) {
+    showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSizes.md),
+              child: Row(
+                children: [
+                  if (category.icon != null)
+                    Text(category.icon!, style: const TextStyle(fontSize: 24)),
+                  const SizedBox(width: AppSizes.sm),
+                  Text(
+                    category.name,
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Editar categoria'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _showEditCategoryDialog(category);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: AppColors.error),
+              title: const Text('Eliminar categoria', style: TextStyle(color: AppColors.error)),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                _confirmDeleteCategory(category);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showEditCategoryDialog(ExpenseCategoryModel category) {
+    final nameController = TextEditingController(text: category.name);
+    final iconController = TextEditingController(text: category.icon ?? '');
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Editar categoria'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                labelText: 'Nombre',
+                border: OutlineInputBorder(),
+              ),
+              textCapitalization: TextCapitalization.sentences,
+              autofocus: true,
+            ),
+            const SizedBox(height: AppSizes.md),
+            TextField(
+              controller: iconController,
+              decoration: const InputDecoration(
+                labelText: 'Emoji (opcional)',
+                hintText: 'Ej: 🛒',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final name = nameController.text.trim();
+              if (name.isEmpty) return;
+
+              Navigator.pop(dialogContext);
+              final result = await ref.read(expensesNotifierProvider.notifier).updateCategory(
+                    id: category.id,
+                    name: name,
+                    icon: iconController.text.trim().isEmpty ? null : iconController.text.trim(),
+                  );
+
+              if (mounted && result != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Categoria actualizada')),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.expenses),
+            child: const Text('Guardar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _confirmDeleteCategory(ExpenseCategoryModel category) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Eliminar categoria'),
+        content: Text(
+          '¿Eliminar "${category.name}"? Los gastos de esta categoria quedaran sin categoria asignada.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(dialogContext);
+              final success = await ref.read(expensesNotifierProvider.notifier).deleteCategory(category.id);
+
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(success ? 'Categoria eliminada' : 'Error al eliminar'),
+                    backgroundColor: success ? null : AppColors.error,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddCategoryDialog() {
+    final nameController = TextEditingController();
+    final iconController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Nueva categoria'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                labelText: 'Nombre',
+                border: OutlineInputBorder(),
+              ),
+              textCapitalization: TextCapitalization.sentences,
+              autofocus: true,
+            ),
+            const SizedBox(height: AppSizes.md),
+            TextField(
+              controller: iconController,
+              decoration: const InputDecoration(
+                labelText: 'Emoji (opcional)',
+                hintText: 'Ej: 🛒',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final name = nameController.text.trim();
+              if (name.isEmpty) return;
+
+              Navigator.pop(dialogContext);
+              final result = await ref.read(expensesNotifierProvider.notifier).createCategory(
+                    name: name,
+                    icon: iconController.text.trim().isEmpty ? null : iconController.text.trim(),
+                  );
+
+              if (mounted && result != null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Categoria creada')),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: AppColors.expenses),
+            child: const Text('Crear'),
+          ),
+        ],
+      ),
+    );
+  }
+
   void _navigateToExpenseDetail(ExpenseModel expense) {
     context.push(AppRoutes.expenseDetail(expense.id));
   }
@@ -74,15 +305,33 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.expenses),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Buscar gastos...',
+                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) => setState(() => _searchQuery = value),
+              )
+            : const Text(AppStrings.expenses),
         backgroundColor: AppColors.expenses,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.bar_chart_outlined),
-            tooltip: 'Ver resumen',
-            onPressed: _navigateToSummary,
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            tooltip: _isSearching ? 'Cerrar busqueda' : 'Buscar',
+            onPressed: _toggleSearch,
           ),
+          if (!_isSearching)
+            IconButton(
+              icon: const Icon(Icons.bar_chart_outlined),
+              tooltip: 'Ver resumen',
+              onPressed: _navigateToSummary,
+            ),
         ],
       ),
       body: switch (state) {
@@ -116,7 +365,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
         ) =>
           _buildContent(
             categories,
-            expenses,
+            _filterExpenses(expenses),
             selectedMonth,
             selectedYear,
             selectedCategoryId,
@@ -269,9 +518,16 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                   onTap: () {
                     ref.read(expensesNotifierProvider.notifier).setCategoryFilter(category.id);
                   },
+                  onLongPress: () => _showCategoryOptions(category),
                 ),
               );
             }),
+            // Add category button
+            ActionChip(
+              avatar: const Icon(Icons.add, size: 18),
+              label: const Text('Nueva'),
+              onPressed: _showAddCategoryDialog,
+            ),
           ],
         ),
       ),
@@ -389,6 +645,7 @@ class _CategoryChip extends StatelessWidget {
   final int count;
   final bool isSelected;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
 
   const _CategoryChip({
     required this.label,
@@ -396,49 +653,53 @@ class _CategoryChip extends StatelessWidget {
     required this.count,
     required this.isSelected,
     required this.onTap,
+    this.onLongPress,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return FilterChip(
-      label: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Text(icon!, style: const TextStyle(fontSize: 14)),
-            const SizedBox(width: 4),
-          ],
-          Text(label),
-          if (count > 0) ...[
-            const SizedBox(width: 4),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-              decoration: BoxDecoration(
-                color: isSelected ? colorScheme.surface : AppColors.expenses,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Text(
-                count.toString(),
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: isSelected ? AppColors.expenses : colorScheme.surface,
+    return GestureDetector(
+      onLongPress: onLongPress,
+      child: FilterChip(
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) ...[
+              Text(icon!, style: const TextStyle(fontSize: 14)),
+              const SizedBox(width: 4),
+            ],
+            Text(label),
+            if (count > 0) ...[
+              const SizedBox(width: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isSelected ? colorScheme.surface : AppColors.expenses,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  count.toString(),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: isSelected ? AppColors.expenses : colorScheme.surface,
+                  ),
                 ),
               ),
-            ),
+            ],
           ],
-        ],
+        ),
+        selected: isSelected,
+        onSelected: (_) => onTap(),
+        selectedColor: AppColors.expenses,
+        backgroundColor: colorScheme.surfaceContainerHighest,
+        labelStyle: TextStyle(
+          color: isSelected ? colorScheme.surface : colorScheme.onSurface,
+        ),
+        showCheckmark: false,
       ),
-      selected: isSelected,
-      onSelected: (_) => onTap(),
-      selectedColor: AppColors.expenses,
-      backgroundColor: colorScheme.surfaceContainerHighest,
-      labelStyle: TextStyle(
-        color: isSelected ? colorScheme.surface : colorScheme.onSurface,
-      ),
-      showCheckmark: false,
     );
   }
 }

@@ -24,9 +24,11 @@ import 'package:nuestra_app/features/expenses/presentation/screens/expenses_scre
 import 'package:nuestra_app/features/expenses/presentation/screens/add_expense_screen.dart';
 import 'package:nuestra_app/features/expenses/presentation/screens/expense_detail_screen.dart';
 import 'package:nuestra_app/features/expenses/presentation/screens/expense_summary_screen.dart';
+import 'package:nuestra_app/features/expenses/presentation/screens/expense_form_screen.dart';
 import 'package:nuestra_app/features/calendar/presentation/screens/calendar_screen.dart';
 import 'package:nuestra_app/features/calendar/presentation/screens/add_event_screen.dart';
 import 'package:nuestra_app/features/calendar/presentation/screens/event_detail_screen.dart';
+import 'package:nuestra_app/features/calendar/presentation/screens/event_form_screen.dart';
 import 'package:nuestra_app/features/home/presentation/screens/home_screen.dart';
 
 /// Route names
@@ -65,15 +67,18 @@ class AppRoutes {
   static const String expenseSummary = '/expenses/summary';
   static const String _expenseDetail = '/expenses/:id';
   static String expenseDetail(String id) => '/expenses/$id';
+  static const String _expenseEdit = '/expenses/:id/edit';
+  static String expenseEdit(String id) => '/expenses/$id/edit';
 
   // Calendar/Event routes
   static const String addEvent = '/calendar/new';
   static const String _eventDetail = '/calendar/:id';
   static String eventDetail(String id) => '/calendar/$id';
+  static const String _eventEdit = '/calendar/:id/edit';
+  static String eventEdit(String id) => '/calendar/$id/edit';
 
   // Settings
   static const String settings = '/settings';
-  static const String profile = '/profile';
 }
 
 /// Navigation key for accessing navigator from anywhere
@@ -251,6 +256,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ExpenseSummaryScreen(),
       ),
 
+      // Expense edit (no shell) - must be before detail to match first
+      GoRoute(
+        path: AppRoutes._expenseEdit,
+        builder: (context, state) {
+          final expenseId = state.pathParameters['id']!;
+          return ExpenseFormScreen(expenseId: expenseId);
+        },
+      ),
+
       // Expense detail (no shell)
       GoRoute(
         path: AppRoutes._expenseDetail,
@@ -264,6 +278,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.addEvent,
         builder: (context, state) => const AddEventScreen(),
+      ),
+
+      // Calendar event edit (no shell) - must be before detail to match first
+      GoRoute(
+        path: AppRoutes._eventEdit,
+        builder: (context, state) {
+          final eventId = state.pathParameters['id']!;
+          return EventFormScreen(eventId: eventId);
+        },
       ),
 
       // Calendar event detail (no shell)

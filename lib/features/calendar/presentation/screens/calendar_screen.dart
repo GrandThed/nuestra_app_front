@@ -23,6 +23,9 @@ class CalendarScreen extends ConsumerStatefulWidget {
 class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   final _dateFormat = DateFormat('EEEE, d MMMM', 'es');
   final _timeFormat = DateFormat('HH:mm', 'es');
+  final _searchController = TextEditingController();
+  bool _isSearching = false;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -33,41 +36,87 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _toggleSearch() {
+    setState(() {
+      _isSearching = !_isSearching;
+      if (!_isSearching) {
+        _searchController.clear();
+        _searchQuery = '';
+      }
+    });
+  }
+
+  List<CalendarEventModel> _filterEvents(List<CalendarEventModel> events) {
+    if (_searchQuery.isEmpty) return events;
+    final query = _searchQuery.toLowerCase();
+    return events.where((e) {
+      return e.title.toLowerCase().contains(query) ||
+          (e.description?.toLowerCase().contains(query) ?? false) ||
+          (e.linkedRecipe?.title.toLowerCase().contains(query) ?? false) ||
+          (e.linkedBoard?.name.toLowerCase().contains(query) ?? false);
+    }).toList();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final state = ref.watch(calendarNotifierProvider);
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text(AppStrings.calendar),
+        title: _isSearching
+            ? TextField(
+                controller: _searchController,
+                autofocus: true,
+                style: const TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Buscar eventos...',
+                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                  border: InputBorder.none,
+                ),
+                onChanged: (value) => setState(() => _searchQuery = value),
+              )
+            : const Text(AppStrings.calendar),
         backgroundColor: AppColors.calendar,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.today),
-            tooltip: 'Ir a hoy',
-            onPressed: () {
-              ref.read(calendarNotifierProvider.notifier).goToToday();
-            },
+            icon: Icon(_isSearching ? Icons.close : Icons.search),
+            tooltip: _isSearching ? 'Cerrar busqueda' : 'Buscar',
+            onPressed: _toggleSearch,
           ),
-          if (state is CalendarStateLoaded)
+          if (!_isSearching) ...[
             IconButton(
-              icon: Icon(
-                state.viewMode == CalendarViewMode.month
-                    ? Icons.view_agenda_outlined
-                    : Icons.calendar_month_outlined,
-              ),
-              tooltip: state.viewMode == CalendarViewMode.month
-                  ? 'Ver timeline'
-                  : 'Ver calendario',
+              icon: const Icon(Icons.today),
+              tooltip: 'Ir a hoy',
               onPressed: () {
-                ref.read(calendarNotifierProvider.notifier).setViewMode(
-                      state.viewMode == CalendarViewMode.month
-                          ? CalendarViewMode.timeline
-                          : CalendarViewMode.month,
-                    );
+                ref.read(calendarNotifierProvider.notifier).goToToday();
               },
             ),
+            if (state is CalendarStateLoaded)
+              IconButton(
+                icon: Icon(
+                  state.viewMode == CalendarViewMode.month
+                      ? Icons.view_agenda_outlined
+                      : Icons.calendar_month_outlined,
+                ),
+                tooltip: state.viewMode == CalendarViewMode.month
+                    ? 'Ver timeline'
+                    : 'Ver calendario',
+                onPressed: () {
+                  ref.read(calendarNotifierProvider.notifier).setViewMode(
+                        state.viewMode == CalendarViewMode.month
+                            ? CalendarViewMode.timeline
+                            : CalendarViewMode.month,
+                      );
+                },
+              ),
+          ],
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
             onSelected: (value) async {
@@ -145,8 +194,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           viewMode: final viewMode,
         ) =>
           viewMode == CalendarViewMode.month
-              ? _buildMonthView(events, selectedDate, focusedMonth, colorScheme)
-              : _buildTimelineView(events, colorScheme),
+              ? _buildMonthView(_filterEvents(events), selectedDate, focusedMonth, colorScheme)
+              : _buildTimelineView(_filterEvents(events), colorScheme),
       },
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRoutes.addEvent),
