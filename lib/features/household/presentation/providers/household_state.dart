@@ -10,3 +10,11 @@ sealed class HouseholdState with _$HouseholdState {
   const factory HouseholdState.loaded(HouseholdModel household) = HouseholdStateLoaded;
   const factory HouseholdState.error(String message) = HouseholdStateError;
 }
+
+@freezed
+sealed class ActiveInviteState with _$ActiveInviteState {
+  const factory ActiveInviteState.initial() = ActiveInviteStateInitial;
+  const factory ActiveInviteState.loading() = ActiveInviteStateLoading;
+  const factory ActiveInviteState.loaded(HouseholdInviteModel? invite) = ActiveInviteStateLoaded;
+  const factory ActiveInviteState.error(String message) = ActiveInviteStateError;
+}

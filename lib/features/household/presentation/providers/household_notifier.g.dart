@@ -45,5 +45,25 @@ final householdNotifierProvider =
     );
 
 typedef _$HouseholdNotifier = Notifier<HouseholdState>;
+String _$activeInviteNotifierHash() =>
+    r'875a979b7aae3056f70591c0b51b43ccd8dabb55';
+
+/// Notifier for active invite state
+///
+/// Copied from [ActiveInviteNotifier].
+@ProviderFor(ActiveInviteNotifier)
+final activeInviteNotifierProvider =
+    NotifierProvider<ActiveInviteNotifier, ActiveInviteState>.internal(
+      ActiveInviteNotifier.new,
+      name: r'activeInviteNotifierProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$activeInviteNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$ActiveInviteNotifier = Notifier<ActiveInviteState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

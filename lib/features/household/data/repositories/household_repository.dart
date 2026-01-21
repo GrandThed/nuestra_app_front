@@ -54,6 +54,17 @@ class HouseholdRepository {
     return HouseholdInviteModel.fromJson(response['data']['invite']);
   }
 
+  /// Get active invite for a household (unused, non-expired)
+  Future<HouseholdInviteModel?> getActiveInvite(String householdId) async {
+    final response = await _dioClient.get<Map<String, dynamic>>(
+      ApiConstants.householdInvites(householdId),
+    );
+
+    final inviteData = response['data']['invite'];
+    if (inviteData == null) return null;
+    return HouseholdInviteModel.fromJson(inviteData);
+  }
+
   /// Join a household using an invite code
   Future<HouseholdModel> joinHousehold(String inviteCode) async {
     final response = await _dioClient.post<Map<String, dynamic>>(

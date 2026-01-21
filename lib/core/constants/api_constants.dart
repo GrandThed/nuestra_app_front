@@ -15,6 +15,7 @@ class ApiConstants {
   static const String households = '/api/households';
   static String household(String id) => '/api/households/$id';
   static String householdInvite(String id) => '/api/households/$id/invite';
+  static String householdInvites(String id) => '/api/households/$id/invites';
   static const String householdJoin = '/api/households/join';
   static String householdMember(String hhId, String uId) =>
       '/api/households/$hhId/members/$uId';

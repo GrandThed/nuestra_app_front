@@ -8,6 +8,7 @@ import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart
 import 'package:nuestra_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:nuestra_app/features/household/presentation/screens/household_setup_screen.dart';
 import 'package:nuestra_app/features/household/presentation/screens/household_settings_screen.dart';
+import 'package:nuestra_app/features/household/presentation/screens/join_by_invite_screen.dart';
 import 'package:nuestra_app/shared/widgets/main_shell.dart';
 
 // Feature screens
@@ -42,6 +43,7 @@ class AppRoutes {
   // Household
   static const String householdSetup = '/household-setup';
   static const String householdSettings = '/household-settings';
+  static const String joinByInvite = '/join/:code';
 
   // Main tabs
   static const String home = '/';
@@ -182,6 +184,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.shareToBoard,
         builder: (context, state) => const ShareToBoardScreen(),
+      ),
+
+      // Join by invite deeplink (no shell)
+      GoRoute(
+        path: AppRoutes.joinByInvite,
+        builder: (context, state) {
+          final code = state.pathParameters['code']!;
+          return JoinByInviteScreen(inviteCode: code);
+        },
       ),
 
       // Board detail (no shell)

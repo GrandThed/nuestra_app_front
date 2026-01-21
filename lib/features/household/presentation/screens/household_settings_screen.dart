@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/constants/app_strings.dart';
@@ -24,21 +25,26 @@ class HouseholdSettingsScreen extends ConsumerStatefulWidget {
 
 class _HouseholdSettingsScreenState
     extends ConsumerState<HouseholdSettingsScreen> {
-  HouseholdInviteModel? _currentInvite;
   bool _isGeneratingInvite = false;
 
   @override
   void initState() {
     super.initState();
-    _loadHousehold();
+    // Use microtask to avoid modifying provider during build
+    Future.microtask(() => _loadData());
   }
 
-  void _loadHousehold() {
+  void _loadData() {
     final authState = ref.read(authNotifierProvider);
     if (authState is AuthStateAuthenticated) {
       final householdId = authState.user.households?.firstOrNull?.id;
       if (householdId != null) {
-        ref.read(householdNotifierProvider.notifier).loadHousehold(householdId);
+        ref
+            .read(householdNotifierProvider.notifier)
+            .loadHouseholdIfNeeded(householdId);
+        ref
+            .read(activeInviteNotifierProvider.notifier)
+            .loadActiveInviteIfNeeded(householdId);
       }
     }
   }
@@ -47,10 +53,14 @@ class _HouseholdSettingsScreenState
   Widget build(BuildContext context) {
     final authState = ref.watch(authNotifierProvider);
     final householdState = ref.watch(householdNotifierProvider);
+    final inviteState = ref.watch(activeInviteNotifierProvider);
 
-    final currentUser = authState is AuthStateAuthenticated ? authState.user : null;
+    final currentUser =
+        authState is AuthStateAuthenticated ? authState.user : null;
     final household =
         householdState is HouseholdStateLoaded ? householdState.household : null;
+    final activeInvite =
+        inviteState is ActiveInviteStateLoaded ? inviteState.invite : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -61,7 +71,7 @@ class _HouseholdSettingsScreenState
           : householdState is HouseholdStateError
               ? _buildErrorState(householdState.message)
               : household != null
-                  ? _buildContent(context, household, currentUser)
+                  ? _buildContent(context, household, currentUser, activeInvite)
                   : const Center(child: Text('No hay hogar configurado')),
     );
   }
@@ -76,7 +86,7 @@ class _HouseholdSettingsScreenState
           Text(message),
           const SizedBox(height: AppSizes.md),
           ElevatedButton(
-            onPressed: _loadHousehold,
+            onPressed: _loadData,
             child: const Text(AppStrings.retry),
           ),
         ],
@@ -88,6 +98,7 @@ class _HouseholdSettingsScreenState
     BuildContext context,
     HouseholdModel household,
     UserModel? currentUser,
+    HouseholdInviteModel? activeInvite,
   ) {
     final isOwner = household.members?.any(
           (m) => m.id == currentUser?.id && m.role == 'owner',
@@ -158,80 +169,7 @@ class _HouseholdSettingsScreenState
                 ),
           ),
           const SizedBox(height: AppSizes.sm),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSizes.paddingMd),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (_currentInvite != null) ...[
-                    Text(
-                      'Código de invitación:',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                    const SizedBox(height: AppSizes.xs),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSizes.md,
-                              vertical: AppSizes.sm,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.background,
-                              borderRadius:
-                                  BorderRadius.circular(AppSizes.radiusSm),
-                              border: Border.all(color: AppColors.border),
-                            ),
-                            child: Text(
-                              _currentInvite!.code,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    fontFamily: 'monospace',
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: AppSizes.sm),
-                        IconButton(
-                          onPressed: () => _copyInviteCode(_currentInvite!.code),
-                          icon: const Icon(Icons.copy),
-                          tooltip: 'Copiar código',
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: AppSizes.xs),
-                    Text(
-                      'Expira: ${_formatDate(_currentInvite!.expiresAt)}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                    ),
-                    const SizedBox(height: AppSizes.md),
-                  ],
-                  ElevatedButton.icon(
-                    onPressed: _isGeneratingInvite
-                        ? null
-                        : () => _generateInvite(household.id),
-                    icon: _isGeneratingInvite
-                        ? const SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.add_link),
-                    label: Text(_currentInvite == null
-                        ? 'Generar código de invitación'
-                        : 'Generar nuevo código'),
-                  ),
-                ],
-              ),
-            ),
-          ),
+          _buildInviteCard(context, household, activeInvite),
           const SizedBox(height: AppSizes.lg),
         ],
 
@@ -250,6 +188,114 @@ class _HouseholdSettingsScreenState
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buildInviteCard(
+    BuildContext context,
+    HouseholdModel household,
+    HouseholdInviteModel? activeInvite,
+  ) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSizes.paddingMd),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            if (activeInvite != null) ...[
+              Text(
+                'Código de invitación activo:',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+              const SizedBox(height: AppSizes.sm),
+              // Code display
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.md,
+                  vertical: AppSizes.md,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.primaryLight.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+                  border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      activeInvite.code,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontFamily: 'monospace',
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 4,
+                            color: AppColors.primary,
+                          ),
+                    ),
+                    const SizedBox(height: AppSizes.xs),
+                    Text(
+                      'Expira: ${_formatDate(activeInvite.expiresAt)}',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: AppSizes.md),
+              // Action buttons
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _copyInviteCode(activeInvite.code),
+                      icon: const Icon(Icons.copy, size: 18),
+                      label: const Text('Copiar'),
+                    ),
+                  ),
+                  const SizedBox(width: AppSizes.sm),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _shareInvite(activeInvite.code, household.name),
+                      icon: const Icon(Icons.share, size: 18),
+                      label: const Text('Compartir'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSizes.md),
+              const Divider(),
+              const SizedBox(height: AppSizes.sm),
+            ],
+            // Generate button
+            OutlinedButton.icon(
+              onPressed: _isGeneratingInvite
+                  ? null
+                  : () => _generateInvite(household.id),
+              icon: _isGeneratingInvite
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.add_link),
+              label: Text(activeInvite == null
+                  ? 'Generar código de invitación'
+                  : 'Generar nuevo código'),
+            ),
+            if (activeInvite != null)
+              Padding(
+                padding: const EdgeInsets.only(top: AppSizes.xs),
+                child: Text(
+                  'Generar un nuevo código invalidará el actual',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                        fontStyle: FontStyle.italic,
+                      ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -274,7 +320,8 @@ class _HouseholdSettingsScreenState
           if (isCurrentUser)
             const Padding(
               padding: EdgeInsets.only(left: AppSizes.xs),
-              child: Text('(tú)', style: TextStyle(color: AppColors.textSecondary)),
+              child:
+                  Text('(tú)', style: TextStyle(color: AppColors.textSecondary)),
             ),
         ],
       ),
@@ -368,15 +415,12 @@ class _HouseholdSettingsScreenState
     setState(() => _isGeneratingInvite = true);
 
     final invite =
-        await ref.read(householdNotifierProvider.notifier).generateInvite(
+        await ref.read(activeInviteNotifierProvider.notifier).generateInvite(
               householdId: householdId,
             );
 
     if (mounted) {
-      setState(() {
-        _isGeneratingInvite = false;
-        _currentInvite = invite;
-      });
+      setState(() => _isGeneratingInvite = false);
 
       if (invite != null) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -403,6 +447,23 @@ class _HouseholdSettingsScreenState
         content: Text('Código copiado al portapapeles'),
         duration: Duration(seconds: 2),
       ),
+    );
+  }
+
+  Future<void> _shareInvite(String code, String householdName) async {
+    final inviteLink = 'https://nuestra-app.benja.ar/join/$code';
+    final message = '''
+Te invito a unirte a "$householdName" en Nuestra App!
+
+Usa este enlace para unirte:
+$inviteLink
+
+O ingresa el código manualmente: $code
+''';
+
+    await Share.share(
+      message,
+      subject: 'Invitación a $householdName - Nuestra App',
     );
   }
 

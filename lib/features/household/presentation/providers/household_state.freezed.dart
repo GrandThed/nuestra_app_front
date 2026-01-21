@@ -388,4 +388,384 @@ as String,
 
 }
 
+/// @nodoc
+mixin _$ActiveInviteState {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActiveInviteState);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ActiveInviteState()';
+}
+
+
+}
+
+/// @nodoc
+class $ActiveInviteStateCopyWith<$Res>  {
+$ActiveInviteStateCopyWith(ActiveInviteState _, $Res Function(ActiveInviteState) __);
+}
+
+
+/// Adds pattern-matching-related methods to [ActiveInviteState].
+extension ActiveInviteStatePatterns on ActiveInviteState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ActiveInviteStateInitial value)?  initial,TResult Function( ActiveInviteStateLoading value)?  loading,TResult Function( ActiveInviteStateLoaded value)?  loaded,TResult Function( ActiveInviteStateError value)?  error,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case ActiveInviteStateInitial() when initial != null:
+return initial(_that);case ActiveInviteStateLoading() when loading != null:
+return loading(_that);case ActiveInviteStateLoaded() when loaded != null:
+return loaded(_that);case ActiveInviteStateError() when error != null:
+return error(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ActiveInviteStateInitial value)  initial,required TResult Function( ActiveInviteStateLoading value)  loading,required TResult Function( ActiveInviteStateLoaded value)  loaded,required TResult Function( ActiveInviteStateError value)  error,}){
+final _that = this;
+switch (_that) {
+case ActiveInviteStateInitial():
+return initial(_that);case ActiveInviteStateLoading():
+return loading(_that);case ActiveInviteStateLoaded():
+return loaded(_that);case ActiveInviteStateError():
+return error(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ActiveInviteStateInitial value)?  initial,TResult? Function( ActiveInviteStateLoading value)?  loading,TResult? Function( ActiveInviteStateLoaded value)?  loaded,TResult? Function( ActiveInviteStateError value)?  error,}){
+final _that = this;
+switch (_that) {
+case ActiveInviteStateInitial() when initial != null:
+return initial(_that);case ActiveInviteStateLoading() when loading != null:
+return loading(_that);case ActiveInviteStateLoaded() when loaded != null:
+return loaded(_that);case ActiveInviteStateError() when error != null:
+return error(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( HouseholdInviteModel? invite)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case ActiveInviteStateInitial() when initial != null:
+return initial();case ActiveInviteStateLoading() when loading != null:
+return loading();case ActiveInviteStateLoaded() when loaded != null:
+return loaded(_that.invite);case ActiveInviteStateError() when error != null:
+return error(_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( HouseholdInviteModel? invite)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+switch (_that) {
+case ActiveInviteStateInitial():
+return initial();case ActiveInviteStateLoading():
+return loading();case ActiveInviteStateLoaded():
+return loaded(_that.invite);case ActiveInviteStateError():
+return error(_that.message);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( HouseholdInviteModel? invite)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+switch (_that) {
+case ActiveInviteStateInitial() when initial != null:
+return initial();case ActiveInviteStateLoading() when loading != null:
+return loading();case ActiveInviteStateLoaded() when loaded != null:
+return loaded(_that.invite);case ActiveInviteStateError() when error != null:
+return error(_that.message);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class ActiveInviteStateInitial implements ActiveInviteState {
+  const ActiveInviteStateInitial();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActiveInviteStateInitial);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ActiveInviteState.initial()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ActiveInviteStateLoading implements ActiveInviteState {
+  const ActiveInviteStateLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActiveInviteStateLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ActiveInviteState.loading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ActiveInviteStateLoaded implements ActiveInviteState {
+  const ActiveInviteStateLoaded(this.invite);
+  
+
+ final  HouseholdInviteModel? invite;
+
+/// Create a copy of ActiveInviteState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ActiveInviteStateLoadedCopyWith<ActiveInviteStateLoaded> get copyWith => _$ActiveInviteStateLoadedCopyWithImpl<ActiveInviteStateLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActiveInviteStateLoaded&&(identical(other.invite, invite) || other.invite == invite));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,invite);
+
+@override
+String toString() {
+  return 'ActiveInviteState.loaded(invite: $invite)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ActiveInviteStateLoadedCopyWith<$Res> implements $ActiveInviteStateCopyWith<$Res> {
+  factory $ActiveInviteStateLoadedCopyWith(ActiveInviteStateLoaded value, $Res Function(ActiveInviteStateLoaded) _then) = _$ActiveInviteStateLoadedCopyWithImpl;
+@useResult
+$Res call({
+ HouseholdInviteModel? invite
+});
+
+
+$HouseholdInviteModelCopyWith<$Res>? get invite;
+
+}
+/// @nodoc
+class _$ActiveInviteStateLoadedCopyWithImpl<$Res>
+    implements $ActiveInviteStateLoadedCopyWith<$Res> {
+  _$ActiveInviteStateLoadedCopyWithImpl(this._self, this._then);
+
+  final ActiveInviteStateLoaded _self;
+  final $Res Function(ActiveInviteStateLoaded) _then;
+
+/// Create a copy of ActiveInviteState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? invite = freezed,}) {
+  return _then(ActiveInviteStateLoaded(
+freezed == invite ? _self.invite : invite // ignore: cast_nullable_to_non_nullable
+as HouseholdInviteModel?,
+  ));
+}
+
+/// Create a copy of ActiveInviteState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$HouseholdInviteModelCopyWith<$Res>? get invite {
+    if (_self.invite == null) {
+    return null;
+  }
+
+  return $HouseholdInviteModelCopyWith<$Res>(_self.invite!, (value) {
+    return _then(_self.copyWith(invite: value));
+  });
+}
+}
+
+/// @nodoc
+
+
+class ActiveInviteStateError implements ActiveInviteState {
+  const ActiveInviteStateError(this.message);
+  
+
+ final  String message;
+
+/// Create a copy of ActiveInviteState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ActiveInviteStateErrorCopyWith<ActiveInviteStateError> get copyWith => _$ActiveInviteStateErrorCopyWithImpl<ActiveInviteStateError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActiveInviteStateError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'ActiveInviteState.error(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ActiveInviteStateErrorCopyWith<$Res> implements $ActiveInviteStateCopyWith<$Res> {
+  factory $ActiveInviteStateErrorCopyWith(ActiveInviteStateError value, $Res Function(ActiveInviteStateError) _then) = _$ActiveInviteStateErrorCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class _$ActiveInviteStateErrorCopyWithImpl<$Res>
+    implements $ActiveInviteStateErrorCopyWith<$Res> {
+  _$ActiveInviteStateErrorCopyWithImpl(this._self, this._then);
+
+  final ActiveInviteStateError _self;
+  final $Res Function(ActiveInviteStateError) _then;
+
+/// Create a copy of ActiveInviteState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(ActiveInviteStateError(
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
 // dart format on
