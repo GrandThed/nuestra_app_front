@@ -12,13 +12,13 @@ import 'package:nuestra_app/features/recipes/presentation/providers/recipes_stat
 
 /// Screen for adding or editing a meal in a menu plan
 class AddMealScreen extends ConsumerStatefulWidget {
-  final String menuId;
+  final String? menuId; // Optional - will use/create default if null
   final DateTime? initialDate;
   final String? mealItemId; // For editing existing meal
 
   const AddMealScreen({
     super.key,
-    required this.menuId,
+    this.menuId,
     this.initialDate,
     this.mealItemId,
   });
@@ -34,6 +34,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
   final _searchController = TextEditingController();
   bool _isLoading = false;
   bool _isLoadingMeal = false;
+  String? _resolvedMenuId; // The actual menu ID to use
 
   bool get _isEditing => widget.mealItemId != null;
 
@@ -41,12 +42,18 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
   void initState() {
     super.initState();
     _selectedDate = widget.initialDate ?? DateTime.now();
+    _resolvedMenuId = widget.menuId;
 
     // Load recipes if not already loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final recipesState = ref.read(recipesNotifierProvider);
       if (recipesState is RecipesStateInitial) {
         ref.read(recipesNotifierProvider.notifier).loadRecipes();
+      }
+
+      // Resolve menu ID if not provided
+      if (_resolvedMenuId == null) {
+        _resolveMenuId();
       }
 
       // Load existing meal data if editing
@@ -56,11 +63,58 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
     });
   }
 
+  /// Get or create a default menu plan if menuId wasn't provided
+  Future<void> _resolveMenuId() async {
+    setState(() => _isLoading = true);
+
+    try {
+      // First, ensure menu plans are loaded
+      await ref.read(menuPlansNotifierProvider.notifier).loadMenuPlansIfNeeded();
+
+      final menuPlansState = ref.read(menuPlansNotifierProvider);
+      if (menuPlansState is MenuPlansStateLoaded && menuPlansState.plans.isNotEmpty) {
+        // Use the first (most recent) menu plan
+        setState(() {
+          _resolvedMenuId = menuPlansState.plans.first.id;
+          _isLoading = false;
+        });
+      } else {
+        // No menu plans exist - create a default one
+        final newPlan = await ref.read(menuPlansNotifierProvider.notifier).createMenuPlan(
+          name: 'Mi Menú',
+        );
+        if (newPlan != null) {
+          setState(() {
+            _resolvedMenuId = newPlan.id;
+            _isLoading = false;
+          });
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Error al crear el menú')),
+            );
+            context.pop();
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+        context.pop();
+      }
+    }
+  }
+
   Future<void> _loadExistingMeal() async {
+    final menuId = _resolvedMenuId ?? widget.menuId;
+    if (menuId == null) return;
+
     setState(() => _isLoadingMeal = true);
 
     // Get meal from the menu plan detail
-    final menuState = ref.read(menuPlanDetailNotifierProvider(widget.menuId));
+    final menuState = ref.read(menuPlanDetailNotifierProvider(menuId));
     if (menuState is MenuPlanDetailStateLoaded) {
       final meal = menuState.plan.items?.firstWhere(
         (item) => item.id == widget.mealItemId,
@@ -78,10 +132,10 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
     } else {
       // Need to load menu plan first
       await ref
-          .read(menuPlanDetailNotifierProvider(widget.menuId).notifier)
+          .read(menuPlanDetailNotifierProvider(menuId).notifier)
           .loadMenuPlan();
 
-      final menuState = ref.read(menuPlanDetailNotifierProvider(widget.menuId));
+      final menuState = ref.read(menuPlanDetailNotifierProvider(menuId));
       if (menuState is MenuPlanDetailStateLoaded) {
         final meal = menuState.plan.items?.firstWhere(
           (item) => item.id == widget.mealItemId,
@@ -127,6 +181,14 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
       return;
     }
 
+    final menuId = _resolvedMenuId;
+    if (menuId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Error: No se pudo determinar el menú')),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     final repository = ref.read(menuRepositoryProvider);
@@ -135,7 +197,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
       if (_isEditing && widget.mealItemId != null) {
         // Update existing meal
         await repository.updateMenuItem(
-          menuId: widget.menuId,
+          menuId: menuId,
           itemId: widget.mealItemId!,
           date: _selectedDate,
           mealType: _selectedMealType,
@@ -144,7 +206,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
       } else {
         // Add new meal
         await repository.addMenuItem(
-          menuId: widget.menuId,
+          menuId: menuId,
           recipeId: _selectedRecipe!.id,
           date: _selectedDate,
           mealType: _selectedMealType,
@@ -157,7 +219,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
 
       // Refresh menu plan detail if loaded
       ref
-          .read(menuPlanDetailNotifierProvider(widget.menuId).notifier)
+          .read(menuPlanDetailNotifierProvider(menuId).notifier)
           .loadMenuPlan();
 
       if (mounted) {
@@ -197,7 +259,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
           ),
         ],
       ),
-      body: _isLoadingMeal
+      body: (_isLoadingMeal || (_resolvedMenuId == null && !_isEditing))
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [

@@ -123,6 +123,7 @@ class ExpenseRepository {
     String currency = 'ARS',
     String? categoryId,
     String? receiptUrl,
+    String? paidById,
   }) async {
     final response = await _dioClient.post<Map<String, dynamic>>(
       ApiConstants.expenses,
@@ -134,6 +135,7 @@ class ExpenseRepository {
         'date': date.toIso8601String(),
         if (categoryId != null) 'categoryId': categoryId,
         if (receiptUrl != null) 'receiptUrl': receiptUrl,
+        if (paidById != null) 'paidById': paidById,
       },
     );
 

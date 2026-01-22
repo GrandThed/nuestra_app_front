@@ -48,14 +48,25 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     });
   }
 
-  List<ExpenseModel> _filterExpenses(List<ExpenseModel> expenses) {
-    if (_searchQuery.isEmpty) return expenses;
-    final query = _searchQuery.toLowerCase();
-    return expenses.where((e) {
-      return e.description.toLowerCase().contains(query) ||
-          (e.category?.name.toLowerCase().contains(query) ?? false) ||
-          e.paidBy.name.toLowerCase().contains(query);
-    }).toList();
+  List<ExpenseModel> _filterExpenses(List<ExpenseModel> expenses, String? selectedCategoryId) {
+    var filtered = expenses;
+
+    // Filter by category if one is selected
+    if (selectedCategoryId != null) {
+      filtered = filtered.where((e) => e.category?.id == selectedCategoryId).toList();
+    }
+
+    // Filter by search query
+    if (_searchQuery.isNotEmpty) {
+      final query = _searchQuery.toLowerCase();
+      filtered = filtered.where((e) {
+        return e.description.toLowerCase().contains(query) ||
+            (e.category?.name.toLowerCase().contains(query) ?? false) ||
+            e.paidBy.name.toLowerCase().contains(query);
+      }).toList();
+    }
+
+    return filtered;
   }
 
   Future<void> _onRefresh() async {
@@ -67,20 +78,23 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     if (state is! ExpensesStateLoaded) return;
 
     final now = DateTime.now();
-    final selectedDate = DateTime(state.selectedYear, state.selectedMonth);
+    int selectedYear = state.selectedYear;
+    int selectedMonth = state.selectedMonth;
 
-    final picked = await showDatePicker(
+    final result = await showDialog<Map<String, int>>(
       context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(now.year + 1, 12),
-      initialDatePickerMode: DatePickerMode.year,
+      builder: (dialogContext) => _MonthYearPickerDialog(
+        initialYear: selectedYear,
+        initialMonth: selectedMonth,
+        firstYear: 2020,
+        lastYear: now.year + 1,
+      ),
     );
 
-    if (picked != null) {
+    if (result != null) {
       ref.read(expensesNotifierProvider.notifier).setMonth(
-            picked.month,
-            picked.year,
+            result['month']!,
+            result['year']!,
           );
     }
   }
@@ -365,7 +379,8 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
         ) =>
           _buildContent(
             categories,
-            _filterExpenses(expenses),
+            expenses, // All expenses for category counts
+            _filterExpenses(expenses, selectedCategoryId), // Filtered for display
             selectedMonth,
             selectedYear,
             selectedCategoryId,
@@ -381,12 +396,13 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
   Widget _buildContent(
     List<ExpenseCategoryModel> categories,
-    List<ExpenseModel> expenses,
+    List<ExpenseModel> allExpenses, // For category counts
+    List<ExpenseModel> filteredExpenses, // For display
     int selectedMonth,
     int selectedYear,
     String? selectedCategoryId,
   ) {
-    final total = expenses.fold(0.0, (sum, e) => sum + e.amount);
+    final total = filteredExpenses.fold(0.0, (sum, e) => sum + e.amount);
     final monthName = DateFormat.MMMM('es').format(
       DateTime(selectedYear, selectedMonth),
     );
@@ -398,14 +414,14 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
         children: [
           // Month selector and total
           _buildHeader(monthName, selectedYear, total),
-          // Category filter chips
+          // Category filter chips - use allExpenses for counts
           if (categories.isNotEmpty)
-            _buildCategoryChips(categories, expenses, selectedCategoryId),
-          // Expenses list
+            _buildCategoryChips(categories, allExpenses, selectedCategoryId),
+          // Expenses list - use filtered expenses
           Expanded(
-            child: expenses.isEmpty
+            child: filteredExpenses.isEmpty
                 ? _buildEmptyState()
-                : _buildExpensesList(expenses),
+                : _buildExpensesList(filteredExpenses),
           ),
         ],
       ),
@@ -829,5 +845,138 @@ extension StringExtension on String {
   String capitalize() {
     if (isEmpty) return this;
     return '${this[0].toUpperCase()}${substring(1)}';
+  }
+}
+
+/// Dialog for selecting only month and year
+class _MonthYearPickerDialog extends StatefulWidget {
+  final int initialYear;
+  final int initialMonth;
+  final int firstYear;
+  final int lastYear;
+
+  const _MonthYearPickerDialog({
+    required this.initialYear,
+    required this.initialMonth,
+    required this.firstYear,
+    required this.lastYear,
+  });
+
+  @override
+  State<_MonthYearPickerDialog> createState() => _MonthYearPickerDialogState();
+}
+
+class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
+  late int _selectedYear;
+  late int _selectedMonth;
+
+  final List<String> _monthNames = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedYear = widget.initialYear;
+    _selectedMonth = widget.initialMonth;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return AlertDialog(
+      title: const Text('Seleccionar mes'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Year selector
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.chevron_left),
+                  onPressed: _selectedYear > widget.firstYear
+                      ? () => setState(() => _selectedYear--)
+                      : null,
+                ),
+                Text(
+                  _selectedYear.toString(),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chevron_right),
+                  onPressed: _selectedYear < widget.lastYear
+                      ? () => setState(() => _selectedYear++)
+                      : null,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSizes.md),
+            // Month grid
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                childAspectRatio: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: 12,
+              itemBuilder: (context, index) {
+                final month = index + 1;
+                final isSelected = month == _selectedMonth;
+                return InkWell(
+                  onTap: () => setState(() => _selectedMonth = month),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.expenses
+                          : colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                    ),
+                    child: Text(
+                      _monthNames[index].substring(0, 3),
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected
+                            ? Colors.white
+                            : colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context, {
+            'year': _selectedYear,
+            'month': _selectedMonth,
+          }),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.expenses,
+            foregroundColor: Colors.white,
+          ),
+          child: const Text('Seleccionar'),
+        ),
+      ],
+    );
   }
 }

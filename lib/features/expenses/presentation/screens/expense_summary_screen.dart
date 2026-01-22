@@ -49,18 +49,21 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
   }
 
   Future<void> _selectMonth() async {
-    final result = await showDatePicker(
+    final now = DateTime.now();
+    final result = await showDialog<Map<String, int>>(
       context: context,
-      initialDate: DateTime(_selectedYear, _selectedMonth),
-      firstDate: DateTime(2020),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
-      initialEntryMode: DatePickerEntryMode.calendarOnly,
+      builder: (dialogContext) => _MonthYearPickerDialog(
+        initialYear: _selectedYear,
+        initialMonth: _selectedMonth,
+        firstYear: 2020,
+        lastYear: now.year + 1,
+      ),
     );
 
     if (result != null) {
       setState(() {
-        _selectedMonth = result.month;
-        _selectedYear = result.year;
+        _selectedMonth = result['month']!;
+        _selectedYear = result['year']!;
       });
       ref.read(expenseSummaryNotifierProvider.notifier).loadSummary(
             month: _selectedMonth,
@@ -71,23 +74,70 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
   }
 
   Future<void> _settlePeriod() async {
+    final summaryState = ref.read(expenseSummaryNotifierProvider);
+    if (summaryState is! ExpenseSummaryStateLoaded) return;
+
+    final summary = summaryState.summary;
     final fromDate = DateTime(_selectedYear, _selectedMonth, 1);
     final toDate = DateTime(_selectedYear, _selectedMonth + 1, 0);
 
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Saldar período'),
-        content: Text(
-          '¿Marcar todos los gastos de ${_getMonthName(_selectedMonth)} $_selectedYear como saldados?',
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Saldar periodo'),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '${_getMonthName(_selectedMonth)} $_selectedYear',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: AppSizes.md),
+              if (summary.settlements.isEmpty)
+                const Text('No hay pagos pendientes entre miembros.')
+              else ...[
+                const Text('Pagos pendientes:'),
+                const SizedBox(height: AppSizes.sm),
+                ...summary.settlements.map((settlement) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${settlement.from.name} debe a ${settlement.to.name}',
+                              style: const TextStyle(fontSize: 14),
+                            ),
+                          ),
+                          Text(
+                            _currencyFormat.format(settlement.amount),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.expenses,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+              ],
+              const SizedBox(height: AppSizes.md),
+              Text(
+                '¿Marcar todos los gastos como saldados?',
+                style: TextStyle(
+                  color: Theme.of(dialogContext).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => Navigator.pop(dialogContext, false),
             child: const Text('Cancelar'),
           ),
           FilledButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => Navigator.pop(dialogContext, true),
             child: const Text('Saldar'),
           ),
         ],
@@ -109,6 +159,12 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
         );
         // Also refresh the main expenses list
         ref.read(expensesNotifierProvider.notifier).loadExpenses();
+        // Reload summary with current month/year
+        ref.read(expenseSummaryNotifierProvider.notifier).loadSummary(
+              month: _selectedMonth,
+              year: _selectedYear,
+              forceLoading: true,
+            );
       }
     }
   }
@@ -505,6 +561,139 @@ class _SettlementRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// Dialog for selecting only month and year
+class _MonthYearPickerDialog extends StatefulWidget {
+  final int initialYear;
+  final int initialMonth;
+  final int firstYear;
+  final int lastYear;
+
+  const _MonthYearPickerDialog({
+    required this.initialYear,
+    required this.initialMonth,
+    required this.firstYear,
+    required this.lastYear,
+  });
+
+  @override
+  State<_MonthYearPickerDialog> createState() => _MonthYearPickerDialogState();
+}
+
+class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
+  late int _selectedYear;
+  late int _selectedMonth;
+
+  final List<String> _monthNames = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedYear = widget.initialYear;
+    _selectedMonth = widget.initialMonth;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return AlertDialog(
+      title: const Text('Seleccionar mes'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Year selector
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.chevron_left),
+                  onPressed: _selectedYear > widget.firstYear
+                      ? () => setState(() => _selectedYear--)
+                      : null,
+                ),
+                Text(
+                  _selectedYear.toString(),
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chevron_right),
+                  onPressed: _selectedYear < widget.lastYear
+                      ? () => setState(() => _selectedYear++)
+                      : null,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSizes.md),
+            // Month grid
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                childAspectRatio: 2,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: 12,
+              itemBuilder: (context, index) {
+                final month = index + 1;
+                final isSelected = month == _selectedMonth;
+                return InkWell(
+                  onTap: () => setState(() => _selectedMonth = month),
+                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: isSelected
+                          ? AppColors.expenses
+                          : colorScheme.surfaceContainerHighest,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                    ),
+                    child: Text(
+                      _monthNames[index].substring(0, 3),
+                      style: TextStyle(
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        color: isSelected
+                            ? Colors.white
+                            : colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context, {
+            'year': _selectedYear,
+            'month': _selectedMonth,
+          }),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.expenses,
+            foregroundColor: Colors.white,
+          ),
+          child: const Text('Seleccionar'),
+        ),
+      ],
     );
   }
 }

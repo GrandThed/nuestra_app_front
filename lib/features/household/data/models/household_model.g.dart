@@ -35,6 +35,7 @@ _MemberModel _$MemberModelFromJson(Map<String, dynamic> json) => _MemberModel(
   avatarUrl: json['avatarUrl'] as String?,
   role: json['role'] as String,
   income: (json['income'] as num?)?.toDouble(),
+  paysExpenses: json['paysExpenses'] as bool? ?? false,
   createdAt:
       json['createdAt'] == null
           ? null
@@ -50,6 +51,7 @@ Map<String, dynamic> _$MemberModelToJson(_MemberModel instance) =>
       'avatarUrl': instance.avatarUrl,
       'role': instance.role,
       'income': instance.income,
+      'paysExpenses': instance.paysExpenses,
       'createdAt': instance.createdAt?.toIso8601String(),
     };
 

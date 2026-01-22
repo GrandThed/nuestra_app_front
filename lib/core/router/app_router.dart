@@ -61,7 +61,8 @@ class AppRoutes {
   static const String recipeNew = '/recipes/new';
   static const String recipeEdit = '/recipes/:id/edit';
   static const String menuDetail = '/menus/:id';
-  static const String menuAddMeal = '/menus/:id/add-meal';
+  static const String menuAddMealSimple = '/menus/add-meal'; // Without menu ID
+  static const String menuAddMeal = '/menus/:id/add-meal'; // With menu ID
   static const String menuEditMeal = '/menus/:id/meals/:mealId/edit';
 
   // Expense routes
@@ -228,7 +229,19 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
 
-      // Menu add meal (no shell)
+      // Menu add meal without ID (no shell) - must be before :id route
+      GoRoute(
+        path: AppRoutes.menuAddMealSimple,
+        builder: (context, state) {
+          final dateStr = state.uri.queryParameters['date'];
+          final initialDate = dateStr != null ? DateTime.tryParse(dateStr) : null;
+          return AddMealScreen(
+            initialDate: initialDate,
+          );
+        },
+      ),
+
+      // Menu add meal with ID (no shell)
       GoRoute(
         path: AppRoutes.menuAddMeal,
         builder: (context, state) {

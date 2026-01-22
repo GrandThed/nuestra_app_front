@@ -27,6 +27,7 @@ sealed class MemberModel with _$MemberModel {
     String? avatarUrl,
     required String role,
     double? income,
+    @Default(false) bool paysExpenses,
     DateTime? createdAt,
   }) = _MemberModel;
 

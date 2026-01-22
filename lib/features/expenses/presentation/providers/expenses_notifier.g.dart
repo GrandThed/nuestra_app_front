@@ -205,7 +205,7 @@ class _ExpensesByCategoryProviderElement
   String? get categoryId => (origin as ExpensesByCategoryProvider).categoryId;
 }
 
-String _$expensesNotifierHash() => r'd3c1fa39d8d1b9d5879cf5dda78f35a06670b7cc';
+String _$expensesNotifierHash() => r'799686ca0b812729cda29ac6c75063cb85f77bb6';
 
 /// Notifier for expenses operations (categories + expenses combined)
 ///
@@ -225,7 +225,7 @@ final expensesNotifierProvider =
 
 typedef _$ExpensesNotifier = Notifier<ExpensesState>;
 String _$expenseSummaryNotifierHash() =>
-    r'27bbb9408f30fd642b728b067ea5b7dcffe807b4';
+    r'a1813f48936706db4bfb5cdcb7eb5ee58e6be760';
 
 /// Notifier for expense summary
 ///

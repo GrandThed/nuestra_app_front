@@ -306,38 +306,68 @@ class _HouseholdSettingsScreenState
   ) {
     final isCurrentUser = member.id == currentUser?.id;
 
-    return ListTile(
-      leading: CircleAvatar(
-        backgroundColor: AppColors.primaryLight,
-        child: Text(
-          member.name.substring(0, 1).toUpperCase(),
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-      title: Row(
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
+      child: Column(
         children: [
-          Text(member.name),
+          ListTile(
+            leading: CircleAvatar(
+              backgroundColor: AppColors.primaryLight,
+              child: Text(
+                member.name.substring(0, 1).toUpperCase(),
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+            title: Row(
+              children: [
+                Text(member.name),
+                if (isCurrentUser)
+                  const Padding(
+                    padding: EdgeInsets.only(left: AppSizes.xs),
+                    child:
+                        Text('(tú)', style: TextStyle(color: AppColors.textSecondary)),
+                  ),
+              ],
+            ),
+            subtitle: Text(member.role == 'owner' ? 'Propietario' : 'Miembro'),
+            trailing: isCurrentUser
+                ? TextButton(
+                    onPressed: () => _showIncomeDialog(context, member),
+                    child: Text(
+                      member.income != null
+                          ? '\$${member.income!.toStringAsFixed(0)}'
+                          : 'Agregar ingreso',
+                    ),
+                  )
+                : member.income != null
+                    ? Text('\$${member.income!.toStringAsFixed(0)}')
+                    : null,
+          ),
+          // Pays expenses toggle (only for current user)
           if (isCurrentUser)
-            const Padding(
-              padding: EdgeInsets.only(left: AppSizes.xs),
-              child:
-                  Text('(tú)', style: TextStyle(color: AppColors.textSecondary)),
+            Padding(
+              padding: const EdgeInsets.only(left: 72, right: AppSizes.md),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Responsable de pagar gastos',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                    ),
+                  ),
+                  Switch(
+                    value: member.paysExpenses,
+                    onChanged: (value) => _updatePaysExpenses(member, value),
+                    activeTrackColor: AppColors.expenses.withValues(alpha: 0.5),
+                    activeThumbColor: AppColors.expenses,
+                  ),
+                ],
+              ),
             ),
         ],
       ),
-      subtitle: Text(member.role == 'owner' ? 'Propietario' : 'Miembro'),
-      trailing: isCurrentUser
-          ? TextButton(
-              onPressed: () => _showIncomeDialog(context, member),
-              child: Text(
-                member.income != null
-                    ? '\$${member.income!.toStringAsFixed(0)}'
-                    : 'Agregar ingreso',
-              ),
-            )
-          : member.income != null
-              ? Text('\$${member.income!.toStringAsFixed(0)}')
-              : null,
     );
   }
 
@@ -393,9 +423,9 @@ class _HouseholdSettingsScreenState
     final householdState = ref.read(householdNotifierProvider);
     if (householdState is HouseholdStateLoaded) {
       final success =
-          await ref.read(householdNotifierProvider.notifier).updateMemberIncome(
+          await ref.read(householdNotifierProvider.notifier).updateMember(
                 householdId: householdState.household.id,
-                userId: member.id,
+                userId: member.userId,
                 income: income,
               );
 
@@ -404,6 +434,28 @@ class _HouseholdSettingsScreenState
           SnackBar(
             content: Text(
                 success ? 'Ingreso actualizado' : 'Error al actualizar ingreso'),
+            backgroundColor: success ? AppColors.success : AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _updatePaysExpenses(MemberModel member, bool paysExpenses) async {
+    final householdState = ref.read(householdNotifierProvider);
+    if (householdState is HouseholdStateLoaded) {
+      final success =
+          await ref.read(householdNotifierProvider.notifier).updateMember(
+                householdId: householdState.household.id,
+                userId: member.userId,
+                paysExpenses: paysExpenses,
+              );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                success ? 'Configuración actualizada' : 'Error al actualizar configuración'),
             backgroundColor: success ? AppColors.success : AppColors.error,
           ),
         );

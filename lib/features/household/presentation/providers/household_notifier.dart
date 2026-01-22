@@ -141,26 +141,28 @@ class HouseholdNotifier extends _$HouseholdNotifier {
     }
   }
 
-  /// Update member income
-  Future<bool> updateMemberIncome({
+  /// Update member settings (income, paysExpenses)
+  Future<bool> updateMember({
     required String householdId,
     required String userId,
-    required double income,
+    double? income,
+    bool? paysExpenses,
   }) async {
     try {
-      await _repository.updateMemberIncome(
+      await _repository.updateMember(
         householdId: householdId,
         userId: userId,
         income: income,
+        paysExpenses: paysExpenses,
       );
       // Reload household to get updated data
       await loadHousehold(householdId);
       return true;
     } on AppException catch (e) {
-      debugPrint('Error updating income: ${e.message}');
+      debugPrint('Error updating member: ${e.message}');
       return false;
     } catch (e) {
-      debugPrint('Error updating income: $e');
+      debugPrint('Error updating member: $e');
       return false;
     }
   }

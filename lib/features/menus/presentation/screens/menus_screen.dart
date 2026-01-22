@@ -99,7 +99,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/menus/add-meal'),
+        onPressed: () => context.push('/menus/add-meal?date=${DateTime.now().toIso8601String()}'),
         backgroundColor: AppColors.menus,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -123,7 +123,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
         return _DayCard(
           date: day,
           meals: dayMeals,
-          onAddMeal: () => context.push('/menus/add-meal', extra: day),
+          onAddMeal: () => context.push('/menus/add-meal?date=${day.toIso8601String()}'),
           onMealTap: (meal) => _showMealOptions(context, meal),
         );
       },

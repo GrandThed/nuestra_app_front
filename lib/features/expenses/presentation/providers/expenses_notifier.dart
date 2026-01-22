@@ -29,11 +29,11 @@ class ExpensesNotifier extends _$ExpensesNotifier {
 
   /// Load all categories and expenses for current household
   /// Shows loading only on first load, refreshes silently otherwise
+  /// Note: categoryId filtering is done on frontend, not passed to API
   Future<void> loadExpenses({
     bool forceLoading = false,
     int? month,
     int? year,
-    String? categoryId,
   }) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) {
@@ -52,10 +52,10 @@ class ExpensesNotifier extends _$ExpensesNotifier {
         (currentState is ExpensesStateLoaded
             ? currentState.selectedYear
             : now.year);
-    final selectedCategoryId = categoryId ??
-        (currentState is ExpensesStateLoaded
-            ? currentState.selectedCategoryId
-            : null);
+    // Preserve selected category filter across reloads
+    final selectedCategoryId = currentState is ExpensesStateLoaded
+        ? currentState.selectedCategoryId
+        : null;
 
     final hasData = currentState is ExpensesStateLoaded;
     if (!hasData || forceLoading) {
@@ -69,7 +69,7 @@ class ExpensesNotifier extends _$ExpensesNotifier {
           householdId,
           month: selectedMonth,
           year: selectedYear,
-          categoryId: selectedCategoryId,
+          // Don't pass categoryId - filtering is done on frontend
         ),
       ]);
 
@@ -99,9 +99,18 @@ class ExpensesNotifier extends _$ExpensesNotifier {
     await loadExpenses(month: month, year: year);
   }
 
-  /// Change selected category filter
-  Future<void> setCategoryFilter(String? categoryId) async {
-    await loadExpenses(categoryId: categoryId);
+  /// Change selected category filter (frontend filtering only, no API call)
+  void setCategoryFilter(String? categoryId) {
+    final currentState = state;
+    if (currentState is ExpensesStateLoaded) {
+      state = ExpensesState.loaded(
+        categories: currentState.categories,
+        expenses: currentState.expenses,
+        selectedMonth: currentState.selectedMonth,
+        selectedYear: currentState.selectedYear,
+        selectedCategoryId: categoryId,
+      );
+    }
   }
 
   // ==================== CATEGORY OPERATIONS ====================
@@ -222,6 +231,7 @@ class ExpensesNotifier extends _$ExpensesNotifier {
     String currency = 'ARS',
     String? categoryId,
     String? receiptUrl,
+    String? paidById,
   }) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) return null;
@@ -235,6 +245,7 @@ class ExpensesNotifier extends _$ExpensesNotifier {
         currency: currency,
         categoryId: categoryId,
         receiptUrl: receiptUrl,
+        paidById: paidById,
       );
 
       // Add to current list if in the same month/year
@@ -409,8 +420,11 @@ class ExpenseSummaryNotifier extends _$ExpenseSummaryNotifier {
       return;
     }
 
-    final hasData = state is ExpenseSummaryStateLoaded;
-    if (!hasData || forceLoading) {
+    final previousState = state;
+    final hasData = previousState is ExpenseSummaryStateLoaded;
+    final showLoading = !hasData || forceLoading;
+
+    if (showLoading) {
       state = const ExpenseSummaryState.loading();
     }
 
@@ -423,17 +437,20 @@ class ExpenseSummaryNotifier extends _$ExpenseSummaryNotifier {
 
       state = ExpenseSummaryState.loaded(summary);
     } on AppException catch (e) {
-      if (!hasData) {
+      // If we showed loading, we must show error or restore previous state
+      if (showLoading) {
         state = ExpenseSummaryState.error(e.message);
       }
     } catch (e) {
-      if (!hasData) {
+      // If we showed loading, we must show error or restore previous state
+      if (showLoading) {
         state = ExpenseSummaryState.error('Error al cargar resumen: $e');
       }
     }
   }
 
   /// Settle all expenses in a period
+  /// Note: Caller should reload summary after this completes
   Future<SettlePeriodResultModel?> settlePeriod({
     required DateTime fromDate,
     required DateTime toDate,
@@ -447,9 +464,6 @@ class ExpenseSummaryNotifier extends _$ExpenseSummaryNotifier {
         fromDate: fromDate,
         toDate: toDate,
       );
-
-      // Reload summary after settling
-      await loadSummary(forceLoading: true);
 
       return result;
     } on AppException catch (e) {

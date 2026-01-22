@@ -5,9 +5,14 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
+import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.dart';
+import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 import 'package:nuestra_app/features/expenses/data/models/expense_model.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_state.dart';
+import 'package:nuestra_app/features/household/data/models/household_model.dart';
+import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
+import 'package:nuestra_app/features/household/presentation/providers/household_state.dart';
 
 /// Screen for adding a new expense
 class AddExpenseScreen extends ConsumerStatefulWidget {
@@ -21,10 +26,31 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   final _formKey = GlobalKey<FormState>();
   final _descriptionController = TextEditingController();
   final _amountController = TextEditingController();
+  FocusNode? _descriptionFocusNode;
 
   DateTime _selectedDate = DateTime.now();
   String? _selectedCategoryId;
+  String? _selectedPaidById;
   bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      // Load household to get members
+      final householdId = ref.read(currentHouseholdIdProvider);
+      if (householdId != null) {
+        ref.read(householdNotifierProvider.notifier).loadHouseholdIfNeeded(householdId);
+      }
+      // Set default payer to current user
+      final authState = ref.read(authNotifierProvider);
+      if (authState is AuthStateAuthenticated) {
+        setState(() {
+          _selectedPaidById = authState.user.id;
+        });
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -45,6 +71,21 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     }
   }
 
+  /// Get unique descriptions from previous expenses for autocomplete
+  List<String> _getDescriptionSuggestions(String query) {
+    final state = ref.read(expensesNotifierProvider);
+    if (state is! ExpensesStateLoaded) return [];
+
+    final descriptions = state.expenses
+        .map((e) => e.description)
+        .toSet()
+        .where((d) => d.toLowerCase().contains(query.toLowerCase()))
+        .take(8)
+        .toList();
+
+    return descriptions;
+  }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -57,7 +98,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     if (amount == null || amount <= 0) {
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Monto inválido')),
+        const SnackBar(content: Text('Monto invalido')),
       );
       return;
     }
@@ -67,6 +108,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
           amount: amount,
           date: _selectedDate,
           categoryId: _selectedCategoryId,
+          paidById: _selectedPaidById,
         );
 
     setState(() => _isLoading = false);
@@ -87,8 +129,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(expensesNotifierProvider);
-    final categories = state is ExpensesStateLoaded ? state.categories : <ExpenseCategoryModel>[];
+    final expensesState = ref.watch(expensesNotifierProvider);
+    final householdState = ref.watch(householdNotifierProvider);
+    final categories = expensesState is ExpensesStateLoaded ? expensesState.categories : <ExpenseCategoryModel>[];
+    final members = householdState is HouseholdStateLoaded ? householdState.household.members ?? [] : <MemberModel>[];
     final colorScheme = Theme.of(context).colorScheme;
     final dateFormat = DateFormat('EEEE, d MMMM yyyy', 'es');
 
@@ -107,6 +151,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
             TextFormField(
               controller: _amountController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              textInputAction: TextInputAction.next,
+              onFieldSubmitted: (_) {
+                _descriptionFocusNode?.requestFocus();
+              },
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[\d.,]')),
               ],
@@ -137,31 +185,120 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 }
                 final amount = double.tryParse(value.replaceAll(',', '.'));
                 if (amount == null || amount <= 0) {
-                  return 'Monto inválido';
+                  return 'Monto invalido';
                 }
                 return null;
               },
             ),
             const SizedBox(height: AppSizes.xl),
 
-            // Description field
-            TextFormField(
-              controller: _descriptionController,
-              textCapitalization: TextCapitalization.sentences,
-              decoration: const InputDecoration(
-                labelText: 'Descripción',
-                hintText: 'Ej: Compras del supermercado',
-                prefixIcon: Icon(Icons.description_outlined),
-                border: OutlineInputBorder(),
-              ),
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return 'Ingresa una descripción';
+            // Description field with autocomplete
+            Autocomplete<String>(
+              optionsBuilder: (textEditingValue) {
+                if (textEditingValue.text.isEmpty) {
+                  return const Iterable<String>.empty();
                 }
-                return null;
+                return _getDescriptionSuggestions(textEditingValue.text);
+              },
+              onSelected: (selection) {
+                _descriptionController.text = selection;
+              },
+              fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+                // Store the focus node reference for keyboard navigation
+                _descriptionFocusNode = focusNode;
+
+                // Sync the external controller with the autocomplete's controller
+                textEditingController.text = _descriptionController.text;
+                textEditingController.addListener(() {
+                  if (_descriptionController.text != textEditingController.text) {
+                    _descriptionController.text = textEditingController.text;
+                  }
+                });
+
+                return TextFormField(
+                  controller: textEditingController,
+                  focusNode: focusNode,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: const InputDecoration(
+                    labelText: 'Descripcion',
+                    hintText: 'Ej: Compras del supermercado',
+                    prefixIcon: Icon(Icons.description_outlined),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Ingresa una descripcion';
+                    }
+                    return null;
+                  },
+                  onFieldSubmitted: (_) => onFieldSubmitted(),
+                );
+              },
+              optionsViewBuilder: (context, onSelected, options) {
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: Material(
+                    elevation: 4,
+                    borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxHeight: 200, maxWidth: 300),
+                      child: ListView.builder(
+                        padding: EdgeInsets.zero,
+                        shrinkWrap: true,
+                        itemCount: options.length,
+                        itemBuilder: (context, index) {
+                          final option = options.elementAt(index);
+                          return ListTile(
+                            leading: const Icon(Icons.history, size: 20),
+                            title: Text(option),
+                            onTap: () => onSelected(option),
+                            dense: true,
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                );
               },
             ),
             const SizedBox(height: AppSizes.lg),
+
+            // Who paid selector
+            if (members.length > 1) ...[
+              Text(
+                'Pagado por',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: AppSizes.sm),
+              Wrap(
+                spacing: AppSizes.sm,
+                runSpacing: AppSizes.sm,
+                children: members.map((member) => ChoiceChip(
+                      avatar: member.avatarUrl != null
+                          ? CircleAvatar(
+                              backgroundImage: NetworkImage(member.avatarUrl!),
+                              radius: 12,
+                            )
+                          : CircleAvatar(
+                              radius: 12,
+                              backgroundColor: AppColors.expenses.withValues(alpha: 0.2),
+                              child: Text(
+                                member.name.isNotEmpty ? member.name[0].toUpperCase() : '?',
+                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                      label: Text(member.name),
+                      selected: _selectedPaidById == member.userId,
+                      onSelected: (_) => setState(() => _selectedPaidById = member.userId),
+                      selectedColor: AppColors.expenses.withValues(alpha: 0.2),
+                    )).toList(),
+              ),
+              const SizedBox(height: AppSizes.lg),
+            ],
 
             // Date selector
             ListTile(
@@ -183,7 +320,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
             // Category selector
             if (categories.isNotEmpty) ...[
               Text(
-                'Categoría',
+                'Categoria',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
@@ -197,7 +334,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 children: [
                   // No category option
                   ChoiceChip(
-                    label: const Text('Sin categoría'),
+                    label: const Text('Sin categoria'),
                     selected: _selectedCategoryId == null,
                     onSelected: (_) => setState(() => _selectedCategoryId = null),
                     selectedColor: AppColors.expenses.withValues(alpha: 0.2),

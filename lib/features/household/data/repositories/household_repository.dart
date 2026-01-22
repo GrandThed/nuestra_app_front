@@ -75,16 +75,23 @@ class HouseholdRepository {
     return HouseholdModel.fromJson(response['data']['household']);
   }
 
-  /// Update a member's income
-  Future<void> updateMemberIncome({
+  /// Update a member's settings (income, paysExpenses)
+  Future<MemberModel> updateMember({
     required String householdId,
     required String userId,
-    required double income,
+    double? income,
+    bool? paysExpenses,
   }) async {
-    await _dioClient.patch<Map<String, dynamic>>(
+    final data = <String, dynamic>{};
+    if (income != null) data['income'] = income;
+    if (paysExpenses != null) data['paysExpenses'] = paysExpenses;
+
+    final response = await _dioClient.patch<Map<String, dynamic>>(
       ApiConstants.householdMember(householdId, userId),
-      data: {'income': income},
+      data: data,
     );
+
+    return MemberModel.fromJson(response['data']['member']);
   }
 
   /// Leave a household (for non-owners)
