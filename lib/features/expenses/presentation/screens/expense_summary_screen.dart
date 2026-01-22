@@ -41,6 +41,12 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
             year: _selectedYear,
             forceLoading: true,
           );
+      // Also load expenses for the same month/year
+      ref.read(expensesNotifierProvider.notifier).loadExpenses(
+            month: _selectedMonth,
+            year: _selectedYear,
+            forceLoading: true,
+          );
     });
   }
 
@@ -66,6 +72,12 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
         _selectedYear = result['year']!;
       });
       ref.read(expenseSummaryNotifierProvider.notifier).loadSummary(
+            month: _selectedMonth,
+            year: _selectedYear,
+            forceLoading: true,
+          );
+      // Also reload expenses for the new month/year
+      ref.read(expensesNotifierProvider.notifier).loadExpenses(
             month: _selectedMonth,
             year: _selectedYear,
             forceLoading: true,

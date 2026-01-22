@@ -48,22 +48,27 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     });
   }
 
-  List<ExpenseModel> _filterExpenses(List<ExpenseModel> expenses, String? selectedCategoryId) {
+  List<ExpenseModel> _filterExpenses(
+    List<ExpenseModel> expenses,
+    String? selectedCategoryId,
+  ) {
     var filtered = expenses;
 
     // Filter by category if one is selected
     if (selectedCategoryId != null) {
-      filtered = filtered.where((e) => e.category?.id == selectedCategoryId).toList();
+      filtered =
+          filtered.where((e) => e.category?.id == selectedCategoryId).toList();
     }
 
     // Filter by search query
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
-      filtered = filtered.where((e) {
-        return e.description.toLowerCase().contains(query) ||
-            (e.category?.name.toLowerCase().contains(query) ?? false) ||
-            e.paidBy.name.toLowerCase().contains(query);
-      }).toList();
+      filtered =
+          filtered.where((e) {
+            return e.description.toLowerCase().contains(query) ||
+                (e.category?.name.toLowerCase().contains(query) ?? false) ||
+                e.paidBy.name.toLowerCase().contains(query);
+          }).toList();
     }
 
     return filtered;
@@ -83,19 +88,19 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
     final result = await showDialog<Map<String, int>>(
       context: context,
-      builder: (dialogContext) => _MonthYearPickerDialog(
-        initialYear: selectedYear,
-        initialMonth: selectedMonth,
-        firstYear: 2020,
-        lastYear: now.year + 1,
-      ),
+      builder:
+          (dialogContext) => _MonthYearPickerDialog(
+            initialYear: selectedYear,
+            initialMonth: selectedMonth,
+            firstYear: 2020,
+            lastYear: now.year + 1,
+          ),
     );
 
     if (result != null) {
-      ref.read(expensesNotifierProvider.notifier).setMonth(
-            result['month']!,
-            result['year']!,
-          );
+      ref
+          .read(expensesNotifierProvider.notifier)
+          .setMonth(result['month']!, result['year']!);
     }
   }
 
@@ -110,44 +115,57 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   void _showCategoryOptions(ExpenseCategoryModel category) {
     showModalBottomSheet(
       context: context,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(AppSizes.md),
-              child: Row(
-                children: [
-                  if (category.icon != null)
-                    Text(category.icon!, style: const TextStyle(fontSize: 24)),
-                  const SizedBox(width: AppSizes.sm),
-                  Text(
-                    category.name,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      builder:
+          (sheetContext) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(AppSizes.md),
+                  child: Row(
+                    children: [
+                      if (category.icon != null)
+                        Text(
+                          category.icon!,
+                          style: const TextStyle(fontSize: 24),
+                        ),
+                      const SizedBox(width: AppSizes.sm),
+                      Text(
+                        category.name,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.edit_outlined),
+                  title: const Text('Editar categoria'),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _showEditCategoryDialog(category);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(
+                    Icons.delete_outline,
+                    color: AppColors.error,
+                  ),
+                  title: const Text(
+                    'Eliminar categoria',
+                    style: TextStyle(color: AppColors.error),
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _confirmDeleteCategory(category);
+                  },
+                ),
+              ],
             ),
-            const Divider(height: 1),
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: const Text('Editar categoria'),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _showEditCategoryDialog(category);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.delete_outline, color: AppColors.error),
-              title: const Text('Eliminar categoria', style: TextStyle(color: AppColors.error)),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _confirmDeleteCategory(category);
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -157,94 +175,109 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Editar categoria'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nombre',
-                border: OutlineInputBorder(),
-              ),
-              textCapitalization: TextCapitalization.sentences,
-              autofocus: true,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Text('Editar categoria'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nombre',
+                    border: OutlineInputBorder(),
+                  ),
+                  textCapitalization: TextCapitalization.sentences,
+                  autofocus: true,
+                ),
+                const SizedBox(height: AppSizes.md),
+                TextField(
+                  controller: iconController,
+                  decoration: const InputDecoration(
+                    labelText: 'Emoji (opcional)',
+                    hintText: 'Ej: 🛒',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: AppSizes.md),
-            TextField(
-              controller: iconController,
-              decoration: const InputDecoration(
-                labelText: 'Emoji (opcional)',
-                hintText: 'Ej: 🛒',
-                border: OutlineInputBorder(),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancelar'),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final name = nameController.text.trim();
-              if (name.isEmpty) return;
+              ElevatedButton(
+                onPressed: () async {
+                  final name = nameController.text.trim();
+                  if (name.isEmpty) return;
 
-              Navigator.pop(dialogContext);
-              final result = await ref.read(expensesNotifierProvider.notifier).updateCategory(
-                    id: category.id,
-                    name: name,
-                    icon: iconController.text.trim().isEmpty ? null : iconController.text.trim(),
-                  );
+                  Navigator.pop(dialogContext);
+                  final result = await ref
+                      .read(expensesNotifierProvider.notifier)
+                      .updateCategory(
+                        id: category.id,
+                        name: name,
+                        icon:
+                            iconController.text.trim().isEmpty
+                                ? null
+                                : iconController.text.trim(),
+                      );
 
-              if (mounted && result != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Categoria actualizada')),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.expenses),
-            child: const Text('Guardar'),
+                  if (mounted && result != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Categoria actualizada')),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.expenses,
+                ),
+                child: const Text('Guardar'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   void _confirmDeleteCategory(ExpenseCategoryModel category) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Eliminar categoria'),
-        content: Text(
-          '¿Eliminar "${category.name}"? Los gastos de esta categoria quedaran sin categoria asignada.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              final success = await ref.read(expensesNotifierProvider.notifier).deleteCategory(category.id);
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Text('Eliminar categoria'),
+            content: Text(
+              '¿Eliminar "${category.name}"? Los gastos de esta categoria quedaran sin categoria asignada.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(dialogContext);
+                  final success = await ref
+                      .read(expensesNotifierProvider.notifier)
+                      .deleteCategory(category.id);
 
-              if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(success ? 'Categoria eliminada' : 'Error al eliminar'),
-                    backgroundColor: success ? null : AppColors.error,
-                  ),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
-            child: const Text('Eliminar'),
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          success ? 'Categoria eliminada' : 'Error al eliminar',
+                        ),
+                        backgroundColor: success ? null : AppColors.error,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                ),
+                child: const Text('Eliminar'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -254,58 +287,66 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Nueva categoria'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                labelText: 'Nombre',
-                border: OutlineInputBorder(),
-              ),
-              textCapitalization: TextCapitalization.sentences,
-              autofocus: true,
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Text('Nueva categoria'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nombre',
+                    border: OutlineInputBorder(),
+                  ),
+                  textCapitalization: TextCapitalization.sentences,
+                  autofocus: true,
+                ),
+                const SizedBox(height: AppSizes.md),
+                TextField(
+                  controller: iconController,
+                  decoration: const InputDecoration(
+                    labelText: 'Emoji (opcional)',
+                    hintText: 'Ej: 🛒',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: AppSizes.md),
-            TextField(
-              controller: iconController,
-              decoration: const InputDecoration(
-                labelText: 'Emoji (opcional)',
-                hintText: 'Ej: 🛒',
-                border: OutlineInputBorder(),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancelar'),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final name = nameController.text.trim();
-              if (name.isEmpty) return;
+              ElevatedButton(
+                onPressed: () async {
+                  final name = nameController.text.trim();
+                  if (name.isEmpty) return;
 
-              Navigator.pop(dialogContext);
-              final result = await ref.read(expensesNotifierProvider.notifier).createCategory(
-                    name: name,
-                    icon: iconController.text.trim().isEmpty ? null : iconController.text.trim(),
-                  );
+                  Navigator.pop(dialogContext);
+                  final result = await ref
+                      .read(expensesNotifierProvider.notifier)
+                      .createCategory(
+                        name: name,
+                        icon:
+                            iconController.text.trim().isEmpty
+                                ? null
+                                : iconController.text.trim(),
+                      );
 
-              if (mounted && result != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Categoria creada')),
-                );
-              }
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.expenses),
-            child: const Text('Crear'),
+                  if (mounted && result != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Categoria creada')),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.expenses,
+                ),
+                child: const Text('Crear'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -319,19 +360,22 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: _isSearching
-            ? TextField(
-                controller: _searchController,
-                autofocus: true,
-                style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Buscar gastos...',
-                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
-                  border: InputBorder.none,
-                ),
-                onChanged: (value) => setState(() => _searchQuery = value),
-              )
-            : const Text(AppStrings.expenses),
+        title:
+            _isSearching
+                ? TextField(
+                  controller: _searchController,
+                  autofocus: true,
+                  style: const TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: 'Buscar gastos...',
+                    hintStyle: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.7),
+                    ),
+                    border: InputBorder.none,
+                  ),
+                  onChanged: (value) => setState(() => _searchQuery = value),
+                )
+                : const Text(AppStrings.expenses),
         backgroundColor: AppColors.expenses,
         foregroundColor: Colors.white,
         actions: [
@@ -350,26 +394,26 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
       ),
       body: switch (state) {
         ExpensesStateInitial() => const Center(
-            child: Text('Cargando gastos...'),
-          ),
+          child: Text('Cargando gastos...'),
+        ),
         ExpensesStateLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.expenses),
-          ),
+          child: CircularProgressIndicator(color: AppColors.expenses),
+        ),
         ExpensesStateError(:final message) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-                const SizedBox(height: 16),
-                Text(message, textAlign: TextAlign.center),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _onRefresh,
-                  child: const Text('Reintentar'),
-                ),
-              ],
-            ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.error_outline, size: 48, color: AppColors.error),
+              const SizedBox(height: 16),
+              Text(message, textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _onRefresh,
+                child: const Text('Reintentar'),
+              ),
+            ],
           ),
+        ),
         ExpensesStateLoaded(
           :final categories,
           :final expenses,
@@ -380,7 +424,10 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
           _buildContent(
             categories,
             expenses, // All expenses for category counts
-            _filterExpenses(expenses, selectedCategoryId), // Filtered for display
+            _filterExpenses(
+              expenses,
+              selectedCategoryId,
+            ), // Filtered for display
             selectedMonth,
             selectedYear,
             selectedCategoryId,
@@ -403,9 +450,9 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     String? selectedCategoryId,
   ) {
     final total = filteredExpenses.fold(0.0, (sum, e) => sum + e.amount);
-    final monthName = DateFormat.MMMM('es').format(
-      DateTime(selectedYear, selectedMonth),
-    );
+    final monthName = DateFormat.MMMM(
+      'es',
+    ).format(DateTime(selectedYear, selectedMonth));
 
     return RefreshIndicator(
       onRefresh: _onRefresh,
@@ -419,9 +466,10 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
             _buildCategoryChips(categories, allExpenses, selectedCategoryId),
           // Expenses list - use filtered expenses
           Expanded(
-            child: filteredExpenses.isEmpty
-                ? _buildEmptyState()
-                : _buildExpensesList(filteredExpenses),
+            child:
+                filteredExpenses.isEmpty
+                    ? _buildEmptyState()
+                    : _buildExpensesList(filteredExpenses),
           ),
         ],
       ),
@@ -448,12 +496,18 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
               decoration: BoxDecoration(
                 color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                border: Border.all(color: AppColors.expenses.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppColors.expenses.withValues(alpha: 0.3),
+                ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.calendar_today, size: 18, color: AppColors.expenses),
+                  const Icon(
+                    Icons.calendar_today,
+                    size: 18,
+                    color: AppColors.expenses,
+                  ),
                   const SizedBox(width: AppSizes.sm),
                   Text(
                     '${monthName.capitalize()} $year',
@@ -517,13 +571,16 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
               count: expenses.length,
               isSelected: selectedCategoryId == null,
               onTap: () {
-                ref.read(expensesNotifierProvider.notifier).setCategoryFilter(null);
+                ref
+                    .read(expensesNotifierProvider.notifier)
+                    .setCategoryFilter(null);
               },
             ),
             const SizedBox(width: AppSizes.sm),
             // Category chips
             ...categories.map((category) {
-              final count = expenses.where((e) => e.category?.id == category.id).length;
+              final count =
+                  expenses.where((e) => e.category?.id == category.id).length;
               return Padding(
                 padding: const EdgeInsets.only(right: AppSizes.sm),
                 child: _CategoryChip(
@@ -532,7 +589,9 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                   count: count,
                   isSelected: selectedCategoryId == category.id,
                   onTap: () {
-                    ref.read(expensesNotifierProvider.notifier).setCategoryFilter(category.id);
+                    ref
+                        .read(expensesNotifierProvider.notifier)
+                        .setCategoryFilter(category.id);
                   },
                   onLongPress: () => _showCategoryOptions(category),
                 ),
@@ -601,11 +660,13 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
               ),
             ),
             // Expenses for this date
-            ...dayExpenses.map((expense) => _ExpenseItemTile(
-                  expense: expense,
-                  currencyFormat: _currencyFormat,
-                  onTap: () => _navigateToExpenseDetail(expense),
-                )),
+            ...dayExpenses.map(
+              (expense) => _ExpenseItemTile(
+                expense: expense,
+                currencyFormat: _currencyFormat,
+                onTap: () => _navigateToExpenseDetail(expense),
+              ),
+            ),
             const SizedBox(height: AppSizes.sm),
           ],
         );
@@ -700,7 +761,8 @@ class _CategoryChip extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: isSelected ? AppColors.expenses : colorScheme.surface,
+                    color:
+                        isSelected ? AppColors.expenses : colorScheme.surface,
                   ),
                 ),
               ),
@@ -790,7 +852,7 @@ class _ExpenseItemTile extends StatelessWidget {
                           const Text(' • ', style: TextStyle(fontSize: 12)),
                         ],
                         Text(
-                          'Pagado por ${expense.paidBy.name}',
+                          expense.paidBy.name,
                           style: TextStyle(
                             fontSize: 12,
                             color: colorScheme.onSurfaceVariant,
@@ -815,11 +877,15 @@ class _ExpenseItemTile extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
-                      color: expense.allSettled
-                          ? Colors.green.withValues(alpha: 0.1)
-                          : Colors.orange.withValues(alpha: 0.1),
+                      color:
+                          expense.allSettled
+                              ? Colors.green.withValues(alpha: 0.1)
+                              : Colors.orange.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -827,7 +893,8 @@ class _ExpenseItemTile extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
-                        color: expense.allSettled ? Colors.green : Colors.orange,
+                        color:
+                            expense.allSettled ? Colors.green : Colors.orange,
                       ),
                     ),
                   ),
@@ -871,8 +938,18 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
   late int _selectedMonth;
 
   final List<String> _monthNames = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    'Enero',
+    'Febrero',
+    'Marzo',
+    'Abril',
+    'Mayo',
+    'Junio',
+    'Julio',
+    'Agosto',
+    'Septiembre',
+    'Octubre',
+    'Noviembre',
+    'Diciembre',
   ];
 
   @override
@@ -899,9 +976,10 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.chevron_left),
-                  onPressed: _selectedYear > widget.firstYear
-                      ? () => setState(() => _selectedYear--)
-                      : null,
+                  onPressed:
+                      _selectedYear > widget.firstYear
+                          ? () => setState(() => _selectedYear--)
+                          : null,
                 ),
                 Text(
                   _selectedYear.toString(),
@@ -912,9 +990,10 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.chevron_right),
-                  onPressed: _selectedYear < widget.lastYear
-                      ? () => setState(() => _selectedYear++)
-                      : null,
+                  onPressed:
+                      _selectedYear < widget.lastYear
+                          ? () => setState(() => _selectedYear++)
+                          : null,
                 ),
               ],
             ),
@@ -939,18 +1018,19 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
                   child: Container(
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppColors.expenses
-                          : colorScheme.surfaceContainerHighest,
+                      color:
+                          isSelected
+                              ? AppColors.expenses
+                              : colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                     ),
                     child: Text(
                       _monthNames[index].substring(0, 3),
                       style: TextStyle(
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                        color: isSelected
-                            ? Colors.white
-                            : colorScheme.onSurface,
+                        fontWeight:
+                            isSelected ? FontWeight.bold : FontWeight.normal,
+                        color:
+                            isSelected ? Colors.white : colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -966,10 +1046,11 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
           child: const Text('Cancelar'),
         ),
         ElevatedButton(
-          onPressed: () => Navigator.pop(context, {
-            'year': _selectedYear,
-            'month': _selectedMonth,
-          }),
+          onPressed:
+              () => Navigator.pop(context, {
+                'year': _selectedYear,
+                'month': _selectedMonth,
+              }),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.expenses,
             foregroundColor: Colors.white,
