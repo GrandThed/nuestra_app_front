@@ -439,6 +439,97 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: AppSizes.xl),
+          ],
+
+          // Pending expenses section
+          if (pendingExpenses.isNotEmpty) ...[
+            Row(
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: const BoxDecoration(
+                    color: Colors.orange,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: AppSizes.sm),
+                Text(
+                  'Pendientes (${pendingExpenses.length})',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSizes.sm),
+            Card(
+              child: Column(
+                children: pendingExpenses.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final expense = entry.value;
+                  final isLast = index == pendingExpenses.length - 1;
+                  return Column(
+                    children: [
+                      _ExpenseListTile(
+                        expense: expense,
+                        currencyFormat: _currencyFormat,
+                      ),
+                      if (!isLast) const Divider(height: 1),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
+            const SizedBox(height: AppSizes.xl),
+          ],
+
+          // Settled expenses section
+          if (settledExpenses.isNotEmpty) ...[
+            Row(
+              children: [
+                Container(
+                  width: 12,
+                  height: 12,
+                  decoration: const BoxDecoration(
+                    color: Colors.green,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: AppSizes.sm),
+                Text(
+                  'Saldados (${settledExpenses.length})',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSizes.sm),
+            Card(
+              child: Column(
+                children: settledExpenses.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final expense = entry.value;
+                  final isLast = index == settledExpenses.length - 1;
+                  return Column(
+                    children: [
+                      _ExpenseListTile(
+                        expense: expense,
+                        currencyFormat: _currencyFormat,
+                        isSettled: true,
+                      ),
+                      if (!isLast) const Divider(height: 1),
+                    ],
+                  );
+                }).toList(),
+              ),
+            ),
           ],
         ],
       ),
@@ -580,6 +671,70 @@ class _SettlementRow extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ExpenseListTile extends StatelessWidget {
+  final ExpenseModel expense;
+  final NumberFormat currencyFormat;
+  final bool isSettled;
+
+  const _ExpenseListTile({
+    required this.expense,
+    required this.currencyFormat,
+    this.isSettled = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final dateFormat = DateFormat('d MMM', 'es');
+
+    return ListTile(
+      leading: expense.category?.icon != null
+          ? CircleAvatar(
+              backgroundColor: isSettled
+                  ? Colors.green.withValues(alpha: 0.1)
+                  : Colors.orange.withValues(alpha: 0.1),
+              child: Text(
+                expense.category!.icon!,
+                style: const TextStyle(fontSize: 18),
+              ),
+            )
+          : CircleAvatar(
+              backgroundColor: isSettled
+                  ? Colors.green.withValues(alpha: 0.1)
+                  : Colors.orange.withValues(alpha: 0.1),
+              child: Icon(
+                Icons.receipt_outlined,
+                color: isSettled ? Colors.green : Colors.orange,
+                size: 20,
+              ),
+            ),
+      title: Text(
+        expense.description,
+        style: TextStyle(
+          fontWeight: FontWeight.w500,
+          color: isSettled ? colorScheme.onSurfaceVariant : null,
+        ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      subtitle: Text(
+        '${dateFormat.format(expense.date)} · ${expense.paidBy.name}',
+        style: TextStyle(
+          fontSize: 12,
+          color: colorScheme.onSurfaceVariant,
+        ),
+      ),
+      trailing: Text(
+        currencyFormat.format(expense.amount),
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: isSettled ? Colors.green : AppColors.expenses,
+        ),
       ),
     );
   }

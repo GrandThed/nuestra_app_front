@@ -31,13 +31,7 @@ void main() async {
     ),
   );
 
-  runApp(
-    ProviderScope(
-      child: const ShareIntentInitializer(
-        child: App(),
-      ),
-    ),
-  );
+  runApp(ProviderScope(child: const ShareIntentInitializer(child: App())));
 }
 
 /// Widget that initializes share intent listening
