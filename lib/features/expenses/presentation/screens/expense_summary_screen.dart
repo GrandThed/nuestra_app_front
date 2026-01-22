@@ -232,6 +232,14 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
   }
 
   Widget _buildContent(ExpenseSummaryModel summary, ColorScheme colorScheme) {
+    // Get expenses from the expenses notifier
+    final expensesState = ref.watch(expensesNotifierProvider);
+    final allExpenses = expensesState is ExpensesStateLoaded ? expensesState.expenses : <ExpenseModel>[];
+
+    // Separate into pending and settled
+    final pendingExpenses = allExpenses.where((e) => !e.allSettled).toList();
+    final settledExpenses = allExpenses.where((e) => e.allSettled).toList();
+
     return RefreshIndicator(
       onRefresh: () => ref
           .read(expenseSummaryNotifierProvider.notifier)
