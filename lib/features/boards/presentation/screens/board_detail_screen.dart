@@ -686,6 +686,13 @@ class _ItemDetailSheet extends StatelessWidget {
     );
   }
 
+  Future<void> _launchUrl(String url) async {
+    final uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -807,13 +814,45 @@ class _ItemDetailSheet extends StatelessWidget {
           // URL for links
           if (item.type == 'link' && item.url != null) ...[
             const SizedBox(height: AppSizes.md),
-            Text(
-              item.url!,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: colorScheme.primary,
+            InkWell(
+              onTap: () => _launchUrl(item.url!),
+              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.link,
+                      size: 16,
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(width: AppSizes.xs),
+                    Expanded(
+                      child: Text(
+                        item.url!,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: colorScheme.primary,
+                          decoration: TextDecoration.underline,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: AppSizes.md),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () => _launchUrl(item.url!),
+                icon: const Icon(Icons.open_in_browser),
+                label: const Text('Abrir enlace'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.boards,
+                ),
+              ),
             ),
           ],
 

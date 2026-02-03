@@ -85,12 +85,7 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
             color: AppColors.expenses,
             onTap: () {
               _close();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Gastos proximamente disponible'),
-                  duration: Duration(seconds: 2),
-                ),
-              );
+              context.push(AppRoutes.addExpense);
             },
           ),
           _buildActionButton(

@@ -841,16 +841,6 @@ class _ExpenseItemTile extends StatelessWidget {
                     const SizedBox(height: 2),
                     Row(
                       children: [
-                        if (expense.category != null) ...[
-                          Text(
-                            expense.category!.name,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const Text(' • ', style: TextStyle(fontSize: 12)),
-                        ],
                         Text(
                           expense.paidBy.name,
                           style: TextStyle(
