@@ -1,0 +1,2 @@
+// Conditional import for File operations
+export 'file_utils_mobile.dart' if (dart.library.html) 'file_utils_web.dart';

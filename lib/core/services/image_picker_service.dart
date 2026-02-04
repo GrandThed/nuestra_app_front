@@ -1,7 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:nuestra_app/core/utils/file_utils.dart';
 
 /// Service for picking images
 class ImagePickerService {
@@ -23,7 +22,7 @@ class ImagePickerService {
       );
 
       if (pickedFile == null) return null;
-      return File(pickedFile.path);
+      return createFile(pickedFile.path);
     } catch (e) {
       debugPrint('Error picking image: $e');
       return null;
@@ -45,7 +44,7 @@ class ImagePickerService {
         limit: limit,
       );
 
-      return pickedFiles.map((xFile) => File(xFile.path)).toList();
+      return pickedFiles.map((xFile) => createFile(xFile.path)).toList();
     } catch (e) {
       debugPrint('Error picking images: $e');
       return [];

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -7,6 +5,7 @@ import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/constants/app_strings.dart';
 import 'package:nuestra_app/core/services/share_intent_service.dart';
+import 'package:nuestra_app/core/utils/file_utils.dart' as file_utils;
 import 'package:nuestra_app/features/boards/data/models/board_model.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_notifier.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_state.dart';
@@ -93,8 +92,8 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
             child: content.hasImages
                 ? ClipRRect(
                     borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                    child: Image.file(
-                      File(content.imagePaths.first),
+                    child: file_utils.fileImage(
+                      content.imagePaths.first,
                       fit: BoxFit.cover,
                     ),
                   )
@@ -342,8 +341,8 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
       } else if (content.hasImages) {
         // Save images
         for (final path in content.imagePaths) {
-          final file = File(path);
-          if (await file.exists()) {
+          final file = file_utils.createFile(path);
+          if (await file_utils.fileExists(path)) {
             final item = await notifier.addPhotoItem(photo: file);
             success = item != null;
           }

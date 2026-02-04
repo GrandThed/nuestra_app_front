@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nuestra_app/core/constants/api_constants.dart';
 import 'package:nuestra_app/core/network/dio_client.dart';
+import 'package:nuestra_app/core/utils/file_utils.dart';
 import 'package:nuestra_app/features/boards/data/models/board_model.dart';
 
 /// Provider for board repository

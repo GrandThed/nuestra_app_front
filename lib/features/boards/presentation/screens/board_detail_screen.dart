@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,6 +6,7 @@ import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/constants/app_strings.dart';
 import 'package:nuestra_app/core/services/image_picker_service.dart';
+import 'package:nuestra_app/core/utils/file_utils.dart';
 import 'package:nuestra_app/features/boards/data/models/board_model.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_notifier.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_state.dart';

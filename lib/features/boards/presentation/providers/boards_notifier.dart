@@ -1,8 +1,7 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:nuestra_app/core/errors/exceptions.dart';
+import 'package:nuestra_app/core/utils/file_utils.dart';
 import 'package:nuestra_app/features/boards/data/models/board_model.dart';
 import 'package:nuestra_app/features/boards/data/repositories/board_repository.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_state.dart';
