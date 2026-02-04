@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -149,9 +147,6 @@ class DioClient {
         return const TimeoutException();
 
       case DioExceptionType.connectionError:
-        if (error.error is SocketException) {
-          return const NetworkException();
-        }
         return const NetworkException();
 
       case DioExceptionType.badResponse:
