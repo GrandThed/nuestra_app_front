@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" rx="100" fill="#5B7B9A"/>
+
+  <!-- Left Person -->
+  <!-- Head -->
+  <circle cx="140" cy="180" r="45" fill="#FFFFFF"/>
+  <!-- Body -->
+  <path d="M140 225 L140 340 M100 270 L180 270 M140 340 L100 420 M140 340 L180 420"
+        stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" fill="none"/>
+
+  <!-- Right Person -->
+  <!-- Head -->
+  <circle cx="372" cy="180" r="45" fill="#FFFFFF"/>
+  <!-- Body -->
+  <path d="M372 225 L372 340 M332 270 L412 270 M372 340 L332 420 M372 340 L412 420"
+        stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" fill="none"/>
+
+  <!-- Dog (centered, sitting) -->
+  <!-- Body -->
+  <ellipse cx="256" cy="360" rx="45" ry="35" fill="#FFFFFF"/>
+  <!-- Head -->
+  <circle cx="256" cy="300" r="32" fill="#FFFFFF"/>
+  <!-- Ears -->
+  <ellipse cx="230" cy="275" rx="12" ry="20" fill="#FFFFFF"/>
+  <ellipse cx="282" cy="275" rx="12" ry="20" fill="#FFFFFF"/>
+  <!-- Snout -->
+  <ellipse cx="256" cy="315" rx="15" ry="10" fill="#D4E1ED"/>
+  <!-- Nose -->
+  <ellipse cx="256" cy="310" rx="6" ry="4" fill="#5B7B9A"/>
+  <!-- Eyes -->
+  <circle cx="244" cy="295" r="4" fill="#5B7B9A"/>
+  <circle cx="268" cy="295" r="4" fill="#5B7B9A"/>
+  <!-- Tail -->
+  <path d="M300 355 Q330 340 320 310" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" fill="none"/>
+  <!-- Front legs -->
+  <rect x="238" y="380" width="12" height="35" rx="6" fill="#FFFFFF"/>
+  <rect x="262" y="380" width="12" height="35" rx="6" fill="#FFFFFF"/>
+</svg>

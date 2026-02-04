@@ -2,7 +2,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // Conditional import - use web stub when compiling for web
 import 'share_intent_service_impl.dart'
-    if (dart.library.html) 'share_intent_service_web.dart';
+    if (dart.library.html) 'share_intent_service_web.dart'
+    as platform;
+
+// Re-export for external use
+export 'share_intent_service_impl.dart'
+    if (dart.library.html) 'share_intent_service_web.dart'
+    show ShareIntentService;
 
 /// Model representing shared content
 class SharedContent {
@@ -41,19 +47,12 @@ class SharedContent {
   }
 }
 
-/// Provider for the current shared content
-final sharedContentProvider = StateProvider<SharedContent?>((ref) => null);
+/// Provider for the current shared content (using dynamic to avoid type issues with conditional imports)
+final sharedContentProvider = StateProvider<dynamic>((ref) => null);
 
 /// Provider for ShareIntentService
-final shareIntentServiceProvider = Provider<ShareIntentService>((ref) {
-  final service = createShareIntentService(ref);
+final shareIntentServiceProvider = Provider<platform.ShareIntentService>((ref) {
+  final service = platform.createShareIntentService(ref, sharedContentProvider);
   ref.onDispose(() => service.dispose());
   return service;
 });
-
-/// Abstract base class for ShareIntentService
-abstract class ShareIntentService {
-  void initialize();
-  void clearSharedContent();
-  void dispose();
-}
