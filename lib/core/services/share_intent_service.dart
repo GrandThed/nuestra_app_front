@@ -62,6 +62,9 @@ class ShareIntentService {
 
   /// Initialize listeners for share intents
   void initialize() {
+    // Share intents are not supported on web
+    if (kIsWeb) return;
+
     // Handle app opened from share while running
     _textSubscription = ReceiveSharingIntent.instance.getMediaStream().listen(
       (List<SharedMediaFile> files) {
@@ -110,7 +113,9 @@ class ShareIntentService {
   /// Clear the shared content
   void clearSharedContent() {
     _ref.read(sharedContentProvider.notifier).state = null;
-    ReceiveSharingIntent.instance.reset();
+    if (!kIsWeb) {
+      ReceiveSharingIntent.instance.reset();
+    }
   }
 
   /// Dispose subscriptions

@@ -32,10 +32,18 @@ class AuthRepository {
         _ref = ref;
 
   /// Sign in with Google OAuth
-  Future<AuthResponseModel> signInWithGoogle(String idToken) async {
+  /// [idToken] - Used on mobile platforms
+  /// [accessToken] - Used on web (fallback when idToken not available)
+  Future<AuthResponseModel> signInWithGoogle({
+    String? idToken,
+    String? accessToken,
+  }) async {
     final response = await _dioClient.post<Map<String, dynamic>>(
       ApiConstants.authGoogle,
-      data: {'idToken': idToken},
+      data: {
+        if (idToken != null) 'idToken': idToken,
+        if (accessToken != null) 'accessToken': accessToken,
+      },
     );
 
     final authResponse = AuthResponseModel.fromJson(response['data']);

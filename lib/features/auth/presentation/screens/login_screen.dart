@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -94,8 +93,8 @@ class LoginScreen extends ConsumerWidget {
               ),
               const SizedBox(height: AppSizes.md),
 
-              // Apple Sign In (iOS only)
-              if (Platform.isIOS) ...[
+              // Apple Sign In (iOS only, not on web)
+              if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) ...[
                 _SocialLoginButton(
                   onPressed: isLoading
                       ? null

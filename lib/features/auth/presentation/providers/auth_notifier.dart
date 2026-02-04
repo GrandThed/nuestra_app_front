@@ -61,10 +61,11 @@ class AuthNotifier extends _$AuthNotifier {
     state = const AuthState.loading();
 
     try {
-      // serverClientId is required to get the idToken for backend authentication
+      // On web, use clientId; on mobile, use serverClientId to get idToken for backend
       final googleSignIn = GoogleSignIn(
         scopes: ['email', 'profile'],
-        serverClientId: AuthConfig.googleWebClientId,
+        clientId: kIsWeb ? AuthConfig.googleWebClientId : null,
+        serverClientId: kIsWeb ? null : AuthConfig.googleWebClientId,
       );
 
       final account = await googleSignIn.signIn();
@@ -75,13 +76,21 @@ class AuthNotifier extends _$AuthNotifier {
 
       final auth = await account.authentication;
       final idToken = auth.idToken;
+      final accessToken = auth.accessToken;
 
-      if (idToken == null) {
+      debugPrint('Google auth - idToken: ${idToken != null ? "present" : "null"}');
+      debugPrint('Google auth - accessToken: ${accessToken != null ? "present" : "null"}');
+
+      // On mobile we get idToken, on web we get accessToken
+      if (idToken == null && accessToken == null) {
         state = const AuthState.error('No se pudo obtener el token de Google');
         return;
       }
 
-      await _authRepository.signInWithGoogle(idToken);
+      await _authRepository.signInWithGoogle(
+        idToken: idToken,
+        accessToken: accessToken,
+      );
       // Fetch full user data with households
       final user = await _authRepository.getCurrentUser();
       _setCurrentHouseholdFromUser(user);
