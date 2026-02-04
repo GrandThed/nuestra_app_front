@@ -5,11 +5,6 @@ import 'share_intent_service_impl.dart'
     if (dart.library.html) 'share_intent_service_web.dart'
     as platform;
 
-// Re-export for external use
-export 'share_intent_service_impl.dart'
-    if (dart.library.html) 'share_intent_service_web.dart'
-    show ShareIntentService;
-
 /// Model representing shared content
 class SharedContent {
   final String? text;
