@@ -224,7 +224,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
             ? Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.file(_selectedImage!, fit: BoxFit.cover),
+                  fileImage(_selectedImage!.path, fit: BoxFit.cover),
                   Positioned(
                     top: 8,
                     right: 8,
