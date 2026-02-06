@@ -69,18 +69,6 @@ class AuthRepository {
     return authResponse;
   }
 
-  /// Dev login (for testing only)
-  Future<AuthResponseModel> devLogin(String email) async {
-    final response = await _dioClient.post<Map<String, dynamic>>(
-      ApiConstants.authDevLogin,
-      data: {'email': email},
-    );
-
-    final authResponse = AuthResponseModel.fromJson(response['data']);
-    await storeToken(authResponse.token);
-    return authResponse;
-  }
-
   /// Get current authenticated user with household info
   Future<UserModel> getCurrentUser() async {
     final response = await _dioClient.get<Map<String, dynamic>>(

@@ -117,52 +117,9 @@ class LoginScreen extends ConsumerWidget {
                 ),
 
               const SizedBox(height: AppSizes.xl),
-
-              // Dev login (only for development)
-              TextButton(
-                onPressed: isLoading ? null : () => _showDevLoginDialog(context, ref),
-                child: const Text('Dev Login (Testing)'),
-              ),
-              const SizedBox(height: AppSizes.lg),
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showDevLoginDialog(BuildContext context, WidgetRef ref) {
-    final emailController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Dev Login'),
-        content: TextField(
-          controller: emailController,
-          decoration: const InputDecoration(
-            labelText: 'Email',
-            hintText: 'test@example.com',
-          ),
-          keyboardType: TextInputType.emailAddress,
-          autofocus: true,
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text(AppStrings.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              final email = emailController.text.trim();
-              if (email.isNotEmpty) {
-                Navigator.pop(dialogContext);
-                ref.read(authNotifierProvider.notifier).devLogin(email);
-              }
-            },
-            child: const Text(AppStrings.signIn),
-          ),
-        ],
       ),
     );
   }

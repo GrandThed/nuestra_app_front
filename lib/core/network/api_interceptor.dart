@@ -25,7 +25,7 @@ class AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     // Skip auth header for public endpoints
-    final publicEndpoints = ['/auth/google', '/auth/apple', '/auth/dev-login'];
+    final publicEndpoints = ['/auth/google', '/auth/apple'];
     if (publicEndpoints.any((e) => options.path.contains(e))) {
       return handler.next(options);
     }

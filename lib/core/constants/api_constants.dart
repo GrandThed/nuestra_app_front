@@ -9,7 +9,6 @@ class ApiConstants {
   static const String authGoogle = '/auth/google';
   static const String authApple = '/auth/apple';
   static const String authMe = '/auth/me';
-  static const String authDevLogin = '/auth/dev-login'; // Dev only
 
   // Households
   static const String households = '/api/households';

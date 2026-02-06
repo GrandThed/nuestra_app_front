@@ -117,23 +117,6 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  /// Dev login (for testing)
-  Future<void> devLogin(String email) async {
-    state = const AuthState.loading();
-
-    try {
-      await _authRepository.devLogin(email);
-      // Fetch full user data with households
-      final user = await _authRepository.getCurrentUser();
-      _setCurrentHouseholdFromUser(user);
-      state = AuthState.authenticated(user);
-    } on AppException catch (e) {
-      state = AuthState.error(e.message);
-    } catch (e) {
-      state = AuthState.error('Error en dev login: $e');
-    }
-  }
-
   /// Sign out
   Future<void> signOut() async {
     try {
