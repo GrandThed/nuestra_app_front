@@ -133,9 +133,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       final isLoggingIn = state.matchedLocation == AppRoutes.login;
       final isSettingUpHousehold =
           state.matchedLocation == AppRoutes.householdSetup;
+      // Allow unauthenticated access to join-by-invite for web invitation flow
+      final isJoiningByInvite = state.matchedLocation.startsWith('/join/');
 
-      // If not logged in, redirect to login (except if already on login)
-      if (!isLoggedIn && !isLoggingIn) {
+      // If not logged in, redirect to login (except if already on login or joining by invite)
+      if (!isLoggedIn && !isLoggingIn && !isJoiningByInvite) {
         return AppRoutes.login;
       }
 
@@ -148,8 +150,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (authState is AuthStateAuthenticated) {
         final hasHousehold = authState.user.households?.isNotEmpty ?? false;
 
-        // If user has no household and not already on setup, redirect to setup
-        if (!hasHousehold && !isSettingUpHousehold) {
+        // If user has no household and not already on setup or joining, redirect to setup
+        if (!hasHousehold && !isSettingUpHousehold && !isJoiningByInvite) {
           return AppRoutes.householdSetup;
         }
 

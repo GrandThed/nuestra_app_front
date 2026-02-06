@@ -8,6 +8,7 @@ import 'package:nuestra_app/core/constants/app_strings.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
+import 'package:nuestra_app/features/household/presentation/providers/pending_invite_provider.dart';
 
 /// Login screen with Google and Apple sign-in options
 class LoginScreen extends ConsumerWidget {
@@ -24,7 +25,16 @@ class LoginScreen extends ConsumerWidget {
         initial: () {},
         loading: () {},
         authenticated: (user) {
-          // Navigate based on household membership
+          // Check for pending invite code first (from web invitation flow)
+          final pendingInviteCode = ref.read(pendingInviteCodeProvider);
+          if (pendingInviteCode != null) {
+            // Clear the pending code and navigate to join screen
+            ref.read(pendingInviteCodeProvider.notifier).state = null;
+            context.go('/join/$pendingInviteCode');
+            return;
+          }
+
+          // Normal flow: navigate based on household membership
           if (user.households?.isNotEmpty == true) {
             context.go(AppRoutes.home);
           } else {

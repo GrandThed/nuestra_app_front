@@ -1,0 +1,11 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// Stores a pending invite code when user needs to log in first.
+///
+/// Used in the web invitation flow:
+/// 1. User opens invite link without being logged in
+/// 2. User clicks "Sign in" on join screen
+/// 3. Invite code is stored here before navigating to login
+/// 4. After login, code is retrieved and user is navigated back to join screen
+/// 5. Code is cleared after use
+final pendingInviteCodeProvider = StateProvider<String?>((ref) => null);

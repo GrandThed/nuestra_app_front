@@ -8,6 +8,7 @@ import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.d
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_state.dart';
+import 'package:nuestra_app/features/household/presentation/providers/pending_invite_provider.dart';
 
 /// Screen for joining a household via invite deeplink
 class JoinByInviteScreen extends ConsumerStatefulWidget {
@@ -93,7 +94,14 @@ class _JoinByInviteScreenState extends ConsumerState<JoinByInviteScreen> {
         title: const Text('Unirse a un hogar'),
         leading: IconButton(
           icon: const Icon(Icons.close),
-          onPressed: () => context.go(AppRoutes.home),
+          onPressed: () {
+            // Navigate based on auth state
+            if (isAuthenticated) {
+              context.go(AppRoutes.home);
+            } else {
+              context.go(AppRoutes.login);
+            }
+          },
         ),
       ),
       body: SafeArea(
@@ -198,9 +206,14 @@ class _JoinByInviteScreenState extends ConsumerState<JoinByInviteScreen> {
 
               // Action buttons
               if (!isAuthenticated) ...[
-                // Not logged in - redirect to login
+                // Not logged in - store invite code and redirect to login
                 ElevatedButton.icon(
-                  onPressed: () => context.go(AppRoutes.login),
+                  onPressed: () {
+                    // Store the invite code so we can return after login
+                    ref.read(pendingInviteCodeProvider.notifier).state =
+                        widget.inviteCode;
+                    context.go(AppRoutes.login);
+                  },
                   icon: const Icon(Icons.login),
                   label: const Text('Iniciar sesión para continuar'),
                 ),
