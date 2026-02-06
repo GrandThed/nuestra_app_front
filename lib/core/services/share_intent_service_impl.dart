@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nuestra_app/core/providers/shared_content_provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 /// Abstract base for ShareIntentService
@@ -12,7 +13,7 @@ abstract class ShareIntentService {
 }
 
 /// Creates the platform-specific ShareIntentService
-ShareIntentService createShareIntentService(Ref ref, StateProvider<dynamic> sharedContentProvider) {
+ShareIntentService createShareIntentService(Ref ref, StateProvider<SharedContent?> sharedContentProvider) {
   return ShareIntentServiceImpl(ref, sharedContentProvider);
 }
 
@@ -21,7 +22,7 @@ class ShareIntentServiceImpl implements ShareIntentService {
   StreamSubscription? _textSubscription;
   StreamSubscription? _mediaSubscription;
   final Ref _ref;
-  final StateProvider<dynamic> _sharedContentProvider;
+  final StateProvider<SharedContent?> _sharedContentProvider;
 
   ShareIntentServiceImpl(this._ref, this._sharedContentProvider);
 
@@ -55,28 +56,18 @@ class ShareIntentServiceImpl implements ShareIntentService {
         textFile.type == SharedMediaType.text ||
         textFile.type == SharedMediaType.url) {
       final text = files.first.path;
-      _ref.read(_sharedContentProvider.notifier).state = _createFromText(text);
+      _ref.read(_sharedContentProvider.notifier).state = SharedContent.fromText(text);
     } else {
       final imagePaths = files
           .where((f) => f.type == SharedMediaType.image)
           .map((f) => f.path)
           .toList();
       if (imagePaths.isNotEmpty) {
-        _ref.read(_sharedContentProvider.notifier).state = {
-          'imagePaths': imagePaths,
-        };
+        _ref.read(_sharedContentProvider.notifier).state = SharedContent(
+          imagePaths: imagePaths,
+        );
       }
     }
-  }
-
-  Map<String, dynamic>? _createFromText(String? text) {
-    if (text == null) return null;
-    final urlRegex = RegExp(
-      r'https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)',
-      caseSensitive: false,
-    );
-    final match = urlRegex.firstMatch(text);
-    return {'text': text, 'url': match?.group(0)};
   }
 
   @override

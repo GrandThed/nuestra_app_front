@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nuestra_app/core/providers/shared_content_provider.dart';
 
 /// Abstract base for ShareIntentService
 abstract class ShareIntentService {
@@ -8,14 +9,14 @@ abstract class ShareIntentService {
 }
 
 /// Creates the web stub ShareIntentService
-ShareIntentService createShareIntentService(Ref ref, StateProvider<dynamic> sharedContentProvider) {
+ShareIntentService createShareIntentService(Ref ref, StateProvider<SharedContent?> sharedContentProvider) {
   return ShareIntentServiceWeb(ref, sharedContentProvider);
 }
 
 /// Web stub implementation - share intents not supported on web
 class ShareIntentServiceWeb implements ShareIntentService {
   final Ref _ref;
-  final StateProvider<dynamic> _sharedContentProvider;
+  final StateProvider<SharedContent?> _sharedContentProvider;
 
   ShareIntentServiceWeb(this._ref, this._sharedContentProvider);
 

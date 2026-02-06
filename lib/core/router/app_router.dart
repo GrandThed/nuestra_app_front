@@ -1,8 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nuestra_app/core/network/api_interceptor.dart';
-import 'package:nuestra_app/core/services/share_intent_service.dart';
+import 'package:nuestra_app/core/providers/shared_content_provider.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 import 'package:nuestra_app/features/auth/presentation/screens/login_screen.dart';
@@ -14,7 +15,9 @@ import 'package:nuestra_app/shared/widgets/main_shell.dart';
 // Feature screens
 import 'package:nuestra_app/features/boards/presentation/screens/boards_screen.dart';
 import 'package:nuestra_app/features/boards/presentation/screens/board_detail_screen.dart';
-import 'package:nuestra_app/features/boards/presentation/screens/share_to_board_screen.dart';
+// Conditional import - use stub on web since share intents are not supported
+import 'package:nuestra_app/features/boards/presentation/screens/share_to_board_screen.dart'
+    if (dart.library.html) 'package:nuestra_app/features/boards/presentation/screens/share_to_board_screen_stub.dart';
 import 'package:nuestra_app/features/recipes/presentation/screens/recipes_screen.dart';
 import 'package:nuestra_app/features/recipes/presentation/screens/recipe_detail_screen.dart';
 import 'package:nuestra_app/features/recipes/presentation/screens/recipe_form_screen.dart';
@@ -97,9 +100,12 @@ class AuthChangeNotifier extends ChangeNotifier {
     _ref.listen(authTokenProvider, (_, __) {
       notifyListeners();
     });
-    _ref.listen(sharedContentProvider, (_, __) {
-      notifyListeners();
-    });
+    // Only listen to shared content on mobile (share intents don't work on web)
+    if (!kIsWeb) {
+      _ref.listen(sharedContentProvider, (_, __) {
+        notifyListeners();
+      });
+    }
   }
 
   final Ref _ref;
@@ -152,11 +158,13 @@ final routerProvider = Provider<GoRouter>((ref) {
           return AppRoutes.home;
         }
 
-        // Check for shared content - redirect to share-to-board screen
-        final sharedContent = ref.read(sharedContentProvider);
-        final isOnShareScreen = state.matchedLocation == AppRoutes.shareToBoard;
-        if (sharedContent != null && !sharedContent.isEmpty && !isOnShareScreen) {
-          return AppRoutes.shareToBoard;
+        // Check for shared content - redirect to share-to-board screen (mobile only)
+        if (!kIsWeb) {
+          final sharedContent = ref.read(sharedContentProvider);
+          final isOnShareScreen = state.matchedLocation == AppRoutes.shareToBoard;
+          if (sharedContent != null && !sharedContent.isEmpty && !isOnShareScreen) {
+            return AppRoutes.shareToBoard;
+          }
         }
       }
 
