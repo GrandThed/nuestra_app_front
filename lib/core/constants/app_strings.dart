@@ -29,6 +29,7 @@ class AppStrings {
   static const String expenses = 'Gastos';
   static const String calendar = 'Calendario';
   static const String settings = 'Configuración';
+  static const String profile = 'Perfil';
 
   // Common actions
   static const String save = 'Guardar';

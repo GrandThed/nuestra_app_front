@@ -23,7 +23,7 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _codeController = TextEditingController();
-  String _selectedHemisphere = 'southern'; // Default for Argentina
+  String _selectedHemisphere = 'south'; // Default for Argentina
 
   @override
   void dispose() {
@@ -158,12 +158,12 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
                   SegmentedButton<String>(
                     segments: const [
                       ButtonSegment(
-                        value: 'southern',
+                        value: 'south',
                         label: Text('Sur'),
                         icon: Icon(Icons.south),
                       ),
                       ButtonSegment(
-                        value: 'northern',
+                        value: 'north',
                         label: Text('Norte'),
                         icon: Icon(Icons.north),
                       ),

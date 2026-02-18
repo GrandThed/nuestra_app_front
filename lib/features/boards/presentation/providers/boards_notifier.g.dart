@@ -6,7 +6,7 @@ part of 'boards_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$boardsNotifierHash() => r'50cba617baacd430dc764d0bdb89cf1a8e4c12b5';
+String _$boardsNotifierHash() => r'd6dd935d8f5e8c215c2af0c388e528fa2facadee';
 
 /// Notifier for boards list operations
 ///

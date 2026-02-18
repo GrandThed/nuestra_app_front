@@ -13,6 +13,7 @@ class UpcomingEventsCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final eventsCount = ref.watch(upcomingEventsCountProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
       elevation: 0,
@@ -57,8 +58,8 @@ class UpcomingEventsCard extends ConsumerWidget {
                           : 'Sin eventos proximos',
                       style: TextStyle(
                         color: eventsCount > 0
-                            ? AppColors.textPrimary
-                            : AppColors.textSecondary,
+                            ? colorScheme.onSurface
+                            : colorScheme.onSurfaceVariant,
                         fontSize: AppSizes.fontSm,
                         fontWeight:
                             eventsCount > 0 ? FontWeight.w500 : FontWeight.normal,
@@ -67,9 +68,9 @@ class UpcomingEventsCard extends ConsumerWidget {
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right,
-                color: AppColors.textTertiary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ],
           ),

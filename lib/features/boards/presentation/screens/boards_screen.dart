@@ -53,7 +53,8 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateBoardDialog(context),
-        backgroundColor: AppColors.boards,
+        backgroundColor: AppColors.boardsDark,
+        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
@@ -82,7 +83,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
             icon: const Icon(Icons.add),
             label: const Text('Crear tablero'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.boards,
+              backgroundColor: AppColors.boardsDark,
               foregroundColor: Colors.white,
             ),
           ),
@@ -179,7 +180,8 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.boards,
+              backgroundColor: AppColors.boardsDark,
+              foregroundColor: Colors.white,
             ),
             child: const Text('Crear'),
           ),
@@ -243,7 +245,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
               final name = controller.text.trim();
               if (name.isNotEmpty && name != board.name) {
                 Navigator.pop(dialogContext);
-                // TODO: Implement rename
+                ref.read(boardsNotifierProvider.notifier).renameBoard(board.id, name);
               }
             },
             child: const Text(AppStrings.save),

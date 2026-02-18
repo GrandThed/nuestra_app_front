@@ -179,6 +179,8 @@ class HouseholdNotifier extends _$HouseholdNotifier {
       );
       ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(null);
       state = const HouseholdState.initial();
+      // Refresh auth state so router knows user no longer has a household
+      await ref.read(authNotifierProvider.notifier).refreshUser();
       return true;
     } on AppException catch (e) {
       debugPrint('Error leaving household: ${e.message}');

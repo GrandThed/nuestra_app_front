@@ -177,6 +177,27 @@ class WishlistRepository {
     );
   }
 
+  /// Bulk create items (for shopping list generation)
+  Future<List<WishlistItemModel>> createBulkItems({
+    required String householdId,
+    required String categoryId,
+    required List<Map<String, dynamic>> items,
+  }) async {
+    final response = await _dioClient.post<Map<String, dynamic>>(
+      ApiConstants.wishlistBulk,
+      data: {
+        'householdId': householdId,
+        'categoryId': categoryId,
+        'items': items,
+      },
+    );
+
+    final createdItems = response['data']['items'] as List<dynamic>? ?? [];
+    return createdItems
+        .map((i) => WishlistItemModel.fromJson(i as Map<String, dynamic>))
+        .toList();
+  }
+
   /// Clear all checked items
   Future<int> clearChecked(String householdId, {String? categoryId}) async {
     final queryParams = <String, dynamic>{

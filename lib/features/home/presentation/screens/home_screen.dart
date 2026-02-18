@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/constants/app_strings.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
@@ -15,6 +14,8 @@ import 'package:nuestra_app/features/home/presentation/widgets/quick_actions_fab
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
 import 'package:nuestra_app/features/menus/presentation/providers/menus_notifier.dart';
 import 'package:nuestra_app/features/wishlists/presentation/providers/wishlists_notifier.dart';
+import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
+import 'package:nuestra_app/features/calendar/presentation/providers/calendar_notifier.dart';
 
 /// Home dashboard screen
 class HomeScreen extends ConsumerStatefulWidget {
@@ -74,6 +75,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // Load wishlists for the shopping list card
     ref.read(wishlistsNotifierProvider.notifier).loadWishlistsIfNeeded();
+
+    // Load expenses for the expenses summary card
+    ref.read(expensesNotifierProvider.notifier).loadExpensesIfNeeded();
+
+    // Load calendar events for the upcoming events card
+    ref.read(calendarNotifierProvider.notifier).loadEventsIfNeeded();
   }
 
   @override
@@ -88,25 +95,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             icon: const Icon(Icons.settings_outlined),
             onPressed: () => context.push(AppRoutes.householdSettings),
           ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert),
-            onSelected: (value) async {
-              if (value == 'logout') {
-                await ref.read(authNotifierProvider.notifier).signOut();
-              }
-            },
-            itemBuilder: (context) => [
-              const PopupMenuItem(
-                value: 'logout',
-                child: Row(
-                  children: [
-                    Icon(Icons.logout, size: 20),
-                    SizedBox(width: 8),
-                    Text(AppStrings.signOut),
-                  ],
-                ),
-              ),
-            ],
+          IconButton(
+            icon: const Icon(Icons.person_outline),
+            onPressed: () => context.push(AppRoutes.profile),
           ),
         ],
       ),
@@ -166,20 +157,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       greeting = 'Buenas noches';
     }
 
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           '$greeting,',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: AppColors.textSecondary,
+                color: colorScheme.onSurfaceVariant,
               ),
         ),
         Text(
           userName,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+                color: colorScheme.onSurface,
               ),
         ),
       ],
@@ -197,6 +190,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.read(upcomingMealsNotifierProvider.notifier).loadWeek(weekStart),
       ref.read(menuPlansNotifierProvider.notifier).loadMenuPlans(),
       ref.read(wishlistsNotifierProvider.notifier).loadWishlists(),
+      ref.read(expensesNotifierProvider.notifier).loadExpenses(),
+      ref.read(calendarNotifierProvider.notifier).loadEvents(),
     ]);
   }
 }

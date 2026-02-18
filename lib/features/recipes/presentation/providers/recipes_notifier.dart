@@ -213,7 +213,7 @@ class RecipeDetailNotifier extends _$RecipeDetailNotifier {
 }
 
 /// Notifier for seasonal vegetables
-@riverpod
+@Riverpod(keepAlive: true)
 class SeasonalVegetablesNotifier extends _$SeasonalVegetablesNotifier {
   late final RecipeRepository _repository;
 
@@ -223,23 +223,40 @@ class SeasonalVegetablesNotifier extends _$SeasonalVegetablesNotifier {
     return const SeasonalVegetablesState.initial();
   }
 
+  /// Load vegetables only if not already loaded (for screen init)
+  Future<void> loadVegetablesIfNeeded() async {
+    if (state is SeasonalVegetablesStateInitial ||
+        state is SeasonalVegetablesStateError) {
+      await loadVegetables();
+    }
+  }
+
   /// Load seasonal vegetables for current household
-  Future<void> loadVegetables() async {
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> loadVegetables({bool forceLoading = false}) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) {
       state = const SeasonalVegetablesState.error('No hay hogar seleccionado');
       return;
     }
 
-    state = const SeasonalVegetablesState.loading();
+    final hasData = state is SeasonalVegetablesStateLoaded;
+
+    if (!hasData || forceLoading) {
+      state = const SeasonalVegetablesState.loading();
+    }
 
     try {
       final vegetables = await _repository.getSeasonalVegetables(householdId);
       state = SeasonalVegetablesState.loaded(vegetables);
     } on AppException catch (e) {
-      state = SeasonalVegetablesState.error(e.message);
+      if (!hasData) {
+        state = SeasonalVegetablesState.error(e.message);
+      }
     } catch (e) {
-      state = SeasonalVegetablesState.error('Error al cargar verduras: $e');
+      if (!hasData) {
+        state = SeasonalVegetablesState.error('Error al cargar verduras: $e');
+      }
     }
   }
 }

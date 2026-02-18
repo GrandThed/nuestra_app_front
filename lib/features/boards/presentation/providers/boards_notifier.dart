@@ -109,6 +109,21 @@ class BoardsNotifier extends _$BoardsNotifier {
     }
   }
 
+  /// Rename a board
+  Future<bool> renameBoard(String id, String newName) async {
+    try {
+      final board = await _repository.updateBoard(id: id, name: newName);
+      updateBoardInList(board);
+      return true;
+    } on AppException catch (e) {
+      debugPrint('Error renaming board: ${e.message}');
+      return false;
+    } catch (e) {
+      debugPrint('Error renaming board: $e');
+      return false;
+    }
+  }
+
   /// Update board in list (after detail edit)
   void updateBoardInList(BoardModel board) {
     final currentState = state;

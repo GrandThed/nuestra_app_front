@@ -55,9 +55,9 @@ class TodaysMenuCard extends ConsumerWidget {
                           ),
                     ),
                   ),
-                  const Icon(
+                  Icon(
                     Icons.chevron_right,
-                    color: AppColors.textTertiary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
@@ -149,6 +149,7 @@ class _MealsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (meals.isEmpty) {
+      final colorScheme = Theme.of(context).colorScheme;
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
         child: Center(
@@ -157,13 +158,13 @@ class _MealsContent extends StatelessWidget {
               Icon(
                 Icons.no_meals_outlined,
                 size: 40,
-                color: AppColors.textTertiary,
+                color: colorScheme.onSurfaceVariant,
               ),
               const SizedBox(height: AppSizes.sm),
               Text(
                 'Sin comidas planificadas',
                 style: TextStyle(
-                  color: AppColors.textSecondary,
+                  color: colorScheme.onSurfaceVariant,
                   fontSize: AppSizes.fontSm,
                 ),
               ),
@@ -220,7 +221,7 @@ class _MealRow extends StatelessWidget {
                   meal.mealType.mealTypeDisplay,
                   style: TextStyle(
                     fontSize: AppSizes.fontXs,
-                    color: AppColors.textTertiary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 Text(

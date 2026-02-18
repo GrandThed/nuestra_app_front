@@ -7,6 +7,12 @@ import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/features/calendar/data/models/calendar_model.dart';
 import 'package:nuestra_app/features/calendar/presentation/providers/calendar_notifier.dart';
 import 'package:nuestra_app/features/calendar/presentation/providers/calendar_state.dart';
+import 'package:nuestra_app/features/boards/presentation/providers/boards_notifier.dart';
+import 'package:nuestra_app/features/boards/presentation/providers/boards_state.dart';
+import 'package:nuestra_app/features/recipes/presentation/providers/recipes_notifier.dart';
+import 'package:nuestra_app/features/recipes/presentation/providers/recipes_state.dart';
+import 'package:nuestra_app/features/menus/presentation/providers/menus_notifier.dart';
+import 'package:nuestra_app/features/menus/presentation/providers/menus_state.dart';
 
 /// Screen for adding or editing a calendar event
 class EventFormScreen extends ConsumerStatefulWidget {
@@ -39,6 +45,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
   DateTime? _recurrenceEndDate;
   bool _isSubmitting = false;
   bool _isInitialized = false;
+  String? _linkedBoardId;
+  String? _linkedRecipeId;
+  String? _linkedMenuPlanId;
 
   bool get isEditing => widget.eventId != null;
 
@@ -47,6 +56,12 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     super.initState();
     _startDate = widget.initialDate ?? DateTime.now();
     _startTime = TimeOfDay.now();
+    // Load data for linked item selectors
+    Future.microtask(() {
+      ref.read(boardsNotifierProvider.notifier).loadBoardsIfNeeded();
+      ref.read(recipesNotifierProvider.notifier).loadRecipesIfNeeded();
+      ref.read(menuPlansNotifierProvider.notifier).loadMenuPlansIfNeeded();
+    });
   }
 
   @override
@@ -71,6 +86,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     _allDay = event.allDay;
     _recurrence = event.recurrence;
     _recurrenceEndDate = event.recurrenceEndDate;
+    _linkedBoardId = event.linkedBoard?.id;
+    _linkedRecipeId = event.linkedRecipe?.id;
+    _linkedMenuPlanId = event.linkedMenuPlan?.id;
   }
 
   CalendarEventModel? _getEvent() {
@@ -193,6 +211,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         allDay: _allDay,
         recurrence: _recurrence,
         recurrenceEndDate: _recurrenceEndDate,
+        linkedBoardId: _linkedBoardId,
+        linkedRecipeId: _linkedRecipeId,
+        linkedMenuPlanId: _linkedMenuPlanId,
       );
     } else {
       result = await notifier.createEvent(
@@ -205,6 +226,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
         allDay: _allDay,
         recurrence: _recurrence,
         recurrenceEndDate: _recurrenceEndDate,
+        linkedBoardId: _linkedBoardId,
+        linkedRecipeId: _linkedRecipeId,
+        linkedMenuPlanId: _linkedMenuPlanId,
       );
     }
 
@@ -456,9 +480,110 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: AppSizes.lg),
+
+            // Linked items
+            Text(
+              'Vincular con',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: AppSizes.sm),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSizes.md),
+                child: Column(
+                  children: [
+                    // Board selector
+                    _buildLinkedBoardSelector(),
+                    const Divider(),
+                    // Recipe selector
+                    _buildLinkedRecipeSelector(),
+                    const Divider(),
+                    // Menu plan selector
+                    _buildLinkedMenuPlanSelector(),
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: AppSizes.xl),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildLinkedBoardSelector() {
+    final boardsState = ref.watch(boardsNotifierProvider);
+    final boards = boardsState is BoardsStateLoaded ? boardsState.boards : [];
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(Icons.dashboard_outlined, color: AppColors.boards),
+      title: const Text('Tablero'),
+      trailing: DropdownButton<String?>(
+        value: _linkedBoardId,
+        hint: const Text('Ninguno'),
+        underline: const SizedBox(),
+        onChanged: (value) => setState(() => _linkedBoardId = value),
+        items: [
+          const DropdownMenuItem<String?>(value: null, child: Text('Ninguno')),
+          ...boards.map((b) => DropdownMenuItem<String?>(
+                value: b.id,
+                child: Text(b.name, overflow: TextOverflow.ellipsis),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLinkedRecipeSelector() {
+    final recipesState = ref.watch(recipesNotifierProvider);
+    final recipes = recipesState is RecipesStateLoaded ? recipesState.recipes : [];
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(Icons.restaurant_menu, color: AppColors.recipes),
+      title: const Text('Receta'),
+      trailing: DropdownButton<String?>(
+        value: _linkedRecipeId,
+        hint: const Text('Ninguna'),
+        underline: const SizedBox(),
+        onChanged: (value) => setState(() => _linkedRecipeId = value),
+        items: [
+          const DropdownMenuItem<String?>(value: null, child: Text('Ninguna')),
+          ...recipes.map((r) => DropdownMenuItem<String?>(
+                value: r.id,
+                child: Text(r.title, overflow: TextOverflow.ellipsis),
+              )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLinkedMenuPlanSelector() {
+    final plansState = ref.watch(menuPlansNotifierProvider);
+    final plans = plansState is MenuPlansStateLoaded ? plansState.plans : [];
+
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: Icon(Icons.calendar_view_week, color: AppColors.menus),
+      title: const Text('Plan de menu'),
+      trailing: DropdownButton<String?>(
+        value: _linkedMenuPlanId,
+        hint: const Text('Ninguno'),
+        underline: const SizedBox(),
+        onChanged: (value) => setState(() => _linkedMenuPlanId = value),
+        items: [
+          const DropdownMenuItem<String?>(value: null, child: Text('Ninguno')),
+          ...plans.map((p) => DropdownMenuItem<String?>(
+                value: p.id,
+                child: Text(p.name ?? 'Sin nombre', overflow: TextOverflow.ellipsis),
+              )),
+        ],
       ),
     );
   }

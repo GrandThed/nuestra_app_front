@@ -101,7 +101,7 @@ class _HouseholdSettingsScreenState
     HouseholdInviteModel? activeInvite,
   ) {
     final isOwner = household.members?.any(
-          (m) => m.id == currentUser?.id && m.role == 'owner',
+          (m) => m.userId == currentUser?.id && m.role == 'owner',
         ) ??
         false;
 
@@ -129,7 +129,7 @@ class _HouseholdSettingsScreenState
                 ),
                 const SizedBox(height: AppSizes.sm),
                 Text(
-                  'Hemisferio: ${household.hemisphere == 'southern' ? 'Sur' : 'Norte'}',
+                  'Hemisferio: ${household.hemisphere == 'south' ? 'Sur' : 'Norte'}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -304,7 +304,7 @@ class _HouseholdSettingsScreenState
     MemberModel member,
     UserModel? currentUser,
   ) {
-    final isCurrentUser = member.id == currentUser?.id;
+    final isCurrentUser = member.userId == currentUser?.id;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
@@ -412,6 +412,9 @@ class _HouseholdSettingsScreenState
               Navigator.pop(dialogContext);
               _updateIncome(member, income);
             },
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(0, AppSizes.buttonHeight),
+            ),
             child: const Text(AppStrings.save),
           ),
         ],
@@ -545,6 +548,7 @@ O ingresa el código manualmente: $code
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
               foregroundColor: Colors.white,
+              minimumSize: const Size(0, AppSizes.buttonHeight),
             ),
             child: const Text('Abandonar'),
           ),

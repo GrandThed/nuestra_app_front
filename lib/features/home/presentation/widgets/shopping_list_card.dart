@@ -13,6 +13,7 @@ class ShoppingListCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uncheckedCount = ref.watch(uncheckedWishlistItemsCountProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
       elevation: 0,
@@ -56,7 +57,7 @@ class ShoppingListCard extends ConsumerWidget {
                           ? '$uncheckedCount item${uncheckedCount > 1 ? 's' : ''} pendiente${uncheckedCount > 1 ? 's' : ''}'
                           : 'Lista vacia',
                       style: TextStyle(
-                        color: AppColors.textSecondary,
+                        color: colorScheme.onSurfaceVariant,
                         fontSize: AppSizes.fontSm,
                       ),
                     ),
@@ -83,9 +84,9 @@ class ShoppingListCard extends ConsumerWidget {
                   ),
                 )
               else
-                const Icon(
+                Icon(
                   Icons.chevron_right,
-                  color: AppColors.textTertiary,
+                  color: colorScheme.onSurfaceVariant,
                 ),
             ],
           ),

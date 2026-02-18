@@ -33,13 +33,21 @@ class AppColors {
   static const Color error = Color(0xFFEF4444);
   static const Color info = Color(0xFF3B82F6);
 
-  // Feature colors (for different modules)
+  // Feature colors (for accents, icons, tinted backgrounds)
   static const Color boards = Color(0xFFEC4899); // Pink
   static const Color recipes = Color(0xFFF97316); // Orange
   static const Color menus = Color(0xFF14B8A6); // Teal
   static const Color wishlists = Color(0xFF8B5CF6); // Purple
   static const Color expenses = Color(0xFF22C55E); // Green
   static const Color calendar = Color(0xFF3B82F6); // Blue
+
+  // Feature colors darkened for backgrounds with white text (WCAG AA 4.5:1)
+  static const Color boardsDark = Color(0xFFBE185D); // Pink-700
+  static const Color recipesDark = Color(0xFFC2410C); // Orange-700
+  static const Color menusDark = Color(0xFF0F766E); // Teal-700
+  static const Color wishlistsDark = Color(0xFF6D28D9); // Violet-700
+  static const Color expensesDark = Color(0xFF15803D); // Green-700
+  static const Color calendarDark = Color(0xFF1D4ED8); // Blue-700
 
   // Border colors
   static const Color border = Color(0xFFE5E7EB);

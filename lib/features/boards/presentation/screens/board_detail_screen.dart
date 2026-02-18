@@ -73,7 +73,8 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddItemOptions(context),
-        backgroundColor: AppColors.boards,
+        backgroundColor: AppColors.boardsDark,
+        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
@@ -259,7 +260,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.boards,
+                  backgroundColor: AppColors.boardsDark,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(0, AppSizes.buttonHeight),
                 ),
                 child: const Text('Agregar'),
               ),
@@ -849,7 +852,8 @@ class _ItemDetailSheet extends StatelessWidget {
                 icon: const Icon(Icons.open_in_browser),
                 label: const Text('Abrir enlace'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.boards,
+                  backgroundColor: AppColors.boardsDark,
+                  foregroundColor: Colors.white,
                 ),
               ),
             ),

@@ -5,6 +5,7 @@ import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/features/recipes/data/models/recipe_model.dart';
 import 'package:nuestra_app/features/recipes/presentation/providers/recipes_notifier.dart';
 import 'package:nuestra_app/features/recipes/presentation/providers/recipes_state.dart';
+import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/shared/widgets/app_network_image.dart';
 
 class RecipesScreen extends ConsumerStatefulWidget {
@@ -56,9 +57,14 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Recetas'),
-        backgroundColor: AppColors.recipes,
+        backgroundColor: AppColors.recipesDark,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.eco_outlined),
+            tooltip: 'Verduras de temporada',
+            onPressed: () => context.push(AppRoutes.seasonalVegetables),
+          ),
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: () => _showFilterSheet(context),
@@ -156,8 +162,9 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/recipes/new'),
-        backgroundColor: AppColors.recipes,
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: AppColors.recipesDark,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
       ),
     );
   }

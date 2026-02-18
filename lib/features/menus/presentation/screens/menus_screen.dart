@@ -7,6 +7,7 @@ import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/features/menus/data/models/menu_model.dart';
 import 'package:nuestra_app/features/menus/presentation/providers/menus_notifier.dart';
 import 'package:nuestra_app/features/menus/presentation/providers/menus_state.dart';
+import 'package:nuestra_app/features/menus/presentation/widgets/generate_shopping_list_dialog.dart';
 import 'package:nuestra_app/shared/widgets/app_network_image.dart';
 
 class MenusScreen extends ConsumerStatefulWidget {
@@ -22,7 +23,9 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
     super.initState();
     Future.microtask(() {
       final weekStart = ref.read(selectedWeekStartProvider);
-      ref.read(upcomingMealsNotifierProvider.notifier).loadWeekIfNeeded(weekStart);
+      ref
+          .read(upcomingMealsNotifierProvider.notifier)
+          .loadWeekIfNeeded(weekStart);
     });
   }
 
@@ -34,7 +37,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Menú Semanal'),
-        backgroundColor: AppColors.menus,
+        backgroundColor: AppColors.menusDark,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -52,17 +55,25 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
             onPreviousWeek: () {
               ref.read(selectedWeekStartProvider.notifier).previousWeek();
               final newWeek = ref.read(selectedWeekStartProvider);
-              ref.read(upcomingMealsNotifierProvider.notifier).loadWeek(newWeek);
+              ref
+                  .read(upcomingMealsNotifierProvider.notifier)
+                  .loadWeek(newWeek);
             },
             onNextWeek: () {
               ref.read(selectedWeekStartProvider.notifier).nextWeek();
               final newWeek = ref.read(selectedWeekStartProvider);
-              ref.read(upcomingMealsNotifierProvider.notifier).loadWeek(newWeek);
+              ref
+                  .read(upcomingMealsNotifierProvider.notifier)
+                  .loadWeek(newWeek);
             },
             onToday: () {
-              ref.read(selectedWeekStartProvider.notifier).setWeek(DateTime.now());
+              ref
+                  .read(selectedWeekStartProvider.notifier)
+                  .setWeek(DateTime.now());
               final newWeek = ref.read(selectedWeekStartProvider);
-              ref.read(upcomingMealsNotifierProvider.notifier).loadWeek(newWeek);
+              ref
+                  .read(upcomingMealsNotifierProvider.notifier)
+                  .loadWeek(newWeek);
             },
           ),
 
@@ -70,28 +81,34 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
           Expanded(
             child: switch (state) {
               UpcomingMealsStateInitial() => const Center(
-                  child: Text('Cargando menú...'),
-                ),
+                child: Text('Cargando menú...'),
+              ),
               UpcomingMealsStateLoading() => const Center(
-                  child: CircularProgressIndicator(color: AppColors.menus),
-                ),
+                child: CircularProgressIndicator(color: AppColors.menus),
+              ),
               UpcomingMealsStateError(:final message) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-                      const SizedBox(height: 16),
-                      Text(message, textAlign: TextAlign.center),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          ref.read(upcomingMealsNotifierProvider.notifier).loadWeek(weekStart);
-                        },
-                        child: const Text('Reintentar'),
-                      ),
-                    ],
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: AppColors.error,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(message, textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        ref
+                            .read(upcomingMealsNotifierProvider.notifier)
+                            .loadWeek(weekStart);
+                      },
+                      child: const Text('Reintentar'),
+                    ),
+                  ],
                 ),
+              ),
               UpcomingMealsStateLoaded(:final items, :final weekStart) =>
                 _buildWeekView(items, weekStart),
             },
@@ -99,9 +116,13 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/menus/add-meal?date=${DateTime.now().toIso8601String()}'),
-        backgroundColor: AppColors.menus,
-        child: const Icon(Icons.add, color: Colors.white),
+        onPressed:
+            () => context.push(
+              '/menus/add-meal?date=${DateTime.now().toIso8601String()}',
+            ),
+        backgroundColor: AppColors.menusDark,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -114,16 +135,19 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
       itemCount: 7,
       itemBuilder: (context, index) {
         final day = days[index];
-        final dayMeals = items.where((item) {
-          return item.date.year == day.year &&
-              item.date.month == day.month &&
-              item.date.day == day.day;
-        }).toList();
+        final dayMeals =
+            items.where((item) {
+              return item.date.year == day.year &&
+                  item.date.month == day.month &&
+                  item.date.day == day.day;
+            }).toList();
 
         return _DayCard(
           date: day,
           meals: dayMeals,
-          onAddMeal: () => context.push('/menus/add-meal?date=${day.toIso8601String()}'),
+          onAddMeal:
+              () =>
+                  context.push('/menus/add-meal?date=${day.toIso8601String()}'),
           onMealTap: (meal) => _showMealOptions(context, meal),
         );
       },
@@ -136,156 +160,169 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Meal info header
-            if (meal.recipe != null)
-              ListTile(
-                leading: meal.recipe!.imageUrl != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: SizedBox(
-                          width: 50,
-                          height: 50,
-                          child: AppNetworkImage(
-                            imageUrl: meal.recipe!.imageUrl!,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      )
-                    : const CircleAvatar(
-                        backgroundColor: AppColors.menus,
-                        child: Icon(Icons.restaurant, color: Colors.white),
-                      ),
-                title: Text(meal.recipe!.title),
-                subtitle: Text(meal.mealType.mealTypeDisplay),
-              ),
-            const Divider(),
+      builder:
+          (sheetContext) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Meal info header
+                if (meal.recipe != null)
+                  ListTile(
+                    leading:
+                        meal.recipe!.imageUrl != null
+                            ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: AppNetworkImage(
+                                  imageUrl: meal.recipe!.imageUrl!,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            )
+                            : const CircleAvatar(
+                              backgroundColor: AppColors.menusDark,
+                              child: Icon(
+                                Icons.restaurant,
+                                color: Colors.white,
+                              ),
+                            ),
+                    title: Text(meal.recipe!.title),
+                    subtitle: Text(meal.mealType.mealTypeDisplay),
+                  ),
+                const Divider(),
 
-            // View recipe
-            if (meal.recipe != null)
-              ListTile(
-                leading: const Icon(Icons.restaurant_menu),
-                title: const Text('Ver receta'),
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  context.push('/recipes/${meal.recipe!.id}');
-                },
-              ),
+                // View recipe
+                if (meal.recipe != null)
+                  ListTile(
+                    leading: const Icon(Icons.restaurant_menu),
+                    title: const Text('Ver receta'),
+                    onTap: () {
+                      Navigator.pop(sheetContext);
+                      context.push('/recipes/${meal.recipe!.id}');
+                    },
+                  ),
 
-            // Edit meal
-            ListTile(
-              leading: const Icon(Icons.edit_outlined),
-              title: const Text('Editar'),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                context.push('/menus/edit-meal/${meal.id}');
-              },
+                // Edit meal
+                ListTile(
+                  leading: const Icon(Icons.edit_outlined),
+                  title: const Text('Editar'),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    context.push('/menus/edit-meal/${meal.id}');
+                  },
+                ),
+
+                // Delete meal
+                ListTile(
+                  leading: const Icon(
+                    Icons.delete_outline,
+                    color: AppColors.error,
+                  ),
+                  title: const Text(
+                    'Eliminar',
+                    style: TextStyle(color: AppColors.error),
+                  ),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _confirmDeleteMeal(context, meal);
+                  },
+                ),
+              ],
             ),
-
-            // Delete meal
-            ListTile(
-              leading: const Icon(Icons.delete_outline, color: AppColors.error),
-              title: const Text('Eliminar', style: TextStyle(color: AppColors.error)),
-              onTap: () {
-                Navigator.pop(sheetContext);
-                _confirmDeleteMeal(context, meal);
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
   void _confirmDeleteMeal(BuildContext context, MenuItemModel meal) {
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Eliminar comida'),
-        content: Text(
-          '¿Seguro que quieres eliminar "${meal.recipe?.title ?? 'esta comida'}" del menú?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
+      builder:
+          (dialogContext) => AlertDialog(
+            title: const Text('Eliminar comida'),
+            content: Text(
+              '¿Seguro que quieres eliminar "${meal.recipe?.title ?? 'esta comida'}" del menú?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                  ref
+                      .read(upcomingMealsNotifierProvider.notifier)
+                      .removeMealFromView(meal.id);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Comida eliminada'),
+                      backgroundColor: AppColors.success,
+                    ),
+                  );
+                },
+                style: TextButton.styleFrom(foregroundColor: AppColors.error),
+                child: const Text('Eliminar'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              ref.read(upcomingMealsNotifierProvider.notifier).removeMealFromView(meal.id);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Comida eliminada'),
-                  backgroundColor: AppColors.success,
-                ),
-              );
-            },
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: const Text('Eliminar'),
-          ),
-        ],
-      ),
     );
   }
 
   void _showGenerateShoppingDialog(BuildContext context) {
-    final multiplierController = TextEditingController(text: '1.0');
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Generar lista de compras'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Se generará una lista de compras con todos los ingredientes de las recetas del menú actual.',
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: multiplierController,
-              decoration: const InputDecoration(
-                labelText: 'Multiplicador de porciones',
-                hintText: '1.0',
-                helperText: 'Ej: 2.0 para duplicar las cantidades',
-              ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-            ),
-          ],
+    final plansState = ref.read(menuPlansNotifierProvider);
+    if (plansState is! MenuPlansStateLoaded || plansState.plans.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No hay planes de menú disponibles'),
+          backgroundColor: AppColors.warning,
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancelar'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              final multiplier = double.tryParse(multiplierController.text) ?? 1.0;
-              _generateShoppingList(context, multiplier);
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.menus),
-            child: const Text('Generar'),
-          ),
-        ],
-      ),
-    );
+      );
+      return;
+    }
+
+    final plans = plansState.plans;
+    if (plans.length == 1) {
+      _openShoppingListDialog(context, plans.first);
+    } else {
+      showDialog(
+        context: context,
+        builder:
+            (dialogContext) => SimpleDialog(
+              title: const Text('Seleccionar plan de menú'),
+              children:
+                  plans.map((plan) {
+                    return SimpleDialogOption(
+                      onPressed: () {
+                        Navigator.pop(dialogContext);
+                        _openShoppingListDialog(context, plan);
+                      },
+                      child: Text(plan.name ?? 'Plan sin nombre'),
+                    );
+                  }).toList(),
+            ),
+      );
+    }
   }
 
-  void _generateShoppingList(BuildContext context, double multiplier) {
-    // TODO: Implement shopping list generation
-    // This would require a current menu plan ID
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Función próximamente disponible'),
-        backgroundColor: AppColors.info,
-      ),
+  Future<void> _openShoppingListDialog(
+    BuildContext context,
+    MenuPlanModel plan,
+  ) async {
+    final result = await GenerateShoppingListDialog.show(
+      context,
+      menuId: plan.id,
+      menuName: plan.name,
     );
+    if (result != null && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${result.itemsCreated} items agregados a la lista'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    }
   }
 }
 
@@ -307,10 +344,11 @@ class _WeekSelector extends StatelessWidget {
     final weekEnd = weekStart.add(const Duration(days: 6));
     final dateFormat = DateFormat('d MMM', 'es');
     final isCurrentWeek = _isCurrentWeek(weekStart);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-      color: AppColors.surface,
+      color: colorScheme.surface,
       child: Row(
         children: [
           IconButton(
@@ -351,7 +389,11 @@ class _WeekSelector extends StatelessWidget {
 
   bool _isCurrentWeek(DateTime weekStart) {
     final now = DateTime.now();
-    final currentWeekStart = DateTime(now.year, now.month, now.day - (now.weekday - 1));
+    final currentWeekStart = DateTime(
+      now.year,
+      now.month,
+      now.day - (now.weekday - 1),
+    );
     return weekStart.year == currentWeekStart.year &&
         weekStart.month == currentWeekStart.month &&
         weekStart.day == currentWeekStart.day;
@@ -376,22 +418,24 @@ class _DayCard extends StatelessWidget {
     final dayFormat = DateFormat('EEEE', 'es');
     final dateFormat = DateFormat('d/M');
     final isToday = _isToday(date);
+    final colorScheme = Theme.of(context).colorScheme;
 
     // Sort meals by meal type order
     final mealTypeOrder = ['breakfast', 'lunch', 'dinner', 'snack'];
     final sortedMeals = [...meals]..sort((a, b) {
-        final aIndex = mealTypeOrder.indexOf(a.mealType);
-        final bIndex = mealTypeOrder.indexOf(b.mealType);
-        return aIndex.compareTo(bIndex);
-      });
+      final aIndex = mealTypeOrder.indexOf(a.mealType);
+      final bIndex = mealTypeOrder.indexOf(b.mealType);
+      return aIndex.compareTo(bIndex);
+    });
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: isToday
-            ? const BorderSide(color: AppColors.menus, width: 2)
-            : BorderSide.none,
+        side:
+            isToday
+                ? const BorderSide(color: AppColors.menus, width: 2)
+                : BorderSide.none,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,15 +444,23 @@ class _DayCard extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: isToday ? AppColors.menus.withValues(alpha: 0.1) : AppColors.surfaceVariant,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              color:
+                  isToday
+                      ? AppColors.menus.withValues(alpha: 0.1)
+                      : AppColors.menus.withValues(alpha: 0.05),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(12),
+              ),
             ),
             child: Row(
               children: [
                 if (isToday)
                   Container(
                     margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.menus,
                       borderRadius: BorderRadius.circular(12),
@@ -426,7 +478,7 @@ class _DayCard extends StatelessWidget {
                   '${dayFormat.format(date).capitalize()} ${dateFormat.format(date)}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: isToday ? AppColors.menus : AppColors.textPrimary,
+                    color: isToday ? AppColors.menus : colorScheme.onSurface,
                   ),
                 ),
                 const Spacer(),
@@ -449,15 +501,14 @@ class _DayCard extends StatelessWidget {
               child: Center(
                 child: Text(
                   'Sin comidas planificadas',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: colorScheme.onSurfaceVariant),
                 ),
               ),
             )
           else
-            ...sortedMeals.map((meal) => _MealTile(
-                  meal: meal,
-                  onTap: () => onMealTap(meal),
-                )),
+            ...sortedMeals.map(
+              (meal) => _MealTile(meal: meal, onTap: () => onMealTap(meal)),
+            ),
         ],
       ),
     );
@@ -465,7 +516,9 @@ class _DayCard extends StatelessWidget {
 
   bool _isToday(DateTime date) {
     final now = DateTime.now();
-    return date.year == now.year && date.month == now.month && date.day == now.day;
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
   }
 }
 
@@ -516,9 +569,9 @@ class _MealTile extends StatelessWidget {
                   const SizedBox(height: 2),
                   Text(
                     meal.recipe?.title ?? 'Sin receta',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -540,7 +593,10 @@ class _MealTile extends StatelessWidget {
               ),
 
             const SizedBox(width: 8),
-            const Icon(Icons.chevron_right, color: AppColors.textTertiary),
+            Icon(
+              Icons.chevron_right,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ],
         ),
       ),

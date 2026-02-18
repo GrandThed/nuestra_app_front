@@ -34,6 +34,9 @@ import 'package:nuestra_app/features/calendar/presentation/screens/add_event_scr
 import 'package:nuestra_app/features/calendar/presentation/screens/event_detail_screen.dart';
 import 'package:nuestra_app/features/calendar/presentation/screens/event_form_screen.dart';
 import 'package:nuestra_app/features/home/presentation/screens/home_screen.dart';
+import 'package:nuestra_app/features/profile/presentation/screens/profile_screen.dart';
+import 'package:nuestra_app/features/settings/presentation/screens/settings_screen.dart';
+import 'package:nuestra_app/features/recipes/presentation/screens/seasonal_vegetables_screen.dart';
 
 /// Route names
 class AppRoutes {
@@ -83,8 +86,10 @@ class AppRoutes {
   static const String _eventEdit = '/calendar/:id/edit';
   static String eventEdit(String id) => '/calendar/$id/edit';
 
-  // Settings
+  // Settings & Profile
   static const String settings = '/settings';
+  static const String profile = '/profile';
+  static const String seasonalVegetables = '/recipes/seasonal';
 }
 
 /// Navigation key for accessing navigator from anywhere
@@ -330,6 +335,24 @@ final routerProvider = Provider<GoRouter>((ref) {
           final eventId = state.pathParameters['id']!;
           return EventDetailScreen(eventId: eventId);
         },
+      ),
+
+      // Profile (no shell)
+      GoRoute(
+        path: AppRoutes.profile,
+        builder: (context, state) => const ProfileScreen(),
+      ),
+
+      // Settings (no shell)
+      GoRoute(
+        path: AppRoutes.settings,
+        builder: (context, state) => const SettingsScreen(),
+      ),
+
+      // Seasonal vegetables (no shell) - must be before /recipes/:id
+      GoRoute(
+        path: AppRoutes.seasonalVegetables,
+        builder: (context, state) => const SeasonalVegetablesScreen(),
       ),
 
       // Main app with bottom navigation shell

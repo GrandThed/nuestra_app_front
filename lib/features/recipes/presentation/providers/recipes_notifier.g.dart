@@ -193,13 +193,13 @@ class _RecipeDetailNotifierProviderElement
 }
 
 String _$seasonalVegetablesNotifierHash() =>
-    r'659c1cadb0a2a841b0660a352e2eae707a486d9d';
+    r'ed7782d05b58bd113835792e1b20be4944ed5620';
 
 /// Notifier for seasonal vegetables
 ///
 /// Copied from [SeasonalVegetablesNotifier].
 @ProviderFor(SeasonalVegetablesNotifier)
-final seasonalVegetablesNotifierProvider = AutoDisposeNotifierProvider<
+final seasonalVegetablesNotifierProvider = NotifierProvider<
   SeasonalVegetablesNotifier,
   SeasonalVegetablesState
 >.internal(
@@ -213,7 +213,6 @@ final seasonalVegetablesNotifierProvider = AutoDisposeNotifierProvider<
   allTransitiveDependencies: null,
 );
 
-typedef _$SeasonalVegetablesNotifier =
-    AutoDisposeNotifier<SeasonalVegetablesState>;
+typedef _$SeasonalVegetablesNotifier = Notifier<SeasonalVegetablesState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

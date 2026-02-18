@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/core/theme/app_theme.dart';
+import 'package:nuestra_app/features/settings/presentation/providers/settings_notifier.dart';
 
 /// Main application widget
 class App extends ConsumerWidget {
@@ -10,6 +11,7 @@ class App extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
+    final themeMode = ref.watch(themeModeNotifierProvider);
 
     return MaterialApp.router(
       title: 'Nuestra App',
@@ -18,7 +20,7 @@ class App extends ConsumerWidget {
       // Theme
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
-      themeMode: ThemeMode.system,
+      themeMode: themeMode,
 
       // Router
       routerConfig: router,

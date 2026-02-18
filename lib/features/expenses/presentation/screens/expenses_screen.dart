@@ -230,7 +230,9 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.expenses,
+                  backgroundColor: AppColors.expensesDark,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(0, AppSizes.buttonHeight),
                 ),
                 child: const Text('Guardar'),
               ),
@@ -273,6 +275,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.error,
+                  minimumSize: const Size(0, AppSizes.buttonHeight),
                 ),
                 child: const Text('Eliminar'),
               ),
@@ -341,7 +344,9 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.expenses,
+                  backgroundColor: AppColors.expensesDark,
+                  foregroundColor: Colors.white,
+                  minimumSize: const Size(0, AppSizes.buttonHeight),
                 ),
                 child: const Text('Crear'),
               ),
@@ -366,17 +371,16 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                   controller: _searchController,
                   autofocus: true,
                   style: const TextStyle(color: Colors.white),
-                  decoration: InputDecoration(
+                  cursorColor: Colors.white,
+                  decoration: const InputDecoration(
                     hintText: 'Buscar gastos...',
-                    hintStyle: TextStyle(
-                      color: Colors.white.withValues(alpha: 0.7),
-                    ),
+                    hintStyle: TextStyle(color: Colors.white70),
                     border: InputBorder.none,
                   ),
                   onChanged: (value) => setState(() => _searchQuery = value),
                 )
                 : const Text(AppStrings.expenses),
-        backgroundColor: AppColors.expenses,
+        backgroundColor: AppColors.expensesDark,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -435,8 +439,9 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
       },
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddExpense,
-        backgroundColor: AppColors.expenses,
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: AppColors.expensesDark,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -706,7 +711,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
             icon: const Icon(Icons.add),
             label: const Text('Agregar gasto'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.expenses,
+              backgroundColor: AppColors.expensesDark,
               foregroundColor: Colors.white,
             ),
           ),
@@ -874,8 +879,8 @@ class _ExpenseItemTile extends StatelessWidget {
                     decoration: BoxDecoration(
                       color:
                           expense.allSettled
-                              ? Colors.green.withValues(alpha: 0.1)
-                              : Colors.orange.withValues(alpha: 0.1),
+                              ? AppColors.success.withValues(alpha: 0.1)
+                              : AppColors.warning.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
@@ -884,7 +889,7 @@ class _ExpenseItemTile extends StatelessWidget {
                         fontSize: 10,
                         fontWeight: FontWeight.w500,
                         color:
-                            expense.allSettled ? Colors.green : Colors.orange,
+                            expense.allSettled ? AppColors.success : AppColors.warning,
                       ),
                     ),
                   ),
@@ -1042,8 +1047,9 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
                 'month': _selectedMonth,
               }),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.expenses,
+            backgroundColor: AppColors.expensesDark,
             foregroundColor: Colors.white,
+            minimumSize: const Size(0, AppSizes.buttonHeight),
           ),
           child: const Text('Seleccionar'),
         ),

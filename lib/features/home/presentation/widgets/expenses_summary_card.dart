@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
+import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:intl/intl.dart';
 
 /// Card showing expenses summary on the home dashboard
@@ -12,9 +13,8 @@ class ExpensesSummaryCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Connect to real expenses data when implemented
-    // final summary = ref.watch(expensesSummaryProvider);
-    const monthlyTotal = 0.0;
+    final monthlyTotal = ref.watch(totalExpensesAmountProvider);
+    final colorScheme = Theme.of(context).colorScheme;
 
     final currentMonth = DateFormat('MMMM', 'es').format(DateTime.now());
 
@@ -61,8 +61,8 @@ class ExpensesSummaryCard extends ConsumerWidget {
                           : 'Sin gastos registrados',
                       style: TextStyle(
                         color: monthlyTotal > 0
-                            ? AppColors.textPrimary
-                            : AppColors.textSecondary,
+                            ? colorScheme.onSurface
+                            : colorScheme.onSurfaceVariant,
                         fontSize: AppSizes.fontSm,
                         fontWeight:
                             monthlyTotal > 0 ? FontWeight.w600 : FontWeight.normal,
@@ -71,9 +71,9 @@ class ExpensesSummaryCard extends ConsumerWidget {
                   ],
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.chevron_right,
-                color: AppColors.textTertiary,
+                color: colorScheme.onSurfaceVariant,
               ),
             ],
           ),

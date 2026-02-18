@@ -74,15 +74,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 controller: _searchController,
                 autofocus: true,
                 style: const TextStyle(color: Colors.white),
-                decoration: InputDecoration(
+                cursorColor: Colors.white,
+                decoration: const InputDecoration(
                   hintText: 'Buscar eventos...',
-                  hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+                  hintStyle: TextStyle(color: Colors.white70),
                   border: InputBorder.none,
                 ),
                 onChanged: (value) => setState(() => _searchQuery = value),
               )
             : const Text(AppStrings.calendar),
-        backgroundColor: AppColors.calendar,
+        backgroundColor: AppColors.calendarDark,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -199,7 +200,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       },
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRoutes.addEvent),
-        backgroundColor: AppColors.calendar,
+        backgroundColor: AppColors.calendarDark,
         foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),

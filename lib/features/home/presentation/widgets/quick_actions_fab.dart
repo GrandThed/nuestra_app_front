@@ -82,7 +82,7 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
             index: 2,
             icon: Icons.attach_money,
             label: 'Agregar gasto',
-            color: AppColors.expenses,
+            color: AppColors.expensesDark,
             onTap: () {
               _close();
               context.push(AppRoutes.addExpense);
@@ -92,7 +92,7 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
             index: 1,
             icon: Icons.book_outlined,
             label: 'Nueva receta',
-            color: AppColors.recipes,
+            color: AppColors.recipesDark,
             onTap: () {
               _close();
               context.push(AppRoutes.recipeNew);
@@ -102,7 +102,7 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
             index: 0,
             icon: Icons.restaurant_menu,
             label: 'Planificar comida',
-            color: AppColors.menus,
+            color: AppColors.menusDark,
             onTap: () {
               _close();
               _navigateToAddMeal(context);
@@ -133,6 +133,7 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
     required VoidCallback onTap,
   }) {
     final offset = 70.0 + (index * 56.0);
+    final colorScheme = Theme.of(context).colorScheme;
 
     return AnimatedBuilder(
       animation: _expandAnimation,
@@ -156,7 +157,7 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
           Material(
             elevation: 4,
             borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-            color: AppColors.surface,
+            color: colorScheme.surface,
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: AppSizes.sm,
@@ -167,7 +168,7 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
                 style: TextStyle(
                   fontSize: AppSizes.fontSm,
                   fontWeight: FontWeight.w500,
-                  color: AppColors.textPrimary,
+                  color: colorScheme.onSurface,
                 ),
               ),
             ),

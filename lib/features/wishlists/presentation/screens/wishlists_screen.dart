@@ -124,7 +124,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.wishlists),
-        backgroundColor: AppColors.wishlists,
+        backgroundColor: AppColors.wishlistsDark,
         foregroundColor: Colors.white,
         actions: [
           IconButton(
@@ -166,8 +166,9 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
       },
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddItemDialog(),
-        backgroundColor: AppColors.wishlists,
-        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: AppColors.wishlistsDark,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
       ),
     );
   }
@@ -451,7 +452,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
             icon: const Icon(Icons.add),
             label: const Text('Nueva categoria'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.wishlists,
+              backgroundColor: AppColors.wishlistsDark,
               foregroundColor: Colors.white,
             ),
           ),

@@ -26,7 +26,7 @@ final currentHouseholdIdProvider =
     );
 
 typedef _$CurrentHouseholdId = Notifier<String?>;
-String _$householdNotifierHash() => r'7a8fda4bce5d806607a6a33a9308af3c3567793a';
+String _$householdNotifierHash() => r'ebba3f93846ae0ef8fa34d875c8970785fbeaf72';
 
 /// Notifier for household operations
 ///

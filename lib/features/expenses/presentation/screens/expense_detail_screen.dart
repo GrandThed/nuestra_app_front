@@ -85,6 +85,34 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
     }
   }
 
+  void _showReceiptFullScreen(BuildContext context, String imageUrl) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          backgroundColor: Colors.black,
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+            title: const Text('Comprobante'),
+          ),
+          body: Center(
+            child: InteractiveViewer(
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stack) => const Icon(
+                  Icons.broken_image_outlined,
+                  size: 64,
+                  color: Colors.white54,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Watch for changes
@@ -198,6 +226,38 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
               ),
             ),
           ),
+          // Receipt image
+          if (expense.receiptUrl != null && expense.receiptUrl!.isNotEmpty) ...[
+            const SizedBox(height: AppSizes.lg),
+            Text(
+              'Comprobante',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
+            ),
+            const SizedBox(height: AppSizes.sm),
+            Card(
+              clipBehavior: Clip.antiAlias,
+              child: InkWell(
+                onTap: () => _showReceiptFullScreen(context, expense.receiptUrl!),
+                child: Image.network(
+                  expense.receiptUrl!,
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stack) => Container(
+                    height: 100,
+                    color: colorScheme.surfaceContainerHighest,
+                    child: const Center(
+                      child: Icon(Icons.broken_image_outlined, size: 40),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
           const SizedBox(height: AppSizes.lg),
 
           // Splits section
