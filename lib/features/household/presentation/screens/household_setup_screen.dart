@@ -92,6 +92,84 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
               ),
               const SizedBox(height: AppSizes.xl),
 
+              // --- Join household section ---
+              Text(
+                AppStrings.joinHousehold,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: AppSizes.sm),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSizes.paddingMd),
+                  child: Form(
+                    key: _joinFormKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextFormField(
+                          controller: _codeController,
+                          enabled: !isLoading,
+                          decoration: const InputDecoration(
+                            labelText: AppStrings.inviteCode,
+                            hintText: 'Ingresa el código de invitación',
+                            prefixIcon: Icon(Icons.vpn_key),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor ingresa el código';
+                            }
+                            return null;
+                          },
+                          textCapitalization: TextCapitalization.characters,
+                        ),
+                        const SizedBox(height: AppSizes.sm),
+                        Text(
+                          'Pide a un miembro del hogar que te comparta el código de invitación.',
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppSizes.md),
+                        ElevatedButton(
+                          onPressed: isLoading ? null : _submitJoin,
+                          child: const Text('Unirse'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: AppSizes.lg),
+
+              // --- "or" divider ---
+              Row(
+                children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppSizes.md),
+                    child: Text(
+                      'o',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant,
+                          ),
+                    ),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
+              ),
+
+              const SizedBox(height: AppSizes.lg),
+
               // --- Create household section ---
               Text(
                 AppStrings.createHousehold,
@@ -166,87 +244,9 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
                                 },
                         ),
                         const SizedBox(height: AppSizes.md),
-                        ElevatedButton(
+                        OutlinedButton(
                           onPressed: isLoading ? null : _submitCreate,
                           child: const Text('Crear Hogar'),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: AppSizes.lg),
-
-              // --- "or" divider ---
-              Row(
-                children: [
-                  const Expanded(child: Divider()),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: AppSizes.md),
-                    child: Text(
-                      'o',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant,
-                          ),
-                    ),
-                  ),
-                  const Expanded(child: Divider()),
-                ],
-              ),
-
-              const SizedBox(height: AppSizes.lg),
-
-              // --- Join household section ---
-              Text(
-                AppStrings.joinHousehold,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-              const SizedBox(height: AppSizes.sm),
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(AppSizes.paddingMd),
-                  child: Form(
-                    key: _joinFormKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        TextFormField(
-                          controller: _codeController,
-                          enabled: !isLoading,
-                          decoration: const InputDecoration(
-                            labelText: AppStrings.inviteCode,
-                            hintText: 'Ingresa el código de invitación',
-                            prefixIcon: Icon(Icons.vpn_key),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Por favor ingresa el código';
-                            }
-                            return null;
-                          },
-                          textCapitalization: TextCapitalization.characters,
-                        ),
-                        const SizedBox(height: AppSizes.sm),
-                        Text(
-                          'Pide a un miembro del hogar que te comparta el código de invitación.',
-                          style:
-                              Theme.of(context).textTheme.bodySmall?.copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onSurfaceVariant,
-                                  ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: AppSizes.md),
-                        OutlinedButton(
-                          onPressed: isLoading ? null : _submitJoin,
-                          child: const Text('Unirse'),
                         ),
                       ],
                     ),
