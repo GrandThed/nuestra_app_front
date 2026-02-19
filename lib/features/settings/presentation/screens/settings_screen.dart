@@ -39,7 +39,7 @@ class SettingsScreen extends ConsumerWidget {
                     Text(
                       'Apariencia',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                     const SizedBox(height: AppSizes.sm),
@@ -102,21 +102,21 @@ class SettingsScreen extends ConsumerWidget {
                     subtitle: Text(
                       'Tu hogar, organizado',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textTertiary,
+                            color: Theme.of(context).colorScheme.outline,
                           ),
                     ),
                   ),
                   const Divider(height: 1, indent: AppSizes.paddingMd),
                   ListTile(
-                    leading: const Icon(
+                    leading: Icon(
                       Icons.info_outline,
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     title: const Text('Versi\u00f3n'),
                     trailing: Text(
                       '1.0.0',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                   ),

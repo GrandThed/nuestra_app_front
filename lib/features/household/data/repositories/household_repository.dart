@@ -94,6 +94,13 @@ class HouseholdRepository {
     return MemberModel.fromJson(response['data']['member']);
   }
 
+  /// Delete a household (owner only)
+  Future<void> deleteHousehold(String householdId) async {
+    await _dioClient.delete<Map<String, dynamic>>(
+      ApiConstants.household(householdId),
+    );
+  }
+
   /// Leave a household (for non-owners)
   Future<void> leaveHousehold({
     required String householdId,

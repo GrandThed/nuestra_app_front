@@ -167,6 +167,23 @@ class HouseholdNotifier extends _$HouseholdNotifier {
     }
   }
 
+  /// Delete household (owner only)
+  Future<bool> deleteHousehold({required String householdId}) async {
+    try {
+      await _repository.deleteHousehold(householdId);
+      ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(null);
+      state = const HouseholdState.initial();
+      await ref.read(authNotifierProvider.notifier).refreshUser();
+      return true;
+    } on AppException catch (e) {
+      debugPrint('Error deleting household: ${e.message}');
+      return false;
+    } catch (e) {
+      debugPrint('Error deleting household: $e');
+      return false;
+    }
+  }
+
   /// Leave household
   Future<bool> leaveHousehold({
     required String householdId,

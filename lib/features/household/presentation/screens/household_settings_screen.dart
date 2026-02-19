@@ -131,7 +131,7 @@ class _HouseholdSettingsScreenState
                 Text(
                   'Hemisferio: ${household.hemisphere == 'south' ? 'Sur' : 'Norte'}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
               ],
@@ -187,6 +187,20 @@ class _HouseholdSettingsScreenState
             ),
           ),
         ],
+
+        // Delete household (only for owners)
+        if (isOwner) ...[
+          const Divider(),
+          const SizedBox(height: AppSizes.md),
+          TextButton.icon(
+            onPressed: () => _showDeleteDialog(context, household),
+            icon: const Icon(Icons.delete_forever),
+            label: const Text('Eliminar hogar'),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.error,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -205,7 +219,9 @@ class _HouseholdSettingsScreenState
             if (activeInvite != null) ...[
               Text(
                 'Código de invitación activo:',
-                style: Theme.of(context).textTheme.bodySmall,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
               ),
               const SizedBox(height: AppSizes.sm),
               // Code display
@@ -234,7 +250,7 @@ class _HouseholdSettingsScreenState
                     Text(
                       'Expira: ${_formatDate(activeInvite.expiresAt)}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                   ],
@@ -287,7 +303,7 @@ class _HouseholdSettingsScreenState
                 child: Text(
                   'Generar un nuevo código invalidará el actual',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                         fontStyle: FontStyle.italic,
                       ),
                   textAlign: TextAlign.center,
@@ -322,10 +338,14 @@ class _HouseholdSettingsScreenState
               children: [
                 Text(member.name),
                 if (isCurrentUser)
-                  const Padding(
-                    padding: EdgeInsets.only(left: AppSizes.xs),
-                    child:
-                        Text('(tú)', style: TextStyle(color: AppColors.textSecondary)),
+                  Padding(
+                    padding: const EdgeInsets.only(left: AppSizes.xs),
+                    child: Text(
+                      '(tú)',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -353,7 +373,7 @@ class _HouseholdSettingsScreenState
                     child: Text(
                       'Responsable de pagar gastos',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                   ),
@@ -571,6 +591,59 @@ O ingresa el código manualmente: $code
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Error al abandonar el hogar'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showDeleteDialog(BuildContext context, HouseholdModel household) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Eliminar hogar'),
+        content: Text(
+          '¿Estás seguro que deseas eliminar "${household.name}"? '
+          'Se borrarán permanentemente todos los tableros, recetas, menús, '
+          'gastos, listas de deseos y eventos del calendario. '
+          'Esta acción no se puede deshacer.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text(AppStrings.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(dialogContext);
+              _deleteHousehold(household.id);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.error,
+              foregroundColor: Colors.white,
+              minimumSize: const Size(0, AppSizes.buttonHeight),
+            ),
+            child: const Text('Eliminar'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteHousehold(String householdId) async {
+    final success =
+        await ref.read(householdNotifierProvider.notifier).deleteHousehold(
+              householdId: householdId,
+            );
+
+    if (mounted) {
+      if (success) {
+        context.go(AppRoutes.householdSetup);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Error al eliminar el hogar'),
             backgroundColor: AppColors.error,
           ),
         );

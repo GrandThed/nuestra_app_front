@@ -19,8 +19,8 @@ class HouseholdSetupScreen extends ConsumerStatefulWidget {
 }
 
 class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
-  bool _isCreating = true;
-  final _formKey = GlobalKey<FormState>();
+  final _createFormKey = GlobalKey<FormState>();
+  final _joinFormKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _codeController = TextEditingController();
   String _selectedHemisphere = 'south'; // Default for Argentina
@@ -59,10 +59,8 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            _isCreating ? AppStrings.createHousehold : AppStrings.joinHousehold),
+        title: const Text('Configurar hogar'),
         actions: [
-          // Logout option
           IconButton(
             onPressed: () => _showLogoutDialog(context),
             icon: const Icon(Icons.logout),
@@ -71,172 +69,218 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
         ],
       ),
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSizes.paddingLg),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Welcome text
-                Text(
-                  'Bienvenido a ${AppStrings.appName}',
-                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSizes.sm),
-                Text(
-                  'Para comenzar, crea un nuevo hogar o únete a uno existente.',
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: AppSizes.xl),
-
-                // Toggle between create and join
-                SegmentedButton<bool>(
-                  segments: const [
-                    ButtonSegment(
-                      value: true,
-                      label: Text('Crear'),
-                      icon: Icon(Icons.add_home),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Welcome text
+              Text(
+                'Bienvenido a ${AppStrings.appName}',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    ButtonSegment(
-                      value: false,
-                      label: Text('Unirse'),
-                      icon: Icon(Icons.group_add),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSizes.sm),
+              Text(
+                'Para comenzar, crea un nuevo hogar o únete a uno existente.',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
-                  ],
-                  selected: {_isCreating},
-                  onSelectionChanged: isLoading
-                      ? null
-                      : (selected) {
-                          setState(() => _isCreating = selected.first);
-                        },
-                ),
-                const SizedBox(height: AppSizes.xl),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: AppSizes.xl),
 
-                if (_isCreating) ...[
-                  // Create household form
-                  TextFormField(
-                    controller: _nameController,
-                    enabled: !isLoading,
-                    decoration: const InputDecoration(
-                      labelText: AppStrings.householdName,
-                      hintText: 'Ej: Casa de Juan y María',
-                      prefixIcon: Icon(Icons.home),
+              // --- Create household section ---
+              Text(
+                AppStrings.createHousehold,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa un nombre';
-                      }
-                      if (value.length < 3) {
-                        return 'El nombre debe tener al menos 3 caracteres';
-                      }
-                      return null;
-                    },
-                    textCapitalization: TextCapitalization.words,
-                  ),
-                  const SizedBox(height: AppSizes.lg),
-
-                  // Hemisphere selection
-                  Text(
-                    'Hemisferio',
-                    style: Theme.of(context).textTheme.titleSmall,
-                  ),
-                  const SizedBox(height: AppSizes.sm),
-                  Text(
-                    'Usado para mostrar vegetales de temporada',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                  ),
-                  const SizedBox(height: AppSizes.sm),
-                  SegmentedButton<String>(
-                    segments: const [
-                      ButtonSegment(
-                        value: 'south',
-                        label: Text('Sur'),
-                        icon: Icon(Icons.south),
-                      ),
-                      ButtonSegment(
-                        value: 'north',
-                        label: Text('Norte'),
-                        icon: Icon(Icons.north),
-                      ),
-                    ],
-                    selected: {_selectedHemisphere},
-                    onSelectionChanged: isLoading
-                        ? null
-                        : (selected) {
-                            setState(() => _selectedHemisphere = selected.first);
+              ),
+              const SizedBox(height: AppSizes.sm),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSizes.paddingMd),
+                  child: Form(
+                    key: _createFormKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextFormField(
+                          controller: _nameController,
+                          enabled: !isLoading,
+                          decoration: const InputDecoration(
+                            labelText: AppStrings.householdName,
+                            hintText: 'Ej: Casa de Juan y María',
+                            prefixIcon: Icon(Icons.home),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor ingresa un nombre';
+                            }
+                            if (value.length < 3) {
+                              return 'El nombre debe tener al menos 3 caracteres';
+                            }
+                            return null;
                           },
-                  ),
-                ] else ...[
-                  // Join household form
-                  TextFormField(
-                    controller: _codeController,
-                    enabled: !isLoading,
-                    decoration: const InputDecoration(
-                      labelText: AppStrings.inviteCode,
-                      hintText: 'Ingresa el código de invitación',
-                      prefixIcon: Icon(Icons.vpn_key),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa el código';
-                      }
-                      return null;
-                    },
-                    textCapitalization: TextCapitalization.characters,
-                  ),
-                  const SizedBox(height: AppSizes.md),
-                  Text(
-                    'Pide a un miembro del hogar que te comparta el código de invitación.',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppColors.textSecondary,
+                          textCapitalization: TextCapitalization.words,
                         ),
-                    textAlign: TextAlign.center,
+                        const SizedBox(height: AppSizes.md),
+
+                        // Hemisphere selection
+                        Text(
+                          'Hemisferio',
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const SizedBox(height: AppSizes.xs),
+                        Text(
+                          'Usado para mostrar vegetales de temporada',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onSurfaceVariant,
+                              ),
+                        ),
+                        const SizedBox(height: AppSizes.sm),
+                        SegmentedButton<String>(
+                          segments: const [
+                            ButtonSegment(
+                              value: 'south',
+                              label: Text('Sur'),
+                              icon: Icon(Icons.south),
+                            ),
+                            ButtonSegment(
+                              value: 'north',
+                              label: Text('Norte'),
+                              icon: Icon(Icons.north),
+                            ),
+                          ],
+                          selected: {_selectedHemisphere},
+                          onSelectionChanged: isLoading
+                              ? null
+                              : (selected) {
+                                  setState(
+                                      () => _selectedHemisphere = selected.first);
+                                },
+                        ),
+                        const SizedBox(height: AppSizes.md),
+                        ElevatedButton(
+                          onPressed: isLoading ? null : _submitCreate,
+                          child: const Text('Crear Hogar'),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-
-                const Spacer(),
-
-                // Loading indicator
-                if (isLoading)
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: AppSizes.md),
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-
-                // Submit button
-                ElevatedButton(
-                  onPressed: isLoading ? null : _submit,
-                  child: Text(_isCreating ? 'Crear Hogar' : 'Unirse'),
                 ),
-              ],
-            ),
+              ),
+
+              const SizedBox(height: AppSizes.lg),
+
+              // --- "or" divider ---
+              Row(
+                children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppSizes.md),
+                    child: Text(
+                      'o',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant,
+                          ),
+                    ),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
+              ),
+
+              const SizedBox(height: AppSizes.lg),
+
+              // --- Join household section ---
+              Text(
+                AppStrings.joinHousehold,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: AppSizes.sm),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSizes.paddingMd),
+                  child: Form(
+                    key: _joinFormKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        TextFormField(
+                          controller: _codeController,
+                          enabled: !isLoading,
+                          decoration: const InputDecoration(
+                            labelText: AppStrings.inviteCode,
+                            hintText: 'Ingresa el código de invitación',
+                            prefixIcon: Icon(Icons.vpn_key),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor ingresa el código';
+                            }
+                            return null;
+                          },
+                          textCapitalization: TextCapitalization.characters,
+                        ),
+                        const SizedBox(height: AppSizes.sm),
+                        Text(
+                          'Pide a un miembro del hogar que te comparta el código de invitación.',
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onSurfaceVariant,
+                                  ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppSizes.md),
+                        OutlinedButton(
+                          onPressed: isLoading ? null : _submitJoin,
+                          child: const Text('Unirse'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+
+              // Loading indicator
+              if (isLoading)
+                const Padding(
+                  padding: EdgeInsets.only(top: AppSizes.lg),
+                  child: Center(child: CircularProgressIndicator()),
+                ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      if (_isCreating) {
-        ref.read(householdNotifierProvider.notifier).createHousehold(
-              name: _nameController.text.trim(),
-              hemisphere: _selectedHemisphere,
-            );
-      } else {
-        ref.read(householdNotifierProvider.notifier).joinHousehold(
-              _codeController.text.trim(),
-            );
-      }
+  void _submitCreate() {
+    if (_createFormKey.currentState!.validate()) {
+      ref.read(householdNotifierProvider.notifier).createHousehold(
+            name: _nameController.text.trim(),
+            hemisphere: _selectedHemisphere,
+          );
+    }
+  }
+
+  void _submitJoin() {
+    if (_joinFormKey.currentState!.validate()) {
+      ref.read(householdNotifierProvider.notifier).joinHousehold(
+            _codeController.text.trim(),
+          );
     }
   }
 

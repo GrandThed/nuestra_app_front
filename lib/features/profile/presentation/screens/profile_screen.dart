@@ -61,14 +61,13 @@ class ProfileScreen extends ConsumerWidget {
                       userName,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.textPrimary,
                           ),
                     ),
                     const SizedBox(height: AppSizes.xs),
                     Text(
                       userEmail,
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
 
@@ -114,23 +113,17 @@ class ProfileScreen extends ConsumerWidget {
                     // --- Menu options card ---
                     Card(
                       elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(AppSizes.radiusMd),
-                        side: const BorderSide(color: AppColors.border),
-                      ),
-                      color: AppColors.surface,
                       child: Column(
                         children: [
                           ListTile(
-                            leading: const Icon(
+                            leading: Icon(
                               Icons.home_outlined,
-                              color: AppColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                             title: const Text('Ajustes del hogar'),
-                            trailing: const Icon(
+                            trailing: Icon(
                               Icons.chevron_right,
-                              color: AppColors.textTertiary,
+                              color: Theme.of(context).colorScheme.outline,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.vertical(
@@ -144,17 +137,16 @@ class ProfileScreen extends ConsumerWidget {
                             height: 1,
                             indent: AppSizes.md,
                             endIndent: AppSizes.md,
-                            color: AppColors.border,
                           ),
                           ListTile(
-                            leading: const Icon(
+                            leading: Icon(
                               Icons.settings_outlined,
-                              color: AppColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                             title: Text(AppStrings.settings),
-                            trailing: const Icon(
+                            trailing: Icon(
                               Icons.chevron_right,
-                              color: AppColors.textTertiary,
+                              color: Theme.of(context).colorScheme.outline,
                             ),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.vertical(
