@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
@@ -355,12 +356,12 @@ class _HouseholdSettingsScreenState
                     onPressed: () => _showIncomeDialog(context, member),
                     child: Text(
                       member.income != null
-                          ? '\$${member.income!.toStringAsFixed(0)}'
+                          ? '\$${NumberFormat.decimalPattern('es').format(member.income!.toInt())}'
                           : 'Agregar ingreso',
                     ),
                   )
                 : member.income != null
-                    ? Text('\$${member.income!.toStringAsFixed(0)}')
+                    ? Text('\$${NumberFormat.decimalPattern('es').format(member.income!.toInt())}')
                     : null,
           ),
           // Pays expenses toggle (only for current user)
