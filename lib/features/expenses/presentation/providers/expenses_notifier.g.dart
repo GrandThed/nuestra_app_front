@@ -380,7 +380,7 @@ final expensesNotifierProvider =
 
 typedef _$ExpensesNotifier = Notifier<ExpensesState>;
 String _$expenseSummaryNotifierHash() =>
-    r'a1813f48936706db4bfb5cdcb7eb5ee58e6be760';
+    r'a61fa4cfd5cf1cf23059aa17c571af0a085fefd9';
 
 /// Notifier for expense summary
 ///

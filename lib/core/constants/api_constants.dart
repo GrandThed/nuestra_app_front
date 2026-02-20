@@ -78,6 +78,7 @@ class ApiConstants {
   static String expenseSettle(String id) => '/api/expenses/$id/settle';
   static const String expenseSettlePeriod = '/api/expenses/settle-period';
   static const String expenseSummary = '/api/expenses/summary';
+  static const String expenseRecalculateSplits = '/api/expenses/recalculate-splits';
   static const String expenseRecurring = '/api/expenses/recurring';
   static String expenseRecurringItem(String id) =>
       '/api/expenses/recurring/$id';

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$HouseholdModel {
 
- String get id; String get name; String get hemisphere; DateTime get createdAt; List<MemberModel>? get members;
+ String get id; String get name; String get hemisphere; String get splitMode; DateTime get createdAt; List<MemberModel>? get members;
 /// Create a copy of HouseholdModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $HouseholdModelCopyWith<HouseholdModel> get copyWith => _$HouseholdModelCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is HouseholdModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.hemisphere, hemisphere) || other.hemisphere == hemisphere)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.members, members));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is HouseholdModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.hemisphere, hemisphere) || other.hemisphere == hemisphere)&&(identical(other.splitMode, splitMode) || other.splitMode == splitMode)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.members, members));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,hemisphere,createdAt,const DeepCollectionEquality().hash(members));
+int get hashCode => Object.hash(runtimeType,id,name,hemisphere,splitMode,createdAt,const DeepCollectionEquality().hash(members));
 
 @override
 String toString() {
-  return 'HouseholdModel(id: $id, name: $name, hemisphere: $hemisphere, createdAt: $createdAt, members: $members)';
+  return 'HouseholdModel(id: $id, name: $name, hemisphere: $hemisphere, splitMode: $splitMode, createdAt: $createdAt, members: $members)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $HouseholdModelCopyWith<$Res>  {
   factory $HouseholdModelCopyWith(HouseholdModel value, $Res Function(HouseholdModel) _then) = _$HouseholdModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String hemisphere, DateTime createdAt, List<MemberModel>? members
+ String id, String name, String hemisphere, String splitMode, DateTime createdAt, List<MemberModel>? members
 });
 
 
@@ -65,11 +65,12 @@ class _$HouseholdModelCopyWithImpl<$Res>
 
 /// Create a copy of HouseholdModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? hemisphere = null,Object? createdAt = null,Object? members = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? hemisphere = null,Object? splitMode = null,Object? createdAt = null,Object? members = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,hemisphere: null == hemisphere ? _self.hemisphere : hemisphere // ignore: cast_nullable_to_non_nullable
+as String,splitMode: null == splitMode ? _self.splitMode : splitMode // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,members: freezed == members ? _self.members : members // ignore: cast_nullable_to_non_nullable
 as List<MemberModel>?,
@@ -154,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String hemisphere,  DateTime createdAt,  List<MemberModel>? members)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String hemisphere,  String splitMode,  DateTime createdAt,  List<MemberModel>? members)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _HouseholdModel() when $default != null:
-return $default(_that.id,_that.name,_that.hemisphere,_that.createdAt,_that.members);case _:
+return $default(_that.id,_that.name,_that.hemisphere,_that.splitMode,_that.createdAt,_that.members);case _:
   return orElse();
 
 }
@@ -175,10 +176,10 @@ return $default(_that.id,_that.name,_that.hemisphere,_that.createdAt,_that.membe
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String hemisphere,  DateTime createdAt,  List<MemberModel>? members)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String hemisphere,  String splitMode,  DateTime createdAt,  List<MemberModel>? members)  $default,) {final _that = this;
 switch (_that) {
 case _HouseholdModel():
-return $default(_that.id,_that.name,_that.hemisphere,_that.createdAt,_that.members);}
+return $default(_that.id,_that.name,_that.hemisphere,_that.splitMode,_that.createdAt,_that.members);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -192,10 +193,10 @@ return $default(_that.id,_that.name,_that.hemisphere,_that.createdAt,_that.membe
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String hemisphere,  DateTime createdAt,  List<MemberModel>? members)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String hemisphere,  String splitMode,  DateTime createdAt,  List<MemberModel>? members)?  $default,) {final _that = this;
 switch (_that) {
 case _HouseholdModel() when $default != null:
-return $default(_that.id,_that.name,_that.hemisphere,_that.createdAt,_that.members);case _:
+return $default(_that.id,_that.name,_that.hemisphere,_that.splitMode,_that.createdAt,_that.members);case _:
   return null;
 
 }
@@ -207,12 +208,13 @@ return $default(_that.id,_that.name,_that.hemisphere,_that.createdAt,_that.membe
 @JsonSerializable()
 
 class _HouseholdModel implements HouseholdModel {
-  const _HouseholdModel({required this.id, required this.name, required this.hemisphere, required this.createdAt, final  List<MemberModel>? members}): _members = members;
+  const _HouseholdModel({required this.id, required this.name, required this.hemisphere, this.splitMode = 'equal', required this.createdAt, final  List<MemberModel>? members}): _members = members;
   factory _HouseholdModel.fromJson(Map<String, dynamic> json) => _$HouseholdModelFromJson(json);
 
 @override final  String id;
 @override final  String name;
 @override final  String hemisphere;
+@override@JsonKey() final  String splitMode;
 @override final  DateTime createdAt;
  final  List<MemberModel>? _members;
 @override List<MemberModel>? get members {
@@ -237,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HouseholdModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.hemisphere, hemisphere) || other.hemisphere == hemisphere)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._members, _members));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _HouseholdModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.hemisphere, hemisphere) || other.hemisphere == hemisphere)&&(identical(other.splitMode, splitMode) || other.splitMode == splitMode)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._members, _members));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,hemisphere,createdAt,const DeepCollectionEquality().hash(_members));
+int get hashCode => Object.hash(runtimeType,id,name,hemisphere,splitMode,createdAt,const DeepCollectionEquality().hash(_members));
 
 @override
 String toString() {
-  return 'HouseholdModel(id: $id, name: $name, hemisphere: $hemisphere, createdAt: $createdAt, members: $members)';
+  return 'HouseholdModel(id: $id, name: $name, hemisphere: $hemisphere, splitMode: $splitMode, createdAt: $createdAt, members: $members)';
 }
 
 
@@ -257,7 +259,7 @@ abstract mixin class _$HouseholdModelCopyWith<$Res> implements $HouseholdModelCo
   factory _$HouseholdModelCopyWith(_HouseholdModel value, $Res Function(_HouseholdModel) _then) = __$HouseholdModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String hemisphere, DateTime createdAt, List<MemberModel>? members
+ String id, String name, String hemisphere, String splitMode, DateTime createdAt, List<MemberModel>? members
 });
 
 
@@ -274,11 +276,12 @@ class __$HouseholdModelCopyWithImpl<$Res>
 
 /// Create a copy of HouseholdModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? hemisphere = null,Object? createdAt = null,Object? members = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? hemisphere = null,Object? splitMode = null,Object? createdAt = null,Object? members = freezed,}) {
   return _then(_HouseholdModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,hemisphere: null == hemisphere ? _self.hemisphere : hemisphere // ignore: cast_nullable_to_non_nullable
+as String,splitMode: null == splitMode ? _self.splitMode : splitMode // ignore: cast_nullable_to_non_nullable
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,members: freezed == members ? _self._members : members // ignore: cast_nullable_to_non_nullable
 as List<MemberModel>?,

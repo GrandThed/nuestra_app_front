@@ -11,6 +11,7 @@ _HouseholdModel _$HouseholdModelFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       name: json['name'] as String,
       hemisphere: json['hemisphere'] as String,
+      splitMode: json['splitMode'] as String? ?? 'equal',
       createdAt: DateTime.parse(json['createdAt'] as String),
       members:
           (json['members'] as List<dynamic>?)
@@ -23,6 +24,7 @@ Map<String, dynamic> _$HouseholdModelToJson(_HouseholdModel instance) =>
       'id': instance.id,
       'name': instance.name,
       'hemisphere': instance.hemisphere,
+      'splitMode': instance.splitMode,
       'createdAt': instance.createdAt.toIso8601String(),
       'members': instance.members,
     };

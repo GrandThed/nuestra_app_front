@@ -141,6 +141,31 @@ class HouseholdNotifier extends _$HouseholdNotifier {
     }
   }
 
+  /// Update household settings (splitMode, name, hemisphere)
+  Future<bool> updateHousehold({
+    required String householdId,
+    String? name,
+    String? hemisphere,
+    String? splitMode,
+  }) async {
+    try {
+      final household = await _repository.updateHousehold(
+        householdId: householdId,
+        name: name,
+        hemisphere: hemisphere,
+        splitMode: splitMode,
+      );
+      state = HouseholdState.loaded(household);
+      return true;
+    } on AppException catch (e) {
+      debugPrint('Error updating household: ${e.message}');
+      return false;
+    } catch (e) {
+      debugPrint('Error updating household: $e');
+      return false;
+    }
+  }
+
   /// Update member settings (income, paysExpenses)
   Future<bool> updateMember({
     required String householdId,

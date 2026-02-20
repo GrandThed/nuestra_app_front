@@ -141,6 +141,33 @@ class _HouseholdSettingsScreenState
         ),
         const SizedBox(height: AppSizes.lg),
 
+        // Expense split mode
+        if (isOwner) ...[
+          Text(
+            'Gastos',
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          const SizedBox(height: AppSizes.sm),
+          Card(
+            child: SwitchListTile(
+              title: const Text('División proporcional por ingreso'),
+              subtitle: const Text(
+                'Quien gana más paga más. Si está desactivado, los gastos se dividen en partes iguales.',
+              ),
+              value: household.splitMode == 'proportional',
+              activeTrackColor: AppColors.expenses.withValues(alpha: 0.5),
+              activeThumbColor: AppColors.expenses,
+              onChanged: (value) => _updateSplitMode(
+                household,
+                value ? 'proportional' : 'equal',
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSizes.lg),
+        ],
+
         // Members section
         Text(
           AppStrings.members,
@@ -441,6 +468,29 @@ class _HouseholdSettingsScreenState
         ],
       ),
     );
+  }
+
+  Future<void> _updateSplitMode(HouseholdModel household, String splitMode) async {
+    final success =
+        await ref.read(householdNotifierProvider.notifier).updateHousehold(
+              householdId: household.id,
+              splitMode: splitMode,
+            );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            success
+                ? (splitMode == 'proportional'
+                    ? 'División proporcional activada'
+                    : 'División igualitaria activada')
+                : 'Error al actualizar configuración',
+          ),
+          backgroundColor: success ? AppColors.success : AppColors.error,
+        ),
+      );
+    }
   }
 
   Future<void> _updateIncome(MemberModel member, double income) async {

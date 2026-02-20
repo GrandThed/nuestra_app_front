@@ -9,6 +9,7 @@ sealed class HouseholdModel with _$HouseholdModel {
     required String id,
     required String name,
     required String hemisphere,
+    @Default('equal') String splitMode,
     required DateTime createdAt,
     List<MemberModel>? members,
   }) = _HouseholdModel;

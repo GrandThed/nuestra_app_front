@@ -68,7 +68,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Load today's meals
     final today = DateTime.now();
     final weekStart = DateTime(today.year, today.month, today.day);
-    ref.read(upcomingMealsNotifierProvider.notifier).loadWeekIfNeeded(weekStart);
+    ref
+        .read(upcomingMealsNotifierProvider.notifier)
+        .loadWeekIfNeeded(weekStart);
 
     // Load menu plans for the FAB
     ref.read(menuPlansNotifierProvider.notifier).loadMenuPlansIfNeeded();
@@ -164,16 +166,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       children: [
         Text(
           '$greeting,',
-          style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(color: colorScheme.onSurfaceVariant),
         ),
         Text(
           userName,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onSurface,
+          ),
         ),
       ],
     );

@@ -449,6 +449,31 @@ class ExpenseSummaryNotifier extends _$ExpenseSummaryNotifier {
     }
   }
 
+  /// Recalculate splits based on current income
+  Future<RecalculateSplitsResultModel?> recalculateSplits({
+    int? month,
+    int? year,
+  }) async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null) return null;
+
+    try {
+      final result = await _repository.recalculateSplits(
+        householdId: householdId,
+        month: month,
+        year: year,
+      );
+
+      return result;
+    } on AppException catch (e) {
+      debugPrint('Error recalculating splits: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint('Error recalculating splits: $e');
+      return null;
+    }
+  }
+
   /// Settle all expenses in a period
   /// Note: Caller should reload summary after this completes
   Future<SettlePeriodResultModel?> settlePeriod({

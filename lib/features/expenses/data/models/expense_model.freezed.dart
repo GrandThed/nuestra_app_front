@@ -2850,6 +2850,269 @@ as int,
 
 
 /// @nodoc
+mixin _$RecalculateSplitsResultModel {
+
+ int get updatedCount; int get skippedCustom; int get total;
+/// Create a copy of RecalculateSplitsResultModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RecalculateSplitsResultModelCopyWith<RecalculateSplitsResultModel> get copyWith => _$RecalculateSplitsResultModelCopyWithImpl<RecalculateSplitsResultModel>(this as RecalculateSplitsResultModel, _$identity);
+
+  /// Serializes this RecalculateSplitsResultModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecalculateSplitsResultModel&&(identical(other.updatedCount, updatedCount) || other.updatedCount == updatedCount)&&(identical(other.skippedCustom, skippedCustom) || other.skippedCustom == skippedCustom)&&(identical(other.total, total) || other.total == total));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,updatedCount,skippedCustom,total);
+
+@override
+String toString() {
+  return 'RecalculateSplitsResultModel(updatedCount: $updatedCount, skippedCustom: $skippedCustom, total: $total)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $RecalculateSplitsResultModelCopyWith<$Res>  {
+  factory $RecalculateSplitsResultModelCopyWith(RecalculateSplitsResultModel value, $Res Function(RecalculateSplitsResultModel) _then) = _$RecalculateSplitsResultModelCopyWithImpl;
+@useResult
+$Res call({
+ int updatedCount, int skippedCustom, int total
+});
+
+
+
+
+}
+/// @nodoc
+class _$RecalculateSplitsResultModelCopyWithImpl<$Res>
+    implements $RecalculateSplitsResultModelCopyWith<$Res> {
+  _$RecalculateSplitsResultModelCopyWithImpl(this._self, this._then);
+
+  final RecalculateSplitsResultModel _self;
+  final $Res Function(RecalculateSplitsResultModel) _then;
+
+/// Create a copy of RecalculateSplitsResultModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? updatedCount = null,Object? skippedCustom = null,Object? total = null,}) {
+  return _then(_self.copyWith(
+updatedCount: null == updatedCount ? _self.updatedCount : updatedCount // ignore: cast_nullable_to_non_nullable
+as int,skippedCustom: null == skippedCustom ? _self.skippedCustom : skippedCustom // ignore: cast_nullable_to_non_nullable
+as int,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [RecalculateSplitsResultModel].
+extension RecalculateSplitsResultModelPatterns on RecalculateSplitsResultModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RecalculateSplitsResultModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _RecalculateSplitsResultModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RecalculateSplitsResultModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _RecalculateSplitsResultModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RecalculateSplitsResultModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _RecalculateSplitsResultModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int updatedCount,  int skippedCustom,  int total)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _RecalculateSplitsResultModel() when $default != null:
+return $default(_that.updatedCount,_that.skippedCustom,_that.total);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int updatedCount,  int skippedCustom,  int total)  $default,) {final _that = this;
+switch (_that) {
+case _RecalculateSplitsResultModel():
+return $default(_that.updatedCount,_that.skippedCustom,_that.total);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int updatedCount,  int skippedCustom,  int total)?  $default,) {final _that = this;
+switch (_that) {
+case _RecalculateSplitsResultModel() when $default != null:
+return $default(_that.updatedCount,_that.skippedCustom,_that.total);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _RecalculateSplitsResultModel implements RecalculateSplitsResultModel {
+  const _RecalculateSplitsResultModel({required this.updatedCount, required this.skippedCustom, required this.total});
+  factory _RecalculateSplitsResultModel.fromJson(Map<String, dynamic> json) => _$RecalculateSplitsResultModelFromJson(json);
+
+@override final  int updatedCount;
+@override final  int skippedCustom;
+@override final  int total;
+
+/// Create a copy of RecalculateSplitsResultModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RecalculateSplitsResultModelCopyWith<_RecalculateSplitsResultModel> get copyWith => __$RecalculateSplitsResultModelCopyWithImpl<_RecalculateSplitsResultModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$RecalculateSplitsResultModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecalculateSplitsResultModel&&(identical(other.updatedCount, updatedCount) || other.updatedCount == updatedCount)&&(identical(other.skippedCustom, skippedCustom) || other.skippedCustom == skippedCustom)&&(identical(other.total, total) || other.total == total));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,updatedCount,skippedCustom,total);
+
+@override
+String toString() {
+  return 'RecalculateSplitsResultModel(updatedCount: $updatedCount, skippedCustom: $skippedCustom, total: $total)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RecalculateSplitsResultModelCopyWith<$Res> implements $RecalculateSplitsResultModelCopyWith<$Res> {
+  factory _$RecalculateSplitsResultModelCopyWith(_RecalculateSplitsResultModel value, $Res Function(_RecalculateSplitsResultModel) _then) = __$RecalculateSplitsResultModelCopyWithImpl;
+@override @useResult
+$Res call({
+ int updatedCount, int skippedCustom, int total
+});
+
+
+
+
+}
+/// @nodoc
+class __$RecalculateSplitsResultModelCopyWithImpl<$Res>
+    implements _$RecalculateSplitsResultModelCopyWith<$Res> {
+  __$RecalculateSplitsResultModelCopyWithImpl(this._self, this._then);
+
+  final _RecalculateSplitsResultModel _self;
+  final $Res Function(_RecalculateSplitsResultModel) _then;
+
+/// Create a copy of RecalculateSplitsResultModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? updatedCount = null,Object? skippedCustom = null,Object? total = null,}) {
+  return _then(_RecalculateSplitsResultModel(
+updatedCount: null == updatedCount ? _self.updatedCount : updatedCount // ignore: cast_nullable_to_non_nullable
+as int,skippedCustom: null == skippedCustom ? _self.skippedCustom : skippedCustom // ignore: cast_nullable_to_non_nullable
+as int,total: null == total ? _self.total : total // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
 mixin _$RecurringExpenseModel {
 
  String get id; String get householdId; String get description;@DecimalConverter() double get amount; String get currency; String? get categoryId; ExpenseCategoryModel? get category; String get paidById; ExpenseUserModel? get paidBy; String get recurrence; DateTime get nextDueDate; bool get isActive; DateTime get createdAt;

@@ -85,6 +85,61 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
     }
   }
 
+  Future<void> _recalculateSplits() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Recalcular divisiones'),
+        content: const Text(
+          'Se recalcularán las divisiones de todos los gastos de este mes '
+          'usando los ingresos actuales de cada miembro.\n\n'
+          'Los gastos con divisiones personalizadas no se modificarán.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Recalcular'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      final result = await ref
+          .read(expenseSummaryNotifierProvider.notifier)
+          .recalculateSplits(
+            month: _selectedMonth,
+            year: _selectedYear,
+          );
+
+      if (mounted && result != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Se recalcularon ${result.updatedCount} gastos'
+              '${result.skippedCustom > 0 ? ' (${result.skippedCustom} personalizados omitidos)' : ''}',
+            ),
+          ),
+        );
+        // Reload summary and expenses
+        ref.read(expenseSummaryNotifierProvider.notifier).loadSummary(
+              month: _selectedMonth,
+              year: _selectedYear,
+              forceLoading: true,
+            );
+        ref.read(expensesNotifierProvider.notifier).loadExpenses(
+              month: _selectedMonth,
+              year: _selectedYear,
+              forceLoading: true,
+            );
+      }
+    }
+  }
+
   Future<void> _settlePeriod() async {
     final summaryState = ref.read(expenseSummaryNotifierProvider);
     if (summaryState is! ExpenseSummaryStateLoaded) return;
@@ -192,6 +247,11 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
         backgroundColor: AppColors.expenses,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.calculate_outlined),
+            tooltip: 'Recalcular divisiones por ingreso',
+            onPressed: _recalculateSplits,
+          ),
           IconButton(
             icon: const Icon(Icons.check_circle_outline),
             tooltip: 'Saldar período',

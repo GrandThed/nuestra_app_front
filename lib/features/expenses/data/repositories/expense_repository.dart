@@ -242,6 +242,27 @@ class ExpenseRepository {
         response['data'] as Map<String, dynamic>);
   }
 
+  // ==================== RECALCULATE SPLITS ====================
+
+  /// Recalculate expense splits based on current household member income
+  Future<RecalculateSplitsResultModel> recalculateSplits({
+    required String householdId,
+    int? month,
+    int? year,
+  }) async {
+    final response = await _dioClient.post<Map<String, dynamic>>(
+      ApiConstants.expenseRecalculateSplits,
+      data: {
+        'householdId': householdId,
+        if (month != null) 'month': month,
+        if (year != null) 'year': year,
+      },
+    );
+
+    return RecalculateSplitsResultModel.fromJson(
+        response['data'] as Map<String, dynamic>);
+  }
+
   // ==================== RECURRING EXPENSES ====================
 
   /// Get all recurring expenses for a household

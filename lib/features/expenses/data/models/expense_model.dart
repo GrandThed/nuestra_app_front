@@ -186,6 +186,19 @@ sealed class SettlePeriodResultModel with _$SettlePeriodResultModel {
       _$SettlePeriodResultModelFromJson(json);
 }
 
+/// Model for recalculate splits response
+@freezed
+sealed class RecalculateSplitsResultModel with _$RecalculateSplitsResultModel {
+  const factory RecalculateSplitsResultModel({
+    required int updatedCount,
+    required int skippedCustom,
+    required int total,
+  }) = _RecalculateSplitsResultModel;
+
+  factory RecalculateSplitsResultModel.fromJson(Map<String, dynamic> json) =>
+      _$RecalculateSplitsResultModelFromJson(json);
+}
+
 /// Model for a recurring expense
 @freezed
 sealed class RecurringExpenseModel with _$RecurringExpenseModel {

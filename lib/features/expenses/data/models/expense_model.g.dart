@@ -230,6 +230,22 @@ Map<String, dynamic> _$SettlePeriodResultModelToJson(
   'expensesAffected': instance.expensesAffected,
 };
 
+_RecalculateSplitsResultModel _$RecalculateSplitsResultModelFromJson(
+  Map<String, dynamic> json,
+) => _RecalculateSplitsResultModel(
+  updatedCount: (json['updatedCount'] as num).toInt(),
+  skippedCustom: (json['skippedCustom'] as num).toInt(),
+  total: (json['total'] as num).toInt(),
+);
+
+Map<String, dynamic> _$RecalculateSplitsResultModelToJson(
+  _RecalculateSplitsResultModel instance,
+) => <String, dynamic>{
+  'updatedCount': instance.updatedCount,
+  'skippedCustom': instance.skippedCustom,
+  'total': instance.total,
+};
+
 _RecurringExpenseModel _$RecurringExpenseModelFromJson(
   Map<String, dynamic> json,
 ) => _RecurringExpenseModel(

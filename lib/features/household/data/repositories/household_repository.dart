@@ -75,6 +75,26 @@ class HouseholdRepository {
     return HouseholdModel.fromJson(response['data']['household']);
   }
 
+  /// Update household settings (name, hemisphere, splitMode)
+  Future<HouseholdModel> updateHousehold({
+    required String householdId,
+    String? name,
+    String? hemisphere,
+    String? splitMode,
+  }) async {
+    final data = <String, dynamic>{};
+    if (name != null) data['name'] = name;
+    if (hemisphere != null) data['hemisphere'] = hemisphere;
+    if (splitMode != null) data['splitMode'] = splitMode;
+
+    final response = await _dioClient.patch<Map<String, dynamic>>(
+      ApiConstants.household(householdId),
+      data: data,
+    );
+
+    return HouseholdModel.fromJson(response['data']['household']);
+  }
+
   /// Update a member's settings (income, paysExpenses)
   Future<MemberModel> updateMember({
     required String householdId,
