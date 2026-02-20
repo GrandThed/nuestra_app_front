@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/core/theme/app_theme.dart';
@@ -25,8 +26,14 @@ class App extends ConsumerWidget {
       // Router
       routerConfig: router,
 
-      // Localization (can be expanded later)
+      // Localization
       locale: const Locale('es', 'AR'),
+      supportedLocales: const [Locale('es', 'AR')],
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
     );
   }
 }

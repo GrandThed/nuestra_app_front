@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +9,7 @@ import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/features/boards/data/models/board_model.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_notifier.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_state.dart';
+import 'package:shimmer/shimmer.dart';
 
 /// Boards screen - Pinterest-style boards list
 class BoardsScreen extends ConsumerStatefulWidget {
@@ -442,13 +444,31 @@ class _BoardCard extends StatelessWidget {
   }
 
   Widget _buildPreviewGrid() {
+    // Prefer composite thumbnail (single cached image, fast)
+    if (board.compositeThumbnailUrl != null) {
+      return CachedNetworkImage(
+        imageUrl: board.compositeThumbnailUrl!,
+        fit: BoxFit.cover,
+        placeholder: (context, url) => Shimmer.fromColors(
+          baseColor: AppColors.shimmerBase,
+          highlightColor: AppColors.shimmerHighlight,
+          child: Container(color: Colors.white),
+        ),
+        errorWidget: (context, url, error) => _buildFallbackGrid(),
+      );
+    }
+
+    return _buildFallbackGrid();
+  }
+
+  Widget _buildFallbackGrid() {
     final previews = board.previewItems;
 
     if (previews.isEmpty) {
       return _buildPlaceholder();
     }
 
-    // 2x2 grid layout
+    // 2x2 grid layout with cached images
     return GridView.count(
       crossAxisCount: 2,
       physics: const NeverScrollableScrollPhysics(),
@@ -457,10 +477,15 @@ class _BoardCard extends StatelessWidget {
       crossAxisSpacing: 1,
       children: List.generate(4, (index) {
         if (index < previews.length) {
-          return Image.network(
-            previews[index],
+          return CachedNetworkImage(
+            imageUrl: previews[index],
             fit: BoxFit.cover,
-            errorBuilder: (_, __, ___) => _buildGridPlaceholder(),
+            placeholder: (context, url) => Shimmer.fromColors(
+              baseColor: AppColors.shimmerBase,
+              highlightColor: AppColors.shimmerHighlight,
+              child: Container(color: Colors.white),
+            ),
+            errorWidget: (context, url, error) => _buildGridPlaceholder(),
           );
         }
         return _buildGridPlaceholder();

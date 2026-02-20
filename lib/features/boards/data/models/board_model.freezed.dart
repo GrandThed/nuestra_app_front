@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$BoardModel {
 
- String get id; String get name; String? get coverUrl; int get itemCount; DateTime get createdAt; List<BoardItemModel>? get items; List<String> get previewItems;
+ String get id; String get name; String? get coverUrl; String? get compositeThumbnailUrl; int get itemCount; DateTime get createdAt; List<BoardItemModel>? get items; List<String> get previewItems;
 /// Create a copy of BoardModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $BoardModelCopyWith<BoardModel> get copyWith => _$BoardModelCopyWithImpl<BoardMo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BoardModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.items, items)&&const DeepCollectionEquality().equals(other.previewItems, previewItems));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BoardModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.compositeThumbnailUrl, compositeThumbnailUrl) || other.compositeThumbnailUrl == compositeThumbnailUrl)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other.items, items)&&const DeepCollectionEquality().equals(other.previewItems, previewItems));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,coverUrl,itemCount,createdAt,const DeepCollectionEquality().hash(items),const DeepCollectionEquality().hash(previewItems));
+int get hashCode => Object.hash(runtimeType,id,name,coverUrl,compositeThumbnailUrl,itemCount,createdAt,const DeepCollectionEquality().hash(items),const DeepCollectionEquality().hash(previewItems));
 
 @override
 String toString() {
-  return 'BoardModel(id: $id, name: $name, coverUrl: $coverUrl, itemCount: $itemCount, createdAt: $createdAt, items: $items, previewItems: $previewItems)';
+  return 'BoardModel(id: $id, name: $name, coverUrl: $coverUrl, compositeThumbnailUrl: $compositeThumbnailUrl, itemCount: $itemCount, createdAt: $createdAt, items: $items, previewItems: $previewItems)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $BoardModelCopyWith<$Res>  {
   factory $BoardModelCopyWith(BoardModel value, $Res Function(BoardModel) _then) = _$BoardModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String? coverUrl, int itemCount, DateTime createdAt, List<BoardItemModel>? items, List<String> previewItems
+ String id, String name, String? coverUrl, String? compositeThumbnailUrl, int itemCount, DateTime createdAt, List<BoardItemModel>? items, List<String> previewItems
 });
 
 
@@ -65,11 +65,12 @@ class _$BoardModelCopyWithImpl<$Res>
 
 /// Create a copy of BoardModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? coverUrl = freezed,Object? itemCount = null,Object? createdAt = null,Object? items = freezed,Object? previewItems = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? coverUrl = freezed,Object? compositeThumbnailUrl = freezed,Object? itemCount = null,Object? createdAt = null,Object? items = freezed,Object? previewItems = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,coverUrl: freezed == coverUrl ? _self.coverUrl : coverUrl // ignore: cast_nullable_to_non_nullable
+as String?,compositeThumbnailUrl: freezed == compositeThumbnailUrl ? _self.compositeThumbnailUrl : compositeThumbnailUrl // ignore: cast_nullable_to_non_nullable
 as String?,itemCount: null == itemCount ? _self.itemCount : itemCount // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,items: freezed == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
@@ -156,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String? coverUrl,  int itemCount,  DateTime createdAt,  List<BoardItemModel>? items,  List<String> previewItems)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String? coverUrl,  String? compositeThumbnailUrl,  int itemCount,  DateTime createdAt,  List<BoardItemModel>? items,  List<String> previewItems)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BoardModel() when $default != null:
-return $default(_that.id,_that.name,_that.coverUrl,_that.itemCount,_that.createdAt,_that.items,_that.previewItems);case _:
+return $default(_that.id,_that.name,_that.coverUrl,_that.compositeThumbnailUrl,_that.itemCount,_that.createdAt,_that.items,_that.previewItems);case _:
   return orElse();
 
 }
@@ -177,10 +178,10 @@ return $default(_that.id,_that.name,_that.coverUrl,_that.itemCount,_that.created
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String? coverUrl,  int itemCount,  DateTime createdAt,  List<BoardItemModel>? items,  List<String> previewItems)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String? coverUrl,  String? compositeThumbnailUrl,  int itemCount,  DateTime createdAt,  List<BoardItemModel>? items,  List<String> previewItems)  $default,) {final _that = this;
 switch (_that) {
 case _BoardModel():
-return $default(_that.id,_that.name,_that.coverUrl,_that.itemCount,_that.createdAt,_that.items,_that.previewItems);}
+return $default(_that.id,_that.name,_that.coverUrl,_that.compositeThumbnailUrl,_that.itemCount,_that.createdAt,_that.items,_that.previewItems);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -194,10 +195,10 @@ return $default(_that.id,_that.name,_that.coverUrl,_that.itemCount,_that.created
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String? coverUrl,  int itemCount,  DateTime createdAt,  List<BoardItemModel>? items,  List<String> previewItems)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String? coverUrl,  String? compositeThumbnailUrl,  int itemCount,  DateTime createdAt,  List<BoardItemModel>? items,  List<String> previewItems)?  $default,) {final _that = this;
 switch (_that) {
 case _BoardModel() when $default != null:
-return $default(_that.id,_that.name,_that.coverUrl,_that.itemCount,_that.createdAt,_that.items,_that.previewItems);case _:
+return $default(_that.id,_that.name,_that.coverUrl,_that.compositeThumbnailUrl,_that.itemCount,_that.createdAt,_that.items,_that.previewItems);case _:
   return null;
 
 }
@@ -209,12 +210,13 @@ return $default(_that.id,_that.name,_that.coverUrl,_that.itemCount,_that.created
 @JsonSerializable()
 
 class _BoardModel implements BoardModel {
-  const _BoardModel({required this.id, required this.name, this.coverUrl, this.itemCount = 0, required this.createdAt, final  List<BoardItemModel>? items, final  List<String> previewItems = const []}): _items = items,_previewItems = previewItems;
+  const _BoardModel({required this.id, required this.name, this.coverUrl, this.compositeThumbnailUrl, this.itemCount = 0, required this.createdAt, final  List<BoardItemModel>? items, final  List<String> previewItems = const []}): _items = items,_previewItems = previewItems;
   factory _BoardModel.fromJson(Map<String, dynamic> json) => _$BoardModelFromJson(json);
 
 @override final  String id;
 @override final  String name;
 @override final  String? coverUrl;
+@override final  String? compositeThumbnailUrl;
 @override@JsonKey() final  int itemCount;
 @override final  DateTime createdAt;
  final  List<BoardItemModel>? _items;
@@ -247,16 +249,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BoardModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._items, _items)&&const DeepCollectionEquality().equals(other._previewItems, _previewItems));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BoardModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.coverUrl, coverUrl) || other.coverUrl == coverUrl)&&(identical(other.compositeThumbnailUrl, compositeThumbnailUrl) || other.compositeThumbnailUrl == compositeThumbnailUrl)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&const DeepCollectionEquality().equals(other._items, _items)&&const DeepCollectionEquality().equals(other._previewItems, _previewItems));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,coverUrl,itemCount,createdAt,const DeepCollectionEquality().hash(_items),const DeepCollectionEquality().hash(_previewItems));
+int get hashCode => Object.hash(runtimeType,id,name,coverUrl,compositeThumbnailUrl,itemCount,createdAt,const DeepCollectionEquality().hash(_items),const DeepCollectionEquality().hash(_previewItems));
 
 @override
 String toString() {
-  return 'BoardModel(id: $id, name: $name, coverUrl: $coverUrl, itemCount: $itemCount, createdAt: $createdAt, items: $items, previewItems: $previewItems)';
+  return 'BoardModel(id: $id, name: $name, coverUrl: $coverUrl, compositeThumbnailUrl: $compositeThumbnailUrl, itemCount: $itemCount, createdAt: $createdAt, items: $items, previewItems: $previewItems)';
 }
 
 
@@ -267,7 +269,7 @@ abstract mixin class _$BoardModelCopyWith<$Res> implements $BoardModelCopyWith<$
   factory _$BoardModelCopyWith(_BoardModel value, $Res Function(_BoardModel) _then) = __$BoardModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String? coverUrl, int itemCount, DateTime createdAt, List<BoardItemModel>? items, List<String> previewItems
+ String id, String name, String? coverUrl, String? compositeThumbnailUrl, int itemCount, DateTime createdAt, List<BoardItemModel>? items, List<String> previewItems
 });
 
 
@@ -284,11 +286,12 @@ class __$BoardModelCopyWithImpl<$Res>
 
 /// Create a copy of BoardModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? coverUrl = freezed,Object? itemCount = null,Object? createdAt = null,Object? items = freezed,Object? previewItems = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? coverUrl = freezed,Object? compositeThumbnailUrl = freezed,Object? itemCount = null,Object? createdAt = null,Object? items = freezed,Object? previewItems = null,}) {
   return _then(_BoardModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,coverUrl: freezed == coverUrl ? _self.coverUrl : coverUrl // ignore: cast_nullable_to_non_nullable
+as String?,compositeThumbnailUrl: freezed == compositeThumbnailUrl ? _self.compositeThumbnailUrl : compositeThumbnailUrl // ignore: cast_nullable_to_non_nullable
 as String?,itemCount: null == itemCount ? _self.itemCount : itemCount // ignore: cast_nullable_to_non_nullable
 as int,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,items: freezed == items ? _self._items : items // ignore: cast_nullable_to_non_nullable

@@ -165,7 +165,6 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
       initialDate: _selectedDate,
       firstDate: DateTime.now().subtract(const Duration(days: 7)),
       lastDate: DateTime.now().add(const Duration(days: 60)),
-      locale: const Locale('es'),
     );
 
     if (picked != null) {

@@ -10,6 +10,7 @@ _BoardModel _$BoardModelFromJson(Map<String, dynamic> json) => _BoardModel(
   id: json['id'] as String,
   name: json['name'] as String,
   coverUrl: json['coverUrl'] as String?,
+  compositeThumbnailUrl: json['compositeThumbnailUrl'] as String?,
   itemCount: (json['itemCount'] as num?)?.toInt() ?? 0,
   createdAt: DateTime.parse(json['createdAt'] as String),
   items:
@@ -28,6 +29,7 @@ Map<String, dynamic> _$BoardModelToJson(_BoardModel instance) =>
       'id': instance.id,
       'name': instance.name,
       'coverUrl': instance.coverUrl,
+      'compositeThumbnailUrl': instance.compositeThumbnailUrl,
       'itemCount': instance.itemCount,
       'createdAt': instance.createdAt.toIso8601String(),
       'items': instance.items,

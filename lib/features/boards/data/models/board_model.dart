@@ -9,6 +9,7 @@ sealed class BoardModel with _$BoardModel {
     required String id,
     required String name,
     String? coverUrl,
+    String? compositeThumbnailUrl,
     @Default(0) int itemCount,
     required DateTime createdAt,
     List<BoardItemModel>? items,
