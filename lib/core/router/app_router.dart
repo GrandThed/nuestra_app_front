@@ -37,6 +37,13 @@ import 'package:nuestra_app/features/home/presentation/screens/home_screen.dart'
 import 'package:nuestra_app/features/profile/presentation/screens/profile_screen.dart';
 import 'package:nuestra_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:nuestra_app/features/recipes/presentation/screens/seasonal_vegetables_screen.dart';
+import 'package:nuestra_app/features/recipes/presentation/screens/cooking_mode_screen.dart';
+import 'package:nuestra_app/features/activity/presentation/screens/activity_feed_screen.dart';
+import 'package:nuestra_app/features/expenses/presentation/screens/recurring_expenses_screen.dart';
+import 'package:nuestra_app/features/expenses/presentation/screens/budget_setup_screen.dart';
+import 'package:nuestra_app/features/expenses/presentation/screens/expense_trends_screen.dart';
+import 'package:nuestra_app/features/menus/presentation/screens/meal_history_screen.dart';
+import 'package:nuestra_app/features/wishlists/presentation/screens/purchase_history_screen.dart';
 
 /// Route names
 class AppRoutes {
@@ -90,6 +97,16 @@ class AppRoutes {
   static const String settings = '/settings';
   static const String profile = '/profile';
   static const String seasonalVegetables = '/recipes/seasonal';
+
+  // New feature screens
+  static const String activityFeed = '/activity';
+  static const String cookingMode = '/recipes/:id/cooking';
+  static String cookingModeFor(String id) => '/recipes/$id/cooking';
+  static const String recurringExpenses = '/expenses/recurring';
+  static const String budgetSetup = '/expenses/budgets';
+  static const String expenseTrends = '/expenses/trends';
+  static const String mealHistory = '/menus/history';
+  static const String purchaseHistory = '/wishlists/history';
 }
 
 /// Navigation key for accessing navigator from anywhere
@@ -353,6 +370,51 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.seasonalVegetables,
         builder: (context, state) => const SeasonalVegetablesScreen(),
+      ),
+
+      // Cooking mode (no shell) - must be before /recipes/:id
+      GoRoute(
+        path: AppRoutes.cookingMode,
+        builder: (context, state) {
+          final recipeId = state.pathParameters['id']!;
+          return CookingModeScreen(recipeId: recipeId);
+        },
+      ),
+
+      // Activity feed (no shell)
+      GoRoute(
+        path: AppRoutes.activityFeed,
+        builder: (context, state) => const ActivityFeedScreen(),
+      ),
+
+      // Recurring expenses (no shell) - must be before /expenses/:id
+      GoRoute(
+        path: AppRoutes.recurringExpenses,
+        builder: (context, state) => const RecurringExpensesScreen(),
+      ),
+
+      // Budget setup (no shell)
+      GoRoute(
+        path: AppRoutes.budgetSetup,
+        builder: (context, state) => const BudgetSetupScreen(),
+      ),
+
+      // Expense trends (no shell)
+      GoRoute(
+        path: AppRoutes.expenseTrends,
+        builder: (context, state) => const ExpenseTrendsScreen(),
+      ),
+
+      // Meal history (no shell) - must be before /menus/:id
+      GoRoute(
+        path: AppRoutes.mealHistory,
+        builder: (context, state) => const MealHistoryScreen(),
+      ),
+
+      // Purchase history (no shell)
+      GoRoute(
+        path: AppRoutes.purchaseHistory,
+        builder: (context, state) => const PurchaseHistoryScreen(),
       ),
 
       // Main app with bottom navigation shell

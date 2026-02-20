@@ -1141,4 +1141,378 @@ as String,
 
 }
 
+/// @nodoc
+mixin _$PurchaseHistoryState {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseHistoryState);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'PurchaseHistoryState()';
+}
+
+
+}
+
+/// @nodoc
+class $PurchaseHistoryStateCopyWith<$Res>  {
+$PurchaseHistoryStateCopyWith(PurchaseHistoryState _, $Res Function(PurchaseHistoryState) __);
+}
+
+
+/// Adds pattern-matching-related methods to [PurchaseHistoryState].
+extension PurchaseHistoryStatePatterns on PurchaseHistoryState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( PurchaseHistoryStateInitial value)?  initial,TResult Function( PurchaseHistoryStateLoading value)?  loading,TResult Function( PurchaseHistoryStateLoaded value)?  loaded,TResult Function( PurchaseHistoryStateError value)?  error,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case PurchaseHistoryStateInitial() when initial != null:
+return initial(_that);case PurchaseHistoryStateLoading() when loading != null:
+return loading(_that);case PurchaseHistoryStateLoaded() when loaded != null:
+return loaded(_that);case PurchaseHistoryStateError() when error != null:
+return error(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( PurchaseHistoryStateInitial value)  initial,required TResult Function( PurchaseHistoryStateLoading value)  loading,required TResult Function( PurchaseHistoryStateLoaded value)  loaded,required TResult Function( PurchaseHistoryStateError value)  error,}){
+final _that = this;
+switch (_that) {
+case PurchaseHistoryStateInitial():
+return initial(_that);case PurchaseHistoryStateLoading():
+return loading(_that);case PurchaseHistoryStateLoaded():
+return loaded(_that);case PurchaseHistoryStateError():
+return error(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( PurchaseHistoryStateInitial value)?  initial,TResult? Function( PurchaseHistoryStateLoading value)?  loading,TResult? Function( PurchaseHistoryStateLoaded value)?  loaded,TResult? Function( PurchaseHistoryStateError value)?  error,}){
+final _that = this;
+switch (_that) {
+case PurchaseHistoryStateInitial() when initial != null:
+return initial(_that);case PurchaseHistoryStateLoading() when loading != null:
+return loading(_that);case PurchaseHistoryStateLoaded() when loaded != null:
+return loaded(_that);case PurchaseHistoryStateError() when error != null:
+return error(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<WishlistPurchaseHistoryModel> history)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case PurchaseHistoryStateInitial() when initial != null:
+return initial();case PurchaseHistoryStateLoading() when loading != null:
+return loading();case PurchaseHistoryStateLoaded() when loaded != null:
+return loaded(_that.history);case PurchaseHistoryStateError() when error != null:
+return error(_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<WishlistPurchaseHistoryModel> history)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+switch (_that) {
+case PurchaseHistoryStateInitial():
+return initial();case PurchaseHistoryStateLoading():
+return loading();case PurchaseHistoryStateLoaded():
+return loaded(_that.history);case PurchaseHistoryStateError():
+return error(_that.message);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<WishlistPurchaseHistoryModel> history)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+switch (_that) {
+case PurchaseHistoryStateInitial() when initial != null:
+return initial();case PurchaseHistoryStateLoading() when loading != null:
+return loading();case PurchaseHistoryStateLoaded() when loaded != null:
+return loaded(_that.history);case PurchaseHistoryStateError() when error != null:
+return error(_that.message);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class PurchaseHistoryStateInitial implements PurchaseHistoryState {
+  const PurchaseHistoryStateInitial();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseHistoryStateInitial);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'PurchaseHistoryState.initial()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class PurchaseHistoryStateLoading implements PurchaseHistoryState {
+  const PurchaseHistoryStateLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseHistoryStateLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'PurchaseHistoryState.loading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class PurchaseHistoryStateLoaded implements PurchaseHistoryState {
+  const PurchaseHistoryStateLoaded(final  List<WishlistPurchaseHistoryModel> history): _history = history;
+  
+
+ final  List<WishlistPurchaseHistoryModel> _history;
+ List<WishlistPurchaseHistoryModel> get history {
+  if (_history is EqualUnmodifiableListView) return _history;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_history);
+}
+
+
+/// Create a copy of PurchaseHistoryState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PurchaseHistoryStateLoadedCopyWith<PurchaseHistoryStateLoaded> get copyWith => _$PurchaseHistoryStateLoadedCopyWithImpl<PurchaseHistoryStateLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseHistoryStateLoaded&&const DeepCollectionEquality().equals(other._history, _history));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_history));
+
+@override
+String toString() {
+  return 'PurchaseHistoryState.loaded(history: $history)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PurchaseHistoryStateLoadedCopyWith<$Res> implements $PurchaseHistoryStateCopyWith<$Res> {
+  factory $PurchaseHistoryStateLoadedCopyWith(PurchaseHistoryStateLoaded value, $Res Function(PurchaseHistoryStateLoaded) _then) = _$PurchaseHistoryStateLoadedCopyWithImpl;
+@useResult
+$Res call({
+ List<WishlistPurchaseHistoryModel> history
+});
+
+
+
+
+}
+/// @nodoc
+class _$PurchaseHistoryStateLoadedCopyWithImpl<$Res>
+    implements $PurchaseHistoryStateLoadedCopyWith<$Res> {
+  _$PurchaseHistoryStateLoadedCopyWithImpl(this._self, this._then);
+
+  final PurchaseHistoryStateLoaded _self;
+  final $Res Function(PurchaseHistoryStateLoaded) _then;
+
+/// Create a copy of PurchaseHistoryState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? history = null,}) {
+  return _then(PurchaseHistoryStateLoaded(
+null == history ? _self._history : history // ignore: cast_nullable_to_non_nullable
+as List<WishlistPurchaseHistoryModel>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class PurchaseHistoryStateError implements PurchaseHistoryState {
+  const PurchaseHistoryStateError(this.message);
+  
+
+ final  String message;
+
+/// Create a copy of PurchaseHistoryState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$PurchaseHistoryStateErrorCopyWith<PurchaseHistoryStateError> get copyWith => _$PurchaseHistoryStateErrorCopyWithImpl<PurchaseHistoryStateError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PurchaseHistoryStateError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'PurchaseHistoryState.error(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $PurchaseHistoryStateErrorCopyWith<$Res> implements $PurchaseHistoryStateCopyWith<$Res> {
+  factory $PurchaseHistoryStateErrorCopyWith(PurchaseHistoryStateError value, $Res Function(PurchaseHistoryStateError) _then) = _$PurchaseHistoryStateErrorCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class _$PurchaseHistoryStateErrorCopyWithImpl<$Res>
+    implements $PurchaseHistoryStateErrorCopyWith<$Res> {
+  _$PurchaseHistoryStateErrorCopyWithImpl(this._self, this._then);
+
+  final PurchaseHistoryStateError _self;
+  final $Res Function(PurchaseHistoryStateError) _then;
+
+/// Create a copy of PurchaseHistoryState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(PurchaseHistoryStateError(
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
 // dart format on

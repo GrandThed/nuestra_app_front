@@ -31,6 +31,9 @@ sealed class BoardItemModel with _$BoardItemModel {
     String? linkPreviewImage,
     PhotoBackModel? photoBack,
     BoardItemCreatorModel? createdBy,
+    @Default(0) int sortOrder,
+    @Default([]) List<BoardItemTagModel> tags,
+    @Default([]) List<BoardItemCommentModel> comments,
     required DateTime createdAt,
   }) = _BoardItemModel;
 
@@ -60,4 +63,58 @@ sealed class BoardItemCreatorModel with _$BoardItemCreatorModel {
 
   factory BoardItemCreatorModel.fromJson(Map<String, dynamic> json) =>
       _$BoardItemCreatorModelFromJson(json);
+}
+
+@freezed
+sealed class BoardItemTagModel with _$BoardItemTagModel {
+  const factory BoardItemTagModel({
+    required String id,
+    required String tagId,
+    required String name,
+    required String color,
+  }) = _BoardItemTagModel;
+
+  factory BoardItemTagModel.fromJson(Map<String, dynamic> json) =>
+      _$BoardItemTagModelFromJson(json);
+}
+
+@freezed
+sealed class BoardItemCommentModel with _$BoardItemCommentModel {
+  const factory BoardItemCommentModel({
+    required String id,
+    required String userId,
+    required BoardItemCreatorModel user,
+    String? content,
+    String? emoji,
+    required DateTime createdAt,
+  }) = _BoardItemCommentModel;
+
+  factory BoardItemCommentModel.fromJson(Map<String, dynamic> json) =>
+      _$BoardItemCommentModelFromJson(json);
+}
+
+@freezed
+sealed class TagModel with _$TagModel {
+  const factory TagModel({
+    required String id,
+    required String name,
+    @Default('#667eea') String color,
+    required DateTime createdAt,
+  }) = _TagModel;
+
+  factory TagModel.fromJson(Map<String, dynamic> json) =>
+      _$TagModelFromJson(json);
+}
+
+@freezed
+sealed class BoardTemplateModel with _$BoardTemplateModel {
+  const factory BoardTemplateModel({
+    required String id,
+    required String name,
+    required String description,
+    required List<Map<String, dynamic>> presetItems,
+  }) = _BoardTemplateModel;
+
+  factory BoardTemplateModel.fromJson(Map<String, dynamic> json) =>
+      _$BoardTemplateModelFromJson(json);
 }

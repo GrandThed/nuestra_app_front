@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
@@ -127,6 +128,11 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
         backgroundColor: AppColors.wishlistsDark,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: 'Historial de compras',
+            onPressed: () => context.push('/wishlists/history'),
+          ),
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
             tooltip: 'Nueva categoria',
@@ -872,6 +878,40 @@ class _WishlistItemTile extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                           ],
+                          // Priority badge
+                          if (item.averagePriority != null &&
+                              item.averagePriority! > 0) ...[
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 1,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.amber.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.star,
+                                    size: 12,
+                                    color: Colors.amber,
+                                  ),
+                                  const SizedBox(width: 2),
+                                  Text(
+                                    item.averagePriority!.toStringAsFixed(1),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.amber.shade800,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                          ],
                           Expanded(
                             child: Text(
                               item.name,
@@ -886,6 +926,15 @@ class _WishlistItemTile extends StatelessWidget {
                               ),
                             ),
                           ),
+                          // Secret item indicator
+                          if (item.isSecret) ...[
+                            const SizedBox(width: 4),
+                            const Icon(
+                              Icons.lock,
+                              size: 14,
+                              color: Colors.grey,
+                            ),
+                          ],
                         ],
                       ),
                       if (_hasSubtitle) ...[

@@ -86,6 +86,7 @@ sealed class CalendarEventModel with _$CalendarEventModel {
     @Default(false) bool isOccurrence,
     DateTime? occurrenceDate,
     String? occurrenceId,
+    String? colorHex,
     DateTime? createdAt,
   }) = _CalendarEventModel;
 
@@ -239,4 +240,58 @@ sealed class TimelineBoardRef with _$TimelineBoardRef {
 
   factory TimelineBoardRef.fromJson(Map<String, dynamic> json) =>
       _$TimelineBoardRefFromJson(json);
+}
+
+/// Model for a single day's availability
+@freezed
+sealed class AvailabilityDayModel with _$AvailabilityDayModel {
+  const factory AvailabilityDayModel({
+    required String date,
+    required List<AvailabilityEventModel> events,
+    required bool isFree,
+  }) = _AvailabilityDayModel;
+
+  factory AvailabilityDayModel.fromJson(Map<String, dynamic> json) =>
+      _$AvailabilityDayModelFromJson(json);
+}
+
+/// Model for an event within an availability day
+@freezed
+sealed class AvailabilityEventModel with _$AvailabilityEventModel {
+  const factory AvailabilityEventModel({
+    required String id,
+    required String title,
+    required String startDate,
+    String? endDate,
+    required bool allDay,
+    required String createdById,
+  }) = _AvailabilityEventModel;
+
+  factory AvailabilityEventModel.fromJson(Map<String, dynamic> json) =>
+      _$AvailabilityEventModelFromJson(json);
+}
+
+/// Model for a household member in availability context
+@freezed
+sealed class AvailabilityMemberModel with _$AvailabilityMemberModel {
+  const factory AvailabilityMemberModel({
+    required String userId,
+    required String name,
+    required String colorHex,
+  }) = _AvailabilityMemberModel;
+
+  factory AvailabilityMemberModel.fromJson(Map<String, dynamic> json) =>
+      _$AvailabilityMemberModelFromJson(json);
+}
+
+/// Model for availability check result
+@freezed
+sealed class AvailabilityResultModel with _$AvailabilityResultModel {
+  const factory AvailabilityResultModel({
+    required List<AvailabilityMemberModel> members,
+    required List<AvailabilityDayModel> days,
+  }) = _AvailabilityResultModel;
+
+  factory AvailabilityResultModel.fromJson(Map<String, dynamic> json) =>
+      _$AvailabilityResultModelFromJson(json);
 }

@@ -30,6 +30,8 @@ sealed class MenuItemModel with _$MenuItemModel {
     RecipeModel? recipe,
     String? recipeId,
     Map<String, dynamic>? substitutions,
+    @Default(false) bool isLeftover,
+    String? originalMenuItemId,
     MenuItemCreatorModel? createdBy,
     DateTime? createdAt,
   }) = _MenuItemModel;
@@ -92,6 +94,22 @@ sealed class UpcomingMealsModel with _$UpcomingMealsModel {
 
   factory UpcomingMealsModel.fromJson(Map<String, dynamic> json) =>
       _$UpcomingMealsModelFromJson(json);
+}
+
+/// Model for meal history (how often a recipe has been cooked)
+@freezed
+sealed class MealHistoryModel with _$MealHistoryModel {
+  const factory MealHistoryModel({
+    required String recipeId,
+    required String title,
+    String? imageUrl,
+    required int timesCooked,
+    required DateTime lastCooked,
+    required int daysSinceLastCooked,
+  }) = _MealHistoryModel;
+
+  factory MealHistoryModel.fromJson(Map<String, dynamic> json) =>
+      _$MealHistoryModelFromJson(json);
 }
 
 /// Extension for meal type display

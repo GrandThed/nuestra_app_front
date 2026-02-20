@@ -18,8 +18,11 @@ class RecipesScreen extends ConsumerStatefulWidget {
 class _RecipesScreenState extends ConsumerState<RecipesScreen> {
   final _searchController = TextEditingController();
   String? _selectedSeason;
+  bool _showFavoritesOnly = false;
+  int? _maxPrepTime;
+  int? _maxCookTime;
 
-  static const _seasons = ['Primavera', 'Verano', 'Otoño', 'Invierno'];
+  static const _seasons = ['Primavera', 'Verano', 'Oto\u00f1o', 'Invierno'];
 
   @override
   void initState() {
@@ -39,6 +42,9 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
     ref.read(recipesNotifierProvider.notifier).loadRecipes(
           search: _searchController.text.isEmpty ? null : _searchController.text,
           season: _selectedSeason,
+          favorites: _showFavoritesOnly ? true : null,
+          maxPrepTime: _maxPrepTime,
+          maxCookTime: _maxCookTime,
         );
   }
 
@@ -64,6 +70,19 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
             icon: const Icon(Icons.eco_outlined),
             tooltip: 'Verduras de temporada',
             onPressed: () => context.push(AppRoutes.seasonalVegetables),
+          ),
+          IconButton(
+            icon: Icon(
+              _showFavoritesOnly ? Icons.favorite : Icons.favorite_border,
+              color: _showFavoritesOnly ? Colors.red : Colors.white,
+            ),
+            tooltip: 'Favoritas',
+            onPressed: () {
+              setState(() {
+                _showFavoritesOnly = !_showFavoritesOnly;
+              });
+              _onSearch();
+            },
           ),
           IconButton(
             icon: const Icon(Icons.filter_list),
@@ -110,21 +129,56 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
             ),
           ),
 
-          // Season filter chips
-          if (_selectedSeason != null)
+          // Active filter chips
+          if (_selectedSeason != null || _maxPrepTime != null || _maxCookTime != null)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               color: colorScheme.surface,
               child: Row(
                 children: [
-                  Chip(
-                    label: Text(_selectedSeason!),
-                    deleteIcon: const Icon(Icons.close, size: 18),
-                    onDeleted: () => _onSeasonChanged(null),
-                    backgroundColor: AppColors.recipes.withValues(alpha: 0.1),
-                    labelStyle: const TextStyle(color: AppColors.recipes),
-                    deleteIconColor: AppColors.recipes,
-                  ),
+                  if (_selectedSeason != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Chip(
+                        label: Text(_selectedSeason!),
+                        deleteIcon: const Icon(Icons.close, size: 18),
+                        onDeleted: () => _onSeasonChanged(null),
+                        backgroundColor: AppColors.recipes.withValues(alpha: 0.1),
+                        labelStyle: const TextStyle(color: AppColors.recipes),
+                        deleteIconColor: AppColors.recipes,
+                      ),
+                    ),
+                  if (_maxPrepTime != null)
+                    Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: Chip(
+                        label: Text('Prep < $_maxPrepTime min'),
+                        deleteIcon: const Icon(Icons.close, size: 18),
+                        onDeleted: () {
+                          setState(() {
+                            _maxPrepTime = null;
+                          });
+                          _onSearch();
+                        },
+                        backgroundColor: AppColors.recipes.withValues(alpha: 0.1),
+                        labelStyle: const TextStyle(color: AppColors.recipes),
+                        deleteIconColor: AppColors.recipes,
+                      ),
+                    ),
+                  if (_maxCookTime != null)
+                    Chip(
+                      label: Text('Cocci\u00f3n < $_maxCookTime min'),
+                      deleteIcon: const Icon(Icons.close, size: 18),
+                      onDeleted: () {
+                        setState(() {
+                          _maxCookTime = null;
+                        });
+                        _onSearch();
+                      },
+                      backgroundColor: AppColors.recipes.withValues(alpha: 0.1),
+                      labelStyle: const TextStyle(color: AppColors.recipes),
+                      deleteIconColor: AppColors.recipes,
+                    ),
                 ],
               ),
             ),
@@ -221,47 +275,99 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Filtrar por temporada',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Wrap(
-              spacing: 8,
-              children: [
-                FilterChip(
-                  label: const Text('Todas'),
-                  selected: _selectedSeason == null,
-                  onSelected: (_) {
-                    Navigator.pop(context);
-                    _onSeasonChanged(null);
-                  },
-                  selectedColor: AppColors.recipes.withValues(alpha: 0.2),
-                  checkmarkColor: AppColors.recipes,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setModalState) => Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Filtrar por temporada',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
                 ),
-                ..._seasons.map((season) => FilterChip(
-                      label: Text(season),
-                      selected: _selectedSeason == season,
-                      onSelected: (_) {
-                        Navigator.pop(context);
-                        _onSeasonChanged(season);
-                      },
-                      selectedColor: AppColors.recipes.withValues(alpha: 0.2),
-                      checkmarkColor: AppColors.recipes,
-                    )),
-              ],
-            ),
-            const SizedBox(height: 16),
-          ],
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                children: [
+                  FilterChip(
+                    label: const Text('Todas'),
+                    selected: _selectedSeason == null,
+                    onSelected: (_) {
+                      Navigator.pop(context);
+                      _onSeasonChanged(null);
+                    },
+                    selectedColor: AppColors.recipes.withValues(alpha: 0.2),
+                    checkmarkColor: AppColors.recipes,
+                  ),
+                  ..._seasons.map((season) => FilterChip(
+                        label: Text(season),
+                        selected: _selectedSeason == season,
+                        onSelected: (_) {
+                          Navigator.pop(context);
+                          _onSeasonChanged(season);
+                        },
+                        selectedColor: AppColors.recipes.withValues(alpha: 0.2),
+                        checkmarkColor: AppColors.recipes,
+                      )),
+                ],
+              ),
+              const SizedBox(height: 24),
+              const Text(
+                'Filtrar por tiempo',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+              Wrap(
+                spacing: 8,
+                children: [
+                  ChoiceChip(
+                    label: const Text('< 30 min'),
+                    selected: _maxPrepTime == 30 && _maxCookTime == 30,
+                    onSelected: (selected) {
+                      Navigator.pop(context);
+                      setState(() {
+                        if (selected) {
+                          _maxPrepTime = 30;
+                          _maxCookTime = 30;
+                        } else {
+                          _maxPrepTime = null;
+                          _maxCookTime = null;
+                        }
+                      });
+                      _onSearch();
+                    },
+                    selectedColor: AppColors.recipes.withValues(alpha: 0.2),
+                  ),
+                  ChoiceChip(
+                    label: const Text('< 60 min'),
+                    selected: _maxPrepTime == 60 && _maxCookTime == 60,
+                    onSelected: (selected) {
+                      Navigator.pop(context);
+                      setState(() {
+                        if (selected) {
+                          _maxPrepTime = 60;
+                          _maxCookTime = 60;
+                        } else {
+                          _maxPrepTime = null;
+                          _maxCookTime = null;
+                        }
+                      });
+                      _onSearch();
+                    },
+                    selectedColor: AppColors.recipes.withValues(alpha: 0.2),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );
@@ -272,7 +378,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Eliminar receta'),
-        content: Text('¿Seguro que quieres eliminar "${recipe.title}"?'),
+        content: Text('\u00bfSeguro que quieres eliminar "${recipe.title}"?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -315,23 +421,38 @@ class _RecipeCard extends StatelessWidget {
         onTap: onTap,
         child: Row(
           children: [
-            // Recipe image
+            // Recipe image with favorite indicator
             SizedBox(
               width: 100,
               height: 100,
-              child: recipe.imageUrl != null
-                  ? AppNetworkImage(
-                      imageUrl: recipe.imageUrl!,
-                      fit: BoxFit.cover,
-                    )
-                  : Container(
-                      color: AppColors.recipes.withValues(alpha: 0.1),
-                      child: const Icon(
-                        Icons.restaurant,
-                        size: 40,
-                        color: AppColors.recipes,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  recipe.imageUrl != null
+                      ? AppNetworkImage(
+                          imageUrl: recipe.imageUrl!,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          color: AppColors.recipes.withValues(alpha: 0.1),
+                          child: const Icon(
+                            Icons.restaurant,
+                            size: 40,
+                            color: AppColors.recipes,
+                          ),
+                        ),
+                  if (recipe.isFavorite)
+                    const Positioned(
+                      top: 6,
+                      right: 6,
+                      child: Icon(
+                        Icons.favorite,
+                        color: Colors.red,
+                        size: 16,
                       ),
                     ),
+                ],
+              ),
             ),
 
             // Recipe info
@@ -375,6 +496,24 @@ class _RecipeCard extends StatelessWidget {
                             fontSize: 12,
                             color: colorScheme.onSurfaceVariant,
                           ),
+                        ),
+                      ),
+                    if (recipe.averageRating != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.star, color: Colors.amber, size: 14),
+                            const SizedBox(width: 3),
+                            Text(
+                              recipe.averageRating!.toStringAsFixed(1),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                   ],

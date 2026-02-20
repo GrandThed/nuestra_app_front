@@ -29,7 +29,14 @@ class RecipesNotifier extends _$RecipesNotifier {
 
   /// Load all recipes for current household
   /// Shows loading only on first load, refreshes silently otherwise
-  Future<void> loadRecipes({String? search, String? season, bool forceLoading = false}) async {
+  Future<void> loadRecipes({
+    String? search,
+    String? season,
+    bool? favorites,
+    int? maxPrepTime,
+    int? maxCookTime,
+    bool forceLoading = false,
+  }) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) {
       state = const RecipesState.error('No hay hogar seleccionado');
@@ -46,6 +53,9 @@ class RecipesNotifier extends _$RecipesNotifier {
         householdId,
         search: search,
         season: season,
+        favorites: favorites,
+        maxPrepTime: maxPrepTime,
+        maxCookTime: maxCookTime,
       );
       state = RecipesState.loaded(recipes);
     } on AppException catch (e) {
@@ -133,6 +143,29 @@ class RecipesNotifier extends _$RecipesNotifier {
       state = RecipesState.loaded(updatedRecipes);
     }
   }
+
+  /// Import a recipe from a URL using LLM extraction
+  Future<RecipeModel?> importFromUrl(String householdId, String url) async {
+    try {
+      final recipe = await _repository.importFromUrl(householdId, url);
+
+      // Add to current list
+      final currentState = state;
+      if (currentState is RecipesStateLoaded) {
+        state = RecipesState.loaded([recipe, ...currentState.recipes]);
+      } else {
+        state = RecipesState.loaded([recipe]);
+      }
+
+      return recipe;
+    } on AppException catch (e) {
+      debugPrint('Error importing recipe from URL: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint('Error importing recipe from URL: $e');
+      return null;
+    }
+  }
 }
 
 /// Notifier for single recipe detail operations
@@ -208,6 +241,53 @@ class RecipeDetailNotifier extends _$RecipeDetailNotifier {
     } catch (e) {
       debugPrint('Error updating recipe: $e');
       return null;
+    }
+  }
+
+  /// Rate the recipe (create or update rating)
+  /// Returns the created/updated rating, or null on failure
+  Future<RecipeRatingModel?> rateRecipe(int rating, {String? note}) async {
+    try {
+      final ratingModel = await _repository.rateRecipe(
+        recipeId,
+        rating,
+        note: note,
+      );
+
+      // Refresh recipe to get updated averageRating and ratings list
+      await loadRecipe();
+
+      return ratingModel;
+    } on AppException catch (e) {
+      debugPrint('Error rating recipe: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint('Error rating recipe: $e');
+      return null;
+    }
+  }
+
+  /// Toggle favorite status for the recipe
+  Future<void> toggleFavorite() async {
+    try {
+      final isFavorite = await _repository.toggleFavorite(recipeId);
+
+      final currentState = state;
+      if (currentState is RecipeDetailStateLoaded) {
+        final updatedRecipe = currentState.recipe.copyWith(
+          isFavorite: isFavorite,
+        );
+        state = RecipeDetailState.loaded(updatedRecipe);
+
+        // Also update in the recipes list
+        ref
+            .read(recipesNotifierProvider.notifier)
+            .updateRecipeInList(updatedRecipe);
+      }
+    } on AppException catch (e) {
+      debugPrint('Error toggling favorite: ${e.message}');
+    } catch (e) {
+      debugPrint('Error toggling favorite: $e');
     }
   }
 }

@@ -60,6 +60,7 @@ class CalendarRepository {
     String? linkedBoardId,
     String? linkedRecipeId,
     String? linkedMenuPlanId,
+    String? colorHex,
   }) async {
     final response = await _dioClient.post<Map<String, dynamic>>(
       ApiConstants.calendar,
@@ -76,6 +77,7 @@ class CalendarRepository {
         if (linkedBoardId != null) 'linkedBoardId': linkedBoardId,
         if (linkedRecipeId != null) 'linkedRecipeId': linkedRecipeId,
         if (linkedMenuPlanId != null) 'linkedMenuPlanId': linkedMenuPlanId,
+        if (colorHex != null) 'colorHex': colorHex,
       },
     );
 
@@ -96,6 +98,7 @@ class CalendarRepository {
     String? linkedBoardId,
     String? linkedRecipeId,
     String? linkedMenuPlanId,
+    String? colorHex,
   }) async {
     final response = await _dioClient.patch<Map<String, dynamic>>(
       ApiConstants.calendarEvent(id),
@@ -111,6 +114,7 @@ class CalendarRepository {
         if (linkedBoardId != null) 'linkedBoardId': linkedBoardId,
         if (linkedRecipeId != null) 'linkedRecipeId': linkedRecipeId,
         if (linkedMenuPlanId != null) 'linkedMenuPlanId': linkedMenuPlanId,
+        if (colorHex != null) 'colorHex': colorHex,
       },
     );
 
@@ -159,5 +163,48 @@ class CalendarRepository {
     return items
         .map((item) => TimelineItemModel.fromJson(item as Map<String, dynamic>))
         .toList();
+  }
+
+  // ==================== AVAILABILITY ====================
+
+  /// Get availability for household members in a date range
+  Future<AvailabilityResultModel> getAvailability({
+    required String householdId,
+    required String from,
+    required String to,
+    List<String>? userIds,
+  }) async {
+    final queryParams = <String, dynamic>{
+      'householdId': householdId,
+      'from': from,
+      'to': to,
+    };
+    if (userIds != null && userIds.isNotEmpty) {
+      queryParams['userIds'] = userIds.join(',');
+    }
+    final response = await _dioClient.get<Map<String, dynamic>>(
+      '/api/calendar/availability',
+      queryParameters: queryParams,
+    );
+    return AvailabilityResultModel.fromJson(
+        response['data'] as Map<String, dynamic>);
+  }
+
+  // ==================== DATE NIGHT ====================
+
+  /// Plan a date night event
+  Future<CalendarEventModel> planDateNight({
+    required String householdId,
+    String? preferredDay,
+  }) async {
+    final response = await _dioClient.post<Map<String, dynamic>>(
+      '/api/calendar/date-night',
+      data: {
+        'householdId': householdId,
+        if (preferredDay != null) 'preferredDay': preferredDay,
+      },
+    );
+    return CalendarEventModel.fromJson(
+        response['data']['event'] as Map<String, dynamic>);
   }
 }

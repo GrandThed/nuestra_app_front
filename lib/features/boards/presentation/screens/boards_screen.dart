@@ -36,6 +36,11 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
         title: const Text(AppStrings.boards),
         actions: [
           IconButton(
+            icon: const Icon(Icons.dashboard_customize_outlined),
+            tooltip: 'Plantillas',
+            onPressed: () => _showTemplatesBottomSheet(context),
+          ),
+          IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
               ref.read(boardsNotifierProvider.notifier).loadBoards();
@@ -134,6 +139,67 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
             onLongPress: () => _showBoardOptions(context, board),
           );
         },
+      ),
+    );
+  }
+
+  void _showTemplatesBottomSheet(BuildContext context) {
+    const templates = <({String name, IconData icon})>[
+      (name: 'Ideas de decoracion', icon: Icons.home),
+      (name: 'Inspiracion de moda', icon: Icons.checkroom),
+      (name: 'Recetas favoritas', icon: Icons.restaurant),
+      (name: 'Viajes soñados', icon: Icons.flight),
+      (name: 'Proyectos DIY', icon: Icons.build),
+      (name: 'Regalos', icon: Icons.card_giftcard),
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSizes.md,
+                AppSizes.md,
+                AppSizes.md,
+                AppSizes.sm,
+              ),
+              child: Text(
+                'Crear desde plantilla',
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+            ...templates.map(
+              (template) => ListTile(
+                leading: Icon(template.icon, color: AppColors.boardsDark),
+                title: Text(template.name),
+                onTap: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  Navigator.pop(sheetContext);
+                  final board = await ref
+                      .read(boardsNotifierProvider.notifier)
+                      .createBoard(template.name);
+                  if (board != null && mounted) {
+                    messenger.showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Tablero "${template.name}" creado',
+                        ),
+                        backgroundColor: AppColors.success,
+                      ),
+                    );
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: AppSizes.sm),
+          ],
+        ),
       ),
     );
   }

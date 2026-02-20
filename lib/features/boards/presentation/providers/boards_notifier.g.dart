@@ -26,7 +26,7 @@ final boardsNotifierProvider =
 
 typedef _$BoardsNotifier = Notifier<BoardsState>;
 String _$boardDetailNotifierHash() =>
-    r'45d733727ffaab1688edec17d9e1a3e0f92f4d45';
+    r'092083c27878a2643fd4914751d3d42831eefccc';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -192,5 +192,21 @@ class _BoardDetailNotifierProviderElement
   String get boardId => (origin as BoardDetailNotifierProvider).boardId;
 }
 
+String _$tagsNotifierHash() => r'd0106826c7e2eafb708a4787e096c4356d05cd69';
+
+/// Notifier for household tags
+///
+/// Copied from [TagsNotifier].
+@ProviderFor(TagsNotifier)
+final tagsNotifierProvider = NotifierProvider<TagsNotifier, TagsState>.internal(
+  TagsNotifier.new,
+  name: r'tagsNotifierProvider',
+  debugGetCreateSourceHash:
+      const bool.fromEnvironment('dart.vm.product') ? null : _$tagsNotifierHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$TagsNotifier = Notifier<TagsState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

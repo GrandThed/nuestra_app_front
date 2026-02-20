@@ -127,6 +127,75 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     }
   }
 
+  void _showAddCategoryDialog() {
+    final nameController = TextEditingController();
+    final iconController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Nueva categoria'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameController,
+              decoration: const InputDecoration(
+                labelText: 'Nombre',
+                border: OutlineInputBorder(),
+              ),
+              textCapitalization: TextCapitalization.sentences,
+              autofocus: true,
+            ),
+            const SizedBox(height: AppSizes.md),
+            TextField(
+              controller: iconController,
+              decoration: const InputDecoration(
+                labelText: 'Emoji (opcional)',
+                hintText: 'Ej: 🛒',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final name = nameController.text.trim();
+              if (name.isEmpty) return;
+
+              Navigator.pop(dialogContext);
+              final result = await ref
+                  .read(expensesNotifierProvider.notifier)
+                  .createCategory(
+                    name: name,
+                    icon: iconController.text.trim().isEmpty
+                        ? null
+                        : iconController.text.trim(),
+                  );
+
+              if (mounted && result != null) {
+                setState(() => _selectedCategoryId = result.id);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Categoria creada')),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.expenses,
+              foregroundColor: Colors.white,
+            ),
+            child: const Text('Crear'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final expensesState = ref.watch(expensesNotifierProvider);
@@ -318,42 +387,46 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
             const SizedBox(height: AppSizes.lg),
 
             // Category selector
-            if (categories.isNotEmpty) ...[
-              Text(
-                'Categoria',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: colorScheme.onSurfaceVariant,
+            Text(
+              'Categoria',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: AppSizes.sm),
+            Wrap(
+              spacing: AppSizes.sm,
+              runSpacing: AppSizes.sm,
+              children: [
+                // No category option
+                ChoiceChip(
+                  label: const Text('Sin categoria'),
+                  selected: _selectedCategoryId == null,
+                  onSelected: (_) => setState(() => _selectedCategoryId = null),
+                  selectedColor: AppColors.expenses.withValues(alpha: 0.2),
                 ),
-              ),
-              const SizedBox(height: AppSizes.sm),
-              Wrap(
-                spacing: AppSizes.sm,
-                runSpacing: AppSizes.sm,
-                children: [
-                  // No category option
-                  ChoiceChip(
-                    label: const Text('Sin categoria'),
-                    selected: _selectedCategoryId == null,
-                    onSelected: (_) => setState(() => _selectedCategoryId = null),
-                    selectedColor: AppColors.expenses.withValues(alpha: 0.2),
-                  ),
-                  // Category options
-                  ...categories.map((category) => ChoiceChip(
-                        avatar: category.icon != null
-                            ? Text(category.icon!, style: const TextStyle(fontSize: 14))
-                            : null,
-                        label: Text(category.name),
-                        selected: _selectedCategoryId == category.id,
-                        onSelected: (_) =>
-                            setState(() => _selectedCategoryId = category.id),
-                        selectedColor: AppColors.expenses.withValues(alpha: 0.2),
-                      )),
-                ],
-              ),
-              const SizedBox(height: AppSizes.xl),
-            ],
+                // Category options
+                ...categories.map((category) => ChoiceChip(
+                      avatar: category.icon != null
+                          ? Text(category.icon!, style: const TextStyle(fontSize: 14))
+                          : null,
+                      label: Text(category.name),
+                      selected: _selectedCategoryId == category.id,
+                      onSelected: (_) =>
+                          setState(() => _selectedCategoryId = category.id),
+                      selectedColor: AppColors.expenses.withValues(alpha: 0.2),
+                    )),
+                // Add new category
+                ActionChip(
+                  avatar: const Icon(Icons.add, size: 18),
+                  label: const Text('Nueva'),
+                  onPressed: _showAddCategoryDialog,
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSizes.xl),
           ],
         ),
       ),

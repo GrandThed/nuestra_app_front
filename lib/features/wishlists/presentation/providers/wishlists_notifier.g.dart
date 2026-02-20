@@ -453,7 +453,7 @@ class _UncheckedItemsCountProviderElement
   String? get categoryId => (origin as UncheckedItemsCountProvider).categoryId;
 }
 
-String _$wishlistsNotifierHash() => r'2d5c316e71995c5bfaf9eca7f012f01311a4cf3b';
+String _$wishlistsNotifierHash() => r'5fb873e62749ea6e34f43cbb00974a9185fc066c';
 
 /// Notifier for wishlists operations (categories + items combined)
 ///
@@ -472,5 +472,25 @@ final wishlistsNotifierProvider =
     );
 
 typedef _$WishlistsNotifier = Notifier<WishlistsState>;
+String _$purchaseHistoryNotifierHash() =>
+    r'b598a7e125cd30cfb8c097431b367de2c486ccc4';
+
+/// Notifier for purchase history
+///
+/// Copied from [PurchaseHistoryNotifier].
+@ProviderFor(PurchaseHistoryNotifier)
+final purchaseHistoryNotifierProvider =
+    NotifierProvider<PurchaseHistoryNotifier, PurchaseHistoryState>.internal(
+      PurchaseHistoryNotifier.new,
+      name: r'purchaseHistoryNotifierProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$purchaseHistoryNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$PurchaseHistoryNotifier = Notifier<PurchaseHistoryState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -358,6 +358,31 @@ class MenuPlanDetailNotifier extends _$MenuPlanDetailNotifier {
     }
   }
 
+  /// Create a leftover from an existing menu item
+  Future<MenuItemModel?> createLeftover(String itemId) async {
+    try {
+      final leftover = await _repository.createLeftover(menuId, itemId);
+
+      // Update state to include the new leftover
+      final currentState = state;
+      if (currentState is MenuPlanDetailStateLoaded) {
+        final currentItems = currentState.plan.items ?? [];
+        final updatedPlan = currentState.plan.copyWith(
+          items: [...currentItems, leftover],
+        );
+        state = MenuPlanDetailState.loaded(updatedPlan);
+      }
+
+      return leftover;
+    } on AppException catch (e) {
+      debugPrint('Error creating leftover: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint('Error creating leftover: $e');
+      return null;
+    }
+  }
+
   /// Generate shopping list from this menu plan
   Future<ShoppingListResultModel?> generateShoppingList({
     double servingsMultiplier = 1.0,
@@ -412,5 +437,46 @@ class CurrentMenuPlanId extends _$CurrentMenuPlanId {
 
   void setMenuPlan(String? id) {
     state = id;
+  }
+}
+
+/// Notifier for meal history
+@Riverpod(keepAlive: true)
+class MealHistoryNotifier extends _$MealHistoryNotifier {
+  late final MenuRepository _repository;
+
+  @override
+  MealHistoryState build() {
+    _repository = ref.watch(menuRepositoryProvider);
+    return const MealHistoryState.initial();
+  }
+
+  /// Load meal history only if not already loaded (for screen init)
+  Future<void> loadIfNeeded(String householdId) async {
+    if (state is MealHistoryStateInitial || state is MealHistoryStateError) {
+      await load(householdId);
+    }
+  }
+
+  /// Load meal history for a household
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> load(String householdId, {bool forceLoading = false}) async {
+    final hasData = state is MealHistoryStateLoaded;
+    if (!hasData || forceLoading) {
+      state = const MealHistoryState.loading();
+    }
+
+    try {
+      final history = await _repository.getMealHistory(householdId);
+      state = MealHistoryState.loaded(history);
+    } on AppException catch (e) {
+      if (!hasData) {
+        state = MealHistoryState.error(e.message);
+      }
+    } catch (e) {
+      if (!hasData) {
+        state = MealHistoryState.error('Error al cargar historial: $e');
+      }
+    }
   }
 }

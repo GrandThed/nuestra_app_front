@@ -26,10 +26,27 @@ class ApiConstants {
   static String boardItemPhoto(String id) => '/api/boards/$id/items/photo';
   static String boardItem(String bId, String iId) =>
       '/api/boards/$bId/items/$iId';
+  static String boardItemReorder(String bId) =>
+      '/api/boards/$bId/items/reorder';
+  static String boardItemTags(String bId, String iId) =>
+      '/api/boards/$bId/items/$iId/tags';
+  static String boardItemTag(String bId, String iId, String tId) =>
+      '/api/boards/$bId/items/$iId/tags/$tId';
+  static String boardItemComments(String bId, String iId) =>
+      '/api/boards/$bId/items/$iId/comments';
+  static String boardItemComment(String bId, String iId, String cId) =>
+      '/api/boards/$bId/items/$iId/comments/$cId';
+  static const String boardTags = '/api/boards/tags';
+  static String boardTag(String tId) => '/api/boards/tags/$tId';
+  static const String boardTemplates = '/api/boards/templates';
 
   // Recipes
   static const String recipes = '/api/recipes';
   static String recipe(String id) => '/api/recipes/$id';
+  static String recipeRating(String id) => '/api/recipes/$id/rating';
+  static String recipeRatings(String id) => '/api/recipes/$id/ratings';
+  static String recipeFavorite(String id) => '/api/recipes/$id/favorite';
+  static const String recipeImportUrl = '/api/recipes/import-url';
   static const String seasonalVegetables = '/api/recipes/seasonal-vegetables';
 
   // Menus
@@ -49,6 +66,9 @@ class ApiConstants {
   static String wishlistItem(String id) => '/api/wishlists/$id';
   static const String wishlistBulk = '/api/wishlists/bulk';
   static const String wishlistClearChecked = '/api/wishlists/clear-checked';
+  static String wishlistVote(String id) => '/api/wishlists/$id/vote';
+  static String wishlistPurchase(String id) => '/api/wishlists/$id/purchase';
+  static const String wishlistHistory = '/api/wishlists/history';
 
   // Expenses
   static const String expenses = '/api/expenses';
@@ -58,11 +78,24 @@ class ApiConstants {
   static String expenseSettle(String id) => '/api/expenses/$id/settle';
   static const String expenseSettlePeriod = '/api/expenses/settle-period';
   static const String expenseSummary = '/api/expenses/summary';
+  static const String expenseRecurring = '/api/expenses/recurring';
+  static String expenseRecurringItem(String id) =>
+      '/api/expenses/recurring/$id';
+  static const String expenseRecurringGenerate =
+      '/api/expenses/recurring/generate';
+  static const String expenseBudgets = '/api/expenses/budgets';
+  static const String expenseBudgetStatus = '/api/expenses/budgets/status';
+  static const String expenseTrends = '/api/expenses/trends';
+  static const String expenseExport = '/api/expenses/export';
 
   // Calendar
   static const String calendar = '/api/calendar';
   static String calendarEvent(String id) => '/api/calendar/$id';
   static const String calendarTimeline = '/api/calendar/timeline';
+
+  // Activity
+  static const String activity = '/api/activity';
+  static const String activityDigest = '/api/activity/digest';
 
   // Upload
   static const String upload = '/api/upload';

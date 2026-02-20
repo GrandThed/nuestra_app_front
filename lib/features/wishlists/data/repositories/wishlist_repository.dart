@@ -81,6 +81,7 @@ class WishlistRepository {
     String? categoryId,
     bool? checked,
     String? ownerType,
+    String? sortBy,
   }) async {
     final queryParams = <String, dynamic>{
       'householdId': householdId,
@@ -88,6 +89,7 @@ class WishlistRepository {
     if (categoryId != null) queryParams['categoryId'] = categoryId;
     if (checked != null) queryParams['checked'] = checked.toString();
     if (ownerType != null) queryParams['ownerType'] = ownerType;
+    if (sortBy != null) queryParams['sortBy'] = sortBy;
 
     final response = await _dioClient.get<Map<String, dynamic>>(
       ApiConstants.wishlists,
@@ -113,6 +115,8 @@ class WishlistRepository {
     double? quantity,
     String? unit,
     String? sourceRecipeId,
+    bool? isSecret,
+    String? hiddenFromUserId,
   }) async {
     final response = await _dioClient.post<Map<String, dynamic>>(
       ApiConstants.wishlists,
@@ -128,6 +132,8 @@ class WishlistRepository {
         if (quantity != null) 'quantity': quantity,
         if (unit != null) 'unit': unit,
         if (sourceRecipeId != null) 'sourceRecipeId': sourceRecipeId,
+        if (isSecret != null) 'isSecret': isSecret,
+        if (hiddenFromUserId != null) 'hiddenFromUserId': hiddenFromUserId,
       },
     );
 
@@ -211,5 +217,49 @@ class WishlistRepository {
     );
 
     return response?['data']?['deletedCount'] as int? ?? 0;
+  }
+
+  // ==================== VOTING ====================
+
+  /// Vote on a wishlist item with a priority
+  Future<void> voteOnItem(String itemId, int priority) async {
+    await _dioClient.post<Map<String, dynamic>>(
+      ApiConstants.wishlistVote(itemId),
+      data: {'priority': priority},
+    );
+  }
+
+  // ==================== PURCHASE HISTORY ====================
+
+  /// Get purchase history for a household
+  Future<List<WishlistPurchaseHistoryModel>> getPurchaseHistory(
+      String householdId) async {
+    final response = await _dioClient.get<Map<String, dynamic>>(
+      ApiConstants.wishlistHistory,
+      queryParameters: {'householdId': householdId},
+    );
+
+    final history = response['data']['history'] as List<dynamic>? ?? [];
+    return history
+        .map((h) =>
+            WishlistPurchaseHistoryModel.fromJson(h as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Purchase an item with optional expense linking
+  Future<void> purchaseItem(
+    String itemId, {
+    required String householdId,
+    bool createExpense = false,
+    String? categoryId,
+  }) async {
+    await _dioClient.post<Map<String, dynamic>>(
+      ApiConstants.wishlistPurchase(itemId),
+      data: {
+        'householdId': householdId,
+        'createExpense': createExpense,
+        if (categoryId != null) 'categoryId': categoryId,
+      },
+    );
   }
 }

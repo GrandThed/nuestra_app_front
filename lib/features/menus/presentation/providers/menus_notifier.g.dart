@@ -46,7 +46,7 @@ final upcomingMealsNotifierProvider =
 
 typedef _$UpcomingMealsNotifier = Notifier<UpcomingMealsState>;
 String _$menuPlanDetailNotifierHash() =>
-    r'476bd281653b7a94bad2b72809f675c809e4a7b6';
+    r'e7294e89d28cca7c36faeb703096314a30e94abc';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -252,5 +252,25 @@ final currentMenuPlanIdProvider =
     );
 
 typedef _$CurrentMenuPlanId = Notifier<String?>;
+String _$mealHistoryNotifierHash() =>
+    r'10a1e7d5e2903ee5ad712e944d78c7a84c49cf9a';
+
+/// Notifier for meal history
+///
+/// Copied from [MealHistoryNotifier].
+@ProviderFor(MealHistoryNotifier)
+final mealHistoryNotifierProvider =
+    NotifierProvider<MealHistoryNotifier, MealHistoryState>.internal(
+      MealHistoryNotifier.new,
+      name: r'mealHistoryNotifierProvider',
+      debugGetCreateSourceHash:
+          const bool.fromEnvironment('dart.vm.product')
+              ? null
+              : _$mealHistoryNotifierHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$MealHistoryNotifier = Notifier<MealHistoryState>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

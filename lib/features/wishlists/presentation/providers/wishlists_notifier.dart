@@ -178,6 +178,8 @@ class WishlistsNotifier extends _$WishlistsNotifier {
     double? quantity,
     String? unit,
     String? sourceRecipeId,
+    bool? isSecret,
+    String? hiddenFromUserId,
   }) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) return null;
@@ -195,6 +197,8 @@ class WishlistsNotifier extends _$WishlistsNotifier {
         quantity: quantity,
         unit: unit,
         sourceRecipeId: sourceRecipeId,
+        isSecret: isSecret,
+        hiddenFromUserId: hiddenFromUserId,
       );
 
       // Add to current list
@@ -294,6 +298,51 @@ class WishlistsNotifier extends _$WishlistsNotifier {
     }
   }
 
+  // ==================== VOTING ====================
+
+  /// Vote on a wishlist item with a priority
+  Future<void> voteOnItem(String itemId, int priority) async {
+    try {
+      await _repository.voteOnItem(itemId, priority);
+      // Reload to get updated vote data
+      await loadWishlists();
+    } catch (e) {
+      debugPrint('Error voting on item: $e');
+    }
+  }
+
+  // ==================== PURCHASE ====================
+
+  /// Purchase an item with optional expense linking
+  Future<void> purchaseItem(
+    String itemId, {
+    required String householdId,
+    bool createExpense = false,
+    String? categoryId,
+  }) async {
+    try {
+      await _repository.purchaseItem(
+        itemId,
+        householdId: householdId,
+        createExpense: createExpense,
+        categoryId: categoryId,
+      );
+
+      // Remove item from list (it's archived)
+      final current = state;
+      if (current is WishlistsStateLoaded) {
+        final updatedItems =
+            current.items.where((i) => i.id != itemId).toList();
+        state = WishlistsState.loaded(
+          categories: current.categories,
+          items: updatedItems,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error purchasing item: $e');
+    }
+  }
+
   /// Clear all checked items
   Future<int> clearCheckedItems({String? categoryId}) async {
     final householdId = ref.read(currentHouseholdIdProvider);
@@ -369,4 +418,46 @@ int checkedItemsCount(Ref ref, String? categoryId) {
 int uncheckedItemsCount(Ref ref, String? categoryId) {
   final items = ref.watch(wishlistItemsByCategoryProvider(categoryId));
   return items.where((i) => !i.checked).length;
+}
+
+/// Notifier for purchase history
+@Riverpod(keepAlive: true)
+class PurchaseHistoryNotifier extends _$PurchaseHistoryNotifier {
+  late final WishlistRepository _repository;
+
+  @override
+  PurchaseHistoryState build() {
+    _repository = ref.watch(wishlistRepositoryProvider);
+    return const PurchaseHistoryState.initial();
+  }
+
+  /// Load purchase history only if not already loaded (for screen init)
+  Future<void> loadIfNeeded(String householdId) async {
+    if (state is PurchaseHistoryStateInitial ||
+        state is PurchaseHistoryStateError) {
+      await load(householdId);
+    }
+  }
+
+  /// Load purchase history for a household
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> load(String householdId, {bool forceLoading = false}) async {
+    final hasData = state is PurchaseHistoryStateLoaded;
+    if (!hasData || forceLoading) {
+      state = const PurchaseHistoryState.loading();
+    }
+
+    try {
+      final history = await _repository.getPurchaseHistory(householdId);
+      state = PurchaseHistoryState.loaded(history);
+    } on AppException catch (e) {
+      if (!hasData) {
+        state = PurchaseHistoryState.error(e.message);
+      }
+    } catch (e) {
+      if (!hasData) {
+        state = PurchaseHistoryState.error('Error al cargar historial: $e');
+      }
+    }
+  }
 }

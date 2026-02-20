@@ -151,6 +151,7 @@ class CalendarNotifier extends _$CalendarNotifier {
     String? linkedBoardId,
     String? linkedRecipeId,
     String? linkedMenuPlanId,
+    String? colorHex,
   }) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) return null;
@@ -168,6 +169,7 @@ class CalendarNotifier extends _$CalendarNotifier {
         linkedBoardId: linkedBoardId,
         linkedRecipeId: linkedRecipeId,
         linkedMenuPlanId: linkedMenuPlanId,
+        colorHex: colorHex,
       );
 
       // Add to current list if in visible range
@@ -204,6 +206,7 @@ class CalendarNotifier extends _$CalendarNotifier {
     String? linkedBoardId,
     String? linkedRecipeId,
     String? linkedMenuPlanId,
+    String? colorHex,
   }) async {
     try {
       final event = await _repository.updateEvent(
@@ -218,6 +221,7 @@ class CalendarNotifier extends _$CalendarNotifier {
         linkedBoardId: linkedBoardId,
         linkedRecipeId: linkedRecipeId,
         linkedMenuPlanId: linkedMenuPlanId,
+        colorHex: colorHex,
       );
 
       // Update in current list
@@ -277,6 +281,48 @@ class CalendarNotifier extends _$CalendarNotifier {
     } catch (e) {
       debugPrint('Error deleting event: $e');
       return false;
+    }
+  }
+
+  // ==================== AVAILABILITY ====================
+
+  /// Get availability for household members in a date range
+  Future<AvailabilityResultModel?> getAvailability({
+    required String householdId,
+    required String from,
+    required String to,
+    List<String>? userIds,
+  }) async {
+    try {
+      return await _repository.getAvailability(
+        householdId: householdId,
+        from: from,
+        to: to,
+        userIds: userIds,
+      );
+    } catch (e) {
+      debugPrint('Error getting availability: $e');
+      return null;
+    }
+  }
+
+  // ==================== DATE NIGHT ====================
+
+  /// Plan a date night event
+  Future<CalendarEventModel?> planDateNight({
+    required String householdId,
+    String? preferredDay,
+  }) async {
+    try {
+      final event = await _repository.planDateNight(
+        householdId: householdId,
+        preferredDay: preferredDay,
+      );
+      await loadEvents(); // Refresh to show new event
+      return event;
+    } catch (e) {
+      debugPrint('Error planning date night: $e');
+      return null;
     }
   }
 }

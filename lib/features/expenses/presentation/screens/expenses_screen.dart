@@ -108,10 +108,6 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     context.push(AppRoutes.addExpense);
   }
 
-  void _navigateToSummary() {
-    context.push(AppRoutes.expenseSummary);
-  }
-
   void _showCategoryOptions(ExpenseCategoryModel category) {
     showModalBottomSheet(
       context: context,
@@ -389,10 +385,48 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
             onPressed: _toggleSearch,
           ),
           if (!_isSearching)
-            IconButton(
-              icon: const Icon(Icons.bar_chart_outlined),
-              tooltip: 'Ver resumen',
-              onPressed: _navigateToSummary,
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              tooltip: 'Opciones',
+              onSelected: (route) => context.push(route),
+              itemBuilder: (context) => [
+                const PopupMenuItem(
+                  value: AppRoutes.expenseSummary,
+                  child: ListTile(
+                    leading: Icon(Icons.bar_chart_outlined),
+                    title: Text('Resumen mensual'),
+                    contentPadding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: AppRoutes.expenseTrends,
+                  child: ListTile(
+                    leading: Icon(Icons.trending_up),
+                    title: Text('Tendencias'),
+                    contentPadding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: AppRoutes.recurringExpenses,
+                  child: ListTile(
+                    leading: Icon(Icons.repeat),
+                    title: Text('Gastos recurrentes'),
+                    contentPadding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+                const PopupMenuItem(
+                  value: AppRoutes.budgetSetup,
+                  child: ListTile(
+                    leading: Icon(Icons.account_balance_wallet),
+                    title: Text('Presupuestos'),
+                    contentPadding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                ),
+              ],
             ),
         ],
       ),

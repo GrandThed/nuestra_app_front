@@ -71,6 +71,8 @@ sealed class ExpenseSplitModel with _$ExpenseSplitModel {
     ExpenseUserModel? user,
     @DecimalConverter() required double amount,
     @Default(false) bool settled,
+    @NullableDecimalConverter() double? customAmount,
+    @Default(false) bool isCustom,
   }) = _ExpenseSplitModel;
 
   factory ExpenseSplitModel.fromJson(Map<String, dynamic> json) =>
@@ -93,6 +95,8 @@ sealed class ExpenseModel with _$ExpenseModel {
     @Default([]) List<ExpenseSplitModel> splits,
     @Default(false) bool allSettled,
     DateTime? createdAt,
+    String? recurringExpenseId,
+    String? linkedWishlistItemId,
   }) = _ExpenseModel;
 
   factory ExpenseModel.fromJson(Map<String, dynamic> json) =>
@@ -180,4 +184,75 @@ sealed class SettlePeriodResultModel with _$SettlePeriodResultModel {
 
   factory SettlePeriodResultModel.fromJson(Map<String, dynamic> json) =>
       _$SettlePeriodResultModelFromJson(json);
+}
+
+/// Model for a recurring expense
+@freezed
+sealed class RecurringExpenseModel with _$RecurringExpenseModel {
+  const factory RecurringExpenseModel({
+    required String id,
+    required String householdId,
+    required String description,
+    @DecimalConverter() required double amount,
+    @Default('ARS') String currency,
+    String? categoryId,
+    ExpenseCategoryModel? category,
+    required String paidById,
+    ExpenseUserModel? paidBy,
+    required String recurrence,
+    required DateTime nextDueDate,
+    @Default(true) bool isActive,
+    required DateTime createdAt,
+  }) = _RecurringExpenseModel;
+
+  factory RecurringExpenseModel.fromJson(Map<String, dynamic> json) =>
+      _$RecurringExpenseModelFromJson(json);
+}
+
+/// Model for an expense budget (monthly limit per category)
+@freezed
+sealed class ExpenseBudgetModel with _$ExpenseBudgetModel {
+  const factory ExpenseBudgetModel({
+    required String id,
+    required String householdId,
+    required String categoryId,
+    ExpenseCategoryModel? category,
+    @DecimalConverter() required double monthlyLimit,
+    required int month,
+    required int year,
+    required DateTime createdAt,
+  }) = _ExpenseBudgetModel;
+
+  factory ExpenseBudgetModel.fromJson(Map<String, dynamic> json) =>
+      _$ExpenseBudgetModelFromJson(json);
+}
+
+/// Model for budget status (actual vs limit)
+@freezed
+sealed class BudgetStatusModel with _$BudgetStatusModel {
+  const factory BudgetStatusModel({
+    required String categoryId,
+    required String categoryName,
+    @DecimalConverter() required double budgetLimit,
+    @DecimalConverter() required double actualSpent,
+    @DecimalConverter() required double remaining,
+    required double percentUsed,
+  }) = _BudgetStatusModel;
+
+  factory BudgetStatusModel.fromJson(Map<String, dynamic> json) =>
+      _$BudgetStatusModelFromJson(json);
+}
+
+/// Model for expense trend data (monthly breakdown)
+@freezed
+sealed class ExpenseTrendModel with _$ExpenseTrendModel {
+  const factory ExpenseTrendModel({
+    required int month,
+    required int year,
+    @DecimalConverter() required double total,
+    required List<ExpenseCategoryBreakdownModel> byCategory,
+  }) = _ExpenseTrendModel;
+
+  factory ExpenseTrendModel.fromJson(Map<String, dynamic> json) =>
+      _$ExpenseTrendModelFromJson(json);
 }

@@ -1058,7 +1058,7 @@ as String,
 /// @nodoc
 mixin _$CalendarEventModel {
 
- String get id; String get householdId; String get title; String? get description; DateTime get startDate; DateTime? get endDate; bool get allDay; RecurrenceType get recurrence; DateTime? get recurrenceEndDate; LinkedBoardModel? get linkedBoard; LinkedRecipeModel? get linkedRecipe; LinkedMenuPlanModel? get linkedMenuPlan; CalendarUserModel? get createdBy; bool get isOccurrence; DateTime? get occurrenceDate; String? get occurrenceId; DateTime? get createdAt;
+ String get id; String get householdId; String get title; String? get description; DateTime get startDate; DateTime? get endDate; bool get allDay; RecurrenceType get recurrence; DateTime? get recurrenceEndDate; LinkedBoardModel? get linkedBoard; LinkedRecipeModel? get linkedRecipe; LinkedMenuPlanModel? get linkedMenuPlan; CalendarUserModel? get createdBy; bool get isOccurrence; DateTime? get occurrenceDate; String? get occurrenceId; String? get colorHex; DateTime? get createdAt;
 /// Create a copy of CalendarEventModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1071,16 +1071,16 @@ $CalendarEventModelCopyWith<CalendarEventModel> get copyWith => _$CalendarEventM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CalendarEventModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.allDay, allDay) || other.allDay == allDay)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.linkedBoard, linkedBoard) || other.linkedBoard == linkedBoard)&&(identical(other.linkedRecipe, linkedRecipe) || other.linkedRecipe == linkedRecipe)&&(identical(other.linkedMenuPlan, linkedMenuPlan) || other.linkedMenuPlan == linkedMenuPlan)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.isOccurrence, isOccurrence) || other.isOccurrence == isOccurrence)&&(identical(other.occurrenceDate, occurrenceDate) || other.occurrenceDate == occurrenceDate)&&(identical(other.occurrenceId, occurrenceId) || other.occurrenceId == occurrenceId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CalendarEventModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.allDay, allDay) || other.allDay == allDay)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.linkedBoard, linkedBoard) || other.linkedBoard == linkedBoard)&&(identical(other.linkedRecipe, linkedRecipe) || other.linkedRecipe == linkedRecipe)&&(identical(other.linkedMenuPlan, linkedMenuPlan) || other.linkedMenuPlan == linkedMenuPlan)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.isOccurrence, isOccurrence) || other.isOccurrence == isOccurrence)&&(identical(other.occurrenceDate, occurrenceDate) || other.occurrenceDate == occurrenceDate)&&(identical(other.occurrenceId, occurrenceId) || other.occurrenceId == occurrenceId)&&(identical(other.colorHex, colorHex) || other.colorHex == colorHex)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,householdId,title,description,startDate,endDate,allDay,recurrence,recurrenceEndDate,linkedBoard,linkedRecipe,linkedMenuPlan,createdBy,isOccurrence,occurrenceDate,occurrenceId,createdAt);
+int get hashCode => Object.hash(runtimeType,id,householdId,title,description,startDate,endDate,allDay,recurrence,recurrenceEndDate,linkedBoard,linkedRecipe,linkedMenuPlan,createdBy,isOccurrence,occurrenceDate,occurrenceId,colorHex,createdAt);
 
 @override
 String toString() {
-  return 'CalendarEventModel(id: $id, householdId: $householdId, title: $title, description: $description, startDate: $startDate, endDate: $endDate, allDay: $allDay, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, linkedBoard: $linkedBoard, linkedRecipe: $linkedRecipe, linkedMenuPlan: $linkedMenuPlan, createdBy: $createdBy, isOccurrence: $isOccurrence, occurrenceDate: $occurrenceDate, occurrenceId: $occurrenceId, createdAt: $createdAt)';
+  return 'CalendarEventModel(id: $id, householdId: $householdId, title: $title, description: $description, startDate: $startDate, endDate: $endDate, allDay: $allDay, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, linkedBoard: $linkedBoard, linkedRecipe: $linkedRecipe, linkedMenuPlan: $linkedMenuPlan, createdBy: $createdBy, isOccurrence: $isOccurrence, occurrenceDate: $occurrenceDate, occurrenceId: $occurrenceId, colorHex: $colorHex, createdAt: $createdAt)';
 }
 
 
@@ -1091,7 +1091,7 @@ abstract mixin class $CalendarEventModelCopyWith<$Res>  {
   factory $CalendarEventModelCopyWith(CalendarEventModel value, $Res Function(CalendarEventModel) _then) = _$CalendarEventModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String householdId, String title, String? description, DateTime startDate, DateTime? endDate, bool allDay, RecurrenceType recurrence, DateTime? recurrenceEndDate, LinkedBoardModel? linkedBoard, LinkedRecipeModel? linkedRecipe, LinkedMenuPlanModel? linkedMenuPlan, CalendarUserModel? createdBy, bool isOccurrence, DateTime? occurrenceDate, String? occurrenceId, DateTime? createdAt
+ String id, String householdId, String title, String? description, DateTime startDate, DateTime? endDate, bool allDay, RecurrenceType recurrence, DateTime? recurrenceEndDate, LinkedBoardModel? linkedBoard, LinkedRecipeModel? linkedRecipe, LinkedMenuPlanModel? linkedMenuPlan, CalendarUserModel? createdBy, bool isOccurrence, DateTime? occurrenceDate, String? occurrenceId, String? colorHex, DateTime? createdAt
 });
 
 
@@ -1108,7 +1108,7 @@ class _$CalendarEventModelCopyWithImpl<$Res>
 
 /// Create a copy of CalendarEventModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? householdId = null,Object? title = null,Object? description = freezed,Object? startDate = null,Object? endDate = freezed,Object? allDay = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? linkedBoard = freezed,Object? linkedRecipe = freezed,Object? linkedMenuPlan = freezed,Object? createdBy = freezed,Object? isOccurrence = null,Object? occurrenceDate = freezed,Object? occurrenceId = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? householdId = null,Object? title = null,Object? description = freezed,Object? startDate = null,Object? endDate = freezed,Object? allDay = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? linkedBoard = freezed,Object? linkedRecipe = freezed,Object? linkedMenuPlan = freezed,Object? createdBy = freezed,Object? isOccurrence = null,Object? occurrenceDate = freezed,Object? occurrenceId = freezed,Object? colorHex = freezed,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,householdId: null == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
@@ -1126,6 +1126,7 @@ as LinkedMenuPlanModel?,createdBy: freezed == createdBy ? _self.createdBy : crea
 as CalendarUserModel?,isOccurrence: null == isOccurrence ? _self.isOccurrence : isOccurrence // ignore: cast_nullable_to_non_nullable
 as bool,occurrenceDate: freezed == occurrenceDate ? _self.occurrenceDate : occurrenceDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,occurrenceId: freezed == occurrenceId ? _self.occurrenceId : occurrenceId // ignore: cast_nullable_to_non_nullable
+as String?,colorHex: freezed == colorHex ? _self.colorHex : colorHex // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -1257,10 +1258,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  String? colorHex,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CalendarEventModel() when $default != null:
-return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.createdAt);case _:
+return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.colorHex,_that.createdAt);case _:
   return orElse();
 
 }
@@ -1278,10 +1279,10 @@ return $default(_that.id,_that.householdId,_that.title,_that.description,_that.s
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  String? colorHex,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _CalendarEventModel():
-return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.createdAt);}
+return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.colorHex,_that.createdAt);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -1295,10 +1296,10 @@ return $default(_that.id,_that.householdId,_that.title,_that.description,_that.s
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  String? colorHex,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _CalendarEventModel() when $default != null:
-return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.createdAt);case _:
+return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.colorHex,_that.createdAt);case _:
   return null;
 
 }
@@ -1310,7 +1311,7 @@ return $default(_that.id,_that.householdId,_that.title,_that.description,_that.s
 @JsonSerializable()
 
 class _CalendarEventModel implements CalendarEventModel {
-  const _CalendarEventModel({required this.id, required this.householdId, required this.title, this.description, required this.startDate, this.endDate, this.allDay = false, this.recurrence = RecurrenceType.none, this.recurrenceEndDate, this.linkedBoard, this.linkedRecipe, this.linkedMenuPlan, this.createdBy, this.isOccurrence = false, this.occurrenceDate, this.occurrenceId, this.createdAt});
+  const _CalendarEventModel({required this.id, required this.householdId, required this.title, this.description, required this.startDate, this.endDate, this.allDay = false, this.recurrence = RecurrenceType.none, this.recurrenceEndDate, this.linkedBoard, this.linkedRecipe, this.linkedMenuPlan, this.createdBy, this.isOccurrence = false, this.occurrenceDate, this.occurrenceId, this.colorHex, this.createdAt});
   factory _CalendarEventModel.fromJson(Map<String, dynamic> json) => _$CalendarEventModelFromJson(json);
 
 @override final  String id;
@@ -1329,6 +1330,7 @@ class _CalendarEventModel implements CalendarEventModel {
 @override@JsonKey() final  bool isOccurrence;
 @override final  DateTime? occurrenceDate;
 @override final  String? occurrenceId;
+@override final  String? colorHex;
 @override final  DateTime? createdAt;
 
 /// Create a copy of CalendarEventModel
@@ -1344,16 +1346,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CalendarEventModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.allDay, allDay) || other.allDay == allDay)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.linkedBoard, linkedBoard) || other.linkedBoard == linkedBoard)&&(identical(other.linkedRecipe, linkedRecipe) || other.linkedRecipe == linkedRecipe)&&(identical(other.linkedMenuPlan, linkedMenuPlan) || other.linkedMenuPlan == linkedMenuPlan)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.isOccurrence, isOccurrence) || other.isOccurrence == isOccurrence)&&(identical(other.occurrenceDate, occurrenceDate) || other.occurrenceDate == occurrenceDate)&&(identical(other.occurrenceId, occurrenceId) || other.occurrenceId == occurrenceId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CalendarEventModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.allDay, allDay) || other.allDay == allDay)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.linkedBoard, linkedBoard) || other.linkedBoard == linkedBoard)&&(identical(other.linkedRecipe, linkedRecipe) || other.linkedRecipe == linkedRecipe)&&(identical(other.linkedMenuPlan, linkedMenuPlan) || other.linkedMenuPlan == linkedMenuPlan)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.isOccurrence, isOccurrence) || other.isOccurrence == isOccurrence)&&(identical(other.occurrenceDate, occurrenceDate) || other.occurrenceDate == occurrenceDate)&&(identical(other.occurrenceId, occurrenceId) || other.occurrenceId == occurrenceId)&&(identical(other.colorHex, colorHex) || other.colorHex == colorHex)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,householdId,title,description,startDate,endDate,allDay,recurrence,recurrenceEndDate,linkedBoard,linkedRecipe,linkedMenuPlan,createdBy,isOccurrence,occurrenceDate,occurrenceId,createdAt);
+int get hashCode => Object.hash(runtimeType,id,householdId,title,description,startDate,endDate,allDay,recurrence,recurrenceEndDate,linkedBoard,linkedRecipe,linkedMenuPlan,createdBy,isOccurrence,occurrenceDate,occurrenceId,colorHex,createdAt);
 
 @override
 String toString() {
-  return 'CalendarEventModel(id: $id, householdId: $householdId, title: $title, description: $description, startDate: $startDate, endDate: $endDate, allDay: $allDay, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, linkedBoard: $linkedBoard, linkedRecipe: $linkedRecipe, linkedMenuPlan: $linkedMenuPlan, createdBy: $createdBy, isOccurrence: $isOccurrence, occurrenceDate: $occurrenceDate, occurrenceId: $occurrenceId, createdAt: $createdAt)';
+  return 'CalendarEventModel(id: $id, householdId: $householdId, title: $title, description: $description, startDate: $startDate, endDate: $endDate, allDay: $allDay, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, linkedBoard: $linkedBoard, linkedRecipe: $linkedRecipe, linkedMenuPlan: $linkedMenuPlan, createdBy: $createdBy, isOccurrence: $isOccurrence, occurrenceDate: $occurrenceDate, occurrenceId: $occurrenceId, colorHex: $colorHex, createdAt: $createdAt)';
 }
 
 
@@ -1364,7 +1366,7 @@ abstract mixin class _$CalendarEventModelCopyWith<$Res> implements $CalendarEven
   factory _$CalendarEventModelCopyWith(_CalendarEventModel value, $Res Function(_CalendarEventModel) _then) = __$CalendarEventModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String householdId, String title, String? description, DateTime startDate, DateTime? endDate, bool allDay, RecurrenceType recurrence, DateTime? recurrenceEndDate, LinkedBoardModel? linkedBoard, LinkedRecipeModel? linkedRecipe, LinkedMenuPlanModel? linkedMenuPlan, CalendarUserModel? createdBy, bool isOccurrence, DateTime? occurrenceDate, String? occurrenceId, DateTime? createdAt
+ String id, String householdId, String title, String? description, DateTime startDate, DateTime? endDate, bool allDay, RecurrenceType recurrence, DateTime? recurrenceEndDate, LinkedBoardModel? linkedBoard, LinkedRecipeModel? linkedRecipe, LinkedMenuPlanModel? linkedMenuPlan, CalendarUserModel? createdBy, bool isOccurrence, DateTime? occurrenceDate, String? occurrenceId, String? colorHex, DateTime? createdAt
 });
 
 
@@ -1381,7 +1383,7 @@ class __$CalendarEventModelCopyWithImpl<$Res>
 
 /// Create a copy of CalendarEventModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? householdId = null,Object? title = null,Object? description = freezed,Object? startDate = null,Object? endDate = freezed,Object? allDay = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? linkedBoard = freezed,Object? linkedRecipe = freezed,Object? linkedMenuPlan = freezed,Object? createdBy = freezed,Object? isOccurrence = null,Object? occurrenceDate = freezed,Object? occurrenceId = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? householdId = null,Object? title = null,Object? description = freezed,Object? startDate = null,Object? endDate = freezed,Object? allDay = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? linkedBoard = freezed,Object? linkedRecipe = freezed,Object? linkedMenuPlan = freezed,Object? createdBy = freezed,Object? isOccurrence = null,Object? occurrenceDate = freezed,Object? occurrenceId = freezed,Object? colorHex = freezed,Object? createdAt = freezed,}) {
   return _then(_CalendarEventModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,householdId: null == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
@@ -1399,6 +1401,7 @@ as LinkedMenuPlanModel?,createdBy: freezed == createdBy ? _self.createdBy : crea
 as CalendarUserModel?,isOccurrence: null == isOccurrence ? _self.isOccurrence : isOccurrence // ignore: cast_nullable_to_non_nullable
 as bool,occurrenceDate: freezed == occurrenceDate ? _self.occurrenceDate : occurrenceDate // ignore: cast_nullable_to_non_nullable
 as DateTime?,occurrenceId: freezed == occurrenceId ? _self.occurrenceId : occurrenceId // ignore: cast_nullable_to_non_nullable
+as String?,colorHex: freezed == colorHex ? _self.colorHex : colorHex // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -2755,6 +2758,1082 @@ class __$TimelineBoardRefCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$AvailabilityDayModel {
+
+ String get date; List<AvailabilityEventModel> get events; bool get isFree;
+/// Create a copy of AvailabilityDayModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AvailabilityDayModelCopyWith<AvailabilityDayModel> get copyWith => _$AvailabilityDayModelCopyWithImpl<AvailabilityDayModel>(this as AvailabilityDayModel, _$identity);
+
+  /// Serializes this AvailabilityDayModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AvailabilityDayModel&&(identical(other.date, date) || other.date == date)&&const DeepCollectionEquality().equals(other.events, events)&&(identical(other.isFree, isFree) || other.isFree == isFree));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,date,const DeepCollectionEquality().hash(events),isFree);
+
+@override
+String toString() {
+  return 'AvailabilityDayModel(date: $date, events: $events, isFree: $isFree)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $AvailabilityDayModelCopyWith<$Res>  {
+  factory $AvailabilityDayModelCopyWith(AvailabilityDayModel value, $Res Function(AvailabilityDayModel) _then) = _$AvailabilityDayModelCopyWithImpl;
+@useResult
+$Res call({
+ String date, List<AvailabilityEventModel> events, bool isFree
+});
+
+
+
+
+}
+/// @nodoc
+class _$AvailabilityDayModelCopyWithImpl<$Res>
+    implements $AvailabilityDayModelCopyWith<$Res> {
+  _$AvailabilityDayModelCopyWithImpl(this._self, this._then);
+
+  final AvailabilityDayModel _self;
+  final $Res Function(AvailabilityDayModel) _then;
+
+/// Create a copy of AvailabilityDayModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? date = null,Object? events = null,Object? isFree = null,}) {
+  return _then(_self.copyWith(
+date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as String,events: null == events ? _self.events : events // ignore: cast_nullable_to_non_nullable
+as List<AvailabilityEventModel>,isFree: null == isFree ? _self.isFree : isFree // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [AvailabilityDayModel].
+extension AvailabilityDayModelPatterns on AvailabilityDayModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _AvailabilityDayModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _AvailabilityDayModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _AvailabilityDayModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _AvailabilityDayModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _AvailabilityDayModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _AvailabilityDayModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String date,  List<AvailabilityEventModel> events,  bool isFree)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _AvailabilityDayModel() when $default != null:
+return $default(_that.date,_that.events,_that.isFree);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String date,  List<AvailabilityEventModel> events,  bool isFree)  $default,) {final _that = this;
+switch (_that) {
+case _AvailabilityDayModel():
+return $default(_that.date,_that.events,_that.isFree);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String date,  List<AvailabilityEventModel> events,  bool isFree)?  $default,) {final _that = this;
+switch (_that) {
+case _AvailabilityDayModel() when $default != null:
+return $default(_that.date,_that.events,_that.isFree);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _AvailabilityDayModel implements AvailabilityDayModel {
+  const _AvailabilityDayModel({required this.date, required final  List<AvailabilityEventModel> events, required this.isFree}): _events = events;
+  factory _AvailabilityDayModel.fromJson(Map<String, dynamic> json) => _$AvailabilityDayModelFromJson(json);
+
+@override final  String date;
+ final  List<AvailabilityEventModel> _events;
+@override List<AvailabilityEventModel> get events {
+  if (_events is EqualUnmodifiableListView) return _events;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_events);
+}
+
+@override final  bool isFree;
+
+/// Create a copy of AvailabilityDayModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AvailabilityDayModelCopyWith<_AvailabilityDayModel> get copyWith => __$AvailabilityDayModelCopyWithImpl<_AvailabilityDayModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$AvailabilityDayModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AvailabilityDayModel&&(identical(other.date, date) || other.date == date)&&const DeepCollectionEquality().equals(other._events, _events)&&(identical(other.isFree, isFree) || other.isFree == isFree));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,date,const DeepCollectionEquality().hash(_events),isFree);
+
+@override
+String toString() {
+  return 'AvailabilityDayModel(date: $date, events: $events, isFree: $isFree)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AvailabilityDayModelCopyWith<$Res> implements $AvailabilityDayModelCopyWith<$Res> {
+  factory _$AvailabilityDayModelCopyWith(_AvailabilityDayModel value, $Res Function(_AvailabilityDayModel) _then) = __$AvailabilityDayModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String date, List<AvailabilityEventModel> events, bool isFree
+});
+
+
+
+
+}
+/// @nodoc
+class __$AvailabilityDayModelCopyWithImpl<$Res>
+    implements _$AvailabilityDayModelCopyWith<$Res> {
+  __$AvailabilityDayModelCopyWithImpl(this._self, this._then);
+
+  final _AvailabilityDayModel _self;
+  final $Res Function(_AvailabilityDayModel) _then;
+
+/// Create a copy of AvailabilityDayModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? date = null,Object? events = null,Object? isFree = null,}) {
+  return _then(_AvailabilityDayModel(
+date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as String,events: null == events ? _self._events : events // ignore: cast_nullable_to_non_nullable
+as List<AvailabilityEventModel>,isFree: null == isFree ? _self.isFree : isFree // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$AvailabilityEventModel {
+
+ String get id; String get title; String get startDate; String? get endDate; bool get allDay; String get createdById;
+/// Create a copy of AvailabilityEventModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AvailabilityEventModelCopyWith<AvailabilityEventModel> get copyWith => _$AvailabilityEventModelCopyWithImpl<AvailabilityEventModel>(this as AvailabilityEventModel, _$identity);
+
+  /// Serializes this AvailabilityEventModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AvailabilityEventModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.allDay, allDay) || other.allDay == allDay)&&(identical(other.createdById, createdById) || other.createdById == createdById));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,title,startDate,endDate,allDay,createdById);
+
+@override
+String toString() {
+  return 'AvailabilityEventModel(id: $id, title: $title, startDate: $startDate, endDate: $endDate, allDay: $allDay, createdById: $createdById)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $AvailabilityEventModelCopyWith<$Res>  {
+  factory $AvailabilityEventModelCopyWith(AvailabilityEventModel value, $Res Function(AvailabilityEventModel) _then) = _$AvailabilityEventModelCopyWithImpl;
+@useResult
+$Res call({
+ String id, String title, String startDate, String? endDate, bool allDay, String createdById
+});
+
+
+
+
+}
+/// @nodoc
+class _$AvailabilityEventModelCopyWithImpl<$Res>
+    implements $AvailabilityEventModelCopyWith<$Res> {
+  _$AvailabilityEventModelCopyWithImpl(this._self, this._then);
+
+  final AvailabilityEventModel _self;
+  final $Res Function(AvailabilityEventModel) _then;
+
+/// Create a copy of AvailabilityEventModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? startDate = null,Object? endDate = freezed,Object? allDay = null,Object? createdById = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,startDate: null == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
+as String,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
+as String?,allDay: null == allDay ? _self.allDay : allDay // ignore: cast_nullable_to_non_nullable
+as bool,createdById: null == createdById ? _self.createdById : createdById // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [AvailabilityEventModel].
+extension AvailabilityEventModelPatterns on AvailabilityEventModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _AvailabilityEventModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _AvailabilityEventModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _AvailabilityEventModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _AvailabilityEventModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _AvailabilityEventModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _AvailabilityEventModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String startDate,  String? endDate,  bool allDay,  String createdById)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _AvailabilityEventModel() when $default != null:
+return $default(_that.id,_that.title,_that.startDate,_that.endDate,_that.allDay,_that.createdById);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String startDate,  String? endDate,  bool allDay,  String createdById)  $default,) {final _that = this;
+switch (_that) {
+case _AvailabilityEventModel():
+return $default(_that.id,_that.title,_that.startDate,_that.endDate,_that.allDay,_that.createdById);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String startDate,  String? endDate,  bool allDay,  String createdById)?  $default,) {final _that = this;
+switch (_that) {
+case _AvailabilityEventModel() when $default != null:
+return $default(_that.id,_that.title,_that.startDate,_that.endDate,_that.allDay,_that.createdById);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _AvailabilityEventModel implements AvailabilityEventModel {
+  const _AvailabilityEventModel({required this.id, required this.title, required this.startDate, this.endDate, required this.allDay, required this.createdById});
+  factory _AvailabilityEventModel.fromJson(Map<String, dynamic> json) => _$AvailabilityEventModelFromJson(json);
+
+@override final  String id;
+@override final  String title;
+@override final  String startDate;
+@override final  String? endDate;
+@override final  bool allDay;
+@override final  String createdById;
+
+/// Create a copy of AvailabilityEventModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AvailabilityEventModelCopyWith<_AvailabilityEventModel> get copyWith => __$AvailabilityEventModelCopyWithImpl<_AvailabilityEventModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$AvailabilityEventModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AvailabilityEventModel&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.allDay, allDay) || other.allDay == allDay)&&(identical(other.createdById, createdById) || other.createdById == createdById));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,title,startDate,endDate,allDay,createdById);
+
+@override
+String toString() {
+  return 'AvailabilityEventModel(id: $id, title: $title, startDate: $startDate, endDate: $endDate, allDay: $allDay, createdById: $createdById)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AvailabilityEventModelCopyWith<$Res> implements $AvailabilityEventModelCopyWith<$Res> {
+  factory _$AvailabilityEventModelCopyWith(_AvailabilityEventModel value, $Res Function(_AvailabilityEventModel) _then) = __$AvailabilityEventModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String title, String startDate, String? endDate, bool allDay, String createdById
+});
+
+
+
+
+}
+/// @nodoc
+class __$AvailabilityEventModelCopyWithImpl<$Res>
+    implements _$AvailabilityEventModelCopyWith<$Res> {
+  __$AvailabilityEventModelCopyWithImpl(this._self, this._then);
+
+  final _AvailabilityEventModel _self;
+  final $Res Function(_AvailabilityEventModel) _then;
+
+/// Create a copy of AvailabilityEventModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? startDate = null,Object? endDate = freezed,Object? allDay = null,Object? createdById = null,}) {
+  return _then(_AvailabilityEventModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,startDate: null == startDate ? _self.startDate : startDate // ignore: cast_nullable_to_non_nullable
+as String,endDate: freezed == endDate ? _self.endDate : endDate // ignore: cast_nullable_to_non_nullable
+as String?,allDay: null == allDay ? _self.allDay : allDay // ignore: cast_nullable_to_non_nullable
+as bool,createdById: null == createdById ? _self.createdById : createdById // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$AvailabilityMemberModel {
+
+ String get userId; String get name; String get colorHex;
+/// Create a copy of AvailabilityMemberModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AvailabilityMemberModelCopyWith<AvailabilityMemberModel> get copyWith => _$AvailabilityMemberModelCopyWithImpl<AvailabilityMemberModel>(this as AvailabilityMemberModel, _$identity);
+
+  /// Serializes this AvailabilityMemberModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AvailabilityMemberModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.colorHex, colorHex) || other.colorHex == colorHex));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,userId,name,colorHex);
+
+@override
+String toString() {
+  return 'AvailabilityMemberModel(userId: $userId, name: $name, colorHex: $colorHex)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $AvailabilityMemberModelCopyWith<$Res>  {
+  factory $AvailabilityMemberModelCopyWith(AvailabilityMemberModel value, $Res Function(AvailabilityMemberModel) _then) = _$AvailabilityMemberModelCopyWithImpl;
+@useResult
+$Res call({
+ String userId, String name, String colorHex
+});
+
+
+
+
+}
+/// @nodoc
+class _$AvailabilityMemberModelCopyWithImpl<$Res>
+    implements $AvailabilityMemberModelCopyWith<$Res> {
+  _$AvailabilityMemberModelCopyWithImpl(this._self, this._then);
+
+  final AvailabilityMemberModel _self;
+  final $Res Function(AvailabilityMemberModel) _then;
+
+/// Create a copy of AvailabilityMemberModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? name = null,Object? colorHex = null,}) {
+  return _then(_self.copyWith(
+userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,colorHex: null == colorHex ? _self.colorHex : colorHex // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [AvailabilityMemberModel].
+extension AvailabilityMemberModelPatterns on AvailabilityMemberModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _AvailabilityMemberModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _AvailabilityMemberModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _AvailabilityMemberModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _AvailabilityMemberModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _AvailabilityMemberModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _AvailabilityMemberModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String userId,  String name,  String colorHex)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _AvailabilityMemberModel() when $default != null:
+return $default(_that.userId,_that.name,_that.colorHex);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String userId,  String name,  String colorHex)  $default,) {final _that = this;
+switch (_that) {
+case _AvailabilityMemberModel():
+return $default(_that.userId,_that.name,_that.colorHex);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String userId,  String name,  String colorHex)?  $default,) {final _that = this;
+switch (_that) {
+case _AvailabilityMemberModel() when $default != null:
+return $default(_that.userId,_that.name,_that.colorHex);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _AvailabilityMemberModel implements AvailabilityMemberModel {
+  const _AvailabilityMemberModel({required this.userId, required this.name, required this.colorHex});
+  factory _AvailabilityMemberModel.fromJson(Map<String, dynamic> json) => _$AvailabilityMemberModelFromJson(json);
+
+@override final  String userId;
+@override final  String name;
+@override final  String colorHex;
+
+/// Create a copy of AvailabilityMemberModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AvailabilityMemberModelCopyWith<_AvailabilityMemberModel> get copyWith => __$AvailabilityMemberModelCopyWithImpl<_AvailabilityMemberModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$AvailabilityMemberModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AvailabilityMemberModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.colorHex, colorHex) || other.colorHex == colorHex));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,userId,name,colorHex);
+
+@override
+String toString() {
+  return 'AvailabilityMemberModel(userId: $userId, name: $name, colorHex: $colorHex)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AvailabilityMemberModelCopyWith<$Res> implements $AvailabilityMemberModelCopyWith<$Res> {
+  factory _$AvailabilityMemberModelCopyWith(_AvailabilityMemberModel value, $Res Function(_AvailabilityMemberModel) _then) = __$AvailabilityMemberModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String userId, String name, String colorHex
+});
+
+
+
+
+}
+/// @nodoc
+class __$AvailabilityMemberModelCopyWithImpl<$Res>
+    implements _$AvailabilityMemberModelCopyWith<$Res> {
+  __$AvailabilityMemberModelCopyWithImpl(this._self, this._then);
+
+  final _AvailabilityMemberModel _self;
+  final $Res Function(_AvailabilityMemberModel) _then;
+
+/// Create a copy of AvailabilityMemberModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? name = null,Object? colorHex = null,}) {
+  return _then(_AvailabilityMemberModel(
+userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,colorHex: null == colorHex ? _self.colorHex : colorHex // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$AvailabilityResultModel {
+
+ List<AvailabilityMemberModel> get members; List<AvailabilityDayModel> get days;
+/// Create a copy of AvailabilityResultModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$AvailabilityResultModelCopyWith<AvailabilityResultModel> get copyWith => _$AvailabilityResultModelCopyWithImpl<AvailabilityResultModel>(this as AvailabilityResultModel, _$identity);
+
+  /// Serializes this AvailabilityResultModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AvailabilityResultModel&&const DeepCollectionEquality().equals(other.members, members)&&const DeepCollectionEquality().equals(other.days, days));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(members),const DeepCollectionEquality().hash(days));
+
+@override
+String toString() {
+  return 'AvailabilityResultModel(members: $members, days: $days)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $AvailabilityResultModelCopyWith<$Res>  {
+  factory $AvailabilityResultModelCopyWith(AvailabilityResultModel value, $Res Function(AvailabilityResultModel) _then) = _$AvailabilityResultModelCopyWithImpl;
+@useResult
+$Res call({
+ List<AvailabilityMemberModel> members, List<AvailabilityDayModel> days
+});
+
+
+
+
+}
+/// @nodoc
+class _$AvailabilityResultModelCopyWithImpl<$Res>
+    implements $AvailabilityResultModelCopyWith<$Res> {
+  _$AvailabilityResultModelCopyWithImpl(this._self, this._then);
+
+  final AvailabilityResultModel _self;
+  final $Res Function(AvailabilityResultModel) _then;
+
+/// Create a copy of AvailabilityResultModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? members = null,Object? days = null,}) {
+  return _then(_self.copyWith(
+members: null == members ? _self.members : members // ignore: cast_nullable_to_non_nullable
+as List<AvailabilityMemberModel>,days: null == days ? _self.days : days // ignore: cast_nullable_to_non_nullable
+as List<AvailabilityDayModel>,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [AvailabilityResultModel].
+extension AvailabilityResultModelPatterns on AvailabilityResultModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _AvailabilityResultModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _AvailabilityResultModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _AvailabilityResultModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _AvailabilityResultModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _AvailabilityResultModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _AvailabilityResultModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<AvailabilityMemberModel> members,  List<AvailabilityDayModel> days)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _AvailabilityResultModel() when $default != null:
+return $default(_that.members,_that.days);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<AvailabilityMemberModel> members,  List<AvailabilityDayModel> days)  $default,) {final _that = this;
+switch (_that) {
+case _AvailabilityResultModel():
+return $default(_that.members,_that.days);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<AvailabilityMemberModel> members,  List<AvailabilityDayModel> days)?  $default,) {final _that = this;
+switch (_that) {
+case _AvailabilityResultModel() when $default != null:
+return $default(_that.members,_that.days);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _AvailabilityResultModel implements AvailabilityResultModel {
+  const _AvailabilityResultModel({required final  List<AvailabilityMemberModel> members, required final  List<AvailabilityDayModel> days}): _members = members,_days = days;
+  factory _AvailabilityResultModel.fromJson(Map<String, dynamic> json) => _$AvailabilityResultModelFromJson(json);
+
+ final  List<AvailabilityMemberModel> _members;
+@override List<AvailabilityMemberModel> get members {
+  if (_members is EqualUnmodifiableListView) return _members;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_members);
+}
+
+ final  List<AvailabilityDayModel> _days;
+@override List<AvailabilityDayModel> get days {
+  if (_days is EqualUnmodifiableListView) return _days;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_days);
+}
+
+
+/// Create a copy of AvailabilityResultModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AvailabilityResultModelCopyWith<_AvailabilityResultModel> get copyWith => __$AvailabilityResultModelCopyWithImpl<_AvailabilityResultModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$AvailabilityResultModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AvailabilityResultModel&&const DeepCollectionEquality().equals(other._members, _members)&&const DeepCollectionEquality().equals(other._days, _days));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_members),const DeepCollectionEquality().hash(_days));
+
+@override
+String toString() {
+  return 'AvailabilityResultModel(members: $members, days: $days)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$AvailabilityResultModelCopyWith<$Res> implements $AvailabilityResultModelCopyWith<$Res> {
+  factory _$AvailabilityResultModelCopyWith(_AvailabilityResultModel value, $Res Function(_AvailabilityResultModel) _then) = __$AvailabilityResultModelCopyWithImpl;
+@override @useResult
+$Res call({
+ List<AvailabilityMemberModel> members, List<AvailabilityDayModel> days
+});
+
+
+
+
+}
+/// @nodoc
+class __$AvailabilityResultModelCopyWithImpl<$Res>
+    implements _$AvailabilityResultModelCopyWith<$Res> {
+  __$AvailabilityResultModelCopyWithImpl(this._self, this._then);
+
+  final _AvailabilityResultModel _self;
+  final $Res Function(_AvailabilityResultModel) _then;
+
+/// Create a copy of AvailabilityResultModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? members = null,Object? days = null,}) {
+  return _then(_AvailabilityResultModel(
+members: null == members ? _self._members : members // ignore: cast_nullable_to_non_nullable
+as List<AvailabilityMemberModel>,days: null == days ? _self._days : days // ignore: cast_nullable_to_non_nullable
+as List<AvailabilityDayModel>,
   ));
 }
 

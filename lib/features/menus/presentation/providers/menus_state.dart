@@ -41,3 +41,12 @@ sealed class ShoppingListState with _$ShoppingListState {
   const factory ShoppingListState.success(ShoppingListResultModel result) = ShoppingListStateSuccess;
   const factory ShoppingListState.error(String message) = ShoppingListStateError;
 }
+
+/// State for meal history
+@freezed
+sealed class MealHistoryState with _$MealHistoryState {
+  const factory MealHistoryState.initial() = MealHistoryStateInitial;
+  const factory MealHistoryState.loading() = MealHistoryStateLoading;
+  const factory MealHistoryState.loaded(List<MealHistoryModel> history) = MealHistoryStateLoaded;
+  const factory MealHistoryState.error(String message) = MealHistoryStateError;
+}

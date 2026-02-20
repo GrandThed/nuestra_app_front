@@ -36,10 +36,15 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Menú Semanal'),
+        title: const Text('Menu Semanal'),
         backgroundColor: AppColors.menusDark,
         foregroundColor: Colors.white,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            onPressed: () => context.push('/menus/history'),
+            tooltip: 'Historial de comidas',
+          ),
           IconButton(
             icon: const Icon(Icons.shopping_cart_outlined),
             onPressed: () => _showGenerateShoppingDialog(context),
@@ -81,7 +86,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
           Expanded(
             child: switch (state) {
               UpcomingMealsStateInitial() => const Center(
-                child: Text('Cargando menú...'),
+                child: Text('Cargando menu...'),
               ),
               UpcomingMealsStateLoading() => const Center(
                 child: CircularProgressIndicator(color: AppColors.menus),
@@ -242,7 +247,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
           (dialogContext) => AlertDialog(
             title: const Text('Eliminar comida'),
             content: Text(
-              '¿Seguro que quieres eliminar "${meal.recipe?.title ?? 'esta comida'}" del menú?',
+              '\u00bfSeguro que quieres eliminar "${meal.recipe?.title ?? 'esta comida'}" del menu?',
             ),
             actions: [
               TextButton(
@@ -275,7 +280,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
     if (plansState is! MenuPlansStateLoaded || plansState.plans.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('No hay planes de menú disponibles'),
+          content: Text('No hay planes de menu disponibles'),
           backgroundColor: AppColors.warning,
         ),
       );
@@ -290,7 +295,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
         context: context,
         builder:
             (dialogContext) => SimpleDialog(
-              title: const Text('Seleccionar plan de menú'),
+              title: const Text('Seleccionar plan de menu'),
               children:
                   plans.map((plan) {
                     return SimpleDialogOption(
@@ -558,13 +563,49 @@ class _MealTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    meal.mealType.mealTypeDisplay,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: _getMealTypeColor(meal.mealType),
-                      fontWeight: FontWeight.w500,
-                    ),
+                  Row(
+                    children: [
+                      Text(
+                        meal.mealType.mealTypeDisplay,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: _getMealTypeColor(meal.mealType),
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      if (meal.isLeftover) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 1,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.teal.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.recycling,
+                                size: 11,
+                                color: Colors.teal.shade700,
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                'Sobras',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.teal.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                   const SizedBox(height: 2),
                   Text(

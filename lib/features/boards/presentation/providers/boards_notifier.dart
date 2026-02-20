@@ -270,6 +270,75 @@ class BoardDetailNotifier extends _$BoardDetailNotifier {
     }
   }
 
+  // --- Tags ---
+
+  /// Add a tag to a board item
+  Future<void> addTagToItem(String itemId, String tagId) async {
+    try {
+      await _repository.addTagToItem(boardId, itemId, tagId);
+      await loadBoard(); // Refresh board
+    } catch (e) {
+      // silent fail - board still shows
+    }
+  }
+
+  /// Remove a tag from a board item
+  Future<void> removeTagFromItem(String itemId, String tagId) async {
+    try {
+      await _repository.removeTagFromItem(boardId, itemId, tagId);
+      await loadBoard();
+    } catch (e) {
+      // silent fail
+    }
+  }
+
+  // --- Comments ---
+
+  /// Get comments for a board item
+  Future<List<BoardItemCommentModel>> getComments(String itemId) async {
+    return _repository.getComments(boardId, itemId);
+  }
+
+  /// Add a comment to a board item
+  Future<BoardItemCommentModel?> addComment(
+    String itemId, {
+    String? content,
+    String? emoji,
+  }) async {
+    try {
+      final comment = await _repository.addComment(
+        boardId,
+        itemId,
+        content: content,
+        emoji: emoji,
+      );
+      return comment;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Delete a comment from a board item
+  Future<void> deleteComment(String itemId, String commentId) async {
+    try {
+      await _repository.deleteComment(boardId, itemId, commentId);
+    } catch (e) {
+      // silent fail
+    }
+  }
+
+  // --- Reorder ---
+
+  /// Reorder items in the board
+  Future<void> reorderItems(List<Map<String, dynamic>> items) async {
+    try {
+      await _repository.reorderItems(boardId, items);
+      await loadBoard();
+    } catch (e) {
+      // silent fail
+    }
+  }
+
   void _addItemToState(BoardItemModel item) {
     final currentState = state;
     if (currentState is BoardDetailStateLoaded) {
@@ -310,6 +379,82 @@ class BoardDetailNotifier extends _$BoardDetailNotifier {
 
       // Update boards list
       ref.read(boardsNotifierProvider.notifier).updateBoardInList(updatedBoard);
+    }
+  }
+}
+
+/// Notifier for household tags
+@Riverpod(keepAlive: true)
+class TagsNotifier extends _$TagsNotifier {
+  late final BoardRepository _repository;
+
+  @override
+  TagsState build() {
+    _repository = ref.watch(boardRepositoryProvider);
+    return const TagsState.initial();
+  }
+
+  /// Load tags only if not already loaded (for screen init)
+  Future<void> loadTagsIfNeeded(String householdId) async {
+    if (state is TagsStateInitial || state is TagsStateError) {
+      await loadTags(householdId);
+    }
+  }
+
+  /// Load all tags for a household
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> loadTags(String householdId, {bool forceLoading = false}) async {
+    final hasData = state is TagsStateLoaded;
+
+    if (!hasData || forceLoading) {
+      state = const TagsState.loading();
+    }
+
+    try {
+      final tags = await _repository.getTags(householdId);
+      state = TagsState.loaded(tags);
+    } on AppException catch (e) {
+      if (!hasData) {
+        state = TagsState.error(e.message);
+      }
+    } catch (e) {
+      if (!hasData) {
+        state = TagsState.error('Error loading tags: $e');
+      }
+    }
+  }
+
+  /// Create a new tag
+  Future<TagModel?> createTag(String householdId, String name, String color) async {
+    try {
+      final tag = await _repository.createTag(householdId, name, color);
+
+      final current = state;
+      if (current is TagsStateLoaded) {
+        state = TagsState.loaded([...current.tags, tag]);
+      }
+
+      return tag;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Delete a tag
+  Future<bool> deleteTag(String tagId) async {
+    try {
+      await _repository.deleteTag(tagId);
+
+      final current = state;
+      if (current is TagsStateLoaded) {
+        state = TagsState.loaded(
+          current.tags.where((t) => t.id != tagId).toList(),
+        );
+      }
+
+      return true;
+    } catch (e) {
+      return false;
     }
   }
 }

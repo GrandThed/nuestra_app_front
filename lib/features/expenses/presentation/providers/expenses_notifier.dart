@@ -508,3 +508,317 @@ List<ExpenseModel> expensesByCategory(Ref ref, String? categoryId) {
   }
   return [];
 }
+
+/// Notifier for recurring expenses
+@Riverpod(keepAlive: true)
+class RecurringExpensesNotifier extends _$RecurringExpensesNotifier {
+  late final ExpenseRepository _repository;
+
+  @override
+  RecurringExpensesState build() {
+    _repository = ref.watch(expenseRepositoryProvider);
+    return const RecurringExpensesState.initial();
+  }
+
+  /// Load recurring expenses only if not already loaded (for screen init)
+  Future<void> loadIfNeeded() async {
+    if (state is RecurringExpensesStateInitial ||
+        state is RecurringExpensesStateError) {
+      await load();
+    }
+  }
+
+  /// Load all recurring expenses for current household
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> load({bool forceLoading = false}) async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null) {
+      state = const RecurringExpensesState.error('No hay hogar seleccionado');
+      return;
+    }
+
+    final hasData = state is RecurringExpensesStateLoaded;
+    if (!hasData || forceLoading) {
+      state = const RecurringExpensesState.loading();
+    }
+
+    try {
+      final expenses = await _repository.getRecurringExpenses(householdId);
+      state = RecurringExpensesState.loaded(expenses);
+    } on AppException catch (e) {
+      if (!hasData) {
+        state = RecurringExpensesState.error(e.message);
+      }
+    } catch (e) {
+      if (!hasData) {
+        state = RecurringExpensesState.error(
+            'Error al cargar gastos recurrentes: $e');
+      }
+    }
+  }
+
+  /// Create a new recurring expense
+  Future<RecurringExpenseModel?> create({
+    required String description,
+    required double amount,
+    String currency = 'ARS',
+    String? categoryId,
+    required String paidById,
+    required String recurrence,
+    required String nextDueDate,
+  }) async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null) return null;
+
+    try {
+      final expense = await _repository.createRecurringExpense(
+        householdId: householdId,
+        description: description,
+        amount: amount,
+        currency: currency,
+        categoryId: categoryId,
+        paidById: paidById,
+        recurrence: recurrence,
+        nextDueDate: nextDueDate,
+      );
+
+      // Add to current list
+      final current = state;
+      if (current is RecurringExpensesStateLoaded) {
+        state = RecurringExpensesState.loaded(
+            [expense, ...current.expenses]);
+      }
+
+      return expense;
+    } on AppException catch (e) {
+      debugPrint('Error creating recurring expense: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint('Error creating recurring expense: $e');
+      return null;
+    }
+  }
+
+  /// Update a recurring expense
+  Future<RecurringExpenseModel?> update(
+      String id, Map<String, dynamic> data) async {
+    try {
+      final expense = await _repository.updateRecurringExpense(id, data);
+
+      // Update in current list
+      final current = state;
+      if (current is RecurringExpensesStateLoaded) {
+        final updated = current.expenses.map((e) {
+          return e.id == id ? expense : e;
+        }).toList();
+        state = RecurringExpensesState.loaded(updated);
+      }
+
+      return expense;
+    } on AppException catch (e) {
+      debugPrint('Error updating recurring expense: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint('Error updating recurring expense: $e');
+      return null;
+    }
+  }
+
+  /// Delete a recurring expense
+  Future<bool> delete(String id) async {
+    try {
+      await _repository.deleteRecurringExpense(id);
+
+      // Remove from current list
+      final current = state;
+      if (current is RecurringExpensesStateLoaded) {
+        state = RecurringExpensesState.loaded(
+            current.expenses.where((e) => e.id != id).toList());
+      }
+
+      return true;
+    } on AppException catch (e) {
+      debugPrint('Error deleting recurring expense: ${e.message}');
+      return false;
+    } catch (e) {
+      debugPrint('Error deleting recurring expense: $e');
+      return false;
+    }
+  }
+
+  /// Generate expenses from due recurring expenses
+  Future<List<ExpenseModel>?> generateFromRecurring() async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null) return null;
+
+    try {
+      final generated =
+          await _repository.generateFromRecurring(householdId);
+      // Reload recurring expenses to get updated nextDueDate values
+      await load();
+      return generated;
+    } on AppException catch (e) {
+      debugPrint('Error generating from recurring: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint('Error generating from recurring: $e');
+      return null;
+    }
+  }
+}
+
+/// Notifier for budget status
+@Riverpod(keepAlive: true)
+class BudgetNotifier extends _$BudgetNotifier {
+  late final ExpenseRepository _repository;
+
+  @override
+  BudgetState build() {
+    _repository = ref.watch(expenseRepositoryProvider);
+    return const BudgetState.initial();
+  }
+
+  /// Load budget status only if not already loaded (for screen init)
+  Future<void> loadIfNeeded(int month, int year) async {
+    if (state is BudgetStateInitial || state is BudgetStateError) {
+      await load(month, year);
+    }
+  }
+
+  /// Load budget status for a specific month/year
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> load(int month, int year,
+      {bool forceLoading = false}) async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null) {
+      state = const BudgetState.error('No hay hogar seleccionado');
+      return;
+    }
+
+    final hasData = state is BudgetStateLoaded;
+    if (!hasData || forceLoading) {
+      state = const BudgetState.loading();
+    }
+
+    try {
+      final budgets =
+          await _repository.getBudgetStatus(householdId, month, year);
+      state = BudgetState.loaded(budgets);
+    } on AppException catch (e) {
+      if (!hasData) {
+        state = BudgetState.error(e.message);
+      }
+    } catch (e) {
+      if (!hasData) {
+        state = BudgetState.error('Error al cargar presupuestos: $e');
+      }
+    }
+  }
+
+  /// Create or update a budget for a category/month
+  Future<ExpenseBudgetModel?> createOrUpdate({
+    required String categoryId,
+    required double monthlyLimit,
+    required int month,
+    required int year,
+  }) async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null) return null;
+
+    try {
+      final budget = await _repository.createOrUpdateBudget(
+        householdId: householdId,
+        categoryId: categoryId,
+        monthlyLimit: monthlyLimit,
+        month: month,
+        year: year,
+      );
+
+      // Reload budget status to reflect the change
+      await load(month, year);
+
+      return budget;
+    } on AppException catch (e) {
+      debugPrint('Error creating/updating budget: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint('Error creating/updating budget: $e');
+      return null;
+    }
+  }
+}
+
+/// Notifier for expense trends
+@Riverpod(keepAlive: true)
+class ExpenseTrendsNotifier extends _$ExpenseTrendsNotifier {
+  late final ExpenseRepository _repository;
+
+  @override
+  ExpenseTrendsState build() {
+    _repository = ref.watch(expenseRepositoryProvider);
+    return const ExpenseTrendsState.initial();
+  }
+
+  /// Load trends only if not already loaded (for screen init)
+  Future<void> loadIfNeeded() async {
+    if (state is ExpenseTrendsStateInitial ||
+        state is ExpenseTrendsStateError) {
+      await load();
+    }
+  }
+
+  /// Load expense trends for current household
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> load({int months = 6, bool forceLoading = false}) async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null) {
+      state =
+          const ExpenseTrendsState.error('No hay hogar seleccionado');
+      return;
+    }
+
+    final hasData = state is ExpenseTrendsStateLoaded;
+    if (!hasData || forceLoading) {
+      state = const ExpenseTrendsState.loading();
+    }
+
+    try {
+      final trends =
+          await _repository.getTrends(householdId, months: months);
+      state = ExpenseTrendsState.loaded(trends);
+    } on AppException catch (e) {
+      if (!hasData) {
+        state = ExpenseTrendsState.error(e.message);
+      }
+    } catch (e) {
+      if (!hasData) {
+        state = ExpenseTrendsState.error(
+            'Error al cargar tendencias: $e');
+      }
+    }
+  }
+}
+
+/// Utility provider for exporting expenses as CSV
+/// Returns the CSV string or null on error
+@riverpod
+Future<String?> exportExpensesCsv(
+  Ref ref, {
+  int? month,
+  int? year,
+}) async {
+  final householdId = ref.read(currentHouseholdIdProvider);
+  if (householdId == null) return null;
+
+  try {
+    final repository = ref.read(expenseRepositoryProvider);
+    return await repository.exportCsv(
+      householdId,
+      month: month,
+      year: year,
+    );
+  } catch (e) {
+    debugPrint('Error exporting CSV: $e');
+    return null;
+  }
+}

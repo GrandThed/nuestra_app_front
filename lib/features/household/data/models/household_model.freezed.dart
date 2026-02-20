@@ -292,7 +292,7 @@ as List<MemberModel>?,
 /// @nodoc
 mixin _$MemberModel {
 
- String get id; String get userId; String get name; String get email; String? get avatarUrl; String get role; double? get income; bool get paysExpenses; DateTime? get createdAt;
+ String get id; String get userId; String get name; String get email; String? get avatarUrl; String get role; double? get income; bool get paysExpenses; String get colorHex; DateTime? get createdAt;
 /// Create a copy of MemberModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -305,16 +305,16 @@ $MemberModelCopyWith<MemberModel> get copyWith => _$MemberModelCopyWithImpl<Memb
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MemberModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.role, role) || other.role == role)&&(identical(other.income, income) || other.income == income)&&(identical(other.paysExpenses, paysExpenses) || other.paysExpenses == paysExpenses)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MemberModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.role, role) || other.role == role)&&(identical(other.income, income) || other.income == income)&&(identical(other.paysExpenses, paysExpenses) || other.paysExpenses == paysExpenses)&&(identical(other.colorHex, colorHex) || other.colorHex == colorHex)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,name,email,avatarUrl,role,income,paysExpenses,createdAt);
+int get hashCode => Object.hash(runtimeType,id,userId,name,email,avatarUrl,role,income,paysExpenses,colorHex,createdAt);
 
 @override
 String toString() {
-  return 'MemberModel(id: $id, userId: $userId, name: $name, email: $email, avatarUrl: $avatarUrl, role: $role, income: $income, paysExpenses: $paysExpenses, createdAt: $createdAt)';
+  return 'MemberModel(id: $id, userId: $userId, name: $name, email: $email, avatarUrl: $avatarUrl, role: $role, income: $income, paysExpenses: $paysExpenses, colorHex: $colorHex, createdAt: $createdAt)';
 }
 
 
@@ -325,7 +325,7 @@ abstract mixin class $MemberModelCopyWith<$Res>  {
   factory $MemberModelCopyWith(MemberModel value, $Res Function(MemberModel) _then) = _$MemberModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String userId, String name, String email, String? avatarUrl, String role, double? income, bool paysExpenses, DateTime? createdAt
+ String id, String userId, String name, String email, String? avatarUrl, String role, double? income, bool paysExpenses, String colorHex, DateTime? createdAt
 });
 
 
@@ -342,7 +342,7 @@ class _$MemberModelCopyWithImpl<$Res>
 
 /// Create a copy of MemberModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? email = null,Object? avatarUrl = freezed,Object? role = null,Object? income = freezed,Object? paysExpenses = null,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? email = null,Object? avatarUrl = freezed,Object? role = null,Object? income = freezed,Object? paysExpenses = null,Object? colorHex = null,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -352,7 +352,8 @@ as String,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignor
 as String?,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String,income: freezed == income ? _self.income : income // ignore: cast_nullable_to_non_nullable
 as double?,paysExpenses: null == paysExpenses ? _self.paysExpenses : paysExpenses // ignore: cast_nullable_to_non_nullable
-as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as bool,colorHex: null == colorHex ? _self.colorHex : colorHex // ignore: cast_nullable_to_non_nullable
+as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }
@@ -435,10 +436,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  String name,  String email,  String? avatarUrl,  String role,  double? income,  bool paysExpenses,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  String name,  String email,  String? avatarUrl,  String role,  double? income,  bool paysExpenses,  String colorHex,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MemberModel() when $default != null:
-return $default(_that.id,_that.userId,_that.name,_that.email,_that.avatarUrl,_that.role,_that.income,_that.paysExpenses,_that.createdAt);case _:
+return $default(_that.id,_that.userId,_that.name,_that.email,_that.avatarUrl,_that.role,_that.income,_that.paysExpenses,_that.colorHex,_that.createdAt);case _:
   return orElse();
 
 }
@@ -456,10 +457,10 @@ return $default(_that.id,_that.userId,_that.name,_that.email,_that.avatarUrl,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  String name,  String email,  String? avatarUrl,  String role,  double? income,  bool paysExpenses,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  String name,  String email,  String? avatarUrl,  String role,  double? income,  bool paysExpenses,  String colorHex,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _MemberModel():
-return $default(_that.id,_that.userId,_that.name,_that.email,_that.avatarUrl,_that.role,_that.income,_that.paysExpenses,_that.createdAt);}
+return $default(_that.id,_that.userId,_that.name,_that.email,_that.avatarUrl,_that.role,_that.income,_that.paysExpenses,_that.colorHex,_that.createdAt);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -473,10 +474,10 @@ return $default(_that.id,_that.userId,_that.name,_that.email,_that.avatarUrl,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  String name,  String email,  String? avatarUrl,  String role,  double? income,  bool paysExpenses,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  String name,  String email,  String? avatarUrl,  String role,  double? income,  bool paysExpenses,  String colorHex,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _MemberModel() when $default != null:
-return $default(_that.id,_that.userId,_that.name,_that.email,_that.avatarUrl,_that.role,_that.income,_that.paysExpenses,_that.createdAt);case _:
+return $default(_that.id,_that.userId,_that.name,_that.email,_that.avatarUrl,_that.role,_that.income,_that.paysExpenses,_that.colorHex,_that.createdAt);case _:
   return null;
 
 }
@@ -488,7 +489,7 @@ return $default(_that.id,_that.userId,_that.name,_that.email,_that.avatarUrl,_th
 @JsonSerializable()
 
 class _MemberModel implements MemberModel {
-  const _MemberModel({required this.id, required this.userId, required this.name, required this.email, this.avatarUrl, required this.role, this.income, this.paysExpenses = false, this.createdAt});
+  const _MemberModel({required this.id, required this.userId, required this.name, required this.email, this.avatarUrl, required this.role, this.income, this.paysExpenses = false, this.colorHex = '#667eea', this.createdAt});
   factory _MemberModel.fromJson(Map<String, dynamic> json) => _$MemberModelFromJson(json);
 
 @override final  String id;
@@ -499,6 +500,7 @@ class _MemberModel implements MemberModel {
 @override final  String role;
 @override final  double? income;
 @override@JsonKey() final  bool paysExpenses;
+@override@JsonKey() final  String colorHex;
 @override final  DateTime? createdAt;
 
 /// Create a copy of MemberModel
@@ -514,16 +516,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MemberModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.role, role) || other.role == role)&&(identical(other.income, income) || other.income == income)&&(identical(other.paysExpenses, paysExpenses) || other.paysExpenses == paysExpenses)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MemberModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.name, name) || other.name == name)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.role, role) || other.role == role)&&(identical(other.income, income) || other.income == income)&&(identical(other.paysExpenses, paysExpenses) || other.paysExpenses == paysExpenses)&&(identical(other.colorHex, colorHex) || other.colorHex == colorHex)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,name,email,avatarUrl,role,income,paysExpenses,createdAt);
+int get hashCode => Object.hash(runtimeType,id,userId,name,email,avatarUrl,role,income,paysExpenses,colorHex,createdAt);
 
 @override
 String toString() {
-  return 'MemberModel(id: $id, userId: $userId, name: $name, email: $email, avatarUrl: $avatarUrl, role: $role, income: $income, paysExpenses: $paysExpenses, createdAt: $createdAt)';
+  return 'MemberModel(id: $id, userId: $userId, name: $name, email: $email, avatarUrl: $avatarUrl, role: $role, income: $income, paysExpenses: $paysExpenses, colorHex: $colorHex, createdAt: $createdAt)';
 }
 
 
@@ -534,7 +536,7 @@ abstract mixin class _$MemberModelCopyWith<$Res> implements $MemberModelCopyWith
   factory _$MemberModelCopyWith(_MemberModel value, $Res Function(_MemberModel) _then) = __$MemberModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String userId, String name, String email, String? avatarUrl, String role, double? income, bool paysExpenses, DateTime? createdAt
+ String id, String userId, String name, String email, String? avatarUrl, String role, double? income, bool paysExpenses, String colorHex, DateTime? createdAt
 });
 
 
@@ -551,7 +553,7 @@ class __$MemberModelCopyWithImpl<$Res>
 
 /// Create a copy of MemberModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? email = null,Object? avatarUrl = freezed,Object? role = null,Object? income = freezed,Object? paysExpenses = null,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? name = null,Object? email = null,Object? avatarUrl = freezed,Object? role = null,Object? income = freezed,Object? paysExpenses = null,Object? colorHex = null,Object? createdAt = freezed,}) {
   return _then(_MemberModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -561,7 +563,8 @@ as String,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignor
 as String?,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String,income: freezed == income ? _self.income : income // ignore: cast_nullable_to_non_nullable
 as double?,paysExpenses: null == paysExpenses ? _self.paysExpenses : paysExpenses // ignore: cast_nullable_to_non_nullable
-as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as bool,colorHex: null == colorHex ? _self.colorHex : colorHex // ignore: cast_nullable_to_non_nullable
+as String,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
 }

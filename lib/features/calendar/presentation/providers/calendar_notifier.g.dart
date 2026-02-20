@@ -203,7 +203,7 @@ final upcomingEventsCountProvider = AutoDisposeProvider<int>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef UpcomingEventsCountRef = AutoDisposeProviderRef<int>;
-String _$calendarNotifierHash() => r'e7196d4fbb4fb2d2ab8243b114c463becc7cf874';
+String _$calendarNotifierHash() => r'b91c03704745f1bb88035f57385c8e10b28dfbea';
 
 /// Notifier for calendar operations
 ///

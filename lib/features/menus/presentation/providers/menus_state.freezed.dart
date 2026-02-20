@@ -1515,4 +1515,378 @@ as String,
 
 }
 
+/// @nodoc
+mixin _$MealHistoryState {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealHistoryState);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'MealHistoryState()';
+}
+
+
+}
+
+/// @nodoc
+class $MealHistoryStateCopyWith<$Res>  {
+$MealHistoryStateCopyWith(MealHistoryState _, $Res Function(MealHistoryState) __);
+}
+
+
+/// Adds pattern-matching-related methods to [MealHistoryState].
+extension MealHistoryStatePatterns on MealHistoryState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( MealHistoryStateInitial value)?  initial,TResult Function( MealHistoryStateLoading value)?  loading,TResult Function( MealHistoryStateLoaded value)?  loaded,TResult Function( MealHistoryStateError value)?  error,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case MealHistoryStateInitial() when initial != null:
+return initial(_that);case MealHistoryStateLoading() when loading != null:
+return loading(_that);case MealHistoryStateLoaded() when loaded != null:
+return loaded(_that);case MealHistoryStateError() when error != null:
+return error(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( MealHistoryStateInitial value)  initial,required TResult Function( MealHistoryStateLoading value)  loading,required TResult Function( MealHistoryStateLoaded value)  loaded,required TResult Function( MealHistoryStateError value)  error,}){
+final _that = this;
+switch (_that) {
+case MealHistoryStateInitial():
+return initial(_that);case MealHistoryStateLoading():
+return loading(_that);case MealHistoryStateLoaded():
+return loaded(_that);case MealHistoryStateError():
+return error(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( MealHistoryStateInitial value)?  initial,TResult? Function( MealHistoryStateLoading value)?  loading,TResult? Function( MealHistoryStateLoaded value)?  loaded,TResult? Function( MealHistoryStateError value)?  error,}){
+final _that = this;
+switch (_that) {
+case MealHistoryStateInitial() when initial != null:
+return initial(_that);case MealHistoryStateLoading() when loading != null:
+return loading(_that);case MealHistoryStateLoaded() when loaded != null:
+return loaded(_that);case MealHistoryStateError() when error != null:
+return error(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<MealHistoryModel> history)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case MealHistoryStateInitial() when initial != null:
+return initial();case MealHistoryStateLoading() when loading != null:
+return loading();case MealHistoryStateLoaded() when loaded != null:
+return loaded(_that.history);case MealHistoryStateError() when error != null:
+return error(_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<MealHistoryModel> history)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+switch (_that) {
+case MealHistoryStateInitial():
+return initial();case MealHistoryStateLoading():
+return loading();case MealHistoryStateLoaded():
+return loaded(_that.history);case MealHistoryStateError():
+return error(_that.message);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<MealHistoryModel> history)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+switch (_that) {
+case MealHistoryStateInitial() when initial != null:
+return initial();case MealHistoryStateLoading() when loading != null:
+return loading();case MealHistoryStateLoaded() when loaded != null:
+return loaded(_that.history);case MealHistoryStateError() when error != null:
+return error(_that.message);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class MealHistoryStateInitial implements MealHistoryState {
+  const MealHistoryStateInitial();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealHistoryStateInitial);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'MealHistoryState.initial()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class MealHistoryStateLoading implements MealHistoryState {
+  const MealHistoryStateLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealHistoryStateLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'MealHistoryState.loading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class MealHistoryStateLoaded implements MealHistoryState {
+  const MealHistoryStateLoaded(final  List<MealHistoryModel> history): _history = history;
+  
+
+ final  List<MealHistoryModel> _history;
+ List<MealHistoryModel> get history {
+  if (_history is EqualUnmodifiableListView) return _history;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_history);
+}
+
+
+/// Create a copy of MealHistoryState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$MealHistoryStateLoadedCopyWith<MealHistoryStateLoaded> get copyWith => _$MealHistoryStateLoadedCopyWithImpl<MealHistoryStateLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealHistoryStateLoaded&&const DeepCollectionEquality().equals(other._history, _history));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_history));
+
+@override
+String toString() {
+  return 'MealHistoryState.loaded(history: $history)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $MealHistoryStateLoadedCopyWith<$Res> implements $MealHistoryStateCopyWith<$Res> {
+  factory $MealHistoryStateLoadedCopyWith(MealHistoryStateLoaded value, $Res Function(MealHistoryStateLoaded) _then) = _$MealHistoryStateLoadedCopyWithImpl;
+@useResult
+$Res call({
+ List<MealHistoryModel> history
+});
+
+
+
+
+}
+/// @nodoc
+class _$MealHistoryStateLoadedCopyWithImpl<$Res>
+    implements $MealHistoryStateLoadedCopyWith<$Res> {
+  _$MealHistoryStateLoadedCopyWithImpl(this._self, this._then);
+
+  final MealHistoryStateLoaded _self;
+  final $Res Function(MealHistoryStateLoaded) _then;
+
+/// Create a copy of MealHistoryState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? history = null,}) {
+  return _then(MealHistoryStateLoaded(
+null == history ? _self._history : history // ignore: cast_nullable_to_non_nullable
+as List<MealHistoryModel>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class MealHistoryStateError implements MealHistoryState {
+  const MealHistoryStateError(this.message);
+  
+
+ final  String message;
+
+/// Create a copy of MealHistoryState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$MealHistoryStateErrorCopyWith<MealHistoryStateError> get copyWith => _$MealHistoryStateErrorCopyWithImpl<MealHistoryStateError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealHistoryStateError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'MealHistoryState.error(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $MealHistoryStateErrorCopyWith<$Res> implements $MealHistoryStateCopyWith<$Res> {
+  factory $MealHistoryStateErrorCopyWith(MealHistoryStateError value, $Res Function(MealHistoryStateError) _then) = _$MealHistoryStateErrorCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class _$MealHistoryStateErrorCopyWithImpl<$Res>
+    implements $MealHistoryStateErrorCopyWith<$Res> {
+  _$MealHistoryStateErrorCopyWithImpl(this._self, this._then);
+
+  final MealHistoryStateError _self;
+  final $Res Function(MealHistoryStateError) _then;
+
+/// Create a copy of MealHistoryState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(MealHistoryStateError(
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
 // dart format on

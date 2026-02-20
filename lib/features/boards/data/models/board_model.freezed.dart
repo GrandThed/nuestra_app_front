@@ -305,7 +305,7 @@ as List<String>,
 mixin _$BoardItemModel {
 
  String get id; String get type;// 'link' or 'photo'
- String? get url; String? get thumbnailUrl; String? get title; String? get description; String? get linkPreviewImage; PhotoBackModel? get photoBack; BoardItemCreatorModel? get createdBy; DateTime get createdAt;
+ String? get url; String? get thumbnailUrl; String? get title; String? get description; String? get linkPreviewImage; PhotoBackModel? get photoBack; BoardItemCreatorModel? get createdBy; int get sortOrder; List<BoardItemTagModel> get tags; List<BoardItemCommentModel> get comments; DateTime get createdAt;
 /// Create a copy of BoardItemModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -318,16 +318,16 @@ $BoardItemModelCopyWith<BoardItemModel> get copyWith => _$BoardItemModelCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is BoardItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.type, type) || other.type == type)&&(identical(other.url, url) || other.url == url)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.linkPreviewImage, linkPreviewImage) || other.linkPreviewImage == linkPreviewImage)&&(identical(other.photoBack, photoBack) || other.photoBack == photoBack)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BoardItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.type, type) || other.type == type)&&(identical(other.url, url) || other.url == url)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.linkPreviewImage, linkPreviewImage) || other.linkPreviewImage == linkPreviewImage)&&(identical(other.photoBack, photoBack) || other.photoBack == photoBack)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&const DeepCollectionEquality().equals(other.tags, tags)&&const DeepCollectionEquality().equals(other.comments, comments)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,type,url,thumbnailUrl,title,description,linkPreviewImage,photoBack,createdBy,createdAt);
+int get hashCode => Object.hash(runtimeType,id,type,url,thumbnailUrl,title,description,linkPreviewImage,photoBack,createdBy,sortOrder,const DeepCollectionEquality().hash(tags),const DeepCollectionEquality().hash(comments),createdAt);
 
 @override
 String toString() {
-  return 'BoardItemModel(id: $id, type: $type, url: $url, thumbnailUrl: $thumbnailUrl, title: $title, description: $description, linkPreviewImage: $linkPreviewImage, photoBack: $photoBack, createdBy: $createdBy, createdAt: $createdAt)';
+  return 'BoardItemModel(id: $id, type: $type, url: $url, thumbnailUrl: $thumbnailUrl, title: $title, description: $description, linkPreviewImage: $linkPreviewImage, photoBack: $photoBack, createdBy: $createdBy, sortOrder: $sortOrder, tags: $tags, comments: $comments, createdAt: $createdAt)';
 }
 
 
@@ -338,7 +338,7 @@ abstract mixin class $BoardItemModelCopyWith<$Res>  {
   factory $BoardItemModelCopyWith(BoardItemModel value, $Res Function(BoardItemModel) _then) = _$BoardItemModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String type, String? url, String? thumbnailUrl, String? title, String? description, String? linkPreviewImage, PhotoBackModel? photoBack, BoardItemCreatorModel? createdBy, DateTime createdAt
+ String id, String type, String? url, String? thumbnailUrl, String? title, String? description, String? linkPreviewImage, PhotoBackModel? photoBack, BoardItemCreatorModel? createdBy, int sortOrder, List<BoardItemTagModel> tags, List<BoardItemCommentModel> comments, DateTime createdAt
 });
 
 
@@ -355,7 +355,7 @@ class _$BoardItemModelCopyWithImpl<$Res>
 
 /// Create a copy of BoardItemModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? type = null,Object? url = freezed,Object? thumbnailUrl = freezed,Object? title = freezed,Object? description = freezed,Object? linkPreviewImage = freezed,Object? photoBack = freezed,Object? createdBy = freezed,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? type = null,Object? url = freezed,Object? thumbnailUrl = freezed,Object? title = freezed,Object? description = freezed,Object? linkPreviewImage = freezed,Object? photoBack = freezed,Object? createdBy = freezed,Object? sortOrder = null,Object? tags = null,Object? comments = null,Object? createdAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -366,7 +366,10 @@ as String?,description: freezed == description ? _self.description : description
 as String?,linkPreviewImage: freezed == linkPreviewImage ? _self.linkPreviewImage : linkPreviewImage // ignore: cast_nullable_to_non_nullable
 as String?,photoBack: freezed == photoBack ? _self.photoBack : photoBack // ignore: cast_nullable_to_non_nullable
 as PhotoBackModel?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
-as BoardItemCreatorModel?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as BoardItemCreatorModel?,sortOrder: null == sortOrder ? _self.sortOrder : sortOrder // ignore: cast_nullable_to_non_nullable
+as int,tags: null == tags ? _self.tags : tags // ignore: cast_nullable_to_non_nullable
+as List<BoardItemTagModel>,comments: null == comments ? _self.comments : comments // ignore: cast_nullable_to_non_nullable
+as List<BoardItemCommentModel>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }
@@ -473,10 +476,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String type,  String? url,  String? thumbnailUrl,  String? title,  String? description,  String? linkPreviewImage,  PhotoBackModel? photoBack,  BoardItemCreatorModel? createdBy,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String type,  String? url,  String? thumbnailUrl,  String? title,  String? description,  String? linkPreviewImage,  PhotoBackModel? photoBack,  BoardItemCreatorModel? createdBy,  int sortOrder,  List<BoardItemTagModel> tags,  List<BoardItemCommentModel> comments,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _BoardItemModel() when $default != null:
-return $default(_that.id,_that.type,_that.url,_that.thumbnailUrl,_that.title,_that.description,_that.linkPreviewImage,_that.photoBack,_that.createdBy,_that.createdAt);case _:
+return $default(_that.id,_that.type,_that.url,_that.thumbnailUrl,_that.title,_that.description,_that.linkPreviewImage,_that.photoBack,_that.createdBy,_that.sortOrder,_that.tags,_that.comments,_that.createdAt);case _:
   return orElse();
 
 }
@@ -494,10 +497,10 @@ return $default(_that.id,_that.type,_that.url,_that.thumbnailUrl,_that.title,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String type,  String? url,  String? thumbnailUrl,  String? title,  String? description,  String? linkPreviewImage,  PhotoBackModel? photoBack,  BoardItemCreatorModel? createdBy,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String type,  String? url,  String? thumbnailUrl,  String? title,  String? description,  String? linkPreviewImage,  PhotoBackModel? photoBack,  BoardItemCreatorModel? createdBy,  int sortOrder,  List<BoardItemTagModel> tags,  List<BoardItemCommentModel> comments,  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _BoardItemModel():
-return $default(_that.id,_that.type,_that.url,_that.thumbnailUrl,_that.title,_that.description,_that.linkPreviewImage,_that.photoBack,_that.createdBy,_that.createdAt);}
+return $default(_that.id,_that.type,_that.url,_that.thumbnailUrl,_that.title,_that.description,_that.linkPreviewImage,_that.photoBack,_that.createdBy,_that.sortOrder,_that.tags,_that.comments,_that.createdAt);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -511,10 +514,10 @@ return $default(_that.id,_that.type,_that.url,_that.thumbnailUrl,_that.title,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String type,  String? url,  String? thumbnailUrl,  String? title,  String? description,  String? linkPreviewImage,  PhotoBackModel? photoBack,  BoardItemCreatorModel? createdBy,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String type,  String? url,  String? thumbnailUrl,  String? title,  String? description,  String? linkPreviewImage,  PhotoBackModel? photoBack,  BoardItemCreatorModel? createdBy,  int sortOrder,  List<BoardItemTagModel> tags,  List<BoardItemCommentModel> comments,  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _BoardItemModel() when $default != null:
-return $default(_that.id,_that.type,_that.url,_that.thumbnailUrl,_that.title,_that.description,_that.linkPreviewImage,_that.photoBack,_that.createdBy,_that.createdAt);case _:
+return $default(_that.id,_that.type,_that.url,_that.thumbnailUrl,_that.title,_that.description,_that.linkPreviewImage,_that.photoBack,_that.createdBy,_that.sortOrder,_that.tags,_that.comments,_that.createdAt);case _:
   return null;
 
 }
@@ -526,7 +529,7 @@ return $default(_that.id,_that.type,_that.url,_that.thumbnailUrl,_that.title,_th
 @JsonSerializable()
 
 class _BoardItemModel implements BoardItemModel {
-  const _BoardItemModel({required this.id, required this.type, this.url, this.thumbnailUrl, this.title, this.description, this.linkPreviewImage, this.photoBack, this.createdBy, required this.createdAt});
+  const _BoardItemModel({required this.id, required this.type, this.url, this.thumbnailUrl, this.title, this.description, this.linkPreviewImage, this.photoBack, this.createdBy, this.sortOrder = 0, final  List<BoardItemTagModel> tags = const [], final  List<BoardItemCommentModel> comments = const [], required this.createdAt}): _tags = tags,_comments = comments;
   factory _BoardItemModel.fromJson(Map<String, dynamic> json) => _$BoardItemModelFromJson(json);
 
 @override final  String id;
@@ -539,6 +542,21 @@ class _BoardItemModel implements BoardItemModel {
 @override final  String? linkPreviewImage;
 @override final  PhotoBackModel? photoBack;
 @override final  BoardItemCreatorModel? createdBy;
+@override@JsonKey() final  int sortOrder;
+ final  List<BoardItemTagModel> _tags;
+@override@JsonKey() List<BoardItemTagModel> get tags {
+  if (_tags is EqualUnmodifiableListView) return _tags;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_tags);
+}
+
+ final  List<BoardItemCommentModel> _comments;
+@override@JsonKey() List<BoardItemCommentModel> get comments {
+  if (_comments is EqualUnmodifiableListView) return _comments;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_comments);
+}
+
 @override final  DateTime createdAt;
 
 /// Create a copy of BoardItemModel
@@ -554,16 +572,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BoardItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.type, type) || other.type == type)&&(identical(other.url, url) || other.url == url)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.linkPreviewImage, linkPreviewImage) || other.linkPreviewImage == linkPreviewImage)&&(identical(other.photoBack, photoBack) || other.photoBack == photoBack)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BoardItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.type, type) || other.type == type)&&(identical(other.url, url) || other.url == url)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.linkPreviewImage, linkPreviewImage) || other.linkPreviewImage == linkPreviewImage)&&(identical(other.photoBack, photoBack) || other.photoBack == photoBack)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&const DeepCollectionEquality().equals(other._tags, _tags)&&const DeepCollectionEquality().equals(other._comments, _comments)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,type,url,thumbnailUrl,title,description,linkPreviewImage,photoBack,createdBy,createdAt);
+int get hashCode => Object.hash(runtimeType,id,type,url,thumbnailUrl,title,description,linkPreviewImage,photoBack,createdBy,sortOrder,const DeepCollectionEquality().hash(_tags),const DeepCollectionEquality().hash(_comments),createdAt);
 
 @override
 String toString() {
-  return 'BoardItemModel(id: $id, type: $type, url: $url, thumbnailUrl: $thumbnailUrl, title: $title, description: $description, linkPreviewImage: $linkPreviewImage, photoBack: $photoBack, createdBy: $createdBy, createdAt: $createdAt)';
+  return 'BoardItemModel(id: $id, type: $type, url: $url, thumbnailUrl: $thumbnailUrl, title: $title, description: $description, linkPreviewImage: $linkPreviewImage, photoBack: $photoBack, createdBy: $createdBy, sortOrder: $sortOrder, tags: $tags, comments: $comments, createdAt: $createdAt)';
 }
 
 
@@ -574,7 +592,7 @@ abstract mixin class _$BoardItemModelCopyWith<$Res> implements $BoardItemModelCo
   factory _$BoardItemModelCopyWith(_BoardItemModel value, $Res Function(_BoardItemModel) _then) = __$BoardItemModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String type, String? url, String? thumbnailUrl, String? title, String? description, String? linkPreviewImage, PhotoBackModel? photoBack, BoardItemCreatorModel? createdBy, DateTime createdAt
+ String id, String type, String? url, String? thumbnailUrl, String? title, String? description, String? linkPreviewImage, PhotoBackModel? photoBack, BoardItemCreatorModel? createdBy, int sortOrder, List<BoardItemTagModel> tags, List<BoardItemCommentModel> comments, DateTime createdAt
 });
 
 
@@ -591,7 +609,7 @@ class __$BoardItemModelCopyWithImpl<$Res>
 
 /// Create a copy of BoardItemModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? type = null,Object? url = freezed,Object? thumbnailUrl = freezed,Object? title = freezed,Object? description = freezed,Object? linkPreviewImage = freezed,Object? photoBack = freezed,Object? createdBy = freezed,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? type = null,Object? url = freezed,Object? thumbnailUrl = freezed,Object? title = freezed,Object? description = freezed,Object? linkPreviewImage = freezed,Object? photoBack = freezed,Object? createdBy = freezed,Object? sortOrder = null,Object? tags = null,Object? comments = null,Object? createdAt = null,}) {
   return _then(_BoardItemModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
@@ -602,7 +620,10 @@ as String?,description: freezed == description ? _self.description : description
 as String?,linkPreviewImage: freezed == linkPreviewImage ? _self.linkPreviewImage : linkPreviewImage // ignore: cast_nullable_to_non_nullable
 as String?,photoBack: freezed == photoBack ? _self.photoBack : photoBack // ignore: cast_nullable_to_non_nullable
 as PhotoBackModel?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
-as BoardItemCreatorModel?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as BoardItemCreatorModel?,sortOrder: null == sortOrder ? _self.sortOrder : sortOrder // ignore: cast_nullable_to_non_nullable
+as int,tags: null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
+as List<BoardItemTagModel>,comments: null == comments ? _self._comments : comments // ignore: cast_nullable_to_non_nullable
+as List<BoardItemCommentModel>,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }
@@ -1154,6 +1175,1100 @@ class __$BoardItemCreatorModelCopyWithImpl<$Res>
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$BoardItemTagModel {
+
+ String get id; String get tagId; String get name; String get color;
+/// Create a copy of BoardItemTagModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BoardItemTagModelCopyWith<BoardItemTagModel> get copyWith => _$BoardItemTagModelCopyWithImpl<BoardItemTagModel>(this as BoardItemTagModel, _$identity);
+
+  /// Serializes this BoardItemTagModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BoardItemTagModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tagId, tagId) || other.tagId == tagId)&&(identical(other.name, name) || other.name == name)&&(identical(other.color, color) || other.color == color));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,tagId,name,color);
+
+@override
+String toString() {
+  return 'BoardItemTagModel(id: $id, tagId: $tagId, name: $name, color: $color)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BoardItemTagModelCopyWith<$Res>  {
+  factory $BoardItemTagModelCopyWith(BoardItemTagModel value, $Res Function(BoardItemTagModel) _then) = _$BoardItemTagModelCopyWithImpl;
+@useResult
+$Res call({
+ String id, String tagId, String name, String color
+});
+
+
+
+
+}
+/// @nodoc
+class _$BoardItemTagModelCopyWithImpl<$Res>
+    implements $BoardItemTagModelCopyWith<$Res> {
+  _$BoardItemTagModelCopyWithImpl(this._self, this._then);
+
+  final BoardItemTagModel _self;
+  final $Res Function(BoardItemTagModel) _then;
+
+/// Create a copy of BoardItemTagModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? tagId = null,Object? name = null,Object? color = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,tagId: null == tagId ? _self.tagId : tagId // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [BoardItemTagModel].
+extension BoardItemTagModelPatterns on BoardItemTagModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _BoardItemTagModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _BoardItemTagModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _BoardItemTagModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _BoardItemTagModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _BoardItemTagModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _BoardItemTagModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String tagId,  String name,  String color)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _BoardItemTagModel() when $default != null:
+return $default(_that.id,_that.tagId,_that.name,_that.color);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String tagId,  String name,  String color)  $default,) {final _that = this;
+switch (_that) {
+case _BoardItemTagModel():
+return $default(_that.id,_that.tagId,_that.name,_that.color);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String tagId,  String name,  String color)?  $default,) {final _that = this;
+switch (_that) {
+case _BoardItemTagModel() when $default != null:
+return $default(_that.id,_that.tagId,_that.name,_that.color);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _BoardItemTagModel implements BoardItemTagModel {
+  const _BoardItemTagModel({required this.id, required this.tagId, required this.name, required this.color});
+  factory _BoardItemTagModel.fromJson(Map<String, dynamic> json) => _$BoardItemTagModelFromJson(json);
+
+@override final  String id;
+@override final  String tagId;
+@override final  String name;
+@override final  String color;
+
+/// Create a copy of BoardItemTagModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$BoardItemTagModelCopyWith<_BoardItemTagModel> get copyWith => __$BoardItemTagModelCopyWithImpl<_BoardItemTagModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BoardItemTagModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BoardItemTagModel&&(identical(other.id, id) || other.id == id)&&(identical(other.tagId, tagId) || other.tagId == tagId)&&(identical(other.name, name) || other.name == name)&&(identical(other.color, color) || other.color == color));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,tagId,name,color);
+
+@override
+String toString() {
+  return 'BoardItemTagModel(id: $id, tagId: $tagId, name: $name, color: $color)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$BoardItemTagModelCopyWith<$Res> implements $BoardItemTagModelCopyWith<$Res> {
+  factory _$BoardItemTagModelCopyWith(_BoardItemTagModel value, $Res Function(_BoardItemTagModel) _then) = __$BoardItemTagModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String tagId, String name, String color
+});
+
+
+
+
+}
+/// @nodoc
+class __$BoardItemTagModelCopyWithImpl<$Res>
+    implements _$BoardItemTagModelCopyWith<$Res> {
+  __$BoardItemTagModelCopyWithImpl(this._self, this._then);
+
+  final _BoardItemTagModel _self;
+  final $Res Function(_BoardItemTagModel) _then;
+
+/// Create a copy of BoardItemTagModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? tagId = null,Object? name = null,Object? color = null,}) {
+  return _then(_BoardItemTagModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,tagId: null == tagId ? _self.tagId : tagId // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$BoardItemCommentModel {
+
+ String get id; String get userId; BoardItemCreatorModel get user; String? get content; String? get emoji; DateTime get createdAt;
+/// Create a copy of BoardItemCommentModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BoardItemCommentModelCopyWith<BoardItemCommentModel> get copyWith => _$BoardItemCommentModelCopyWithImpl<BoardItemCommentModel>(this as BoardItemCommentModel, _$identity);
+
+  /// Serializes this BoardItemCommentModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BoardItemCommentModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.content, content) || other.content == content)&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,userId,user,content,emoji,createdAt);
+
+@override
+String toString() {
+  return 'BoardItemCommentModel(id: $id, userId: $userId, user: $user, content: $content, emoji: $emoji, createdAt: $createdAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BoardItemCommentModelCopyWith<$Res>  {
+  factory $BoardItemCommentModelCopyWith(BoardItemCommentModel value, $Res Function(BoardItemCommentModel) _then) = _$BoardItemCommentModelCopyWithImpl;
+@useResult
+$Res call({
+ String id, String userId, BoardItemCreatorModel user, String? content, String? emoji, DateTime createdAt
+});
+
+
+$BoardItemCreatorModelCopyWith<$Res> get user;
+
+}
+/// @nodoc
+class _$BoardItemCommentModelCopyWithImpl<$Res>
+    implements $BoardItemCommentModelCopyWith<$Res> {
+  _$BoardItemCommentModelCopyWithImpl(this._self, this._then);
+
+  final BoardItemCommentModel _self;
+  final $Res Function(BoardItemCommentModel) _then;
+
+/// Create a copy of BoardItemCommentModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? user = null,Object? content = freezed,Object? emoji = freezed,Object? createdAt = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as BoardItemCreatorModel,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
+as String?,emoji: freezed == emoji ? _self.emoji : emoji // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+/// Create a copy of BoardItemCommentModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$BoardItemCreatorModelCopyWith<$Res> get user {
+  
+  return $BoardItemCreatorModelCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [BoardItemCommentModel].
+extension BoardItemCommentModelPatterns on BoardItemCommentModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _BoardItemCommentModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _BoardItemCommentModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _BoardItemCommentModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _BoardItemCommentModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _BoardItemCommentModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _BoardItemCommentModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String userId,  BoardItemCreatorModel user,  String? content,  String? emoji,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _BoardItemCommentModel() when $default != null:
+return $default(_that.id,_that.userId,_that.user,_that.content,_that.emoji,_that.createdAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String userId,  BoardItemCreatorModel user,  String? content,  String? emoji,  DateTime createdAt)  $default,) {final _that = this;
+switch (_that) {
+case _BoardItemCommentModel():
+return $default(_that.id,_that.userId,_that.user,_that.content,_that.emoji,_that.createdAt);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String userId,  BoardItemCreatorModel user,  String? content,  String? emoji,  DateTime createdAt)?  $default,) {final _that = this;
+switch (_that) {
+case _BoardItemCommentModel() when $default != null:
+return $default(_that.id,_that.userId,_that.user,_that.content,_that.emoji,_that.createdAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _BoardItemCommentModel implements BoardItemCommentModel {
+  const _BoardItemCommentModel({required this.id, required this.userId, required this.user, this.content, this.emoji, required this.createdAt});
+  factory _BoardItemCommentModel.fromJson(Map<String, dynamic> json) => _$BoardItemCommentModelFromJson(json);
+
+@override final  String id;
+@override final  String userId;
+@override final  BoardItemCreatorModel user;
+@override final  String? content;
+@override final  String? emoji;
+@override final  DateTime createdAt;
+
+/// Create a copy of BoardItemCommentModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$BoardItemCommentModelCopyWith<_BoardItemCommentModel> get copyWith => __$BoardItemCommentModelCopyWithImpl<_BoardItemCommentModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BoardItemCommentModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BoardItemCommentModel&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.content, content) || other.content == content)&&(identical(other.emoji, emoji) || other.emoji == emoji)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,userId,user,content,emoji,createdAt);
+
+@override
+String toString() {
+  return 'BoardItemCommentModel(id: $id, userId: $userId, user: $user, content: $content, emoji: $emoji, createdAt: $createdAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$BoardItemCommentModelCopyWith<$Res> implements $BoardItemCommentModelCopyWith<$Res> {
+  factory _$BoardItemCommentModelCopyWith(_BoardItemCommentModel value, $Res Function(_BoardItemCommentModel) _then) = __$BoardItemCommentModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String userId, BoardItemCreatorModel user, String? content, String? emoji, DateTime createdAt
+});
+
+
+@override $BoardItemCreatorModelCopyWith<$Res> get user;
+
+}
+/// @nodoc
+class __$BoardItemCommentModelCopyWithImpl<$Res>
+    implements _$BoardItemCommentModelCopyWith<$Res> {
+  __$BoardItemCommentModelCopyWithImpl(this._self, this._then);
+
+  final _BoardItemCommentModel _self;
+  final $Res Function(_BoardItemCommentModel) _then;
+
+/// Create a copy of BoardItemCommentModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? user = null,Object? content = freezed,Object? emoji = freezed,Object? createdAt = null,}) {
+  return _then(_BoardItemCommentModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as BoardItemCreatorModel,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
+as String?,emoji: freezed == emoji ? _self.emoji : emoji // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+/// Create a copy of BoardItemCommentModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$BoardItemCreatorModelCopyWith<$Res> get user {
+  
+  return $BoardItemCreatorModelCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}
+}
+
+
+/// @nodoc
+mixin _$TagModel {
+
+ String get id; String get name; String get color; DateTime get createdAt;
+/// Create a copy of TagModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TagModelCopyWith<TagModel> get copyWith => _$TagModelCopyWithImpl<TagModel>(this as TagModel, _$identity);
+
+  /// Serializes this TagModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TagModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.color, color) || other.color == color)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name,color,createdAt);
+
+@override
+String toString() {
+  return 'TagModel(id: $id, name: $name, color: $color, createdAt: $createdAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TagModelCopyWith<$Res>  {
+  factory $TagModelCopyWith(TagModel value, $Res Function(TagModel) _then) = _$TagModelCopyWithImpl;
+@useResult
+$Res call({
+ String id, String name, String color, DateTime createdAt
+});
+
+
+
+
+}
+/// @nodoc
+class _$TagModelCopyWithImpl<$Res>
+    implements $TagModelCopyWith<$Res> {
+  _$TagModelCopyWithImpl(this._self, this._then);
+
+  final TagModel _self;
+  final $Res Function(TagModel) _then;
+
+/// Create a copy of TagModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? color = null,Object? createdAt = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [TagModel].
+extension TagModelPatterns on TagModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _TagModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _TagModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _TagModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _TagModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _TagModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _TagModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String color,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _TagModel() when $default != null:
+return $default(_that.id,_that.name,_that.color,_that.createdAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String color,  DateTime createdAt)  $default,) {final _that = this;
+switch (_that) {
+case _TagModel():
+return $default(_that.id,_that.name,_that.color,_that.createdAt);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String color,  DateTime createdAt)?  $default,) {final _that = this;
+switch (_that) {
+case _TagModel() when $default != null:
+return $default(_that.id,_that.name,_that.color,_that.createdAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _TagModel implements TagModel {
+  const _TagModel({required this.id, required this.name, this.color = '#667eea', required this.createdAt});
+  factory _TagModel.fromJson(Map<String, dynamic> json) => _$TagModelFromJson(json);
+
+@override final  String id;
+@override final  String name;
+@override@JsonKey() final  String color;
+@override final  DateTime createdAt;
+
+/// Create a copy of TagModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$TagModelCopyWith<_TagModel> get copyWith => __$TagModelCopyWithImpl<_TagModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$TagModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TagModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.color, color) || other.color == color)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name,color,createdAt);
+
+@override
+String toString() {
+  return 'TagModel(id: $id, name: $name, color: $color, createdAt: $createdAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$TagModelCopyWith<$Res> implements $TagModelCopyWith<$Res> {
+  factory _$TagModelCopyWith(_TagModel value, $Res Function(_TagModel) _then) = __$TagModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String name, String color, DateTime createdAt
+});
+
+
+
+
+}
+/// @nodoc
+class __$TagModelCopyWithImpl<$Res>
+    implements _$TagModelCopyWith<$Res> {
+  __$TagModelCopyWithImpl(this._self, this._then);
+
+  final _TagModel _self;
+  final $Res Function(_TagModel) _then;
+
+/// Create a copy of TagModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? color = null,Object? createdAt = null,}) {
+  return _then(_TagModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,color: null == color ? _self.color : color // ignore: cast_nullable_to_non_nullable
+as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$BoardTemplateModel {
+
+ String get id; String get name; String get description; List<Map<String, dynamic>> get presetItems;
+/// Create a copy of BoardTemplateModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BoardTemplateModelCopyWith<BoardTemplateModel> get copyWith => _$BoardTemplateModelCopyWithImpl<BoardTemplateModel>(this as BoardTemplateModel, _$identity);
+
+  /// Serializes this BoardTemplateModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BoardTemplateModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other.presetItems, presetItems));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name,description,const DeepCollectionEquality().hash(presetItems));
+
+@override
+String toString() {
+  return 'BoardTemplateModel(id: $id, name: $name, description: $description, presetItems: $presetItems)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BoardTemplateModelCopyWith<$Res>  {
+  factory $BoardTemplateModelCopyWith(BoardTemplateModel value, $Res Function(BoardTemplateModel) _then) = _$BoardTemplateModelCopyWithImpl;
+@useResult
+$Res call({
+ String id, String name, String description, List<Map<String, dynamic>> presetItems
+});
+
+
+
+
+}
+/// @nodoc
+class _$BoardTemplateModelCopyWithImpl<$Res>
+    implements $BoardTemplateModelCopyWith<$Res> {
+  _$BoardTemplateModelCopyWithImpl(this._self, this._then);
+
+  final BoardTemplateModel _self;
+  final $Res Function(BoardTemplateModel) _then;
+
+/// Create a copy of BoardTemplateModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = null,Object? presetItems = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,presetItems: null == presetItems ? _self.presetItems : presetItems // ignore: cast_nullable_to_non_nullable
+as List<Map<String, dynamic>>,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [BoardTemplateModel].
+extension BoardTemplateModelPatterns on BoardTemplateModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _BoardTemplateModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _BoardTemplateModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _BoardTemplateModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _BoardTemplateModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _BoardTemplateModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _BoardTemplateModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String description,  List<Map<String, dynamic>> presetItems)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _BoardTemplateModel() when $default != null:
+return $default(_that.id,_that.name,_that.description,_that.presetItems);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String description,  List<Map<String, dynamic>> presetItems)  $default,) {final _that = this;
+switch (_that) {
+case _BoardTemplateModel():
+return $default(_that.id,_that.name,_that.description,_that.presetItems);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String description,  List<Map<String, dynamic>> presetItems)?  $default,) {final _that = this;
+switch (_that) {
+case _BoardTemplateModel() when $default != null:
+return $default(_that.id,_that.name,_that.description,_that.presetItems);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _BoardTemplateModel implements BoardTemplateModel {
+  const _BoardTemplateModel({required this.id, required this.name, required this.description, required final  List<Map<String, dynamic>> presetItems}): _presetItems = presetItems;
+  factory _BoardTemplateModel.fromJson(Map<String, dynamic> json) => _$BoardTemplateModelFromJson(json);
+
+@override final  String id;
+@override final  String name;
+@override final  String description;
+ final  List<Map<String, dynamic>> _presetItems;
+@override List<Map<String, dynamic>> get presetItems {
+  if (_presetItems is EqualUnmodifiableListView) return _presetItems;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_presetItems);
+}
+
+
+/// Create a copy of BoardTemplateModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$BoardTemplateModelCopyWith<_BoardTemplateModel> get copyWith => __$BoardTemplateModelCopyWithImpl<_BoardTemplateModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$BoardTemplateModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _BoardTemplateModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&const DeepCollectionEquality().equals(other._presetItems, _presetItems));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,name,description,const DeepCollectionEquality().hash(_presetItems));
+
+@override
+String toString() {
+  return 'BoardTemplateModel(id: $id, name: $name, description: $description, presetItems: $presetItems)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$BoardTemplateModelCopyWith<$Res> implements $BoardTemplateModelCopyWith<$Res> {
+  factory _$BoardTemplateModelCopyWith(_BoardTemplateModel value, $Res Function(_BoardTemplateModel) _then) = __$BoardTemplateModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String name, String description, List<Map<String, dynamic>> presetItems
+});
+
+
+
+
+}
+/// @nodoc
+class __$BoardTemplateModelCopyWithImpl<$Res>
+    implements _$BoardTemplateModelCopyWith<$Res> {
+  __$BoardTemplateModelCopyWithImpl(this._self, this._then);
+
+  final _BoardTemplateModel _self;
+  final $Res Function(_BoardTemplateModel) _then;
+
+/// Create a copy of BoardTemplateModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = null,Object? presetItems = null,}) {
+  return _then(_BoardTemplateModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,presetItems: null == presetItems ? _self._presetItems : presetItems // ignore: cast_nullable_to_non_nullable
+as List<Map<String, dynamic>>,
   ));
 }
 

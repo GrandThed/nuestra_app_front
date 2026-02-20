@@ -94,6 +94,7 @@ _CalendarEventModel _$CalendarEventModelFromJson(Map<String, dynamic> json) =>
               ? null
               : DateTime.parse(json['occurrenceDate'] as String),
       occurrenceId: json['occurrenceId'] as String?,
+      colorHex: json['colorHex'] as String?,
       createdAt:
           json['createdAt'] == null
               ? null
@@ -118,6 +119,7 @@ Map<String, dynamic> _$CalendarEventModelToJson(_CalendarEventModel instance) =>
       'isOccurrence': instance.isOccurrence,
       'occurrenceDate': instance.occurrenceDate?.toIso8601String(),
       'occurrenceId': instance.occurrenceId,
+      'colorHex': instance.colorHex,
       'createdAt': instance.createdAt?.toIso8601String(),
     };
 
@@ -158,3 +160,81 @@ _TimelineBoardRef _$TimelineBoardRefFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$TimelineBoardRefToJson(_TimelineBoardRef instance) =>
     <String, dynamic>{'id': instance.id, 'name': instance.name};
+
+_AvailabilityDayModel _$AvailabilityDayModelFromJson(
+  Map<String, dynamic> json,
+) => _AvailabilityDayModel(
+  date: json['date'] as String,
+  events:
+      (json['events'] as List<dynamic>)
+          .map(
+            (e) => AvailabilityEventModel.fromJson(e as Map<String, dynamic>),
+          )
+          .toList(),
+  isFree: json['isFree'] as bool,
+);
+
+Map<String, dynamic> _$AvailabilityDayModelToJson(
+  _AvailabilityDayModel instance,
+) => <String, dynamic>{
+  'date': instance.date,
+  'events': instance.events,
+  'isFree': instance.isFree,
+};
+
+_AvailabilityEventModel _$AvailabilityEventModelFromJson(
+  Map<String, dynamic> json,
+) => _AvailabilityEventModel(
+  id: json['id'] as String,
+  title: json['title'] as String,
+  startDate: json['startDate'] as String,
+  endDate: json['endDate'] as String?,
+  allDay: json['allDay'] as bool,
+  createdById: json['createdById'] as String,
+);
+
+Map<String, dynamic> _$AvailabilityEventModelToJson(
+  _AvailabilityEventModel instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'title': instance.title,
+  'startDate': instance.startDate,
+  'endDate': instance.endDate,
+  'allDay': instance.allDay,
+  'createdById': instance.createdById,
+};
+
+_AvailabilityMemberModel _$AvailabilityMemberModelFromJson(
+  Map<String, dynamic> json,
+) => _AvailabilityMemberModel(
+  userId: json['userId'] as String,
+  name: json['name'] as String,
+  colorHex: json['colorHex'] as String,
+);
+
+Map<String, dynamic> _$AvailabilityMemberModelToJson(
+  _AvailabilityMemberModel instance,
+) => <String, dynamic>{
+  'userId': instance.userId,
+  'name': instance.name,
+  'colorHex': instance.colorHex,
+};
+
+_AvailabilityResultModel _$AvailabilityResultModelFromJson(
+  Map<String, dynamic> json,
+) => _AvailabilityResultModel(
+  members:
+      (json['members'] as List<dynamic>)
+          .map(
+            (e) => AvailabilityMemberModel.fromJson(e as Map<String, dynamic>),
+          )
+          .toList(),
+  days:
+      (json['days'] as List<dynamic>)
+          .map((e) => AvailabilityDayModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+);
+
+Map<String, dynamic> _$AvailabilityResultModelToJson(
+  _AvailabilityResultModel instance,
+) => <String, dynamic>{'members': instance.members, 'days': instance.days};

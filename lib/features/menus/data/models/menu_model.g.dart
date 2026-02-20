@@ -46,6 +46,8 @@ _MenuItemModel _$MenuItemModelFromJson(Map<String, dynamic> json) =>
               : RecipeModel.fromJson(json['recipe'] as Map<String, dynamic>),
       recipeId: json['recipeId'] as String?,
       substitutions: json['substitutions'] as Map<String, dynamic>?,
+      isLeftover: json['isLeftover'] as bool? ?? false,
+      originalMenuItemId: json['originalMenuItemId'] as String?,
       createdBy:
           json['createdBy'] == null
               ? null
@@ -66,6 +68,8 @@ Map<String, dynamic> _$MenuItemModelToJson(_MenuItemModel instance) =>
       'recipe': instance.recipe,
       'recipeId': instance.recipeId,
       'substitutions': instance.substitutions,
+      'isLeftover': instance.isLeftover,
+      'originalMenuItemId': instance.originalMenuItemId,
       'createdBy': instance.createdBy,
       'createdAt': instance.createdAt?.toIso8601String(),
     };
@@ -142,4 +146,24 @@ Map<String, dynamic> _$UpcomingMealsModelToJson(_UpcomingMealsModel instance) =>
       'items': instance.items,
       'from': instance.from.toIso8601String(),
       'to': instance.to.toIso8601String(),
+    };
+
+_MealHistoryModel _$MealHistoryModelFromJson(Map<String, dynamic> json) =>
+    _MealHistoryModel(
+      recipeId: json['recipeId'] as String,
+      title: json['title'] as String,
+      imageUrl: json['imageUrl'] as String?,
+      timesCooked: (json['timesCooked'] as num).toInt(),
+      lastCooked: DateTime.parse(json['lastCooked'] as String),
+      daysSinceLastCooked: (json['daysSinceLastCooked'] as num).toInt(),
+    );
+
+Map<String, dynamic> _$MealHistoryModelToJson(_MealHistoryModel instance) =>
+    <String, dynamic>{
+      'recipeId': instance.recipeId,
+      'title': instance.title,
+      'imageUrl': instance.imageUrl,
+      'timesCooked': instance.timesCooked,
+      'lastCooked': instance.lastCooked.toIso8601String(),
+      'daysSinceLastCooked': instance.daysSinceLastCooked,
     };

@@ -296,7 +296,7 @@ as DateTime?,
 mixin _$MenuItemModel {
 
  String get id; DateTime get date; String get mealType;// 'breakfast' | 'lunch' | 'dinner' | 'snack'
- RecipeModel? get recipe; String? get recipeId; Map<String, dynamic>? get substitutions; MenuItemCreatorModel? get createdBy; DateTime? get createdAt;
+ RecipeModel? get recipe; String? get recipeId; Map<String, dynamic>? get substitutions; bool get isLeftover; String? get originalMenuItemId; MenuItemCreatorModel? get createdBy; DateTime? get createdAt;
 /// Create a copy of MenuItemModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -309,16 +309,16 @@ $MenuItemModelCopyWith<MenuItemModel> get copyWith => _$MenuItemModelCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MenuItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.mealType, mealType) || other.mealType == mealType)&&(identical(other.recipe, recipe) || other.recipe == recipe)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&const DeepCollectionEquality().equals(other.substitutions, substitutions)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MenuItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.mealType, mealType) || other.mealType == mealType)&&(identical(other.recipe, recipe) || other.recipe == recipe)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&const DeepCollectionEquality().equals(other.substitutions, substitutions)&&(identical(other.isLeftover, isLeftover) || other.isLeftover == isLeftover)&&(identical(other.originalMenuItemId, originalMenuItemId) || other.originalMenuItemId == originalMenuItemId)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,date,mealType,recipe,recipeId,const DeepCollectionEquality().hash(substitutions),createdBy,createdAt);
+int get hashCode => Object.hash(runtimeType,id,date,mealType,recipe,recipeId,const DeepCollectionEquality().hash(substitutions),isLeftover,originalMenuItemId,createdBy,createdAt);
 
 @override
 String toString() {
-  return 'MenuItemModel(id: $id, date: $date, mealType: $mealType, recipe: $recipe, recipeId: $recipeId, substitutions: $substitutions, createdBy: $createdBy, createdAt: $createdAt)';
+  return 'MenuItemModel(id: $id, date: $date, mealType: $mealType, recipe: $recipe, recipeId: $recipeId, substitutions: $substitutions, isLeftover: $isLeftover, originalMenuItemId: $originalMenuItemId, createdBy: $createdBy, createdAt: $createdAt)';
 }
 
 
@@ -329,7 +329,7 @@ abstract mixin class $MenuItemModelCopyWith<$Res>  {
   factory $MenuItemModelCopyWith(MenuItemModel value, $Res Function(MenuItemModel) _then) = _$MenuItemModelCopyWithImpl;
 @useResult
 $Res call({
- String id, DateTime date, String mealType, RecipeModel? recipe, String? recipeId, Map<String, dynamic>? substitutions, MenuItemCreatorModel? createdBy, DateTime? createdAt
+ String id, DateTime date, String mealType, RecipeModel? recipe, String? recipeId, Map<String, dynamic>? substitutions, bool isLeftover, String? originalMenuItemId, MenuItemCreatorModel? createdBy, DateTime? createdAt
 });
 
 
@@ -346,7 +346,7 @@ class _$MenuItemModelCopyWithImpl<$Res>
 
 /// Create a copy of MenuItemModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? date = null,Object? mealType = null,Object? recipe = freezed,Object? recipeId = freezed,Object? substitutions = freezed,Object? createdBy = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? date = null,Object? mealType = null,Object? recipe = freezed,Object? recipeId = freezed,Object? substitutions = freezed,Object? isLeftover = null,Object? originalMenuItemId = freezed,Object? createdBy = freezed,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
@@ -354,7 +354,9 @@ as DateTime,mealType: null == mealType ? _self.mealType : mealType // ignore: ca
 as String,recipe: freezed == recipe ? _self.recipe : recipe // ignore: cast_nullable_to_non_nullable
 as RecipeModel?,recipeId: freezed == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
 as String?,substitutions: freezed == substitutions ? _self.substitutions : substitutions // ignore: cast_nullable_to_non_nullable
-as Map<String, dynamic>?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,isLeftover: null == isLeftover ? _self.isLeftover : isLeftover // ignore: cast_nullable_to_non_nullable
+as bool,originalMenuItemId: freezed == originalMenuItemId ? _self.originalMenuItemId : originalMenuItemId // ignore: cast_nullable_to_non_nullable
+as String?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
 as MenuItemCreatorModel?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -462,10 +464,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime date,  String mealType,  RecipeModel? recipe,  String? recipeId,  Map<String, dynamic>? substitutions,  MenuItemCreatorModel? createdBy,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime date,  String mealType,  RecipeModel? recipe,  String? recipeId,  Map<String, dynamic>? substitutions,  bool isLeftover,  String? originalMenuItemId,  MenuItemCreatorModel? createdBy,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MenuItemModel() when $default != null:
-return $default(_that.id,_that.date,_that.mealType,_that.recipe,_that.recipeId,_that.substitutions,_that.createdBy,_that.createdAt);case _:
+return $default(_that.id,_that.date,_that.mealType,_that.recipe,_that.recipeId,_that.substitutions,_that.isLeftover,_that.originalMenuItemId,_that.createdBy,_that.createdAt);case _:
   return orElse();
 
 }
@@ -483,10 +485,10 @@ return $default(_that.id,_that.date,_that.mealType,_that.recipe,_that.recipeId,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime date,  String mealType,  RecipeModel? recipe,  String? recipeId,  Map<String, dynamic>? substitutions,  MenuItemCreatorModel? createdBy,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime date,  String mealType,  RecipeModel? recipe,  String? recipeId,  Map<String, dynamic>? substitutions,  bool isLeftover,  String? originalMenuItemId,  MenuItemCreatorModel? createdBy,  DateTime? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _MenuItemModel():
-return $default(_that.id,_that.date,_that.mealType,_that.recipe,_that.recipeId,_that.substitutions,_that.createdBy,_that.createdAt);}
+return $default(_that.id,_that.date,_that.mealType,_that.recipe,_that.recipeId,_that.substitutions,_that.isLeftover,_that.originalMenuItemId,_that.createdBy,_that.createdAt);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -500,10 +502,10 @@ return $default(_that.id,_that.date,_that.mealType,_that.recipe,_that.recipeId,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime date,  String mealType,  RecipeModel? recipe,  String? recipeId,  Map<String, dynamic>? substitutions,  MenuItemCreatorModel? createdBy,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime date,  String mealType,  RecipeModel? recipe,  String? recipeId,  Map<String, dynamic>? substitutions,  bool isLeftover,  String? originalMenuItemId,  MenuItemCreatorModel? createdBy,  DateTime? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _MenuItemModel() when $default != null:
-return $default(_that.id,_that.date,_that.mealType,_that.recipe,_that.recipeId,_that.substitutions,_that.createdBy,_that.createdAt);case _:
+return $default(_that.id,_that.date,_that.mealType,_that.recipe,_that.recipeId,_that.substitutions,_that.isLeftover,_that.originalMenuItemId,_that.createdBy,_that.createdAt);case _:
   return null;
 
 }
@@ -515,7 +517,7 @@ return $default(_that.id,_that.date,_that.mealType,_that.recipe,_that.recipeId,_
 @JsonSerializable()
 
 class _MenuItemModel implements MenuItemModel {
-  const _MenuItemModel({required this.id, required this.date, required this.mealType, this.recipe, this.recipeId, final  Map<String, dynamic>? substitutions, this.createdBy, this.createdAt}): _substitutions = substitutions;
+  const _MenuItemModel({required this.id, required this.date, required this.mealType, this.recipe, this.recipeId, final  Map<String, dynamic>? substitutions, this.isLeftover = false, this.originalMenuItemId, this.createdBy, this.createdAt}): _substitutions = substitutions;
   factory _MenuItemModel.fromJson(Map<String, dynamic> json) => _$MenuItemModelFromJson(json);
 
 @override final  String id;
@@ -533,6 +535,8 @@ class _MenuItemModel implements MenuItemModel {
   return EqualUnmodifiableMapView(value);
 }
 
+@override@JsonKey() final  bool isLeftover;
+@override final  String? originalMenuItemId;
 @override final  MenuItemCreatorModel? createdBy;
 @override final  DateTime? createdAt;
 
@@ -549,16 +553,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MenuItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.mealType, mealType) || other.mealType == mealType)&&(identical(other.recipe, recipe) || other.recipe == recipe)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&const DeepCollectionEquality().equals(other._substitutions, _substitutions)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MenuItemModel&&(identical(other.id, id) || other.id == id)&&(identical(other.date, date) || other.date == date)&&(identical(other.mealType, mealType) || other.mealType == mealType)&&(identical(other.recipe, recipe) || other.recipe == recipe)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&const DeepCollectionEquality().equals(other._substitutions, _substitutions)&&(identical(other.isLeftover, isLeftover) || other.isLeftover == isLeftover)&&(identical(other.originalMenuItemId, originalMenuItemId) || other.originalMenuItemId == originalMenuItemId)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,date,mealType,recipe,recipeId,const DeepCollectionEquality().hash(_substitutions),createdBy,createdAt);
+int get hashCode => Object.hash(runtimeType,id,date,mealType,recipe,recipeId,const DeepCollectionEquality().hash(_substitutions),isLeftover,originalMenuItemId,createdBy,createdAt);
 
 @override
 String toString() {
-  return 'MenuItemModel(id: $id, date: $date, mealType: $mealType, recipe: $recipe, recipeId: $recipeId, substitutions: $substitutions, createdBy: $createdBy, createdAt: $createdAt)';
+  return 'MenuItemModel(id: $id, date: $date, mealType: $mealType, recipe: $recipe, recipeId: $recipeId, substitutions: $substitutions, isLeftover: $isLeftover, originalMenuItemId: $originalMenuItemId, createdBy: $createdBy, createdAt: $createdAt)';
 }
 
 
@@ -569,7 +573,7 @@ abstract mixin class _$MenuItemModelCopyWith<$Res> implements $MenuItemModelCopy
   factory _$MenuItemModelCopyWith(_MenuItemModel value, $Res Function(_MenuItemModel) _then) = __$MenuItemModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, DateTime date, String mealType, RecipeModel? recipe, String? recipeId, Map<String, dynamic>? substitutions, MenuItemCreatorModel? createdBy, DateTime? createdAt
+ String id, DateTime date, String mealType, RecipeModel? recipe, String? recipeId, Map<String, dynamic>? substitutions, bool isLeftover, String? originalMenuItemId, MenuItemCreatorModel? createdBy, DateTime? createdAt
 });
 
 
@@ -586,7 +590,7 @@ class __$MenuItemModelCopyWithImpl<$Res>
 
 /// Create a copy of MenuItemModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? date = null,Object? mealType = null,Object? recipe = freezed,Object? recipeId = freezed,Object? substitutions = freezed,Object? createdBy = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? date = null,Object? mealType = null,Object? recipe = freezed,Object? recipeId = freezed,Object? substitutions = freezed,Object? isLeftover = null,Object? originalMenuItemId = freezed,Object? createdBy = freezed,Object? createdAt = freezed,}) {
   return _then(_MenuItemModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
@@ -594,7 +598,9 @@ as DateTime,mealType: null == mealType ? _self.mealType : mealType // ignore: ca
 as String,recipe: freezed == recipe ? _self.recipe : recipe // ignore: cast_nullable_to_non_nullable
 as RecipeModel?,recipeId: freezed == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
 as String?,substitutions: freezed == substitutions ? _self._substitutions : substitutions // ignore: cast_nullable_to_non_nullable
-as Map<String, dynamic>?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
+as Map<String, dynamic>?,isLeftover: null == isLeftover ? _self.isLeftover : isLeftover // ignore: cast_nullable_to_non_nullable
+as bool,originalMenuItemId: freezed == originalMenuItemId ? _self.originalMenuItemId : originalMenuItemId // ignore: cast_nullable_to_non_nullable
+as String?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
 as MenuItemCreatorModel?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
   ));
@@ -1699,6 +1705,278 @@ items: null == items ? _self._items : items // ignore: cast_nullable_to_non_null
 as List<MenuItemModel>,from: null == from ? _self.from : from // ignore: cast_nullable_to_non_nullable
 as DateTime,to: null == to ? _self.to : to // ignore: cast_nullable_to_non_nullable
 as DateTime,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$MealHistoryModel {
+
+ String get recipeId; String get title; String? get imageUrl; int get timesCooked; DateTime get lastCooked; int get daysSinceLastCooked;
+/// Create a copy of MealHistoryModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$MealHistoryModelCopyWith<MealHistoryModel> get copyWith => _$MealHistoryModelCopyWithImpl<MealHistoryModel>(this as MealHistoryModel, _$identity);
+
+  /// Serializes this MealHistoryModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealHistoryModel&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.timesCooked, timesCooked) || other.timesCooked == timesCooked)&&(identical(other.lastCooked, lastCooked) || other.lastCooked == lastCooked)&&(identical(other.daysSinceLastCooked, daysSinceLastCooked) || other.daysSinceLastCooked == daysSinceLastCooked));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,recipeId,title,imageUrl,timesCooked,lastCooked,daysSinceLastCooked);
+
+@override
+String toString() {
+  return 'MealHistoryModel(recipeId: $recipeId, title: $title, imageUrl: $imageUrl, timesCooked: $timesCooked, lastCooked: $lastCooked, daysSinceLastCooked: $daysSinceLastCooked)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $MealHistoryModelCopyWith<$Res>  {
+  factory $MealHistoryModelCopyWith(MealHistoryModel value, $Res Function(MealHistoryModel) _then) = _$MealHistoryModelCopyWithImpl;
+@useResult
+$Res call({
+ String recipeId, String title, String? imageUrl, int timesCooked, DateTime lastCooked, int daysSinceLastCooked
+});
+
+
+
+
+}
+/// @nodoc
+class _$MealHistoryModelCopyWithImpl<$Res>
+    implements $MealHistoryModelCopyWith<$Res> {
+  _$MealHistoryModelCopyWithImpl(this._self, this._then);
+
+  final MealHistoryModel _self;
+  final $Res Function(MealHistoryModel) _then;
+
+/// Create a copy of MealHistoryModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? recipeId = null,Object? title = null,Object? imageUrl = freezed,Object? timesCooked = null,Object? lastCooked = null,Object? daysSinceLastCooked = null,}) {
+  return _then(_self.copyWith(
+recipeId: null == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String?,timesCooked: null == timesCooked ? _self.timesCooked : timesCooked // ignore: cast_nullable_to_non_nullable
+as int,lastCooked: null == lastCooked ? _self.lastCooked : lastCooked // ignore: cast_nullable_to_non_nullable
+as DateTime,daysSinceLastCooked: null == daysSinceLastCooked ? _self.daysSinceLastCooked : daysSinceLastCooked // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [MealHistoryModel].
+extension MealHistoryModelPatterns on MealHistoryModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _MealHistoryModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _MealHistoryModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _MealHistoryModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _MealHistoryModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _MealHistoryModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _MealHistoryModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String recipeId,  String title,  String? imageUrl,  int timesCooked,  DateTime lastCooked,  int daysSinceLastCooked)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _MealHistoryModel() when $default != null:
+return $default(_that.recipeId,_that.title,_that.imageUrl,_that.timesCooked,_that.lastCooked,_that.daysSinceLastCooked);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String recipeId,  String title,  String? imageUrl,  int timesCooked,  DateTime lastCooked,  int daysSinceLastCooked)  $default,) {final _that = this;
+switch (_that) {
+case _MealHistoryModel():
+return $default(_that.recipeId,_that.title,_that.imageUrl,_that.timesCooked,_that.lastCooked,_that.daysSinceLastCooked);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String recipeId,  String title,  String? imageUrl,  int timesCooked,  DateTime lastCooked,  int daysSinceLastCooked)?  $default,) {final _that = this;
+switch (_that) {
+case _MealHistoryModel() when $default != null:
+return $default(_that.recipeId,_that.title,_that.imageUrl,_that.timesCooked,_that.lastCooked,_that.daysSinceLastCooked);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _MealHistoryModel implements MealHistoryModel {
+  const _MealHistoryModel({required this.recipeId, required this.title, this.imageUrl, required this.timesCooked, required this.lastCooked, required this.daysSinceLastCooked});
+  factory _MealHistoryModel.fromJson(Map<String, dynamic> json) => _$MealHistoryModelFromJson(json);
+
+@override final  String recipeId;
+@override final  String title;
+@override final  String? imageUrl;
+@override final  int timesCooked;
+@override final  DateTime lastCooked;
+@override final  int daysSinceLastCooked;
+
+/// Create a copy of MealHistoryModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$MealHistoryModelCopyWith<_MealHistoryModel> get copyWith => __$MealHistoryModelCopyWithImpl<_MealHistoryModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$MealHistoryModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MealHistoryModel&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.title, title) || other.title == title)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.timesCooked, timesCooked) || other.timesCooked == timesCooked)&&(identical(other.lastCooked, lastCooked) || other.lastCooked == lastCooked)&&(identical(other.daysSinceLastCooked, daysSinceLastCooked) || other.daysSinceLastCooked == daysSinceLastCooked));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,recipeId,title,imageUrl,timesCooked,lastCooked,daysSinceLastCooked);
+
+@override
+String toString() {
+  return 'MealHistoryModel(recipeId: $recipeId, title: $title, imageUrl: $imageUrl, timesCooked: $timesCooked, lastCooked: $lastCooked, daysSinceLastCooked: $daysSinceLastCooked)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$MealHistoryModelCopyWith<$Res> implements $MealHistoryModelCopyWith<$Res> {
+  factory _$MealHistoryModelCopyWith(_MealHistoryModel value, $Res Function(_MealHistoryModel) _then) = __$MealHistoryModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String recipeId, String title, String? imageUrl, int timesCooked, DateTime lastCooked, int daysSinceLastCooked
+});
+
+
+
+
+}
+/// @nodoc
+class __$MealHistoryModelCopyWithImpl<$Res>
+    implements _$MealHistoryModelCopyWith<$Res> {
+  __$MealHistoryModelCopyWithImpl(this._self, this._then);
+
+  final _MealHistoryModel _self;
+  final $Res Function(_MealHistoryModel) _then;
+
+/// Create a copy of MealHistoryModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? recipeId = null,Object? title = null,Object? imageUrl = freezed,Object? timesCooked = null,Object? lastCooked = null,Object? daysSinceLastCooked = null,}) {
+  return _then(_MealHistoryModel(
+recipeId: null == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
+as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
+as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
+as String?,timesCooked: null == timesCooked ? _self.timesCooked : timesCooked // ignore: cast_nullable_to_non_nullable
+as int,lastCooked: null == lastCooked ? _self.lastCooked : lastCooked // ignore: cast_nullable_to_non_nullable
+as DateTime,daysSinceLastCooked: null == daysSinceLastCooked ? _self.daysSinceLastCooked : daysSinceLastCooked // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

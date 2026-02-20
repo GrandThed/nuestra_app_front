@@ -762,4 +762,378 @@ as String,
 
 }
 
+/// @nodoc
+mixin _$TagsState {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TagsState);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'TagsState()';
+}
+
+
+}
+
+/// @nodoc
+class $TagsStateCopyWith<$Res>  {
+$TagsStateCopyWith(TagsState _, $Res Function(TagsState) __);
+}
+
+
+/// Adds pattern-matching-related methods to [TagsState].
+extension TagsStatePatterns on TagsState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( TagsStateInitial value)?  initial,TResult Function( TagsStateLoading value)?  loading,TResult Function( TagsStateLoaded value)?  loaded,TResult Function( TagsStateError value)?  error,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case TagsStateInitial() when initial != null:
+return initial(_that);case TagsStateLoading() when loading != null:
+return loading(_that);case TagsStateLoaded() when loaded != null:
+return loaded(_that);case TagsStateError() when error != null:
+return error(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( TagsStateInitial value)  initial,required TResult Function( TagsStateLoading value)  loading,required TResult Function( TagsStateLoaded value)  loaded,required TResult Function( TagsStateError value)  error,}){
+final _that = this;
+switch (_that) {
+case TagsStateInitial():
+return initial(_that);case TagsStateLoading():
+return loading(_that);case TagsStateLoaded():
+return loaded(_that);case TagsStateError():
+return error(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( TagsStateInitial value)?  initial,TResult? Function( TagsStateLoading value)?  loading,TResult? Function( TagsStateLoaded value)?  loaded,TResult? Function( TagsStateError value)?  error,}){
+final _that = this;
+switch (_that) {
+case TagsStateInitial() when initial != null:
+return initial(_that);case TagsStateLoading() when loading != null:
+return loading(_that);case TagsStateLoaded() when loaded != null:
+return loaded(_that);case TagsStateError() when error != null:
+return error(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<TagModel> tags)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case TagsStateInitial() when initial != null:
+return initial();case TagsStateLoading() when loading != null:
+return loading();case TagsStateLoaded() when loaded != null:
+return loaded(_that.tags);case TagsStateError() when error != null:
+return error(_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<TagModel> tags)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+switch (_that) {
+case TagsStateInitial():
+return initial();case TagsStateLoading():
+return loading();case TagsStateLoaded():
+return loaded(_that.tags);case TagsStateError():
+return error(_that.message);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<TagModel> tags)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+switch (_that) {
+case TagsStateInitial() when initial != null:
+return initial();case TagsStateLoading() when loading != null:
+return loading();case TagsStateLoaded() when loaded != null:
+return loaded(_that.tags);case TagsStateError() when error != null:
+return error(_that.message);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class TagsStateInitial implements TagsState {
+  const TagsStateInitial();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TagsStateInitial);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'TagsState.initial()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class TagsStateLoading implements TagsState {
+  const TagsStateLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TagsStateLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'TagsState.loading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class TagsStateLoaded implements TagsState {
+  const TagsStateLoaded(final  List<TagModel> tags): _tags = tags;
+  
+
+ final  List<TagModel> _tags;
+ List<TagModel> get tags {
+  if (_tags is EqualUnmodifiableListView) return _tags;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_tags);
+}
+
+
+/// Create a copy of TagsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TagsStateLoadedCopyWith<TagsStateLoaded> get copyWith => _$TagsStateLoadedCopyWithImpl<TagsStateLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TagsStateLoaded&&const DeepCollectionEquality().equals(other._tags, _tags));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tags));
+
+@override
+String toString() {
+  return 'TagsState.loaded(tags: $tags)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TagsStateLoadedCopyWith<$Res> implements $TagsStateCopyWith<$Res> {
+  factory $TagsStateLoadedCopyWith(TagsStateLoaded value, $Res Function(TagsStateLoaded) _then) = _$TagsStateLoadedCopyWithImpl;
+@useResult
+$Res call({
+ List<TagModel> tags
+});
+
+
+
+
+}
+/// @nodoc
+class _$TagsStateLoadedCopyWithImpl<$Res>
+    implements $TagsStateLoadedCopyWith<$Res> {
+  _$TagsStateLoadedCopyWithImpl(this._self, this._then);
+
+  final TagsStateLoaded _self;
+  final $Res Function(TagsStateLoaded) _then;
+
+/// Create a copy of TagsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? tags = null,}) {
+  return _then(TagsStateLoaded(
+null == tags ? _self._tags : tags // ignore: cast_nullable_to_non_nullable
+as List<TagModel>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class TagsStateError implements TagsState {
+  const TagsStateError(this.message);
+  
+
+ final  String message;
+
+/// Create a copy of TagsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TagsStateErrorCopyWith<TagsStateError> get copyWith => _$TagsStateErrorCopyWithImpl<TagsStateError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TagsStateError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'TagsState.error(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TagsStateErrorCopyWith<$Res> implements $TagsStateCopyWith<$Res> {
+  factory $TagsStateErrorCopyWith(TagsStateError value, $Res Function(TagsStateError) _then) = _$TagsStateErrorCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class _$TagsStateErrorCopyWithImpl<$Res>
+    implements $TagsStateErrorCopyWith<$Res> {
+  _$TagsStateErrorCopyWithImpl(this._self, this._then);
+
+  final TagsStateError _self;
+  final $Res Function(TagsStateError) _then;
+
+/// Create a copy of TagsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(TagsStateError(
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
 // dart format on

@@ -12,6 +12,14 @@ import 'package:nuestra_app/features/calendar/data/models/calendar_model.dart';
 import 'package:nuestra_app/features/calendar/presentation/providers/calendar_notifier.dart';
 import 'package:nuestra_app/features/calendar/presentation/providers/calendar_state.dart';
 
+/// Parses a hex color string (with or without leading '#') into a [Color].
+Color _parseHexColor(String hex) {
+  final buffer = StringBuffer();
+  if (hex.length == 6 || hex.length == 7) buffer.write('ff');
+  buffer.write(hex.replaceFirst('#', ''));
+  return Color(int.parse(buffer.toString(), radix: 16));
+}
+
 /// Calendar screen - Unified timeline and calendar
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -282,6 +290,42 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               markerSize: 6,
               markerMargin: const EdgeInsets.symmetric(horizontal: 1),
             ),
+            calendarBuilders: CalendarBuilders<CalendarEventModel>(
+              markerBuilder: (context, day, dayEvents) {
+                if (dayEvents.isEmpty) return null;
+
+                // Collect unique colors from events for this day (up to 3)
+                final colors = <Color>[];
+                final seenHex = <String>{};
+                for (final event in dayEvents) {
+                  if (colors.length >= 3) break;
+                  final hex = event.colorHex;
+                  final key = hex ?? '__default__';
+                  if (!seenHex.contains(key)) {
+                    seenHex.add(key);
+                    colors.add(
+                      hex != null ? _parseHexColor(hex) : AppColors.calendar,
+                    );
+                  }
+                }
+
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: colors.map((color) {
+                    return Container(
+                      width: 6,
+                      height: 6,
+                      margin: const EdgeInsets.symmetric(horizontal: 1),
+                      decoration: BoxDecoration(
+                        color: color,
+                        shape: BoxShape.circle,
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
             eventLoader: (day) {
               final dateKey = DateTime(day.year, day.month, day.day);
               return eventMap[dateKey] ?? [];
@@ -498,12 +542,16 @@ class _EventTile extends StatelessWidget {
     final hasLinks = event.linkedBoard != null ||
         event.linkedRecipe != null ||
         event.linkedMenuPlan != null;
+    final eventColor = event.colorHex != null
+        ? _parseHexColor(event.colorHex!)
+        : AppColors.calendar;
 
     return Card(
       margin: const EdgeInsets.symmetric(
         horizontal: AppSizes.lg,
         vertical: AppSizes.xs,
       ),
+      clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
@@ -511,6 +559,16 @@ class _EventTile extends StatelessWidget {
           padding: const EdgeInsets.all(AppSizes.md),
           child: Row(
             children: [
+              // Color stripe for member identification
+              Container(
+                width: 4,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: eventColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: AppSizes.sm),
               // Time or all-day indicator
               Container(
                 width: 56,

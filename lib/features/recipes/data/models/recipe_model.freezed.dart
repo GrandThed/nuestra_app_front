@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RecipeModel {
 
- String get id; String? get householdId; String get title; List<IngredientModel>? get ingredients; List<String>? get instructions; String? get imageUrl; int? get servings; String? get sourceUrl; RecipeCreatorModel? get createdBy; DateTime? get createdAt; DateTime? get updatedAt;
+ String get id; String? get householdId; String get title; List<IngredientModel>? get ingredients; List<String>? get instructions; String? get imageUrl; int? get servings; String? get sourceUrl; int? get prepTimeMinutes; int? get cookTimeMinutes; double? get averageRating; bool get isFavorite; List<RecipeRatingModel> get ratings; RecipeCreatorModel? get createdBy; DateTime? get createdAt; DateTime? get updatedAt;
 /// Create a copy of RecipeModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $RecipeModelCopyWith<RecipeModel> get copyWith => _$RecipeModelCopyWithImpl<Reci
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecipeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other.ingredients, ingredients)&&const DeepCollectionEquality().equals(other.instructions, instructions)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.servings, servings) || other.servings == servings)&&(identical(other.sourceUrl, sourceUrl) || other.sourceUrl == sourceUrl)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecipeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other.ingredients, ingredients)&&const DeepCollectionEquality().equals(other.instructions, instructions)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.servings, servings) || other.servings == servings)&&(identical(other.sourceUrl, sourceUrl) || other.sourceUrl == sourceUrl)&&(identical(other.prepTimeMinutes, prepTimeMinutes) || other.prepTimeMinutes == prepTimeMinutes)&&(identical(other.cookTimeMinutes, cookTimeMinutes) || other.cookTimeMinutes == cookTimeMinutes)&&(identical(other.averageRating, averageRating) || other.averageRating == averageRating)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&const DeepCollectionEquality().equals(other.ratings, ratings)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,householdId,title,const DeepCollectionEquality().hash(ingredients),const DeepCollectionEquality().hash(instructions),imageUrl,servings,sourceUrl,createdBy,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,householdId,title,const DeepCollectionEquality().hash(ingredients),const DeepCollectionEquality().hash(instructions),imageUrl,servings,sourceUrl,prepTimeMinutes,cookTimeMinutes,averageRating,isFavorite,const DeepCollectionEquality().hash(ratings),createdBy,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'RecipeModel(id: $id, householdId: $householdId, title: $title, ingredients: $ingredients, instructions: $instructions, imageUrl: $imageUrl, servings: $servings, sourceUrl: $sourceUrl, createdBy: $createdBy, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'RecipeModel(id: $id, householdId: $householdId, title: $title, ingredients: $ingredients, instructions: $instructions, imageUrl: $imageUrl, servings: $servings, sourceUrl: $sourceUrl, prepTimeMinutes: $prepTimeMinutes, cookTimeMinutes: $cookTimeMinutes, averageRating: $averageRating, isFavorite: $isFavorite, ratings: $ratings, createdBy: $createdBy, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $RecipeModelCopyWith<$Res>  {
   factory $RecipeModelCopyWith(RecipeModel value, $Res Function(RecipeModel) _then) = _$RecipeModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String? householdId, String title, List<IngredientModel>? ingredients, List<String>? instructions, String? imageUrl, int? servings, String? sourceUrl, RecipeCreatorModel? createdBy, DateTime? createdAt, DateTime? updatedAt
+ String id, String? householdId, String title, List<IngredientModel>? ingredients, List<String>? instructions, String? imageUrl, int? servings, String? sourceUrl, int? prepTimeMinutes, int? cookTimeMinutes, double? averageRating, bool isFavorite, List<RecipeRatingModel> ratings, RecipeCreatorModel? createdBy, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -65,7 +65,7 @@ class _$RecipeModelCopyWithImpl<$Res>
 
 /// Create a copy of RecipeModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? householdId = freezed,Object? title = null,Object? ingredients = freezed,Object? instructions = freezed,Object? imageUrl = freezed,Object? servings = freezed,Object? sourceUrl = freezed,Object? createdBy = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? householdId = freezed,Object? title = null,Object? ingredients = freezed,Object? instructions = freezed,Object? imageUrl = freezed,Object? servings = freezed,Object? sourceUrl = freezed,Object? prepTimeMinutes = freezed,Object? cookTimeMinutes = freezed,Object? averageRating = freezed,Object? isFavorite = null,Object? ratings = null,Object? createdBy = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,householdId: freezed == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
@@ -75,7 +75,12 @@ as List<IngredientModel>?,instructions: freezed == instructions ? _self.instruct
 as List<String>?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String?,servings: freezed == servings ? _self.servings : servings // ignore: cast_nullable_to_non_nullable
 as int?,sourceUrl: freezed == sourceUrl ? _self.sourceUrl : sourceUrl // ignore: cast_nullable_to_non_nullable
-as String?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
+as String?,prepTimeMinutes: freezed == prepTimeMinutes ? _self.prepTimeMinutes : prepTimeMinutes // ignore: cast_nullable_to_non_nullable
+as int?,cookTimeMinutes: freezed == cookTimeMinutes ? _self.cookTimeMinutes : cookTimeMinutes // ignore: cast_nullable_to_non_nullable
+as int?,averageRating: freezed == averageRating ? _self.averageRating : averageRating // ignore: cast_nullable_to_non_nullable
+as double?,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
+as bool,ratings: null == ratings ? _self.ratings : ratings // ignore: cast_nullable_to_non_nullable
+as List<RecipeRatingModel>,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
 as RecipeCreatorModel?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
@@ -172,10 +177,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String? householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  int? prepTimeMinutes,  int? cookTimeMinutes,  double? averageRating,  bool isFavorite,  List<RecipeRatingModel> ratings,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RecipeModel() when $default != null:
-return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.instructions,_that.imageUrl,_that.servings,_that.sourceUrl,_that.createdBy,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.instructions,_that.imageUrl,_that.servings,_that.sourceUrl,_that.prepTimeMinutes,_that.cookTimeMinutes,_that.averageRating,_that.isFavorite,_that.ratings,_that.createdBy,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -193,10 +198,10 @@ return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.i
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String? householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  int? prepTimeMinutes,  int? cookTimeMinutes,  double? averageRating,  bool isFavorite,  List<RecipeRatingModel> ratings,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _RecipeModel():
-return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.instructions,_that.imageUrl,_that.servings,_that.sourceUrl,_that.createdBy,_that.createdAt,_that.updatedAt);}
+return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.instructions,_that.imageUrl,_that.servings,_that.sourceUrl,_that.prepTimeMinutes,_that.cookTimeMinutes,_that.averageRating,_that.isFavorite,_that.ratings,_that.createdBy,_that.createdAt,_that.updatedAt);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -210,10 +215,10 @@ return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.i
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String? householdId,  String title,  List<IngredientModel>? ingredients,  List<String>? instructions,  String? imageUrl,  int? servings,  String? sourceUrl,  int? prepTimeMinutes,  int? cookTimeMinutes,  double? averageRating,  bool isFavorite,  List<RecipeRatingModel> ratings,  RecipeCreatorModel? createdBy,  DateTime? createdAt,  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _RecipeModel() when $default != null:
-return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.instructions,_that.imageUrl,_that.servings,_that.sourceUrl,_that.createdBy,_that.createdAt,_that.updatedAt);case _:
+return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.instructions,_that.imageUrl,_that.servings,_that.sourceUrl,_that.prepTimeMinutes,_that.cookTimeMinutes,_that.averageRating,_that.isFavorite,_that.ratings,_that.createdBy,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -225,7 +230,7 @@ return $default(_that.id,_that.householdId,_that.title,_that.ingredients,_that.i
 @JsonSerializable()
 
 class _RecipeModel implements RecipeModel {
-  const _RecipeModel({required this.id, this.householdId, required this.title, final  List<IngredientModel>? ingredients, final  List<String>? instructions, this.imageUrl, this.servings, this.sourceUrl, this.createdBy, this.createdAt, this.updatedAt}): _ingredients = ingredients,_instructions = instructions;
+  const _RecipeModel({required this.id, this.householdId, required this.title, final  List<IngredientModel>? ingredients, final  List<String>? instructions, this.imageUrl, this.servings, this.sourceUrl, this.prepTimeMinutes, this.cookTimeMinutes, this.averageRating, this.isFavorite = false, final  List<RecipeRatingModel> ratings = const [], this.createdBy, this.createdAt, this.updatedAt}): _ingredients = ingredients,_instructions = instructions,_ratings = ratings;
   factory _RecipeModel.fromJson(Map<String, dynamic> json) => _$RecipeModelFromJson(json);
 
 @override final  String id;
@@ -252,6 +257,17 @@ class _RecipeModel implements RecipeModel {
 @override final  String? imageUrl;
 @override final  int? servings;
 @override final  String? sourceUrl;
+@override final  int? prepTimeMinutes;
+@override final  int? cookTimeMinutes;
+@override final  double? averageRating;
+@override@JsonKey() final  bool isFavorite;
+ final  List<RecipeRatingModel> _ratings;
+@override@JsonKey() List<RecipeRatingModel> get ratings {
+  if (_ratings is EqualUnmodifiableListView) return _ratings;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_ratings);
+}
+
 @override final  RecipeCreatorModel? createdBy;
 @override final  DateTime? createdAt;
 @override final  DateTime? updatedAt;
@@ -269,16 +285,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecipeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other._ingredients, _ingredients)&&const DeepCollectionEquality().equals(other._instructions, _instructions)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.servings, servings) || other.servings == servings)&&(identical(other.sourceUrl, sourceUrl) || other.sourceUrl == sourceUrl)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecipeModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&const DeepCollectionEquality().equals(other._ingredients, _ingredients)&&const DeepCollectionEquality().equals(other._instructions, _instructions)&&(identical(other.imageUrl, imageUrl) || other.imageUrl == imageUrl)&&(identical(other.servings, servings) || other.servings == servings)&&(identical(other.sourceUrl, sourceUrl) || other.sourceUrl == sourceUrl)&&(identical(other.prepTimeMinutes, prepTimeMinutes) || other.prepTimeMinutes == prepTimeMinutes)&&(identical(other.cookTimeMinutes, cookTimeMinutes) || other.cookTimeMinutes == cookTimeMinutes)&&(identical(other.averageRating, averageRating) || other.averageRating == averageRating)&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&const DeepCollectionEquality().equals(other._ratings, _ratings)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,householdId,title,const DeepCollectionEquality().hash(_ingredients),const DeepCollectionEquality().hash(_instructions),imageUrl,servings,sourceUrl,createdBy,createdAt,updatedAt);
+int get hashCode => Object.hash(runtimeType,id,householdId,title,const DeepCollectionEquality().hash(_ingredients),const DeepCollectionEquality().hash(_instructions),imageUrl,servings,sourceUrl,prepTimeMinutes,cookTimeMinutes,averageRating,isFavorite,const DeepCollectionEquality().hash(_ratings),createdBy,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'RecipeModel(id: $id, householdId: $householdId, title: $title, ingredients: $ingredients, instructions: $instructions, imageUrl: $imageUrl, servings: $servings, sourceUrl: $sourceUrl, createdBy: $createdBy, createdAt: $createdAt, updatedAt: $updatedAt)';
+  return 'RecipeModel(id: $id, householdId: $householdId, title: $title, ingredients: $ingredients, instructions: $instructions, imageUrl: $imageUrl, servings: $servings, sourceUrl: $sourceUrl, prepTimeMinutes: $prepTimeMinutes, cookTimeMinutes: $cookTimeMinutes, averageRating: $averageRating, isFavorite: $isFavorite, ratings: $ratings, createdBy: $createdBy, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -289,7 +305,7 @@ abstract mixin class _$RecipeModelCopyWith<$Res> implements $RecipeModelCopyWith
   factory _$RecipeModelCopyWith(_RecipeModel value, $Res Function(_RecipeModel) _then) = __$RecipeModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String? householdId, String title, List<IngredientModel>? ingredients, List<String>? instructions, String? imageUrl, int? servings, String? sourceUrl, RecipeCreatorModel? createdBy, DateTime? createdAt, DateTime? updatedAt
+ String id, String? householdId, String title, List<IngredientModel>? ingredients, List<String>? instructions, String? imageUrl, int? servings, String? sourceUrl, int? prepTimeMinutes, int? cookTimeMinutes, double? averageRating, bool isFavorite, List<RecipeRatingModel> ratings, RecipeCreatorModel? createdBy, DateTime? createdAt, DateTime? updatedAt
 });
 
 
@@ -306,7 +322,7 @@ class __$RecipeModelCopyWithImpl<$Res>
 
 /// Create a copy of RecipeModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? householdId = freezed,Object? title = null,Object? ingredients = freezed,Object? instructions = freezed,Object? imageUrl = freezed,Object? servings = freezed,Object? sourceUrl = freezed,Object? createdBy = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? householdId = freezed,Object? title = null,Object? ingredients = freezed,Object? instructions = freezed,Object? imageUrl = freezed,Object? servings = freezed,Object? sourceUrl = freezed,Object? prepTimeMinutes = freezed,Object? cookTimeMinutes = freezed,Object? averageRating = freezed,Object? isFavorite = null,Object? ratings = null,Object? createdBy = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_RecipeModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,householdId: freezed == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
@@ -316,7 +332,12 @@ as List<IngredientModel>?,instructions: freezed == instructions ? _self._instruc
 as List<String>?,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
 as String?,servings: freezed == servings ? _self.servings : servings // ignore: cast_nullable_to_non_nullable
 as int?,sourceUrl: freezed == sourceUrl ? _self.sourceUrl : sourceUrl // ignore: cast_nullable_to_non_nullable
-as String?,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
+as String?,prepTimeMinutes: freezed == prepTimeMinutes ? _self.prepTimeMinutes : prepTimeMinutes // ignore: cast_nullable_to_non_nullable
+as int?,cookTimeMinutes: freezed == cookTimeMinutes ? _self.cookTimeMinutes : cookTimeMinutes // ignore: cast_nullable_to_non_nullable
+as int?,averageRating: freezed == averageRating ? _self.averageRating : averageRating // ignore: cast_nullable_to_non_nullable
+as double?,isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
+as bool,ratings: null == ratings ? _self._ratings : ratings // ignore: cast_nullable_to_non_nullable
+as List<RecipeRatingModel>,createdBy: freezed == createdBy ? _self.createdBy : createdBy // ignore: cast_nullable_to_non_nullable
 as RecipeCreatorModel?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
@@ -873,6 +894,302 @@ as String?,
 }
 
 
+}
+
+
+/// @nodoc
+mixin _$RecipeRatingModel {
+
+ String get id; String get recipeId; String get userId; RecipeCreatorModel get user; int get rating; String? get note; DateTime get createdAt; DateTime get updatedAt;
+/// Create a copy of RecipeRatingModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RecipeRatingModelCopyWith<RecipeRatingModel> get copyWith => _$RecipeRatingModelCopyWithImpl<RecipeRatingModel>(this as RecipeRatingModel, _$identity);
+
+  /// Serializes this RecipeRatingModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecipeRatingModel&&(identical(other.id, id) || other.id == id)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.note, note) || other.note == note)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,recipeId,userId,user,rating,note,createdAt,updatedAt);
+
+@override
+String toString() {
+  return 'RecipeRatingModel(id: $id, recipeId: $recipeId, userId: $userId, user: $user, rating: $rating, note: $note, createdAt: $createdAt, updatedAt: $updatedAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $RecipeRatingModelCopyWith<$Res>  {
+  factory $RecipeRatingModelCopyWith(RecipeRatingModel value, $Res Function(RecipeRatingModel) _then) = _$RecipeRatingModelCopyWithImpl;
+@useResult
+$Res call({
+ String id, String recipeId, String userId, RecipeCreatorModel user, int rating, String? note, DateTime createdAt, DateTime updatedAt
+});
+
+
+$RecipeCreatorModelCopyWith<$Res> get user;
+
+}
+/// @nodoc
+class _$RecipeRatingModelCopyWithImpl<$Res>
+    implements $RecipeRatingModelCopyWith<$Res> {
+  _$RecipeRatingModelCopyWithImpl(this._self, this._then);
+
+  final RecipeRatingModel _self;
+  final $Res Function(RecipeRatingModel) _then;
+
+/// Create a copy of RecipeRatingModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? recipeId = null,Object? userId = null,Object? user = null,Object? rating = null,Object? note = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,recipeId: null == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
+as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as RecipeCreatorModel,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
+as int,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+/// Create a copy of RecipeRatingModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$RecipeCreatorModelCopyWith<$Res> get user {
+  
+  return $RecipeCreatorModelCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [RecipeRatingModel].
+extension RecipeRatingModelPatterns on RecipeRatingModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RecipeRatingModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _RecipeRatingModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RecipeRatingModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _RecipeRatingModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RecipeRatingModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _RecipeRatingModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String recipeId,  String userId,  RecipeCreatorModel user,  int rating,  String? note,  DateTime createdAt,  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _RecipeRatingModel() when $default != null:
+return $default(_that.id,_that.recipeId,_that.userId,_that.user,_that.rating,_that.note,_that.createdAt,_that.updatedAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String recipeId,  String userId,  RecipeCreatorModel user,  int rating,  String? note,  DateTime createdAt,  DateTime updatedAt)  $default,) {final _that = this;
+switch (_that) {
+case _RecipeRatingModel():
+return $default(_that.id,_that.recipeId,_that.userId,_that.user,_that.rating,_that.note,_that.createdAt,_that.updatedAt);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String recipeId,  String userId,  RecipeCreatorModel user,  int rating,  String? note,  DateTime createdAt,  DateTime updatedAt)?  $default,) {final _that = this;
+switch (_that) {
+case _RecipeRatingModel() when $default != null:
+return $default(_that.id,_that.recipeId,_that.userId,_that.user,_that.rating,_that.note,_that.createdAt,_that.updatedAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _RecipeRatingModel implements RecipeRatingModel {
+  const _RecipeRatingModel({required this.id, required this.recipeId, required this.userId, required this.user, required this.rating, this.note, required this.createdAt, required this.updatedAt});
+  factory _RecipeRatingModel.fromJson(Map<String, dynamic> json) => _$RecipeRatingModelFromJson(json);
+
+@override final  String id;
+@override final  String recipeId;
+@override final  String userId;
+@override final  RecipeCreatorModel user;
+@override final  int rating;
+@override final  String? note;
+@override final  DateTime createdAt;
+@override final  DateTime updatedAt;
+
+/// Create a copy of RecipeRatingModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RecipeRatingModelCopyWith<_RecipeRatingModel> get copyWith => __$RecipeRatingModelCopyWithImpl<_RecipeRatingModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$RecipeRatingModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecipeRatingModel&&(identical(other.id, id) || other.id == id)&&(identical(other.recipeId, recipeId) || other.recipeId == recipeId)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.rating, rating) || other.rating == rating)&&(identical(other.note, note) || other.note == note)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,recipeId,userId,user,rating,note,createdAt,updatedAt);
+
+@override
+String toString() {
+  return 'RecipeRatingModel(id: $id, recipeId: $recipeId, userId: $userId, user: $user, rating: $rating, note: $note, createdAt: $createdAt, updatedAt: $updatedAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RecipeRatingModelCopyWith<$Res> implements $RecipeRatingModelCopyWith<$Res> {
+  factory _$RecipeRatingModelCopyWith(_RecipeRatingModel value, $Res Function(_RecipeRatingModel) _then) = __$RecipeRatingModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, String recipeId, String userId, RecipeCreatorModel user, int rating, String? note, DateTime createdAt, DateTime updatedAt
+});
+
+
+@override $RecipeCreatorModelCopyWith<$Res> get user;
+
+}
+/// @nodoc
+class __$RecipeRatingModelCopyWithImpl<$Res>
+    implements _$RecipeRatingModelCopyWith<$Res> {
+  __$RecipeRatingModelCopyWithImpl(this._self, this._then);
+
+  final _RecipeRatingModel _self;
+  final $Res Function(_RecipeRatingModel) _then;
+
+/// Create a copy of RecipeRatingModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? recipeId = null,Object? userId = null,Object? user = null,Object? rating = null,Object? note = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
+  return _then(_RecipeRatingModel(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,recipeId: null == recipeId ? _self.recipeId : recipeId // ignore: cast_nullable_to_non_nullable
+as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as String,user: null == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as RecipeCreatorModel,rating: null == rating ? _self.rating : rating // ignore: cast_nullable_to_non_nullable
+as int,note: freezed == note ? _self.note : note // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+/// Create a copy of RecipeRatingModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$RecipeCreatorModelCopyWith<$Res> get user {
+  
+  return $RecipeCreatorModelCopyWith<$Res>(_self.user, (value) {
+    return _then(_self.copyWith(user: value));
+  });
+}
 }
 
 

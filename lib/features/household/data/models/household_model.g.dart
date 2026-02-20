@@ -36,6 +36,7 @@ _MemberModel _$MemberModelFromJson(Map<String, dynamic> json) => _MemberModel(
   role: json['role'] as String,
   income: (json['income'] as num?)?.toDouble(),
   paysExpenses: json['paysExpenses'] as bool? ?? false,
+  colorHex: json['colorHex'] as String? ?? '#667eea',
   createdAt:
       json['createdAt'] == null
           ? null
@@ -52,6 +53,7 @@ Map<String, dynamic> _$MemberModelToJson(_MemberModel instance) =>
       'role': instance.role,
       'income': instance.income,
       'paysExpenses': instance.paysExpenses,
+      'colorHex': instance.colorHex,
       'createdAt': instance.createdAt?.toIso8601String(),
     };
 

@@ -15,6 +15,11 @@ sealed class RecipeModel with _$RecipeModel {
     String? imageUrl,
     int? servings,
     String? sourceUrl,
+    int? prepTimeMinutes,
+    int? cookTimeMinutes,
+    double? averageRating,
+    @Default(false) bool isFavorite,
+    @Default([]) List<RecipeRatingModel> ratings,
     RecipeCreatorModel? createdBy,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -49,6 +54,24 @@ sealed class RecipeCreatorModel with _$RecipeCreatorModel {
 
   factory RecipeCreatorModel.fromJson(Map<String, dynamic> json) =>
       _$RecipeCreatorModelFromJson(json);
+}
+
+/// Model for a recipe rating
+@freezed
+sealed class RecipeRatingModel with _$RecipeRatingModel {
+  const factory RecipeRatingModel({
+    required String id,
+    required String recipeId,
+    required String userId,
+    required RecipeCreatorModel user,
+    required int rating,
+    String? note,
+    required DateTime createdAt,
+    required DateTime updatedAt,
+  }) = _RecipeRatingModel;
+
+  factory RecipeRatingModel.fromJson(Map<String, dynamic> json) =>
+      _$RecipeRatingModelFromJson(json);
 }
 
 /// Model for seasonal vegetables

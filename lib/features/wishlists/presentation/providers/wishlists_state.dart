@@ -32,3 +32,15 @@ sealed class WishlistsState with _$WishlistsState {
   }) = WishlistsStateLoaded;
   const factory WishlistsState.error(String message) = WishlistsStateError;
 }
+
+/// State for purchase history
+@freezed
+sealed class PurchaseHistoryState with _$PurchaseHistoryState {
+  const factory PurchaseHistoryState.initial() = PurchaseHistoryStateInitial;
+  const factory PurchaseHistoryState.loading() = PurchaseHistoryStateLoading;
+  const factory PurchaseHistoryState.loaded(
+          List<WishlistPurchaseHistoryModel> history) =
+      PurchaseHistoryStateLoaded;
+  const factory PurchaseHistoryState.error(String message) =
+      PurchaseHistoryStateError;
+}

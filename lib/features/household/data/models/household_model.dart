@@ -28,6 +28,7 @@ sealed class MemberModel with _$MemberModel {
     required String role,
     double? income,
     @Default(false) bool paysExpenses,
+    @Default('#667eea') String colorHex,
     DateTime? createdAt,
   }) = _MemberModel;
 

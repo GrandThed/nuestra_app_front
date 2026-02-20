@@ -20,3 +20,12 @@ sealed class BoardDetailState with _$BoardDetailState {
   const factory BoardDetailState.loaded(BoardModel board) = BoardDetailStateLoaded;
   const factory BoardDetailState.error(String message) = BoardDetailStateError;
 }
+
+/// State for tags
+@freezed
+sealed class TagsState with _$TagsState {
+  const factory TagsState.initial() = TagsStateInitial;
+  const factory TagsState.loading() = TagsStateLoading;
+  const factory TagsState.loaded(List<TagModel> tags) = TagsStateLoaded;
+  const factory TagsState.error(String message) = TagsStateError;
+}

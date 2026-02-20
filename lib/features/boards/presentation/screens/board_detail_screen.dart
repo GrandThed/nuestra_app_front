@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/constants/app_strings.dart';
@@ -13,6 +14,14 @@ import 'package:nuestra_app/features/boards/presentation/providers/boards_state.
 import 'package:photo_view/photo_view.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+/// Parses a hex color string (with or without '#') into a [Color].
+Color _parseColor(String hex) {
+  final buffer = StringBuffer();
+  if (hex.length == 6 || hex.length == 7) buffer.write('ff');
+  buffer.write(hex.replaceFirst('#', ''));
+  return Color(int.parse(buffer.toString(), radix: 16));
+}
 
 /// Screen to display board items in a grid
 class BoardDetailScreen extends ConsumerStatefulWidget {
@@ -632,6 +641,76 @@ class _BoardItemCard extends StatelessWidget {
                   child: const Icon(Icons.flip, size: 16, color: Colors.white),
                 ),
               ),
+
+            // Comment count badge
+            if (item.comments.isNotEmpty)
+              Positioned(
+                top: _hasPhotoBack && item.type == 'photo'
+                    ? AppSizes.xs + 24 + 4 // below photo-back indicator
+                    : AppSizes.xs,
+                left: AppSizes.xs,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.chat_bubble,
+                        size: 12,
+                        color: Colors.white,
+                      ),
+                      const SizedBox(width: 2),
+                      Text(
+                        '${item.comments.length}',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+            // Tag color dots
+            if (item.tags.isNotEmpty)
+              Positioned(
+                bottom: item.title != null
+                    ? AppSizes.xs + 28 // above title overlay
+                    : AppSizes.xs,
+                left: AppSizes.xs,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: item.tags
+                      .take(3)
+                      .map(
+                        (tag) => Padding(
+                          padding: const EdgeInsets.only(right: 2),
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: _parseColor(tag.color),
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 0.5,
+                              ),
+                            ),
+                          ),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
           ],
         ),
       ),
@@ -891,6 +970,85 @@ class _ItemDetailSheet extends StatelessWidget {
                   Text(item.photoBack!.place!),
                 ],
               ),
+          ],
+
+          // Comments section
+          if (item.comments.isNotEmpty) ...[
+            const Divider(height: AppSizes.xl),
+            Row(
+              children: [
+                const Icon(Icons.chat_bubble_outline, size: 18),
+                const SizedBox(width: AppSizes.xs),
+                Text(
+                  'Comentarios (${item.comments.length})',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(height: AppSizes.sm),
+            ...item.comments.map(
+              (comment) => Padding(
+                padding: const EdgeInsets.only(bottom: AppSizes.sm),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CircleAvatar(
+                      radius: 14,
+                      backgroundColor: colorScheme.primaryContainer,
+                      child: Text(
+                        comment.user.name.isNotEmpty
+                            ? comment.user.name[0].toUpperCase()
+                            : '?',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppSizes.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text(
+                                comment.user.name,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 13,
+                                ),
+                              ),
+                              const SizedBox(width: AppSizes.sm),
+                              Text(
+                                DateFormat('dd/MM/yy HH:mm')
+                                    .format(comment.createdAt.toLocal()),
+                                style:
+                                    Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: colorScheme.onSurfaceVariant,
+                                    ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          if (comment.emoji != null)
+                            Text(
+                              comment.emoji!,
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                          if (comment.content != null)
+                            Text(
+                              comment.content!,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ],
 
           // Created by

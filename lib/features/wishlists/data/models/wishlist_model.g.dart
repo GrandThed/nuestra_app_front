@@ -26,63 +26,82 @@ Map<String, dynamic> _$WishlistCategoryModelToJson(
   'itemCount': instance.itemCount,
 };
 
-_WishlistItemModel _$WishlistItemModelFromJson(Map<String, dynamic> json) =>
-    _WishlistItemModel(
-      id: json['id'] as String,
-      householdId: json['householdId'] as String,
-      categoryId: json['categoryId'] as String,
-      name: json['name'] as String,
-      ownerType: json['ownerType'] as String,
-      checked: json['checked'] as bool? ?? false,
-      userId: json['userId'] as String?,
-      user:
-          json['user'] == null
-              ? null
-              : WishlistItemUserModel.fromJson(
-                json['user'] as Map<String, dynamic>,
-              ),
-      url: json['url'] as String?,
-      price: const DecimalConverter().fromJson(json['price']),
-      preferenceEmoji: json['preferenceEmoji'] as String?,
-      quantity: const DecimalConverter().fromJson(json['quantity']),
-      unit: json['unit'] as String?,
-      category:
-          json['category'] == null
-              ? null
-              : WishlistCategoryRefModel.fromJson(
-                json['category'] as Map<String, dynamic>,
-              ),
-      sourceRecipe:
-          json['sourceRecipe'] == null
-              ? null
-              : WishlistSourceRecipeModel.fromJson(
-                json['sourceRecipe'] as Map<String, dynamic>,
-              ),
-      createdAt:
-          json['createdAt'] == null
-              ? null
-              : DateTime.parse(json['createdAt'] as String),
-    );
+_WishlistItemModel _$WishlistItemModelFromJson(
+  Map<String, dynamic> json,
+) => _WishlistItemModel(
+  id: json['id'] as String,
+  householdId: json['householdId'] as String,
+  categoryId: json['categoryId'] as String,
+  name: json['name'] as String,
+  ownerType: json['ownerType'] as String,
+  checked: json['checked'] as bool? ?? false,
+  userId: json['userId'] as String?,
+  user:
+      json['user'] == null
+          ? null
+          : WishlistItemUserModel.fromJson(
+            json['user'] as Map<String, dynamic>,
+          ),
+  url: json['url'] as String?,
+  price: const DecimalConverter().fromJson(json['price']),
+  preferenceEmoji: json['preferenceEmoji'] as String?,
+  quantity: const DecimalConverter().fromJson(json['quantity']),
+  unit: json['unit'] as String?,
+  category:
+      json['category'] == null
+          ? null
+          : WishlistCategoryRefModel.fromJson(
+            json['category'] as Map<String, dynamic>,
+          ),
+  sourceRecipe:
+      json['sourceRecipe'] == null
+          ? null
+          : WishlistSourceRecipeModel.fromJson(
+            json['sourceRecipe'] as Map<String, dynamic>,
+          ),
+  createdAt:
+      json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+  isSecret: json['isSecret'] as bool? ?? false,
+  hiddenFromUserId: json['hiddenFromUserId'] as String?,
+  archivedAt:
+      json['archivedAt'] == null
+          ? null
+          : DateTime.parse(json['archivedAt'] as String),
+  votes:
+      (json['votes'] as List<dynamic>?)
+          ?.map((e) => WishlistVoteModel.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
+  averagePriority: const DecimalConverter().fromJson(json['averagePriority']),
+);
 
-Map<String, dynamic> _$WishlistItemModelToJson(_WishlistItemModel instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'householdId': instance.householdId,
-      'categoryId': instance.categoryId,
-      'name': instance.name,
-      'ownerType': instance.ownerType,
-      'checked': instance.checked,
-      'userId': instance.userId,
-      'user': instance.user,
-      'url': instance.url,
-      'price': const DecimalConverter().toJson(instance.price),
-      'preferenceEmoji': instance.preferenceEmoji,
-      'quantity': const DecimalConverter().toJson(instance.quantity),
-      'unit': instance.unit,
-      'category': instance.category,
-      'sourceRecipe': instance.sourceRecipe,
-      'createdAt': instance.createdAt?.toIso8601String(),
-    };
+Map<String, dynamic> _$WishlistItemModelToJson(
+  _WishlistItemModel instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'householdId': instance.householdId,
+  'categoryId': instance.categoryId,
+  'name': instance.name,
+  'ownerType': instance.ownerType,
+  'checked': instance.checked,
+  'userId': instance.userId,
+  'user': instance.user,
+  'url': instance.url,
+  'price': const DecimalConverter().toJson(instance.price),
+  'preferenceEmoji': instance.preferenceEmoji,
+  'quantity': const DecimalConverter().toJson(instance.quantity),
+  'unit': instance.unit,
+  'category': instance.category,
+  'sourceRecipe': instance.sourceRecipe,
+  'createdAt': instance.createdAt?.toIso8601String(),
+  'isSecret': instance.isSecret,
+  'hiddenFromUserId': instance.hiddenFromUserId,
+  'archivedAt': instance.archivedAt?.toIso8601String(),
+  'votes': instance.votes,
+  'averagePriority': const DecimalConverter().toJson(instance.averagePriority),
+};
 
 _WishlistItemUserModel _$WishlistItemUserModelFromJson(
   Map<String, dynamic> json,
@@ -116,3 +135,54 @@ _WishlistSourceRecipeModel _$WishlistSourceRecipeModelFromJson(
 Map<String, dynamic> _$WishlistSourceRecipeModelToJson(
   _WishlistSourceRecipeModel instance,
 ) => <String, dynamic>{'id': instance.id, 'title': instance.title};
+
+_WishlistVoteModel _$WishlistVoteModelFromJson(Map<String, dynamic> json) =>
+    _WishlistVoteModel(
+      id: json['id'] as String,
+      wishlistItemId: json['wishlistItemId'] as String,
+      userId: json['userId'] as String,
+      priority: (json['priority'] as num).toInt(),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+    );
+
+Map<String, dynamic> _$WishlistVoteModelToJson(_WishlistVoteModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'wishlistItemId': instance.wishlistItemId,
+      'userId': instance.userId,
+      'priority': instance.priority,
+      'createdAt': instance.createdAt.toIso8601String(),
+    };
+
+_WishlistPurchaseHistoryModel _$WishlistPurchaseHistoryModelFromJson(
+  Map<String, dynamic> json,
+) => _WishlistPurchaseHistoryModel(
+  id: json['id'] as String,
+  householdId: json['householdId'] as String,
+  name: json['name'] as String,
+  price: const DecimalConverter().fromJson(json['price']),
+  purchasedAt: DateTime.parse(json['purchasedAt'] as String),
+  purchasedById: json['purchasedById'] as String,
+  purchasedBy:
+      json['purchasedBy'] == null
+          ? null
+          : WishlistItemUserModel.fromJson(
+            json['purchasedBy'] as Map<String, dynamic>,
+          ),
+  linkedExpenseId: json['linkedExpenseId'] as String?,
+  originalItemId: json['originalItemId'] as String?,
+);
+
+Map<String, dynamic> _$WishlistPurchaseHistoryModelToJson(
+  _WishlistPurchaseHistoryModel instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'householdId': instance.householdId,
+  'name': instance.name,
+  'price': const DecimalConverter().toJson(instance.price),
+  'purchasedAt': instance.purchasedAt.toIso8601String(),
+  'purchasedById': instance.purchasedById,
+  'purchasedBy': instance.purchasedBy,
+  'linkedExpenseId': instance.linkedExpenseId,
+  'originalItemId': instance.originalItemId,
+};

@@ -6,7 +6,7 @@ part of 'recipes_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$recipesNotifierHash() => r'6e833063fb200cb338c0ade761a6998cbfb5b5a2';
+String _$recipesNotifierHash() => r'7e09c6ac38919d9b7b117bb4107ddf031b03eeeb';
 
 /// Notifier for recipes list operations
 ///
@@ -26,7 +26,7 @@ final recipesNotifierProvider =
 
 typedef _$RecipesNotifier = Notifier<RecipesState>;
 String _$recipeDetailNotifierHash() =>
-    r'9e055a1353ddd9b13b136c757b28ecb9d2f4ca54';
+    r'54c97089cdee314857e9710b7617e482d3fc0db2';
 
 /// Copied from Dart SDK
 class _SystemHash {

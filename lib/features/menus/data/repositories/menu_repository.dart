@@ -133,4 +133,25 @@ class MenuRepository {
     );
     return ShoppingListResultModel.fromJson(response['data']['shoppingList'] as Map<String, dynamic>);
   }
+
+  /// Create a leftover from an existing menu item
+  Future<MenuItemModel> createLeftover(String menuPlanId, String itemId) async {
+    final response = await _dioClient.post<Map<String, dynamic>>(
+      '${ApiConstants.menuItem(menuPlanId, itemId)}/leftover',
+    );
+    return MenuItemModel.fromJson(
+        response['data']['menuItem'] as Map<String, dynamic>);
+  }
+
+  /// Get meal history for a household
+  Future<List<MealHistoryModel>> getMealHistory(String householdId) async {
+    final response = await _dioClient.get<Map<String, dynamic>>(
+      '/api/menus/history',
+      queryParameters: {'householdId': householdId},
+    );
+    final List<dynamic> data = response['data']['history'] ?? [];
+    return data
+        .map((h) => MealHistoryModel.fromJson(h as Map<String, dynamic>))
+        .toList();
+  }
 }

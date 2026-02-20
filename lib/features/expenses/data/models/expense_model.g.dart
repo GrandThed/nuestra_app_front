@@ -48,6 +48,10 @@ _ExpenseSplitModel _$ExpenseSplitModelFromJson(Map<String, dynamic> json) =>
               : ExpenseUserModel.fromJson(json['user'] as Map<String, dynamic>),
       amount: const DecimalConverter().fromJson(json['amount']),
       settled: json['settled'] as bool? ?? false,
+      customAmount: const NullableDecimalConverter().fromJson(
+        json['customAmount'],
+      ),
+      isCustom: json['isCustom'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$ExpenseSplitModelToJson(_ExpenseSplitModel instance) =>
@@ -57,6 +61,10 @@ Map<String, dynamic> _$ExpenseSplitModelToJson(_ExpenseSplitModel instance) =>
       'user': instance.user,
       'amount': const DecimalConverter().toJson(instance.amount),
       'settled': instance.settled,
+      'customAmount': const NullableDecimalConverter().toJson(
+        instance.customAmount,
+      ),
+      'isCustom': instance.isCustom,
     };
 
 _ExpenseModel _$ExpenseModelFromJson(Map<String, dynamic> json) =>
@@ -87,6 +95,8 @@ _ExpenseModel _$ExpenseModelFromJson(Map<String, dynamic> json) =>
           json['createdAt'] == null
               ? null
               : DateTime.parse(json['createdAt'] as String),
+      recurringExpenseId: json['recurringExpenseId'] as String?,
+      linkedWishlistItemId: json['linkedWishlistItemId'] as String?,
     );
 
 Map<String, dynamic> _$ExpenseModelToJson(_ExpenseModel instance) =>
@@ -103,6 +113,8 @@ Map<String, dynamic> _$ExpenseModelToJson(_ExpenseModel instance) =>
       'splits': instance.splits,
       'allSettled': instance.allSettled,
       'createdAt': instance.createdAt?.toIso8601String(),
+      'recurringExpenseId': instance.recurringExpenseId,
+      'linkedWishlistItemId': instance.linkedWishlistItemId,
     };
 
 _ExpensePeriodModel _$ExpensePeriodModelFromJson(Map<String, dynamic> json) =>
@@ -217,3 +229,119 @@ Map<String, dynamic> _$SettlePeriodResultModelToJson(
   'settledCount': instance.settledCount,
   'expensesAffected': instance.expensesAffected,
 };
+
+_RecurringExpenseModel _$RecurringExpenseModelFromJson(
+  Map<String, dynamic> json,
+) => _RecurringExpenseModel(
+  id: json['id'] as String,
+  householdId: json['householdId'] as String,
+  description: json['description'] as String,
+  amount: const DecimalConverter().fromJson(json['amount']),
+  currency: json['currency'] as String? ?? 'ARS',
+  categoryId: json['categoryId'] as String?,
+  category:
+      json['category'] == null
+          ? null
+          : ExpenseCategoryModel.fromJson(
+            json['category'] as Map<String, dynamic>,
+          ),
+  paidById: json['paidById'] as String,
+  paidBy:
+      json['paidBy'] == null
+          ? null
+          : ExpenseUserModel.fromJson(json['paidBy'] as Map<String, dynamic>),
+  recurrence: json['recurrence'] as String,
+  nextDueDate: DateTime.parse(json['nextDueDate'] as String),
+  isActive: json['isActive'] as bool? ?? true,
+  createdAt: DateTime.parse(json['createdAt'] as String),
+);
+
+Map<String, dynamic> _$RecurringExpenseModelToJson(
+  _RecurringExpenseModel instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'householdId': instance.householdId,
+  'description': instance.description,
+  'amount': const DecimalConverter().toJson(instance.amount),
+  'currency': instance.currency,
+  'categoryId': instance.categoryId,
+  'category': instance.category,
+  'paidById': instance.paidById,
+  'paidBy': instance.paidBy,
+  'recurrence': instance.recurrence,
+  'nextDueDate': instance.nextDueDate.toIso8601String(),
+  'isActive': instance.isActive,
+  'createdAt': instance.createdAt.toIso8601String(),
+};
+
+_ExpenseBudgetModel _$ExpenseBudgetModelFromJson(Map<String, dynamic> json) =>
+    _ExpenseBudgetModel(
+      id: json['id'] as String,
+      householdId: json['householdId'] as String,
+      categoryId: json['categoryId'] as String,
+      category:
+          json['category'] == null
+              ? null
+              : ExpenseCategoryModel.fromJson(
+                json['category'] as Map<String, dynamic>,
+              ),
+      monthlyLimit: const DecimalConverter().fromJson(json['monthlyLimit']),
+      month: (json['month'] as num).toInt(),
+      year: (json['year'] as num).toInt(),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+    );
+
+Map<String, dynamic> _$ExpenseBudgetModelToJson(_ExpenseBudgetModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'householdId': instance.householdId,
+      'categoryId': instance.categoryId,
+      'category': instance.category,
+      'monthlyLimit': const DecimalConverter().toJson(instance.monthlyLimit),
+      'month': instance.month,
+      'year': instance.year,
+      'createdAt': instance.createdAt.toIso8601String(),
+    };
+
+_BudgetStatusModel _$BudgetStatusModelFromJson(Map<String, dynamic> json) =>
+    _BudgetStatusModel(
+      categoryId: json['categoryId'] as String,
+      categoryName: json['categoryName'] as String,
+      budgetLimit: const DecimalConverter().fromJson(json['budgetLimit']),
+      actualSpent: const DecimalConverter().fromJson(json['actualSpent']),
+      remaining: const DecimalConverter().fromJson(json['remaining']),
+      percentUsed: (json['percentUsed'] as num).toDouble(),
+    );
+
+Map<String, dynamic> _$BudgetStatusModelToJson(_BudgetStatusModel instance) =>
+    <String, dynamic>{
+      'categoryId': instance.categoryId,
+      'categoryName': instance.categoryName,
+      'budgetLimit': const DecimalConverter().toJson(instance.budgetLimit),
+      'actualSpent': const DecimalConverter().toJson(instance.actualSpent),
+      'remaining': const DecimalConverter().toJson(instance.remaining),
+      'percentUsed': instance.percentUsed,
+    };
+
+_ExpenseTrendModel _$ExpenseTrendModelFromJson(Map<String, dynamic> json) =>
+    _ExpenseTrendModel(
+      month: (json['month'] as num).toInt(),
+      year: (json['year'] as num).toInt(),
+      total: const DecimalConverter().fromJson(json['total']),
+      byCategory:
+          (json['byCategory'] as List<dynamic>)
+              .map(
+                (e) => ExpenseCategoryBreakdownModel.fromJson(
+                  e as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
+    );
+
+Map<String, dynamic> _$ExpenseTrendModelToJson(_ExpenseTrendModel instance) =>
+    <String, dynamic>{
+      'month': instance.month,
+      'year': instance.year,
+      'total': const DecimalConverter().toJson(instance.total),
+      'byCategory': instance.byCategory,
+    };

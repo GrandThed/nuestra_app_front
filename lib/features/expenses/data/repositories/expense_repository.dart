@@ -241,4 +241,185 @@ class ExpenseRepository {
     return ExpenseSummaryModel.fromJson(
         response['data'] as Map<String, dynamic>);
   }
+
+  // ==================== RECURRING EXPENSES ====================
+
+  /// Get all recurring expenses for a household
+  Future<List<RecurringExpenseModel>> getRecurringExpenses(
+      String householdId) async {
+    final response = await _dioClient.get<Map<String, dynamic>>(
+      ApiConstants.expenseRecurring,
+      queryParameters: {'householdId': householdId},
+    );
+
+    final recurring =
+        response['data']['recurringExpenses'] as List<dynamic>? ?? [];
+    return recurring
+        .map((r) =>
+            RecurringExpenseModel.fromJson(r as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Create a new recurring expense
+  Future<RecurringExpenseModel> createRecurringExpense({
+    required String householdId,
+    required String description,
+    required double amount,
+    String currency = 'ARS',
+    String? categoryId,
+    required String paidById,
+    required String recurrence,
+    required String nextDueDate,
+  }) async {
+    final response = await _dioClient.post<Map<String, dynamic>>(
+      ApiConstants.expenseRecurring,
+      data: {
+        'householdId': householdId,
+        'description': description,
+        'amount': amount,
+        'currency': currency,
+        if (categoryId != null) 'categoryId': categoryId,
+        'paidById': paidById,
+        'recurrence': recurrence,
+        'nextDueDate': nextDueDate,
+      },
+    );
+
+    return RecurringExpenseModel.fromJson(
+        response['data']['recurringExpense'] as Map<String, dynamic>);
+  }
+
+  /// Update a recurring expense
+  Future<RecurringExpenseModel> updateRecurringExpense(
+      String id, Map<String, dynamic> data) async {
+    final response = await _dioClient.patch<Map<String, dynamic>>(
+      ApiConstants.expenseRecurringItem(id),
+      data: data,
+    );
+
+    return RecurringExpenseModel.fromJson(
+        response['data']['recurringExpense'] as Map<String, dynamic>);
+  }
+
+  /// Delete a recurring expense
+  Future<void> deleteRecurringExpense(String id) async {
+    await _dioClient.delete<Map<String, dynamic>>(
+      ApiConstants.expenseRecurringItem(id),
+    );
+  }
+
+  /// Generate expenses from due recurring expenses
+  Future<List<ExpenseModel>> generateFromRecurring(
+      String householdId) async {
+    final response = await _dioClient.post<Map<String, dynamic>>(
+      ApiConstants.expenseRecurringGenerate,
+      data: {'householdId': householdId},
+    );
+
+    final generated = response['data']['generated'] as List<dynamic>? ?? [];
+    return generated
+        .map((e) => ExpenseModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  // ==================== BUDGETS ====================
+
+  /// Get all budgets for a household
+  Future<List<ExpenseBudgetModel>> getBudgets(String householdId) async {
+    final response = await _dioClient.get<Map<String, dynamic>>(
+      ApiConstants.expenseBudgets,
+      queryParameters: {'householdId': householdId},
+    );
+
+    final budgets = response['data']['budgets'] as List<dynamic>? ?? [];
+    return budgets
+        .map((b) => ExpenseBudgetModel.fromJson(b as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Create or update a budget for a category/month
+  Future<ExpenseBudgetModel> createOrUpdateBudget({
+    required String householdId,
+    required String categoryId,
+    required double monthlyLimit,
+    required int month,
+    required int year,
+  }) async {
+    final response = await _dioClient.post<Map<String, dynamic>>(
+      ApiConstants.expenseBudgets,
+      data: {
+        'householdId': householdId,
+        'categoryId': categoryId,
+        'monthlyLimit': monthlyLimit,
+        'month': month,
+        'year': year,
+      },
+    );
+
+    return ExpenseBudgetModel.fromJson(
+        response['data']['budget'] as Map<String, dynamic>);
+  }
+
+  /// Get budget status (actual vs limit) for a month
+  Future<List<BudgetStatusModel>> getBudgetStatus(
+      String householdId, int month, int year) async {
+    final response = await _dioClient.get<Map<String, dynamic>>(
+      ApiConstants.expenseBudgetStatus,
+      queryParameters: {
+        'householdId': householdId,
+        'month': month.toString(),
+        'year': year.toString(),
+      },
+    );
+
+    final status =
+        response['data']['budgetStatus'] as List<dynamic>? ?? [];
+    return status
+        .map((b) => BudgetStatusModel.fromJson(b as Map<String, dynamic>))
+        .toList();
+  }
+
+  // ==================== TRENDS ====================
+
+  /// Get expense trends over multiple months
+  Future<List<ExpenseTrendModel>> getTrends(
+    String householdId, {
+    int months = 6,
+  }) async {
+    final response = await _dioClient.get<Map<String, dynamic>>(
+      ApiConstants.expenseTrends,
+      queryParameters: {
+        'householdId': householdId,
+        'months': months.toString(),
+      },
+    );
+
+    final trends = response['data']['trends'] as List<dynamic>? ?? [];
+    return trends
+        .map((t) => ExpenseTrendModel.fromJson(t as Map<String, dynamic>))
+        .toList();
+  }
+
+  // ==================== CSV EXPORT ====================
+
+  /// Export expenses as CSV string
+  Future<String> exportCsv(
+    String householdId, {
+    int? month,
+    int? year,
+  }) async {
+    final queryParams = <String, dynamic>{
+      'householdId': householdId,
+      'format': 'csv',
+    };
+    if (month != null) queryParams['month'] = month.toString();
+    if (year != null) queryParams['year'] = year.toString();
+
+    final response = await _dioClient.get<String>(
+      ApiConstants.expenseExport,
+      queryParameters: queryParams,
+    );
+
+    return response;
+  }
 }

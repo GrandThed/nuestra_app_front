@@ -54,6 +54,11 @@ sealed class WishlistItemModel with _$WishlistItemModel {
     WishlistCategoryRefModel? category,
     WishlistSourceRecipeModel? sourceRecipe,
     DateTime? createdAt,
+    @Default(false) bool isSecret,
+    String? hiddenFromUserId,
+    DateTime? archivedAt,
+    @Default([]) List<WishlistVoteModel> votes,
+    @DecimalConverter() double? averagePriority,
   }) = _WishlistItemModel;
 
   factory WishlistItemModel.fromJson(Map<String, dynamic> json) =>
@@ -94,4 +99,38 @@ sealed class WishlistSourceRecipeModel with _$WishlistSourceRecipeModel {
 
   factory WishlistSourceRecipeModel.fromJson(Map<String, dynamic> json) =>
       _$WishlistSourceRecipeModelFromJson(json);
+}
+
+/// Model for a vote on a wishlist item
+@freezed
+sealed class WishlistVoteModel with _$WishlistVoteModel {
+  const factory WishlistVoteModel({
+    required String id,
+    required String wishlistItemId,
+    required String userId,
+    required int priority,
+    required DateTime createdAt,
+  }) = _WishlistVoteModel;
+
+  factory WishlistVoteModel.fromJson(Map<String, dynamic> json) =>
+      _$WishlistVoteModelFromJson(json);
+}
+
+/// Model for purchase history entries
+@freezed
+sealed class WishlistPurchaseHistoryModel with _$WishlistPurchaseHistoryModel {
+  const factory WishlistPurchaseHistoryModel({
+    required String id,
+    required String householdId,
+    required String name,
+    @DecimalConverter() double? price,
+    required DateTime purchasedAt,
+    required String purchasedById,
+    WishlistItemUserModel? purchasedBy,
+    String? linkedExpenseId,
+    String? originalItemId,
+  }) = _WishlistPurchaseHistoryModel;
+
+  factory WishlistPurchaseHistoryModel.fromJson(Map<String, dynamic> json) =>
+      _$WishlistPurchaseHistoryModelFromJson(json);
 }

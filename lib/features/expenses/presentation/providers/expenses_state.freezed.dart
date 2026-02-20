@@ -1153,4 +1153,1126 @@ as String,
 
 }
 
+/// @nodoc
+mixin _$RecurringExpensesState {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecurringExpensesState);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'RecurringExpensesState()';
+}
+
+
+}
+
+/// @nodoc
+class $RecurringExpensesStateCopyWith<$Res>  {
+$RecurringExpensesStateCopyWith(RecurringExpensesState _, $Res Function(RecurringExpensesState) __);
+}
+
+
+/// Adds pattern-matching-related methods to [RecurringExpensesState].
+extension RecurringExpensesStatePatterns on RecurringExpensesState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( RecurringExpensesStateInitial value)?  initial,TResult Function( RecurringExpensesStateLoading value)?  loading,TResult Function( RecurringExpensesStateLoaded value)?  loaded,TResult Function( RecurringExpensesStateError value)?  error,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case RecurringExpensesStateInitial() when initial != null:
+return initial(_that);case RecurringExpensesStateLoading() when loading != null:
+return loading(_that);case RecurringExpensesStateLoaded() when loaded != null:
+return loaded(_that);case RecurringExpensesStateError() when error != null:
+return error(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( RecurringExpensesStateInitial value)  initial,required TResult Function( RecurringExpensesStateLoading value)  loading,required TResult Function( RecurringExpensesStateLoaded value)  loaded,required TResult Function( RecurringExpensesStateError value)  error,}){
+final _that = this;
+switch (_that) {
+case RecurringExpensesStateInitial():
+return initial(_that);case RecurringExpensesStateLoading():
+return loading(_that);case RecurringExpensesStateLoaded():
+return loaded(_that);case RecurringExpensesStateError():
+return error(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( RecurringExpensesStateInitial value)?  initial,TResult? Function( RecurringExpensesStateLoading value)?  loading,TResult? Function( RecurringExpensesStateLoaded value)?  loaded,TResult? Function( RecurringExpensesStateError value)?  error,}){
+final _that = this;
+switch (_that) {
+case RecurringExpensesStateInitial() when initial != null:
+return initial(_that);case RecurringExpensesStateLoading() when loading != null:
+return loading(_that);case RecurringExpensesStateLoaded() when loaded != null:
+return loaded(_that);case RecurringExpensesStateError() when error != null:
+return error(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<RecurringExpenseModel> expenses)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case RecurringExpensesStateInitial() when initial != null:
+return initial();case RecurringExpensesStateLoading() when loading != null:
+return loading();case RecurringExpensesStateLoaded() when loaded != null:
+return loaded(_that.expenses);case RecurringExpensesStateError() when error != null:
+return error(_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<RecurringExpenseModel> expenses)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+switch (_that) {
+case RecurringExpensesStateInitial():
+return initial();case RecurringExpensesStateLoading():
+return loading();case RecurringExpensesStateLoaded():
+return loaded(_that.expenses);case RecurringExpensesStateError():
+return error(_that.message);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<RecurringExpenseModel> expenses)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+switch (_that) {
+case RecurringExpensesStateInitial() when initial != null:
+return initial();case RecurringExpensesStateLoading() when loading != null:
+return loading();case RecurringExpensesStateLoaded() when loaded != null:
+return loaded(_that.expenses);case RecurringExpensesStateError() when error != null:
+return error(_that.message);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class RecurringExpensesStateInitial implements RecurringExpensesState {
+  const RecurringExpensesStateInitial();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecurringExpensesStateInitial);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'RecurringExpensesState.initial()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class RecurringExpensesStateLoading implements RecurringExpensesState {
+  const RecurringExpensesStateLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecurringExpensesStateLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'RecurringExpensesState.loading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class RecurringExpensesStateLoaded implements RecurringExpensesState {
+  const RecurringExpensesStateLoaded(final  List<RecurringExpenseModel> expenses): _expenses = expenses;
+  
+
+ final  List<RecurringExpenseModel> _expenses;
+ List<RecurringExpenseModel> get expenses {
+  if (_expenses is EqualUnmodifiableListView) return _expenses;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_expenses);
+}
+
+
+/// Create a copy of RecurringExpensesState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RecurringExpensesStateLoadedCopyWith<RecurringExpensesStateLoaded> get copyWith => _$RecurringExpensesStateLoadedCopyWithImpl<RecurringExpensesStateLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecurringExpensesStateLoaded&&const DeepCollectionEquality().equals(other._expenses, _expenses));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_expenses));
+
+@override
+String toString() {
+  return 'RecurringExpensesState.loaded(expenses: $expenses)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $RecurringExpensesStateLoadedCopyWith<$Res> implements $RecurringExpensesStateCopyWith<$Res> {
+  factory $RecurringExpensesStateLoadedCopyWith(RecurringExpensesStateLoaded value, $Res Function(RecurringExpensesStateLoaded) _then) = _$RecurringExpensesStateLoadedCopyWithImpl;
+@useResult
+$Res call({
+ List<RecurringExpenseModel> expenses
+});
+
+
+
+
+}
+/// @nodoc
+class _$RecurringExpensesStateLoadedCopyWithImpl<$Res>
+    implements $RecurringExpensesStateLoadedCopyWith<$Res> {
+  _$RecurringExpensesStateLoadedCopyWithImpl(this._self, this._then);
+
+  final RecurringExpensesStateLoaded _self;
+  final $Res Function(RecurringExpensesStateLoaded) _then;
+
+/// Create a copy of RecurringExpensesState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? expenses = null,}) {
+  return _then(RecurringExpensesStateLoaded(
+null == expenses ? _self._expenses : expenses // ignore: cast_nullable_to_non_nullable
+as List<RecurringExpenseModel>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class RecurringExpensesStateError implements RecurringExpensesState {
+  const RecurringExpensesStateError(this.message);
+  
+
+ final  String message;
+
+/// Create a copy of RecurringExpensesState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RecurringExpensesStateErrorCopyWith<RecurringExpensesStateError> get copyWith => _$RecurringExpensesStateErrorCopyWithImpl<RecurringExpensesStateError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecurringExpensesStateError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'RecurringExpensesState.error(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $RecurringExpensesStateErrorCopyWith<$Res> implements $RecurringExpensesStateCopyWith<$Res> {
+  factory $RecurringExpensesStateErrorCopyWith(RecurringExpensesStateError value, $Res Function(RecurringExpensesStateError) _then) = _$RecurringExpensesStateErrorCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class _$RecurringExpensesStateErrorCopyWithImpl<$Res>
+    implements $RecurringExpensesStateErrorCopyWith<$Res> {
+  _$RecurringExpensesStateErrorCopyWithImpl(this._self, this._then);
+
+  final RecurringExpensesStateError _self;
+  final $Res Function(RecurringExpensesStateError) _then;
+
+/// Create a copy of RecurringExpensesState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(RecurringExpensesStateError(
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$BudgetState {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BudgetState);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'BudgetState()';
+}
+
+
+}
+
+/// @nodoc
+class $BudgetStateCopyWith<$Res>  {
+$BudgetStateCopyWith(BudgetState _, $Res Function(BudgetState) __);
+}
+
+
+/// Adds pattern-matching-related methods to [BudgetState].
+extension BudgetStatePatterns on BudgetState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BudgetStateInitial value)?  initial,TResult Function( BudgetStateLoading value)?  loading,TResult Function( BudgetStateLoaded value)?  loaded,TResult Function( BudgetStateError value)?  error,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case BudgetStateInitial() when initial != null:
+return initial(_that);case BudgetStateLoading() when loading != null:
+return loading(_that);case BudgetStateLoaded() when loaded != null:
+return loaded(_that);case BudgetStateError() when error != null:
+return error(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BudgetStateInitial value)  initial,required TResult Function( BudgetStateLoading value)  loading,required TResult Function( BudgetStateLoaded value)  loaded,required TResult Function( BudgetStateError value)  error,}){
+final _that = this;
+switch (_that) {
+case BudgetStateInitial():
+return initial(_that);case BudgetStateLoading():
+return loading(_that);case BudgetStateLoaded():
+return loaded(_that);case BudgetStateError():
+return error(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BudgetStateInitial value)?  initial,TResult? Function( BudgetStateLoading value)?  loading,TResult? Function( BudgetStateLoaded value)?  loaded,TResult? Function( BudgetStateError value)?  error,}){
+final _that = this;
+switch (_that) {
+case BudgetStateInitial() when initial != null:
+return initial(_that);case BudgetStateLoading() when loading != null:
+return loading(_that);case BudgetStateLoaded() when loaded != null:
+return loaded(_that);case BudgetStateError() when error != null:
+return error(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<BudgetStatusModel> budgets)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case BudgetStateInitial() when initial != null:
+return initial();case BudgetStateLoading() when loading != null:
+return loading();case BudgetStateLoaded() when loaded != null:
+return loaded(_that.budgets);case BudgetStateError() when error != null:
+return error(_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<BudgetStatusModel> budgets)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+switch (_that) {
+case BudgetStateInitial():
+return initial();case BudgetStateLoading():
+return loading();case BudgetStateLoaded():
+return loaded(_that.budgets);case BudgetStateError():
+return error(_that.message);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<BudgetStatusModel> budgets)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+switch (_that) {
+case BudgetStateInitial() when initial != null:
+return initial();case BudgetStateLoading() when loading != null:
+return loading();case BudgetStateLoaded() when loaded != null:
+return loaded(_that.budgets);case BudgetStateError() when error != null:
+return error(_that.message);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class BudgetStateInitial implements BudgetState {
+  const BudgetStateInitial();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BudgetStateInitial);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'BudgetState.initial()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class BudgetStateLoading implements BudgetState {
+  const BudgetStateLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BudgetStateLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'BudgetState.loading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class BudgetStateLoaded implements BudgetState {
+  const BudgetStateLoaded(final  List<BudgetStatusModel> budgets): _budgets = budgets;
+  
+
+ final  List<BudgetStatusModel> _budgets;
+ List<BudgetStatusModel> get budgets {
+  if (_budgets is EqualUnmodifiableListView) return _budgets;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_budgets);
+}
+
+
+/// Create a copy of BudgetState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BudgetStateLoadedCopyWith<BudgetStateLoaded> get copyWith => _$BudgetStateLoadedCopyWithImpl<BudgetStateLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BudgetStateLoaded&&const DeepCollectionEquality().equals(other._budgets, _budgets));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_budgets));
+
+@override
+String toString() {
+  return 'BudgetState.loaded(budgets: $budgets)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BudgetStateLoadedCopyWith<$Res> implements $BudgetStateCopyWith<$Res> {
+  factory $BudgetStateLoadedCopyWith(BudgetStateLoaded value, $Res Function(BudgetStateLoaded) _then) = _$BudgetStateLoadedCopyWithImpl;
+@useResult
+$Res call({
+ List<BudgetStatusModel> budgets
+});
+
+
+
+
+}
+/// @nodoc
+class _$BudgetStateLoadedCopyWithImpl<$Res>
+    implements $BudgetStateLoadedCopyWith<$Res> {
+  _$BudgetStateLoadedCopyWithImpl(this._self, this._then);
+
+  final BudgetStateLoaded _self;
+  final $Res Function(BudgetStateLoaded) _then;
+
+/// Create a copy of BudgetState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? budgets = null,}) {
+  return _then(BudgetStateLoaded(
+null == budgets ? _self._budgets : budgets // ignore: cast_nullable_to_non_nullable
+as List<BudgetStatusModel>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class BudgetStateError implements BudgetState {
+  const BudgetStateError(this.message);
+  
+
+ final  String message;
+
+/// Create a copy of BudgetState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$BudgetStateErrorCopyWith<BudgetStateError> get copyWith => _$BudgetStateErrorCopyWithImpl<BudgetStateError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is BudgetStateError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'BudgetState.error(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $BudgetStateErrorCopyWith<$Res> implements $BudgetStateCopyWith<$Res> {
+  factory $BudgetStateErrorCopyWith(BudgetStateError value, $Res Function(BudgetStateError) _then) = _$BudgetStateErrorCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class _$BudgetStateErrorCopyWithImpl<$Res>
+    implements $BudgetStateErrorCopyWith<$Res> {
+  _$BudgetStateErrorCopyWithImpl(this._self, this._then);
+
+  final BudgetStateError _self;
+  final $Res Function(BudgetStateError) _then;
+
+/// Create a copy of BudgetState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(BudgetStateError(
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$ExpenseTrendsState {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExpenseTrendsState);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ExpenseTrendsState()';
+}
+
+
+}
+
+/// @nodoc
+class $ExpenseTrendsStateCopyWith<$Res>  {
+$ExpenseTrendsStateCopyWith(ExpenseTrendsState _, $Res Function(ExpenseTrendsState) __);
+}
+
+
+/// Adds pattern-matching-related methods to [ExpenseTrendsState].
+extension ExpenseTrendsStatePatterns on ExpenseTrendsState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( ExpenseTrendsStateInitial value)?  initial,TResult Function( ExpenseTrendsStateLoading value)?  loading,TResult Function( ExpenseTrendsStateLoaded value)?  loaded,TResult Function( ExpenseTrendsStateError value)?  error,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case ExpenseTrendsStateInitial() when initial != null:
+return initial(_that);case ExpenseTrendsStateLoading() when loading != null:
+return loading(_that);case ExpenseTrendsStateLoaded() when loaded != null:
+return loaded(_that);case ExpenseTrendsStateError() when error != null:
+return error(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( ExpenseTrendsStateInitial value)  initial,required TResult Function( ExpenseTrendsStateLoading value)  loading,required TResult Function( ExpenseTrendsStateLoaded value)  loaded,required TResult Function( ExpenseTrendsStateError value)  error,}){
+final _that = this;
+switch (_that) {
+case ExpenseTrendsStateInitial():
+return initial(_that);case ExpenseTrendsStateLoading():
+return loading(_that);case ExpenseTrendsStateLoaded():
+return loaded(_that);case ExpenseTrendsStateError():
+return error(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( ExpenseTrendsStateInitial value)?  initial,TResult? Function( ExpenseTrendsStateLoading value)?  loading,TResult? Function( ExpenseTrendsStateLoaded value)?  loaded,TResult? Function( ExpenseTrendsStateError value)?  error,}){
+final _that = this;
+switch (_that) {
+case ExpenseTrendsStateInitial() when initial != null:
+return initial(_that);case ExpenseTrendsStateLoading() when loading != null:
+return loading(_that);case ExpenseTrendsStateLoaded() when loaded != null:
+return loaded(_that);case ExpenseTrendsStateError() when error != null:
+return error(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<ExpenseTrendModel> trends)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case ExpenseTrendsStateInitial() when initial != null:
+return initial();case ExpenseTrendsStateLoading() when loading != null:
+return loading();case ExpenseTrendsStateLoaded() when loaded != null:
+return loaded(_that.trends);case ExpenseTrendsStateError() when error != null:
+return error(_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<ExpenseTrendModel> trends)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+switch (_that) {
+case ExpenseTrendsStateInitial():
+return initial();case ExpenseTrendsStateLoading():
+return loading();case ExpenseTrendsStateLoaded():
+return loaded(_that.trends);case ExpenseTrendsStateError():
+return error(_that.message);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<ExpenseTrendModel> trends)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+switch (_that) {
+case ExpenseTrendsStateInitial() when initial != null:
+return initial();case ExpenseTrendsStateLoading() when loading != null:
+return loading();case ExpenseTrendsStateLoaded() when loaded != null:
+return loaded(_that.trends);case ExpenseTrendsStateError() when error != null:
+return error(_that.message);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class ExpenseTrendsStateInitial implements ExpenseTrendsState {
+  const ExpenseTrendsStateInitial();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExpenseTrendsStateInitial);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ExpenseTrendsState.initial()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ExpenseTrendsStateLoading implements ExpenseTrendsState {
+  const ExpenseTrendsStateLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExpenseTrendsStateLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ExpenseTrendsState.loading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class ExpenseTrendsStateLoaded implements ExpenseTrendsState {
+  const ExpenseTrendsStateLoaded(final  List<ExpenseTrendModel> trends): _trends = trends;
+  
+
+ final  List<ExpenseTrendModel> _trends;
+ List<ExpenseTrendModel> get trends {
+  if (_trends is EqualUnmodifiableListView) return _trends;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_trends);
+}
+
+
+/// Create a copy of ExpenseTrendsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ExpenseTrendsStateLoadedCopyWith<ExpenseTrendsStateLoaded> get copyWith => _$ExpenseTrendsStateLoadedCopyWithImpl<ExpenseTrendsStateLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExpenseTrendsStateLoaded&&const DeepCollectionEquality().equals(other._trends, _trends));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_trends));
+
+@override
+String toString() {
+  return 'ExpenseTrendsState.loaded(trends: $trends)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ExpenseTrendsStateLoadedCopyWith<$Res> implements $ExpenseTrendsStateCopyWith<$Res> {
+  factory $ExpenseTrendsStateLoadedCopyWith(ExpenseTrendsStateLoaded value, $Res Function(ExpenseTrendsStateLoaded) _then) = _$ExpenseTrendsStateLoadedCopyWithImpl;
+@useResult
+$Res call({
+ List<ExpenseTrendModel> trends
+});
+
+
+
+
+}
+/// @nodoc
+class _$ExpenseTrendsStateLoadedCopyWithImpl<$Res>
+    implements $ExpenseTrendsStateLoadedCopyWith<$Res> {
+  _$ExpenseTrendsStateLoadedCopyWithImpl(this._self, this._then);
+
+  final ExpenseTrendsStateLoaded _self;
+  final $Res Function(ExpenseTrendsStateLoaded) _then;
+
+/// Create a copy of ExpenseTrendsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? trends = null,}) {
+  return _then(ExpenseTrendsStateLoaded(
+null == trends ? _self._trends : trends // ignore: cast_nullable_to_non_nullable
+as List<ExpenseTrendModel>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class ExpenseTrendsStateError implements ExpenseTrendsState {
+  const ExpenseTrendsStateError(this.message);
+  
+
+ final  String message;
+
+/// Create a copy of ExpenseTrendsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ExpenseTrendsStateErrorCopyWith<ExpenseTrendsStateError> get copyWith => _$ExpenseTrendsStateErrorCopyWithImpl<ExpenseTrendsStateError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExpenseTrendsStateError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'ExpenseTrendsState.error(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ExpenseTrendsStateErrorCopyWith<$Res> implements $ExpenseTrendsStateCopyWith<$Res> {
+  factory $ExpenseTrendsStateErrorCopyWith(ExpenseTrendsStateError value, $Res Function(ExpenseTrendsStateError) _then) = _$ExpenseTrendsStateErrorCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class _$ExpenseTrendsStateErrorCopyWithImpl<$Res>
+    implements $ExpenseTrendsStateErrorCopyWith<$Res> {
+  _$ExpenseTrendsStateErrorCopyWithImpl(this._self, this._then);
+
+  final ExpenseTrendsStateError _self;
+  final $Res Function(ExpenseTrendsStateError) _then;
+
+/// Create a copy of ExpenseTrendsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(ExpenseTrendsStateError(
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
 // dart format on
