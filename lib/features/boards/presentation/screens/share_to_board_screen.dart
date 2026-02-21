@@ -27,14 +27,14 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
     super.initState();
     // Load boards when screen opens
     Future.microtask(() {
-      ref.read(boardsNotifierProvider.notifier).loadBoards();
+      ref.read(boardsProvider.notifier).loadBoards();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final sharedContent = ref.watch(sharedContentProvider);
-    final boardsState = ref.watch(boardsNotifierProvider);
+    final boardsState = ref.watch(boardsProvider);
 
     // If no shared content, close
     if (sharedContent == null || sharedContent.isEmpty) {
@@ -235,7 +235,7 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
           const SizedBox(height: AppSizes.md),
           ElevatedButton(
             onPressed: () {
-              ref.read(boardsNotifierProvider.notifier).loadBoards();
+              ref.read(boardsProvider.notifier).loadBoards();
             },
             child: const Text(AppStrings.retry),
           ),
@@ -301,7 +301,7 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
               Navigator.pop(dialogContext);
 
               final board = await ref
-                  .read(boardsNotifierProvider.notifier)
+                  .read(boardsProvider.notifier)
                   .createBoard(name);
 
               if (board != null && mounted) {
@@ -329,7 +329,7 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
 
     try {
       final notifier = ref.read(
-        boardDetailNotifierProvider(_selectedBoardId!).notifier,
+        boardDetailProvider(_selectedBoardId!).notifier,
       );
 
       bool success = false;

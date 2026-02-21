@@ -6,491 +6,436 @@ part of 'wishlists_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// Notifier for wishlists operations (categories + items combined)
+
+@ProviderFor(WishlistsNotifier)
+final wishlistsProvider = WishlistsNotifierProvider._();
+
+/// Notifier for wishlists operations (categories + items combined)
+final class WishlistsNotifierProvider
+    extends $NotifierProvider<WishlistsNotifier, WishlistsState> {
+  /// Notifier for wishlists operations (categories + items combined)
+  WishlistsNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'wishlistsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$wishlistsNotifierHash();
+
+  @$internal
+  @override
+  WishlistsNotifier create() => WishlistsNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(WishlistsState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<WishlistsState>(value),
+    );
+  }
+}
+
+String _$wishlistsNotifierHash() => r'23a2aa7109490608067d8d01055c64b9347c5240';
+
+/// Notifier for wishlists operations (categories + items combined)
+
+abstract class _$WishlistsNotifier extends $Notifier<WishlistsState> {
+  WishlistsState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<WishlistsState, WishlistsState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<WishlistsState, WishlistsState>,
+              WishlistsState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Provider for unchecked items count (for home dashboard)
+
+@ProviderFor(uncheckedWishlistItemsCount)
+final uncheckedWishlistItemsCountProvider =
+    UncheckedWishlistItemsCountProvider._();
+
+/// Provider for unchecked items count (for home dashboard)
+
+final class UncheckedWishlistItemsCountProvider
+    extends $FunctionalProvider<int, int, int>
+    with $Provider<int> {
+  /// Provider for unchecked items count (for home dashboard)
+  UncheckedWishlistItemsCountProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'uncheckedWishlistItemsCountProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$uncheckedWishlistItemsCountHash();
+
+  @$internal
+  @override
+  $ProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  int create(Ref ref) {
+    return uncheckedWishlistItemsCount(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+}
+
 String _$uncheckedWishlistItemsCountHash() =>
     r'cba83180de532ff9ded3912741a5acfcca446d5e';
 
-/// Provider for unchecked items count (for home dashboard)
-///
-/// Copied from [uncheckedWishlistItemsCount].
-@ProviderFor(uncheckedWishlistItemsCount)
-final uncheckedWishlistItemsCountProvider = AutoDisposeProvider<int>.internal(
-  uncheckedWishlistItemsCount,
-  name: r'uncheckedWishlistItemsCountProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$uncheckedWishlistItemsCountHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef UncheckedWishlistItemsCountRef = AutoDisposeProviderRef<int>;
-String _$wishlistItemsByCategoryHash() =>
-    r'38c83ae4473a32cf04130a3209b9a7774c4b7a3f';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
 /// Provider for items filtered by category
-///
-/// Copied from [wishlistItemsByCategory].
+
 @ProviderFor(wishlistItemsByCategory)
-const wishlistItemsByCategoryProvider = WishlistItemsByCategoryFamily();
+final wishlistItemsByCategoryProvider = WishlistItemsByCategoryFamily._();
 
 /// Provider for items filtered by category
-///
-/// Copied from [wishlistItemsByCategory].
-class WishlistItemsByCategoryFamily extends Family<List<WishlistItemModel>> {
-  /// Provider for items filtered by category
-  ///
-  /// Copied from [wishlistItemsByCategory].
-  const WishlistItemsByCategoryFamily();
 
+final class WishlistItemsByCategoryProvider
+    extends
+        $FunctionalProvider<
+          List<WishlistItemModel>,
+          List<WishlistItemModel>,
+          List<WishlistItemModel>
+        >
+    with $Provider<List<WishlistItemModel>> {
   /// Provider for items filtered by category
-  ///
-  /// Copied from [wishlistItemsByCategory].
-  WishlistItemsByCategoryProvider call(String? categoryId) {
-    return WishlistItemsByCategoryProvider(categoryId);
+  WishlistItemsByCategoryProvider._({
+    required WishlistItemsByCategoryFamily super.from,
+    required String? super.argument,
+  }) : super(
+         retry: null,
+         name: r'wishlistItemsByCategoryProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$wishlistItemsByCategoryHash();
+
+  @override
+  String toString() {
+    return r'wishlistItemsByCategoryProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  WishlistItemsByCategoryProvider getProviderOverride(
-    covariant WishlistItemsByCategoryProvider provider,
-  ) {
-    return call(provider.categoryId);
+  $ProviderElement<List<WishlistItemModel>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  List<WishlistItemModel> create(Ref ref) {
+    final argument = this.argument as String?;
+    return wishlistItemsByCategory(ref, argument);
   }
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'wishlistItemsByCategoryProvider';
-}
-
-/// Provider for items filtered by category
-///
-/// Copied from [wishlistItemsByCategory].
-class WishlistItemsByCategoryProvider
-    extends AutoDisposeProvider<List<WishlistItemModel>> {
-  /// Provider for items filtered by category
-  ///
-  /// Copied from [wishlistItemsByCategory].
-  WishlistItemsByCategoryProvider(String? categoryId)
-    : this._internal(
-        (ref) => wishlistItemsByCategory(
-          ref as WishlistItemsByCategoryRef,
-          categoryId,
-        ),
-        from: wishlistItemsByCategoryProvider,
-        name: r'wishlistItemsByCategoryProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$wishlistItemsByCategoryHash,
-        dependencies: WishlistItemsByCategoryFamily._dependencies,
-        allTransitiveDependencies:
-            WishlistItemsByCategoryFamily._allTransitiveDependencies,
-        categoryId: categoryId,
-      );
-
-  WishlistItemsByCategoryProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.categoryId,
-  }) : super.internal();
-
-  final String? categoryId;
-
-  @override
-  Override overrideWith(
-    List<WishlistItemModel> Function(WishlistItemsByCategoryRef provider)
-    create,
-  ) {
-    return ProviderOverride(
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<WishlistItemModel> value) {
+    return $ProviderOverride(
       origin: this,
-      override: WishlistItemsByCategoryProvider._internal(
-        (ref) => create(ref as WishlistItemsByCategoryRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        categoryId: categoryId,
-      ),
+      providerOverride: $SyncValueProvider<List<WishlistItemModel>>(value),
     );
-  }
-
-  @override
-  AutoDisposeProviderElement<List<WishlistItemModel>> createElement() {
-    return _WishlistItemsByCategoryProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
     return other is WishlistItemsByCategoryProvider &&
-        other.categoryId == categoryId;
+        other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, categoryId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin WishlistItemsByCategoryRef
-    on AutoDisposeProviderRef<List<WishlistItemModel>> {
-  /// The parameter `categoryId` of this provider.
-  String? get categoryId;
-}
+String _$wishlistItemsByCategoryHash() =>
+    r'38c83ae4473a32cf04130a3209b9a7774c4b7a3f';
 
-class _WishlistItemsByCategoryProviderElement
-    extends AutoDisposeProviderElement<List<WishlistItemModel>>
-    with WishlistItemsByCategoryRef {
-  _WishlistItemsByCategoryProviderElement(super.provider);
+/// Provider for items filtered by category
+
+final class WishlistItemsByCategoryFamily extends $Family
+    with $FunctionalFamilyOverride<List<WishlistItemModel>, String?> {
+  WishlistItemsByCategoryFamily._()
+    : super(
+        retry: null,
+        name: r'wishlistItemsByCategoryProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Provider for items filtered by category
+
+  WishlistItemsByCategoryProvider call(String? categoryId) =>
+      WishlistItemsByCategoryProvider._(argument: categoryId, from: this);
 
   @override
-  String? get categoryId =>
-      (origin as WishlistItemsByCategoryProvider).categoryId;
+  String toString() => r'wishlistItemsByCategoryProvider';
+}
+
+/// Provider for checked items count in a category
+
+@ProviderFor(checkedItemsCount)
+final checkedItemsCountProvider = CheckedItemsCountFamily._();
+
+/// Provider for checked items count in a category
+
+final class CheckedItemsCountProvider extends $FunctionalProvider<int, int, int>
+    with $Provider<int> {
+  /// Provider for checked items count in a category
+  CheckedItemsCountProvider._({
+    required CheckedItemsCountFamily super.from,
+    required String? super.argument,
+  }) : super(
+         retry: null,
+         name: r'checkedItemsCountProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$checkedItemsCountHash();
+
+  @override
+  String toString() {
+    return r'checkedItemsCountProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  int create(Ref ref) {
+    final argument = this.argument as String?;
+    return checkedItemsCount(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is CheckedItemsCountProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
 }
 
 String _$checkedItemsCountHash() => r'415bba1226a56a1747eb7b881b2234eaf1438bb0';
 
 /// Provider for checked items count in a category
-///
-/// Copied from [checkedItemsCount].
-@ProviderFor(checkedItemsCount)
-const checkedItemsCountProvider = CheckedItemsCountFamily();
 
-/// Provider for checked items count in a category
-///
-/// Copied from [checkedItemsCount].
-class CheckedItemsCountFamily extends Family<int> {
-  /// Provider for checked items count in a category
-  ///
-  /// Copied from [checkedItemsCount].
-  const CheckedItemsCountFamily();
-
-  /// Provider for checked items count in a category
-  ///
-  /// Copied from [checkedItemsCount].
-  CheckedItemsCountProvider call(String? categoryId) {
-    return CheckedItemsCountProvider(categoryId);
-  }
-
-  @override
-  CheckedItemsCountProvider getProviderOverride(
-    covariant CheckedItemsCountProvider provider,
-  ) {
-    return call(provider.categoryId);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'checkedItemsCountProvider';
-}
-
-/// Provider for checked items count in a category
-///
-/// Copied from [checkedItemsCount].
-class CheckedItemsCountProvider extends AutoDisposeProvider<int> {
-  /// Provider for checked items count in a category
-  ///
-  /// Copied from [checkedItemsCount].
-  CheckedItemsCountProvider(String? categoryId)
-    : this._internal(
-        (ref) => checkedItemsCount(ref as CheckedItemsCountRef, categoryId),
-        from: checkedItemsCountProvider,
+final class CheckedItemsCountFamily extends $Family
+    with $FunctionalFamilyOverride<int, String?> {
+  CheckedItemsCountFamily._()
+    : super(
+        retry: null,
         name: r'checkedItemsCountProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$checkedItemsCountHash,
-        dependencies: CheckedItemsCountFamily._dependencies,
-        allTransitiveDependencies:
-            CheckedItemsCountFamily._allTransitiveDependencies,
-        categoryId: categoryId,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
       );
 
-  CheckedItemsCountProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.categoryId,
-  }) : super.internal();
+  /// Provider for checked items count in a category
 
-  final String? categoryId;
+  CheckedItemsCountProvider call(String? categoryId) =>
+      CheckedItemsCountProvider._(argument: categoryId, from: this);
 
   @override
-  Override overrideWith(int Function(CheckedItemsCountRef provider) create) {
-    return ProviderOverride(
+  String toString() => r'checkedItemsCountProvider';
+}
+
+/// Provider for unchecked items count in a category
+
+@ProviderFor(uncheckedItemsCount)
+final uncheckedItemsCountProvider = UncheckedItemsCountFamily._();
+
+/// Provider for unchecked items count in a category
+
+final class UncheckedItemsCountProvider
+    extends $FunctionalProvider<int, int, int>
+    with $Provider<int> {
+  /// Provider for unchecked items count in a category
+  UncheckedItemsCountProvider._({
+    required UncheckedItemsCountFamily super.from,
+    required String? super.argument,
+  }) : super(
+         retry: null,
+         name: r'uncheckedItemsCountProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$uncheckedItemsCountHash();
+
+  @override
+  String toString() {
+    return r'uncheckedItemsCountProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  int create(Ref ref) {
+    final argument = this.argument as String?;
+    return uncheckedItemsCount(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
       origin: this,
-      override: CheckedItemsCountProvider._internal(
-        (ref) => create(ref as CheckedItemsCountRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        categoryId: categoryId,
-      ),
+      providerOverride: $SyncValueProvider<int>(value),
     );
   }
 
   @override
-  AutoDisposeProviderElement<int> createElement() {
-    return _CheckedItemsCountProviderElement(this);
-  }
-
-  @override
   bool operator ==(Object other) {
-    return other is CheckedItemsCountProvider && other.categoryId == categoryId;
+    return other is UncheckedItemsCountProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, categoryId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
-}
-
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin CheckedItemsCountRef on AutoDisposeProviderRef<int> {
-  /// The parameter `categoryId` of this provider.
-  String? get categoryId;
-}
-
-class _CheckedItemsCountProviderElement extends AutoDisposeProviderElement<int>
-    with CheckedItemsCountRef {
-  _CheckedItemsCountProviderElement(super.provider);
-
-  @override
-  String? get categoryId => (origin as CheckedItemsCountProvider).categoryId;
 }
 
 String _$uncheckedItemsCountHash() =>
     r'6faf4a87c9d6c0ed1640c1de11edf16aa9e1cee4';
 
 /// Provider for unchecked items count in a category
-///
-/// Copied from [uncheckedItemsCount].
-@ProviderFor(uncheckedItemsCount)
-const uncheckedItemsCountProvider = UncheckedItemsCountFamily();
 
-/// Provider for unchecked items count in a category
-///
-/// Copied from [uncheckedItemsCount].
-class UncheckedItemsCountFamily extends Family<int> {
-  /// Provider for unchecked items count in a category
-  ///
-  /// Copied from [uncheckedItemsCount].
-  const UncheckedItemsCountFamily();
-
-  /// Provider for unchecked items count in a category
-  ///
-  /// Copied from [uncheckedItemsCount].
-  UncheckedItemsCountProvider call(String? categoryId) {
-    return UncheckedItemsCountProvider(categoryId);
-  }
-
-  @override
-  UncheckedItemsCountProvider getProviderOverride(
-    covariant UncheckedItemsCountProvider provider,
-  ) {
-    return call(provider.categoryId);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'uncheckedItemsCountProvider';
-}
-
-/// Provider for unchecked items count in a category
-///
-/// Copied from [uncheckedItemsCount].
-class UncheckedItemsCountProvider extends AutoDisposeProvider<int> {
-  /// Provider for unchecked items count in a category
-  ///
-  /// Copied from [uncheckedItemsCount].
-  UncheckedItemsCountProvider(String? categoryId)
-    : this._internal(
-        (ref) => uncheckedItemsCount(ref as UncheckedItemsCountRef, categoryId),
-        from: uncheckedItemsCountProvider,
+final class UncheckedItemsCountFamily extends $Family
+    with $FunctionalFamilyOverride<int, String?> {
+  UncheckedItemsCountFamily._()
+    : super(
+        retry: null,
         name: r'uncheckedItemsCountProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$uncheckedItemsCountHash,
-        dependencies: UncheckedItemsCountFamily._dependencies,
-        allTransitiveDependencies:
-            UncheckedItemsCountFamily._allTransitiveDependencies,
-        categoryId: categoryId,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
       );
 
-  UncheckedItemsCountProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.categoryId,
-  }) : super.internal();
+  /// Provider for unchecked items count in a category
 
-  final String? categoryId;
+  UncheckedItemsCountProvider call(String? categoryId) =>
+      UncheckedItemsCountProvider._(argument: categoryId, from: this);
 
   @override
-  Override overrideWith(int Function(UncheckedItemsCountRef provider) create) {
-    return ProviderOverride(
-      origin: this,
-      override: UncheckedItemsCountProvider._internal(
-        (ref) => create(ref as UncheckedItemsCountRef),
-        from: from,
-        name: null,
+  String toString() => r'uncheckedItemsCountProvider';
+}
+
+/// Notifier for purchase history
+
+@ProviderFor(PurchaseHistoryNotifier)
+final purchaseHistoryProvider = PurchaseHistoryNotifierProvider._();
+
+/// Notifier for purchase history
+final class PurchaseHistoryNotifierProvider
+    extends $NotifierProvider<PurchaseHistoryNotifier, PurchaseHistoryState> {
+  /// Notifier for purchase history
+  PurchaseHistoryNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'purchaseHistoryProvider',
+        isAutoDispose: false,
         dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        categoryId: categoryId,
-      ),
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$purchaseHistoryNotifierHash();
+
+  @$internal
+  @override
+  PurchaseHistoryNotifier create() => PurchaseHistoryNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(PurchaseHistoryState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<PurchaseHistoryState>(value),
     );
   }
-
-  @override
-  AutoDisposeProviderElement<int> createElement() {
-    return _UncheckedItemsCountProviderElement(this);
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is UncheckedItemsCountProvider &&
-        other.categoryId == categoryId;
-  }
-
-  @override
-  int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, categoryId.hashCode);
-
-    return _SystemHash.finish(hash);
-  }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin UncheckedItemsCountRef on AutoDisposeProviderRef<int> {
-  /// The parameter `categoryId` of this provider.
-  String? get categoryId;
-}
-
-class _UncheckedItemsCountProviderElement
-    extends AutoDisposeProviderElement<int>
-    with UncheckedItemsCountRef {
-  _UncheckedItemsCountProviderElement(super.provider);
-
-  @override
-  String? get categoryId => (origin as UncheckedItemsCountProvider).categoryId;
-}
-
-String _$wishlistsNotifierHash() => r'5fb873e62749ea6e34f43cbb00974a9185fc066c';
-
-/// Notifier for wishlists operations (categories + items combined)
-///
-/// Copied from [WishlistsNotifier].
-@ProviderFor(WishlistsNotifier)
-final wishlistsNotifierProvider =
-    NotifierProvider<WishlistsNotifier, WishlistsState>.internal(
-      WishlistsNotifier.new,
-      name: r'wishlistsNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$wishlistsNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$WishlistsNotifier = Notifier<WishlistsState>;
 String _$purchaseHistoryNotifierHash() =>
     r'b598a7e125cd30cfb8c097431b367de2c486ccc4';
 
 /// Notifier for purchase history
-///
-/// Copied from [PurchaseHistoryNotifier].
-@ProviderFor(PurchaseHistoryNotifier)
-final purchaseHistoryNotifierProvider =
-    NotifierProvider<PurchaseHistoryNotifier, PurchaseHistoryState>.internal(
-      PurchaseHistoryNotifier.new,
-      name: r'purchaseHistoryNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$purchaseHistoryNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
 
-typedef _$PurchaseHistoryNotifier = Notifier<PurchaseHistoryState>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$PurchaseHistoryNotifier
+    extends $Notifier<PurchaseHistoryState> {
+  PurchaseHistoryState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<PurchaseHistoryState, PurchaseHistoryState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<PurchaseHistoryState, PurchaseHistoryState>,
+              PurchaseHistoryState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

@@ -397,7 +397,7 @@ class WishlistsNotifier extends _$WishlistsNotifier {
 /// Provider for unchecked items count (for home dashboard)
 @riverpod
 int uncheckedWishlistItemsCount(Ref ref) {
-  final state = ref.watch(wishlistsNotifierProvider);
+  final state = ref.watch(wishlistsProvider);
   if (state is WishlistsStateLoaded) {
     return state.items.where((i) => !i.checked).length;
   }
@@ -410,7 +410,7 @@ List<WishlistItemModel> wishlistItemsByCategory(
   Ref ref,
   String? categoryId,
 ) {
-  final state = ref.watch(wishlistsNotifierProvider);
+  final state = ref.watch(wishlistsProvider);
   if (state is WishlistsStateLoaded) {
     if (categoryId == null) {
       return state.items;

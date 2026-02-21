@@ -13,8 +13,8 @@ abstract class ShareIntentService {
 }
 
 /// Creates the platform-specific ShareIntentService
-ShareIntentService createShareIntentService(Ref ref, StateProvider<SharedContent?> sharedContentProvider) {
-  return ShareIntentServiceImpl(ref, sharedContentProvider);
+ShareIntentService createShareIntentService(Ref ref) {
+  return ShareIntentServiceImpl(ref);
 }
 
 /// Mobile implementation of ShareIntentService
@@ -22,9 +22,8 @@ class ShareIntentServiceImpl implements ShareIntentService {
   StreamSubscription? _textSubscription;
   StreamSubscription? _mediaSubscription;
   final Ref _ref;
-  final StateProvider<SharedContent?> _sharedContentProvider;
 
-  ShareIntentServiceImpl(this._ref, this._sharedContentProvider);
+  ShareIntentServiceImpl(this._ref);
 
   @override
   void initialize() {
@@ -56,23 +55,23 @@ class ShareIntentServiceImpl implements ShareIntentService {
         textFile.type == SharedMediaType.text ||
         textFile.type == SharedMediaType.url) {
       final text = files.first.path;
-      _ref.read(_sharedContentProvider.notifier).state = SharedContent.fromText(text);
+      _ref.read(sharedContentProvider.notifier).set(SharedContent.fromText(text));
     } else {
       final imagePaths = files
           .where((f) => f.type == SharedMediaType.image)
           .map((f) => f.path)
           .toList();
       if (imagePaths.isNotEmpty) {
-        _ref.read(_sharedContentProvider.notifier).state = SharedContent(
+        _ref.read(sharedContentProvider.notifier).set(SharedContent(
           imagePaths: imagePaths,
-        );
+        ));
       }
     }
   }
 
   @override
   void clearSharedContent() {
-    _ref.read(_sharedContentProvider.notifier).state = null;
+    _ref.read(sharedContentProvider.notifier).clear();
     ReceiveSharingIntent.instance.reset();
   }
 

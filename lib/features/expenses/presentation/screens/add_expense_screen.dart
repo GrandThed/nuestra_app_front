@@ -40,10 +40,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       // Load household to get members
       final householdId = ref.read(currentHouseholdIdProvider);
       if (householdId != null) {
-        ref.read(householdNotifierProvider.notifier).loadHouseholdIfNeeded(householdId);
+        ref.read(householdProvider.notifier).loadHouseholdIfNeeded(householdId);
       }
       // Set default payer to current user
-      final authState = ref.read(authNotifierProvider);
+      final authState = ref.read(authProvider);
       if (authState is AuthStateAuthenticated) {
         setState(() {
           _selectedPaidById = authState.user.id;
@@ -73,7 +73,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
   /// Get unique descriptions from previous expenses for autocomplete
   List<String> _getDescriptionSuggestions(String query) {
-    final state = ref.read(expensesNotifierProvider);
+    final state = ref.read(expensesProvider);
     if (state is! ExpensesStateLoaded) return [];
 
     final descriptions = state.expenses
@@ -103,7 +103,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       return;
     }
 
-    final expense = await ref.read(expensesNotifierProvider.notifier).createExpense(
+    final expense = await ref.read(expensesProvider.notifier).createExpense(
           description: _descriptionController.text.trim(),
           amount: amount,
           date: _selectedDate,
@@ -170,7 +170,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
               Navigator.pop(dialogContext);
               final result = await ref
-                  .read(expensesNotifierProvider.notifier)
+                  .read(expensesProvider.notifier)
                   .createCategory(
                     name: name,
                     icon: iconController.text.trim().isEmpty
@@ -198,8 +198,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final expensesState = ref.watch(expensesNotifierProvider);
-    final householdState = ref.watch(householdNotifierProvider);
+    final expensesState = ref.watch(expensesProvider);
+    final householdState = ref.watch(householdProvider);
     final categories = expensesState is ExpensesStateLoaded ? expensesState.categories : <ExpenseCategoryModel>[];
     final members = householdState is HouseholdStateLoaded ? householdState.household.members ?? [] : <MemberModel>[];
     final colorScheme = Theme.of(context).colorScheme;

@@ -27,7 +27,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   final _timeFormat = DateFormat('HH:mm', 'es');
 
   CalendarEventModel? _getEvent() {
-    final state = ref.read(calendarNotifierProvider);
+    final state = ref.read(calendarProvider);
     if (state is CalendarStateLoaded) {
       try {
         return state.events.firstWhere((e) => e.id == widget.eventId);
@@ -66,7 +66,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
 
       if (deleteOption == null) return;
 
-      final success = await ref.read(calendarNotifierProvider.notifier).deleteEvent(
+      final success = await ref.read(calendarProvider.notifier).deleteEvent(
             widget.eventId,
             deleteRecurring: deleteOption,
             occurrenceDate: event.occurrenceDate,
@@ -100,7 +100,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       );
 
       if (confirmed == true) {
-        final success = await ref.read(calendarNotifierProvider.notifier).deleteEvent(
+        final success = await ref.read(calendarProvider.notifier).deleteEvent(
               widget.eventId,
             );
 
@@ -117,7 +117,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
   @override
   Widget build(BuildContext context) {
     // Watch for changes
-    ref.watch(calendarNotifierProvider);
+    ref.watch(calendarProvider);
     final event = _getEvent();
     final colorScheme = Theme.of(context).colorScheme;
 

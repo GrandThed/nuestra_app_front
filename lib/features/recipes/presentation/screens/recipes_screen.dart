@@ -28,7 +28,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(recipesNotifierProvider.notifier).loadRecipesIfNeeded();
+      ref.read(recipesProvider.notifier).loadRecipesIfNeeded();
     });
   }
 
@@ -39,7 +39,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
   }
 
   void _onSearch() {
-    ref.read(recipesNotifierProvider.notifier).loadRecipes(
+    ref.read(recipesProvider.notifier).loadRecipes(
           search: _searchController.text.isEmpty ? null : _searchController.text,
           season: _selectedSeason,
           favorites: _showFavoritesOnly ? true : null,
@@ -57,7 +57,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(recipesNotifierProvider);
+    final state = ref.watch(recipesProvider);
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -201,7 +201,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                       Text(message, textAlign: TextAlign.center),
                       const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: () => ref.read(recipesNotifierProvider.notifier).loadRecipes(),
+                        onPressed: () => ref.read(recipesProvider.notifier).loadRecipes(),
                         child: const Text('Reintentar'),
                       ),
                     ],
@@ -388,7 +388,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              ref.read(recipesNotifierProvider.notifier).deleteRecipe(recipe.id);
+              ref.read(recipesProvider.notifier).deleteRecipe(recipe.id);
             },
             style: TextButton.styleFrom(foregroundColor: AppColors.error),
             child: const Text('Eliminar'),

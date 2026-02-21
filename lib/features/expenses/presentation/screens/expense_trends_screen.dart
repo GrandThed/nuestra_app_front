@@ -52,12 +52,12 @@ class _ExpenseTrendsScreenState extends ConsumerState<ExpenseTrendsScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(expenseTrendsNotifierProvider.notifier).loadIfNeeded();
+      ref.read(expenseTrendsProvider.notifier).loadIfNeeded();
     });
   }
 
   Future<void> _onRefresh() async {
-    await ref.read(expenseTrendsNotifierProvider.notifier).load();
+    await ref.read(expenseTrendsProvider.notifier).load();
   }
 
   Color _colorForCategory(int index) {
@@ -70,7 +70,7 @@ class _ExpenseTrendsScreenState extends ConsumerState<ExpenseTrendsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(expenseTrendsNotifierProvider);
+    final state = ref.watch(expenseTrendsProvider);
 
     return Scaffold(
       appBar: AppBar(

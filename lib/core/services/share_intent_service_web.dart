@@ -9,16 +9,15 @@ abstract class ShareIntentService {
 }
 
 /// Creates the web stub ShareIntentService
-ShareIntentService createShareIntentService(Ref ref, StateProvider<SharedContent?> sharedContentProvider) {
-  return ShareIntentServiceWeb(ref, sharedContentProvider);
+ShareIntentService createShareIntentService(Ref ref) {
+  return ShareIntentServiceWeb(ref);
 }
 
 /// Web stub implementation - share intents not supported on web
 class ShareIntentServiceWeb implements ShareIntentService {
   final Ref _ref;
-  final StateProvider<SharedContent?> _sharedContentProvider;
 
-  ShareIntentServiceWeb(this._ref, this._sharedContentProvider);
+  ShareIntentServiceWeb(this._ref);
 
   @override
   void initialize() {
@@ -27,7 +26,7 @@ class ShareIntentServiceWeb implements ShareIntentService {
 
   @override
   void clearSharedContent() {
-    _ref.read(_sharedContentProvider.notifier).state = null;
+    _ref.read(sharedContentProvider.notifier).clear();
   }
 
   @override

@@ -46,9 +46,9 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
 
     // Load recipes if not already loaded
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final recipesState = ref.read(recipesNotifierProvider);
+      final recipesState = ref.read(recipesProvider);
       if (recipesState is RecipesStateInitial) {
-        ref.read(recipesNotifierProvider.notifier).loadRecipes();
+        ref.read(recipesProvider.notifier).loadRecipes();
       }
 
       // Resolve menu ID if not provided
@@ -69,9 +69,9 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
 
     try {
       // First, ensure menu plans are loaded
-      await ref.read(menuPlansNotifierProvider.notifier).loadMenuPlansIfNeeded();
+      await ref.read(menuPlansProvider.notifier).loadMenuPlansIfNeeded();
 
-      final menuPlansState = ref.read(menuPlansNotifierProvider);
+      final menuPlansState = ref.read(menuPlansProvider);
       if (menuPlansState is MenuPlansStateLoaded && menuPlansState.plans.isNotEmpty) {
         // Use the first (most recent) menu plan
         setState(() {
@@ -80,7 +80,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
         });
       } else {
         // No menu plans exist - create a default one
-        final newPlan = await ref.read(menuPlansNotifierProvider.notifier).createMenuPlan(
+        final newPlan = await ref.read(menuPlansProvider.notifier).createMenuPlan(
           name: 'Mi Menú',
         );
         if (newPlan != null) {
@@ -114,7 +114,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
     setState(() => _isLoadingMeal = true);
 
     // Get meal from the menu plan detail
-    final menuState = ref.read(menuPlanDetailNotifierProvider(menuId));
+    final menuState = ref.read(menuPlanDetailProvider(menuId));
     if (menuState is MenuPlanDetailStateLoaded) {
       final meal = menuState.plan.items?.firstWhere(
         (item) => item.id == widget.mealItemId,
@@ -132,10 +132,10 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
     } else {
       // Need to load menu plan first
       await ref
-          .read(menuPlanDetailNotifierProvider(menuId).notifier)
+          .read(menuPlanDetailProvider(menuId).notifier)
           .loadMenuPlan();
 
-      final menuState = ref.read(menuPlanDetailNotifierProvider(menuId));
+      final menuState = ref.read(menuPlanDetailProvider(menuId));
       if (menuState is MenuPlanDetailStateLoaded) {
         final meal = menuState.plan.items?.firstWhere(
           (item) => item.id == widget.mealItemId,
@@ -214,11 +214,11 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
 
       // Refresh upcoming meals for the current week
       final weekStart = ref.read(selectedWeekStartProvider);
-      ref.read(upcomingMealsNotifierProvider.notifier).loadWeek(weekStart);
+      ref.read(upcomingMealsProvider.notifier).loadWeek(weekStart);
 
       // Refresh menu plan detail if loaded
       ref
-          .read(menuPlanDetailNotifierProvider(menuId).notifier)
+          .read(menuPlanDetailProvider(menuId).notifier)
           .loadMenuPlan();
 
       if (mounted) {
@@ -240,7 +240,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final recipesState = ref.watch(recipesNotifierProvider);
+    final recipesState = ref.watch(recipesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -355,7 +355,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                               onPressed: () {
                                 _searchController.clear();
                                 ref
-                                    .read(recipesNotifierProvider.notifier)
+                                    .read(recipesProvider.notifier)
                                     .loadRecipes();
                               },
                             )
@@ -363,7 +363,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                     ),
                     onChanged: (value) {
                       ref
-                          .read(recipesNotifierProvider.notifier)
+                          .read(recipesProvider.notifier)
                           .loadRecipes(search: value);
                     },
                   ),
@@ -434,7 +434,7 @@ class _AddMealScreenState extends ConsumerState<AddMealScreen> {
                             ElevatedButton(
                               onPressed: () {
                                 ref
-                                    .read(recipesNotifierProvider.notifier)
+                                    .read(recipesProvider.notifier)
                                     .loadRecipes();
                               },
                               child: const Text('Reintentar'),

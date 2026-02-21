@@ -26,7 +26,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     // Load recipe only if not already loaded
     Future.microtask(() {
       ref
-          .read(recipeDetailNotifierProvider(widget.recipeId).notifier)
+          .read(recipeDetailProvider(widget.recipeId).notifier)
           .loadRecipeIfNeeded();
     });
   }
@@ -35,7 +35,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(recipeDetailNotifierProvider(recipeId));
+    final state = ref.watch(recipeDetailProvider(recipeId));
 
     return Scaffold(
       body: switch (state) {
@@ -68,7 +68,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
             const SizedBox(height: AppSizes.md),
             ElevatedButton(
               onPressed: () {
-                ref.read(recipeDetailNotifierProvider(recipeId).notifier).loadRecipe();
+                ref.read(recipeDetailProvider(recipeId).notifier).loadRecipe();
               },
               child: const Text('Reintentar'),
             ),
@@ -108,7 +108,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
               ),
               onPressed: () {
                 ref
-                    .read(recipeDetailNotifierProvider(recipeId).notifier)
+                    .read(recipeDetailProvider(recipeId).notifier)
                     .toggleFavorite();
               },
             ),
@@ -310,7 +310,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
             onPressed: () async {
               Navigator.pop(dialogContext);
               final success = await ref
-                  .read(recipesNotifierProvider.notifier)
+                  .read(recipesProvider.notifier)
                   .deleteRecipe(recipe.id);
               if (success && context.mounted) {
                 context.pop();

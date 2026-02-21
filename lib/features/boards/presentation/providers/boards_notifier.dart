@@ -430,7 +430,7 @@ class BoardDetailNotifier extends _$BoardDetailNotifier {
       state = BoardDetailState.loaded(updatedBoard);
 
       // Update boards list
-      ref.read(boardsNotifierProvider.notifier).updateBoardInList(updatedBoard);
+      ref.read(boardsProvider.notifier).updateBoardInList(updatedBoard);
     }
   }
 
@@ -458,7 +458,7 @@ class BoardDetailNotifier extends _$BoardDetailNotifier {
       state = BoardDetailState.loaded(updatedBoard);
 
       // Update boards list
-      ref.read(boardsNotifierProvider.notifier).updateBoardInList(updatedBoard);
+      ref.read(boardsProvider.notifier).updateBoardInList(updatedBoard);
     }
   }
 }

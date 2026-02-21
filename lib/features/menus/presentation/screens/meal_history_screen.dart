@@ -27,7 +27,7 @@ class _MealHistoryScreenState extends ConsumerState<MealHistoryScreen> {
     Future.microtask(() {
       final householdId = ref.read(currentHouseholdIdProvider);
       if (householdId != null) {
-        ref.read(mealHistoryNotifierProvider.notifier).loadIfNeeded(householdId);
+        ref.read(mealHistoryProvider.notifier).loadIfNeeded(householdId);
       }
     });
   }
@@ -45,7 +45,7 @@ class _MealHistoryScreenState extends ConsumerState<MealHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(mealHistoryNotifierProvider);
+    final state = ref.watch(mealHistoryProvider);
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -137,7 +137,7 @@ class _MealHistoryScreenState extends ConsumerState<MealHistoryScreen> {
                     final householdId = ref.read(currentHouseholdIdProvider);
                     if (householdId != null) {
                       ref
-                          .read(mealHistoryNotifierProvider.notifier)
+                          .read(mealHistoryProvider.notifier)
                           .load(householdId, forceLoading: true);
                     }
                   },
@@ -191,7 +191,7 @@ class _MealHistoryScreenState extends ConsumerState<MealHistoryScreen> {
         final householdId = ref.read(currentHouseholdIdProvider);
         if (householdId != null) {
           await ref
-              .read(mealHistoryNotifierProvider.notifier)
+              .read(mealHistoryProvider.notifier)
               .load(householdId);
         }
       },

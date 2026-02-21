@@ -1,4 +1,6 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'shared_content_provider.g.dart';
 
 /// Model representing shared content
 class SharedContent {
@@ -38,4 +40,12 @@ class SharedContent {
 }
 
 /// Provider for the current shared content
-final sharedContentProvider = StateProvider<SharedContent?>((ref) => null);
+@Riverpod(keepAlive: true)
+class SharedContentNotifier extends _$SharedContentNotifier {
+  @override
+  SharedContent? build() => null;
+
+  void set(SharedContent? content) => state = content;
+
+  void clear() => state = null;
+}

@@ -14,7 +14,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authNotifierProvider);
+    final authState = ref.watch(authProvider);
 
     // Extract user data from auth state
     final user = authState is AuthStateAuthenticated ? authState.user : null;
@@ -176,7 +176,7 @@ class ProfileScreen extends ConsumerWidget {
                 height: AppSizes.buttonHeight,
                 child: OutlinedButton(
                   onPressed: () =>
-                      ref.read(authNotifierProvider.notifier).signOut(),
+                      ref.read(authProvider.notifier).signOut(),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.error,
                     side: const BorderSide(color: AppColors.error),

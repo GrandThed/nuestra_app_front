@@ -13,10 +13,9 @@ _HouseholdModel _$HouseholdModelFromJson(Map<String, dynamic> json) =>
       hemisphere: json['hemisphere'] as String,
       splitMode: json['splitMode'] as String? ?? 'equal',
       createdAt: DateTime.parse(json['createdAt'] as String),
-      members:
-          (json['members'] as List<dynamic>?)
-              ?.map((e) => MemberModel.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      members: (json['members'] as List<dynamic>?)
+          ?.map((e) => MemberModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$HouseholdModelToJson(_HouseholdModel instance) =>
@@ -39,10 +38,9 @@ _MemberModel _$MemberModelFromJson(Map<String, dynamic> json) => _MemberModel(
   income: (json['income'] as num?)?.toDouble(),
   paysExpenses: json['paysExpenses'] as bool? ?? false,
   colorHex: json['colorHex'] as String? ?? '#667eea',
-  createdAt:
-      json['createdAt'] == null
-          ? null
-          : DateTime.parse(json['createdAt'] as String),
+  createdAt: json['createdAt'] == null
+      ? null
+      : DateTime.parse(json['createdAt'] as String),
 );
 
 Map<String, dynamic> _$MemberModelToJson(_MemberModel instance) =>

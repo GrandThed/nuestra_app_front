@@ -10,14 +10,12 @@ _RecipeModel _$RecipeModelFromJson(Map<String, dynamic> json) => _RecipeModel(
   id: json['id'] as String,
   householdId: json['householdId'] as String?,
   title: json['title'] as String,
-  ingredients:
-      (json['ingredients'] as List<dynamic>?)
-          ?.map((e) => IngredientModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
-  instructions:
-      (json['instructions'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
+  ingredients: (json['ingredients'] as List<dynamic>?)
+      ?.map((e) => IngredientModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  instructions: (json['instructions'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
   imageUrl: json['imageUrl'] as String?,
   servings: (json['servings'] as num?)?.toInt(),
   sourceUrl: json['sourceUrl'] as String?,
@@ -30,20 +28,15 @@ _RecipeModel _$RecipeModelFromJson(Map<String, dynamic> json) => _RecipeModel(
           ?.map((e) => RecipeRatingModel.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
-  createdBy:
-      json['createdBy'] == null
-          ? null
-          : RecipeCreatorModel.fromJson(
-            json['createdBy'] as Map<String, dynamic>,
-          ),
-  createdAt:
-      json['createdAt'] == null
-          ? null
-          : DateTime.parse(json['createdAt'] as String),
-  updatedAt:
-      json['updatedAt'] == null
-          ? null
-          : DateTime.parse(json['updatedAt'] as String),
+  createdBy: json['createdBy'] == null
+      ? null
+      : RecipeCreatorModel.fromJson(json['createdBy'] as Map<String, dynamic>),
+  createdAt: json['createdAt'] == null
+      ? null
+      : DateTime.parse(json['createdAt'] as String),
+  updatedAt: json['updatedAt'] == null
+      ? null
+      : DateTime.parse(json['updatedAt'] as String),
 );
 
 Map<String, dynamic> _$RecipeModelToJson(_RecipeModel instance) =>
@@ -71,10 +64,9 @@ _IngredientModel _$IngredientModelFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String,
       quantity: (json['quantity'] as num?)?.toDouble(),
       unit: json['unit'] as String?,
-      alternatives:
-          (json['alternatives'] as List<dynamic>?)
-              ?.map((e) => IngredientModel.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      alternatives: (json['alternatives'] as List<dynamic>?)
+          ?.map((e) => IngredientModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$IngredientModelToJson(_IngredientModel instance) =>

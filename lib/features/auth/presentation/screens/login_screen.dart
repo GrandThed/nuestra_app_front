@@ -16,11 +16,11 @@ class LoginScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authNotifierProvider);
+    final authState = ref.watch(authProvider);
     final isLoading = authState is AuthStateLoading;
 
     // Listen for auth state changes
-    ref.listen<AuthState>(authNotifierProvider, (previous, next) {
+    ref.listen<AuthState>(authProvider, (previous, next) {
       next.when(
         initial: () {},
         loading: () {},
@@ -29,7 +29,7 @@ class LoginScreen extends ConsumerWidget {
           final pendingInviteCode = ref.read(pendingInviteCodeProvider);
           if (pendingInviteCode != null) {
             // Clear the pending code and navigate to join screen
-            ref.read(pendingInviteCodeProvider.notifier).state = null;
+            ref.read(pendingInviteCodeProvider.notifier).set(null);
             context.go('/join/$pendingInviteCode');
             return;
           }
@@ -50,7 +50,7 @@ class LoginScreen extends ConsumerWidget {
             ),
           );
           // Clear error after showing
-          ref.read(authNotifierProvider.notifier).clearError();
+          ref.read(authProvider.notifier).clearError();
         },
       );
     });
@@ -93,7 +93,7 @@ class LoginScreen extends ConsumerWidget {
                 onPressed: isLoading
                     ? null
                     : () {
-                        ref.read(authNotifierProvider.notifier).signInWithGoogle();
+                        ref.read(authProvider.notifier).signInWithGoogle();
                       },
                 icon: Icons.g_mobiledata,
                 label: AppStrings.signInWithGoogle,
@@ -109,7 +109,7 @@ class LoginScreen extends ConsumerWidget {
                   onPressed: isLoading
                       ? null
                       : () {
-                          ref.read(authNotifierProvider.notifier).signInWithApple();
+                          ref.read(authProvider.notifier).signInWithApple();
                         },
                   icon: Icons.apple,
                   label: AppStrings.signInWithApple,

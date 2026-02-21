@@ -24,7 +24,7 @@ class _PurchaseHistoryScreenState extends ConsumerState<PurchaseHistoryScreen> {
       final householdId = ref.read(currentHouseholdIdProvider);
       if (householdId != null) {
         ref
-            .read(purchaseHistoryNotifierProvider.notifier)
+            .read(purchaseHistoryProvider.notifier)
             .loadIfNeeded(householdId);
       }
     });
@@ -73,7 +73,7 @@ class _PurchaseHistoryScreenState extends ConsumerState<PurchaseHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(purchaseHistoryNotifierProvider);
+    final state = ref.watch(purchaseHistoryProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -105,7 +105,7 @@ class _PurchaseHistoryScreenState extends ConsumerState<PurchaseHistoryScreen> {
                     final householdId = ref.read(currentHouseholdIdProvider);
                     if (householdId != null) {
                       ref
-                          .read(purchaseHistoryNotifierProvider.notifier)
+                          .read(purchaseHistoryProvider.notifier)
                           .load(householdId, forceLoading: true);
                     }
                   },
@@ -160,7 +160,7 @@ class _PurchaseHistoryScreenState extends ConsumerState<PurchaseHistoryScreen> {
         final householdId = ref.read(currentHouseholdIdProvider);
         if (householdId != null) {
           await ref
-              .read(purchaseHistoryNotifierProvider.notifier)
+              .read(purchaseHistoryProvider.notifier)
               .load(householdId);
         }
       },

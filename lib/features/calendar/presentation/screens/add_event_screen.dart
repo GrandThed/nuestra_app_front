@@ -143,7 +143,7 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
           : _combineDateTime(_endDate!, _endTime);
     }
 
-    final event = await ref.read(calendarNotifierProvider.notifier).createEvent(
+    final event = await ref.read(calendarProvider.notifier).createEvent(
           title: _titleController.text.trim(),
           description: _descriptionController.text.trim().isNotEmpty
               ? _descriptionController.text.trim()

@@ -11,18 +11,15 @@ _MenuPlanModel _$MenuPlanModelFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       householdId: json['householdId'] as String,
       name: json['name'] as String?,
-      items:
-          (json['items'] as List<dynamic>?)
-              ?.map((e) => MenuItemModel.fromJson(e as Map<String, dynamic>))
-              .toList(),
-      createdAt:
-          json['createdAt'] == null
-              ? null
-              : DateTime.parse(json['createdAt'] as String),
-      updatedAt:
-          json['updatedAt'] == null
-              ? null
-              : DateTime.parse(json['updatedAt'] as String),
+      items: (json['items'] as List<dynamic>?)
+          ?.map((e) => MenuItemModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
+      updatedAt: json['updatedAt'] == null
+          ? null
+          : DateTime.parse(json['updatedAt'] as String),
     );
 
 Map<String, dynamic> _$MenuPlanModelToJson(_MenuPlanModel instance) =>
@@ -40,24 +37,21 @@ _MenuItemModel _$MenuItemModelFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       date: DateTime.parse(json['date'] as String),
       mealType: json['mealType'] as String,
-      recipe:
-          json['recipe'] == null
-              ? null
-              : RecipeModel.fromJson(json['recipe'] as Map<String, dynamic>),
+      recipe: json['recipe'] == null
+          ? null
+          : RecipeModel.fromJson(json['recipe'] as Map<String, dynamic>),
       recipeId: json['recipeId'] as String?,
       substitutions: json['substitutions'] as Map<String, dynamic>?,
       isLeftover: json['isLeftover'] as bool? ?? false,
       originalMenuItemId: json['originalMenuItemId'] as String?,
-      createdBy:
-          json['createdBy'] == null
-              ? null
-              : MenuItemCreatorModel.fromJson(
-                json['createdBy'] as Map<String, dynamic>,
-              ),
-      createdAt:
-          json['createdAt'] == null
-              ? null
-              : DateTime.parse(json['createdAt'] as String),
+      createdBy: json['createdBy'] == null
+          ? null
+          : MenuItemCreatorModel.fromJson(
+              json['createdBy'] as Map<String, dynamic>,
+            ),
+      createdAt: json['createdAt'] == null
+          ? null
+          : DateTime.parse(json['createdAt'] as String),
     );
 
 Map<String, dynamic> _$MenuItemModelToJson(_MenuItemModel instance) =>
@@ -97,10 +91,9 @@ _ShoppingListResultModel _$ShoppingListResultModelFromJson(
   menuName: json['menuName'] as String?,
   servingsMultiplier: (json['servingsMultiplier'] as num).toDouble(),
   itemsCreated: (json['itemsCreated'] as num).toInt(),
-  shoppingList:
-      (json['shoppingList'] as List<dynamic>?)
-          ?.map((e) => ShoppingItemModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  shoppingList: (json['shoppingList'] as List<dynamic>?)
+      ?.map((e) => ShoppingItemModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$ShoppingListResultModelToJson(
@@ -133,10 +126,9 @@ Map<String, dynamic> _$ShoppingItemModelToJson(_ShoppingItemModel instance) =>
 
 _UpcomingMealsModel _$UpcomingMealsModelFromJson(Map<String, dynamic> json) =>
     _UpcomingMealsModel(
-      items:
-          (json['items'] as List<dynamic>)
-              .map((e) => MenuItemModel.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      items: (json['items'] as List<dynamic>)
+          .map((e) => MenuItemModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
       from: DateTime.parse(json['from'] as String),
       to: DateTime.parse(json['to'] as String),
     );

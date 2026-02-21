@@ -27,7 +27,7 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
   final _dateFormat = DateFormat('EEEE, d MMMM yyyy', 'es');
 
   ExpenseModel? _getExpense() {
-    final state = ref.read(expensesNotifierProvider);
+    final state = ref.read(expensesProvider);
     if (state is ExpensesStateLoaded) {
       try {
         return state.expenses.firstWhere((e) => e.id == widget.expenseId);
@@ -39,14 +39,14 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
   }
 
   Future<void> _toggleSettled(ExpenseModel expense) async {
-    await ref.read(expensesNotifierProvider.notifier).settleExpense(
+    await ref.read(expensesProvider.notifier).settleExpense(
           id: expense.id,
           settled: !expense.allSettled,
         );
   }
 
   Future<void> _toggleSplitSettled(ExpenseModel expense, ExpenseSplitModel split) async {
-    await ref.read(expensesNotifierProvider.notifier).settleExpense(
+    await ref.read(expensesProvider.notifier).settleExpense(
           id: expense.id,
           userId: split.userId,
           settled: !split.settled,
@@ -75,7 +75,7 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
 
     if (confirmed == true) {
       final success =
-          await ref.read(expensesNotifierProvider.notifier).deleteExpense(expense.id);
+          await ref.read(expensesProvider.notifier).deleteExpense(expense.id);
       if (mounted && success) {
         context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -116,7 +116,7 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
   @override
   Widget build(BuildContext context) {
     // Watch for changes
-    ref.watch(expensesNotifierProvider);
+    ref.watch(expensesProvider);
     final expense = _getExpense();
 
     if (expense == null) {

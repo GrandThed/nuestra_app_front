@@ -24,7 +24,7 @@ class _ActivityFeedScreenState extends ConsumerState<ActivityFeedScreen> {
     Future.microtask(() {
       final householdId = ref.read(currentHouseholdIdProvider);
       if (householdId != null) {
-        ref.read(activityFeedNotifierProvider.notifier).loadIfNeeded(householdId);
+        ref.read(activityFeedProvider.notifier).loadIfNeeded(householdId);
       }
     });
     _scrollController.addListener(_onScroll);
@@ -42,7 +42,7 @@ class _ActivityFeedScreenState extends ConsumerState<ActivityFeedScreen> {
         _scrollController.position.maxScrollExtent - 200) {
       final householdId = ref.read(currentHouseholdIdProvider);
       if (householdId != null) {
-        ref.read(activityFeedNotifierProvider.notifier).loadMore(householdId);
+        ref.read(activityFeedProvider.notifier).loadMore(householdId);
       }
     }
   }
@@ -50,13 +50,13 @@ class _ActivityFeedScreenState extends ConsumerState<ActivityFeedScreen> {
   Future<void> _onRefresh() async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId != null) {
-      await ref.read(activityFeedNotifierProvider.notifier).load(householdId);
+      await ref.read(activityFeedProvider.notifier).load(householdId);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(activityFeedNotifierProvider);
+    final state = ref.watch(activityFeedProvider);
 
     return Scaffold(
       appBar: AppBar(

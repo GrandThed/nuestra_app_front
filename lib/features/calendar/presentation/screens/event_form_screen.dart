@@ -58,9 +58,9 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     _startTime = TimeOfDay.now();
     // Load data for linked item selectors
     Future.microtask(() {
-      ref.read(boardsNotifierProvider.notifier).loadBoardsIfNeeded();
-      ref.read(recipesNotifierProvider.notifier).loadRecipesIfNeeded();
-      ref.read(menuPlansNotifierProvider.notifier).loadMenuPlansIfNeeded();
+      ref.read(boardsProvider.notifier).loadBoardsIfNeeded();
+      ref.read(recipesProvider.notifier).loadRecipesIfNeeded();
+      ref.read(menuPlansProvider.notifier).loadMenuPlansIfNeeded();
     });
   }
 
@@ -93,7 +93,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
 
   CalendarEventModel? _getEvent() {
     if (widget.eventId == null) return null;
-    final state = ref.read(calendarNotifierProvider);
+    final state = ref.read(calendarProvider);
     if (state is CalendarStateLoaded) {
       try {
         return state.events.firstWhere((e) => e.id == widget.eventId);
@@ -196,7 +196,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           : _combineDateTime(_endDate!, _endTime);
     }
 
-    final notifier = ref.read(calendarNotifierProvider.notifier);
+    final notifier = ref.read(calendarProvider.notifier);
     dynamic result;
 
     if (isEditing) {
@@ -517,7 +517,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
   }
 
   Widget _buildLinkedBoardSelector() {
-    final boardsState = ref.watch(boardsNotifierProvider);
+    final boardsState = ref.watch(boardsProvider);
     final boards = boardsState is BoardsStateLoaded ? boardsState.boards : [];
 
     return ListTile(
@@ -541,7 +541,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
   }
 
   Widget _buildLinkedRecipeSelector() {
-    final recipesState = ref.watch(recipesNotifierProvider);
+    final recipesState = ref.watch(recipesProvider);
     final recipes = recipesState is RecipesStateLoaded ? recipesState.recipes : [];
 
     return ListTile(
@@ -565,7 +565,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
   }
 
   Widget _buildLinkedMenuPlanSelector() {
-    final plansState = ref.watch(menuPlansNotifierProvider);
+    final plansState = ref.watch(menuPlansProvider);
     final plans = plansState is MenuPlansStateLoaded ? plansState.plans : [];
 
     return ListTile(

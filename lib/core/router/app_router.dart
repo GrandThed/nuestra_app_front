@@ -116,7 +116,7 @@ final shellNavigatorKey = GlobalKey<NavigatorState>();
 /// Listenable that notifies GoRouter when auth state changes or shared content arrives
 class AuthChangeNotifier extends ChangeNotifier {
   AuthChangeNotifier(this._ref) {
-    _ref.listen(authNotifierProvider, (_, __) {
+    _ref.listen(authProvider, (_, __) {
       notifyListeners();
     });
     _ref.listen(authTokenProvider, (_, __) {
@@ -149,7 +149,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     refreshListenable: authChangeNotifier,
     redirect: (context, state) {
       final authToken = ref.read(authTokenProvider);
-      final authState = ref.read(authNotifierProvider);
+      final authState = ref.read(authProvider);
 
       final isLoggedIn = authToken != null;
       final isLoggingIn = state.matchedLocation == AppRoutes.login;

@@ -61,7 +61,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
 
   void _loadExistingRecipe() {
     Future.microtask(() {
-      final state = ref.read(recipeDetailNotifierProvider(widget.recipeId!));
+      final state = ref.read(recipeDetailProvider(widget.recipeId!));
       if (state is RecipeDetailStateLoaded) {
         _populateForm(state.recipe);
       }
@@ -97,7 +97,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
   Widget build(BuildContext context) {
     // Watch for recipe data when editing
     if (widget.isEditing) {
-      final state = ref.watch(recipeDetailNotifierProvider(widget.recipeId!));
+      final state = ref.watch(recipeDetailProvider(widget.recipeId!));
       if (state is RecipeDetailStateLoading) {
         return Scaffold(
           appBar: AppBar(
@@ -942,7 +942,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
       RecipeModel? result;
 
       if (widget.isEditing) {
-        result = await ref.read(recipeDetailNotifierProvider(widget.recipeId!).notifier).updateRecipe(
+        result = await ref.read(recipeDetailProvider(widget.recipeId!).notifier).updateRecipe(
               title: _titleController.text.trim(),
               ingredients: _ingredients.isEmpty ? null : _ingredients,
               instructions: _instructions.isEmpty ? null : _instructions,
@@ -951,7 +951,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
               image: _selectedImage,
             );
       } else {
-        result = await ref.read(recipesNotifierProvider.notifier).createRecipe(
+        result = await ref.read(recipesProvider.notifier).createRecipe(
               title: _titleController.text.trim(),
               ingredients: _ingredients.isEmpty ? null : _ingredients,
               instructions: _instructions.isEmpty ? null : _instructions,

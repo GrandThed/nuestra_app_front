@@ -1,4 +1,6 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'pending_invite_provider.g.dart';
 
 /// Stores a pending invite code when user needs to log in first.
 ///
@@ -8,4 +10,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// 3. Invite code is stored here before navigating to login
 /// 4. After login, code is retrieved and user is navigated back to join screen
 /// 5. Code is cleared after use
-final pendingInviteCodeProvider = StateProvider<String?>((ref) => null);
+@Riverpod(keepAlive: true)
+class PendingInviteCodeNotifier extends _$PendingInviteCodeNotifier {
+  @override
+  String? build() => null;
+
+  void set(String? code) => state = code;
+}

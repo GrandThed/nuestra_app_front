@@ -421,7 +421,7 @@ class TimelineNotifier extends _$TimelineNotifier {
 /// Provider for events on a specific date
 @riverpod
 List<CalendarEventModel> eventsForDate(Ref ref, DateTime date) {
-  final state = ref.watch(calendarNotifierProvider);
+  final state = ref.watch(calendarProvider);
   if (state is CalendarStateLoaded) {
     return state.events.where((e) {
       final eventDate = e.occurrenceDate ?? e.startDate;
@@ -436,7 +436,7 @@ List<CalendarEventModel> eventsForDate(Ref ref, DateTime date) {
 /// Provider for events count per day (for calendar markers)
 @riverpod
 Map<DateTime, int> eventCountsByDay(Ref ref) {
-  final state = ref.watch(calendarNotifierProvider);
+  final state = ref.watch(calendarProvider);
   if (state is CalendarStateLoaded) {
     final counts = <DateTime, int>{};
     for (final event in state.events) {
@@ -452,7 +452,7 @@ Map<DateTime, int> eventCountsByDay(Ref ref) {
 /// Provider for upcoming events count (for home dashboard)
 @riverpod
 int upcomingEventsCount(Ref ref) {
-  final state = ref.watch(calendarNotifierProvider);
+  final state = ref.watch(calendarProvider);
   if (state is CalendarStateLoaded) {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);

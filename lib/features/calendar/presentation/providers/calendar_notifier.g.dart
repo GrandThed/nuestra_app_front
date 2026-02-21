@@ -6,240 +6,311 @@ part of 'calendar_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$eventsForDateHash() => r'ad6677f1e22c0867b0a44fb10ea69bb08eeb3802';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// Notifier for calendar operations
 
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
+@ProviderFor(CalendarNotifier)
+final calendarProvider = CalendarNotifierProvider._();
 
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-/// Provider for events on a specific date
-///
-/// Copied from [eventsForDate].
-@ProviderFor(eventsForDate)
-const eventsForDateProvider = EventsForDateFamily();
-
-/// Provider for events on a specific date
-///
-/// Copied from [eventsForDate].
-class EventsForDateFamily extends Family<List<CalendarEventModel>> {
-  /// Provider for events on a specific date
-  ///
-  /// Copied from [eventsForDate].
-  const EventsForDateFamily();
-
-  /// Provider for events on a specific date
-  ///
-  /// Copied from [eventsForDate].
-  EventsForDateProvider call(DateTime date) {
-    return EventsForDateProvider(date);
-  }
-
-  @override
-  EventsForDateProvider getProviderOverride(
-    covariant EventsForDateProvider provider,
-  ) {
-    return call(provider.date);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'eventsForDateProvider';
-}
-
-/// Provider for events on a specific date
-///
-/// Copied from [eventsForDate].
-class EventsForDateProvider
-    extends AutoDisposeProvider<List<CalendarEventModel>> {
-  /// Provider for events on a specific date
-  ///
-  /// Copied from [eventsForDate].
-  EventsForDateProvider(DateTime date)
-    : this._internal(
-        (ref) => eventsForDate(ref as EventsForDateRef, date),
-        from: eventsForDateProvider,
-        name: r'eventsForDateProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$eventsForDateHash,
-        dependencies: EventsForDateFamily._dependencies,
-        allTransitiveDependencies:
-            EventsForDateFamily._allTransitiveDependencies,
-        date: date,
+/// Notifier for calendar operations
+final class CalendarNotifierProvider
+    extends $NotifierProvider<CalendarNotifier, CalendarState> {
+  /// Notifier for calendar operations
+  CalendarNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'calendarProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
       );
 
-  EventsForDateProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.date,
-  }) : super.internal();
-
-  final DateTime date;
-
   @override
-  Override overrideWith(
-    List<CalendarEventModel> Function(EventsForDateRef provider) create,
-  ) {
-    return ProviderOverride(
+  String debugGetCreateSourceHash() => _$calendarNotifierHash();
+
+  @$internal
+  @override
+  CalendarNotifier create() => CalendarNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(CalendarState value) {
+    return $ProviderOverride(
       origin: this,
-      override: EventsForDateProvider._internal(
-        (ref) => create(ref as EventsForDateRef),
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        date: date,
-      ),
+      providerOverride: $SyncValueProvider<CalendarState>(value),
     );
   }
+}
+
+String _$calendarNotifierHash() => r'463f226805aac2b872aed26e6363e0cc3677463e';
+
+/// Notifier for calendar operations
+
+abstract class _$CalendarNotifier extends $Notifier<CalendarState> {
+  CalendarState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<CalendarState, CalendarState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<CalendarState, CalendarState>,
+              CalendarState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Notifier for timeline view
+
+@ProviderFor(TimelineNotifier)
+final timelineProvider = TimelineNotifierProvider._();
+
+/// Notifier for timeline view
+final class TimelineNotifierProvider
+    extends $NotifierProvider<TimelineNotifier, TimelineState> {
+  /// Notifier for timeline view
+  TimelineNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'timelineProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
   @override
-  AutoDisposeProviderElement<List<CalendarEventModel>> createElement() {
-    return _EventsForDateProviderElement(this);
+  String debugGetCreateSourceHash() => _$timelineNotifierHash();
+
+  @$internal
+  @override
+  TimelineNotifier create() => TimelineNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(TimelineState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<TimelineState>(value),
+    );
+  }
+}
+
+String _$timelineNotifierHash() => r'004478d11bfdab72e61a4a2e071d1d481429b37d';
+
+/// Notifier for timeline view
+
+abstract class _$TimelineNotifier extends $Notifier<TimelineState> {
+  TimelineState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<TimelineState, TimelineState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<TimelineState, TimelineState>,
+              TimelineState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Provider for events on a specific date
+
+@ProviderFor(eventsForDate)
+final eventsForDateProvider = EventsForDateFamily._();
+
+/// Provider for events on a specific date
+
+final class EventsForDateProvider
+    extends
+        $FunctionalProvider<
+          List<CalendarEventModel>,
+          List<CalendarEventModel>,
+          List<CalendarEventModel>
+        >
+    with $Provider<List<CalendarEventModel>> {
+  /// Provider for events on a specific date
+  EventsForDateProvider._({
+    required EventsForDateFamily super.from,
+    required DateTime super.argument,
+  }) : super(
+         retry: null,
+         name: r'eventsForDateProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$eventsForDateHash();
+
+  @override
+  String toString() {
+    return r'eventsForDateProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $ProviderElement<List<CalendarEventModel>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  List<CalendarEventModel> create(Ref ref) {
+    final argument = this.argument as DateTime;
+    return eventsForDate(ref, argument);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(List<CalendarEventModel> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<List<CalendarEventModel>>(value),
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is EventsForDateProvider && other.date == date;
+    return other is EventsForDateProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, date.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin EventsForDateRef on AutoDisposeProviderRef<List<CalendarEventModel>> {
-  /// The parameter `date` of this provider.
-  DateTime get date;
-}
+String _$eventsForDateHash() => r'ad6677f1e22c0867b0a44fb10ea69bb08eeb3802';
 
-class _EventsForDateProviderElement
-    extends AutoDisposeProviderElement<List<CalendarEventModel>>
-    with EventsForDateRef {
-  _EventsForDateProviderElement(super.provider);
+/// Provider for events on a specific date
+
+final class EventsForDateFamily extends $Family
+    with $FunctionalFamilyOverride<List<CalendarEventModel>, DateTime> {
+  EventsForDateFamily._()
+    : super(
+        retry: null,
+        name: r'eventsForDateProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Provider for events on a specific date
+
+  EventsForDateProvider call(DateTime date) =>
+      EventsForDateProvider._(argument: date, from: this);
 
   @override
-  DateTime get date => (origin as EventsForDateProvider).date;
+  String toString() => r'eventsForDateProvider';
+}
+
+/// Provider for events count per day (for calendar markers)
+
+@ProviderFor(eventCountsByDay)
+final eventCountsByDayProvider = EventCountsByDayProvider._();
+
+/// Provider for events count per day (for calendar markers)
+
+final class EventCountsByDayProvider
+    extends
+        $FunctionalProvider<
+          Map<DateTime, int>,
+          Map<DateTime, int>,
+          Map<DateTime, int>
+        >
+    with $Provider<Map<DateTime, int>> {
+  /// Provider for events count per day (for calendar markers)
+  EventCountsByDayProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'eventCountsByDayProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$eventCountsByDayHash();
+
+  @$internal
+  @override
+  $ProviderElement<Map<DateTime, int>> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  Map<DateTime, int> create(Ref ref) {
+    return eventCountsByDay(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(Map<DateTime, int> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<Map<DateTime, int>>(value),
+    );
+  }
 }
 
 String _$eventCountsByDayHash() => r'72889e625d2feea50397ba1d0b9a77e9a4318261';
 
-/// Provider for events count per day (for calendar markers)
-///
-/// Copied from [eventCountsByDay].
-@ProviderFor(eventCountsByDay)
-final eventCountsByDayProvider =
-    AutoDisposeProvider<Map<DateTime, int>>.internal(
-      eventCountsByDay,
-      name: r'eventCountsByDayProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$eventCountsByDayHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+/// Provider for upcoming events count (for home dashboard)
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef EventCountsByDayRef = AutoDisposeProviderRef<Map<DateTime, int>>;
-String _$upcomingEventsCountHash() =>
-    r'b0bc83e4e0230a58df2a4498ee5c41720cd31622';
+@ProviderFor(upcomingEventsCount)
+final upcomingEventsCountProvider = UpcomingEventsCountProvider._();
 
 /// Provider for upcoming events count (for home dashboard)
-///
-/// Copied from [upcomingEventsCount].
-@ProviderFor(upcomingEventsCount)
-final upcomingEventsCountProvider = AutoDisposeProvider<int>.internal(
-  upcomingEventsCount,
-  name: r'upcomingEventsCountProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$upcomingEventsCountHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef UpcomingEventsCountRef = AutoDisposeProviderRef<int>;
-String _$calendarNotifierHash() => r'b91c03704745f1bb88035f57385c8e10b28dfbea';
+final class UpcomingEventsCountProvider
+    extends $FunctionalProvider<int, int, int>
+    with $Provider<int> {
+  /// Provider for upcoming events count (for home dashboard)
+  UpcomingEventsCountProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'upcomingEventsCountProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-/// Notifier for calendar operations
-///
-/// Copied from [CalendarNotifier].
-@ProviderFor(CalendarNotifier)
-final calendarNotifierProvider =
-    NotifierProvider<CalendarNotifier, CalendarState>.internal(
-      CalendarNotifier.new,
-      name: r'calendarNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$calendarNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
+  @override
+  String debugGetCreateSourceHash() => _$upcomingEventsCountHash();
+
+  @$internal
+  @override
+  $ProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  int create(Ref ref) {
+    return upcomingEventsCount(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(int value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<int>(value),
     );
+  }
+}
 
-typedef _$CalendarNotifier = Notifier<CalendarState>;
-String _$timelineNotifierHash() => r'004478d11bfdab72e61a4a2e071d1d481429b37d';
-
-/// Notifier for timeline view
-///
-/// Copied from [TimelineNotifier].
-@ProviderFor(TimelineNotifier)
-final timelineNotifierProvider =
-    NotifierProvider<TimelineNotifier, TimelineState>.internal(
-      TimelineNotifier.new,
-      name: r'timelineNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$timelineNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$TimelineNotifier = Notifier<TimelineState>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+String _$upcomingEventsCountHash() =>
+    r'b0bc83e4e0230a58df2a4498ee5c41720cd31622';

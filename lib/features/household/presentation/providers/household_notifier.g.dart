@@ -6,64 +6,180 @@ part of 'household_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// Provider for the current household ID (persisted)
+
+@ProviderFor(CurrentHouseholdId)
+final currentHouseholdIdProvider = CurrentHouseholdIdProvider._();
+
+/// Provider for the current household ID (persisted)
+final class CurrentHouseholdIdProvider
+    extends $NotifierProvider<CurrentHouseholdId, String?> {
+  /// Provider for the current household ID (persisted)
+  CurrentHouseholdIdProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'currentHouseholdIdProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$currentHouseholdIdHash();
+
+  @$internal
+  @override
+  CurrentHouseholdId create() => CurrentHouseholdId();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String?>(value),
+    );
+  }
+}
+
 String _$currentHouseholdIdHash() =>
     r'c93068067a2cad4954aa0951165db78d61df0a7d';
 
 /// Provider for the current household ID (persisted)
-///
-/// Copied from [CurrentHouseholdId].
-@ProviderFor(CurrentHouseholdId)
-final currentHouseholdIdProvider =
-    NotifierProvider<CurrentHouseholdId, String?>.internal(
-      CurrentHouseholdId.new,
-      name: r'currentHouseholdIdProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$currentHouseholdIdHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
 
-typedef _$CurrentHouseholdId = Notifier<String?>;
+abstract class _$CurrentHouseholdId extends $Notifier<String?> {
+  String? build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<String?, String?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String?, String?>,
+              String?,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Notifier for household operations
+
+@ProviderFor(HouseholdNotifier)
+final householdProvider = HouseholdNotifierProvider._();
+
+/// Notifier for household operations
+final class HouseholdNotifierProvider
+    extends $NotifierProvider<HouseholdNotifier, HouseholdState> {
+  /// Notifier for household operations
+  HouseholdNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'householdProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$householdNotifierHash();
+
+  @$internal
+  @override
+  HouseholdNotifier create() => HouseholdNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(HouseholdState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<HouseholdState>(value),
+    );
+  }
+}
+
 String _$householdNotifierHash() => r'f344357e59030e680daf8a6ed69da6192d8b7be6';
 
 /// Notifier for household operations
-///
-/// Copied from [HouseholdNotifier].
-@ProviderFor(HouseholdNotifier)
-final householdNotifierProvider =
-    NotifierProvider<HouseholdNotifier, HouseholdState>.internal(
-      HouseholdNotifier.new,
-      name: r'householdNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$householdNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
 
-typedef _$HouseholdNotifier = Notifier<HouseholdState>;
+abstract class _$HouseholdNotifier extends $Notifier<HouseholdState> {
+  HouseholdState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<HouseholdState, HouseholdState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<HouseholdState, HouseholdState>,
+              HouseholdState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Notifier for active invite state
+
+@ProviderFor(ActiveInviteNotifier)
+final activeInviteProvider = ActiveInviteNotifierProvider._();
+
+/// Notifier for active invite state
+final class ActiveInviteNotifierProvider
+    extends $NotifierProvider<ActiveInviteNotifier, ActiveInviteState> {
+  /// Notifier for active invite state
+  ActiveInviteNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'activeInviteProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$activeInviteNotifierHash();
+
+  @$internal
+  @override
+  ActiveInviteNotifier create() => ActiveInviteNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(ActiveInviteState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<ActiveInviteState>(value),
+    );
+  }
+}
+
 String _$activeInviteNotifierHash() =>
     r'875a979b7aae3056f70591c0b51b43ccd8dabb55';
 
 /// Notifier for active invite state
-///
-/// Copied from [ActiveInviteNotifier].
-@ProviderFor(ActiveInviteNotifier)
-final activeInviteNotifierProvider =
-    NotifierProvider<ActiveInviteNotifier, ActiveInviteState>.internal(
-      ActiveInviteNotifier.new,
-      name: r'activeInviteNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$activeInviteNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
 
-typedef _$ActiveInviteNotifier = Notifier<ActiveInviteState>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$ActiveInviteNotifier extends $Notifier<ActiveInviteState> {
+  ActiveInviteState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<ActiveInviteState, ActiveInviteState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<ActiveInviteState, ActiveInviteState>,
+              ActiveInviteState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

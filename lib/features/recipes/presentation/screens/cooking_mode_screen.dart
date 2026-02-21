@@ -59,7 +59,7 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
     // Load recipe if needed
     Future.microtask(() {
       ref
-          .read(recipeDetailNotifierProvider(widget.recipeId).notifier)
+          .read(recipeDetailProvider(widget.recipeId).notifier)
           .loadRecipeIfNeeded();
     });
   }
@@ -91,7 +91,7 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(recipeDetailNotifierProvider(widget.recipeId));
+    final state = ref.watch(recipeDetailProvider(widget.recipeId));
 
     return Theme(
       data: ThemeData.dark().copyWith(
@@ -162,7 +162,7 @@ class _CookingModeScreenState extends ConsumerState<CookingModeScreen> {
                 ),
                 onPressed: () {
                   ref
-                      .read(recipeDetailNotifierProvider(widget.recipeId).notifier)
+                      .read(recipeDetailProvider(widget.recipeId).notifier)
                       .loadRecipe();
                 },
                 child: const Text('Reintentar', style: TextStyle(fontSize: AppSizes.fontMd)),

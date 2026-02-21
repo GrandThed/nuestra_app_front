@@ -34,11 +34,11 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final householdState = ref.watch(householdNotifierProvider);
+    final householdState = ref.watch(householdProvider);
     final isLoading = householdState is HouseholdStateLoading;
 
     // Listen for household state changes
-    ref.listen<HouseholdState>(householdNotifierProvider, (previous, next) {
+    ref.listen<HouseholdState>(householdProvider, (previous, next) {
       next.when(
         initial: () {},
         loading: () {},
@@ -269,7 +269,7 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
 
   void _submitCreate() {
     if (_createFormKey.currentState!.validate()) {
-      ref.read(householdNotifierProvider.notifier).createHousehold(
+      ref.read(householdProvider.notifier).createHousehold(
             name: _nameController.text.trim(),
             hemisphere: _selectedHemisphere,
           );
@@ -278,7 +278,7 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
 
   void _submitJoin() {
     if (_joinFormKey.currentState!.validate()) {
-      ref.read(householdNotifierProvider.notifier).joinHousehold(
+      ref.read(householdProvider.notifier).joinHousehold(
             _codeController.text.trim(),
           );
     }
@@ -298,7 +298,7 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(dialogContext);
-              ref.read(authNotifierProvider.notifier).signOut();
+              ref.read(authProvider.notifier).signOut();
               context.go(AppRoutes.login);
             },
             style: ElevatedButton.styleFrom(

@@ -69,25 +69,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final today = DateTime.now();
     final weekStart = DateTime(today.year, today.month, today.day);
     ref
-        .read(upcomingMealsNotifierProvider.notifier)
+        .read(upcomingMealsProvider.notifier)
         .loadWeekIfNeeded(weekStart);
 
     // Load menu plans for the FAB
-    ref.read(menuPlansNotifierProvider.notifier).loadMenuPlansIfNeeded();
+    ref.read(menuPlansProvider.notifier).loadMenuPlansIfNeeded();
 
     // Load wishlists for the shopping list card
-    ref.read(wishlistsNotifierProvider.notifier).loadWishlistsIfNeeded();
+    ref.read(wishlistsProvider.notifier).loadWishlistsIfNeeded();
 
     // Load expenses for the expenses summary card
-    ref.read(expensesNotifierProvider.notifier).loadExpensesIfNeeded();
+    ref.read(expensesProvider.notifier).loadExpensesIfNeeded();
 
     // Load calendar events for the upcoming events card
-    ref.read(calendarNotifierProvider.notifier).loadEventsIfNeeded();
+    ref.read(calendarProvider.notifier).loadEventsIfNeeded();
   }
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authNotifierProvider);
+    final authState = ref.watch(authProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -189,11 +189,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final weekStart = DateTime(today.year, today.month, today.day);
 
     await Future.wait([
-      ref.read(upcomingMealsNotifierProvider.notifier).loadWeek(weekStart),
-      ref.read(menuPlansNotifierProvider.notifier).loadMenuPlans(),
-      ref.read(wishlistsNotifierProvider.notifier).loadWishlists(),
-      ref.read(expensesNotifierProvider.notifier).loadExpenses(),
-      ref.read(calendarNotifierProvider.notifier).loadEvents(),
+      ref.read(upcomingMealsProvider.notifier).loadWeek(weekStart),
+      ref.read(menuPlansProvider.notifier).loadMenuPlans(),
+      ref.read(wishlistsProvider.notifier).loadWishlists(),
+      ref.read(expensesProvider.notifier).loadExpenses(),
+      ref.read(calendarProvider.notifier).loadEvents(),
     ]);
   }
 }

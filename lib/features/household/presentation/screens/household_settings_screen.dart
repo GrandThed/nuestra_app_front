@@ -36,15 +36,15 @@ class _HouseholdSettingsScreenState
   }
 
   void _loadData() {
-    final authState = ref.read(authNotifierProvider);
+    final authState = ref.read(authProvider);
     if (authState is AuthStateAuthenticated) {
       final householdId = authState.user.households?.firstOrNull?.id;
       if (householdId != null) {
         ref
-            .read(householdNotifierProvider.notifier)
+            .read(householdProvider.notifier)
             .loadHouseholdIfNeeded(householdId);
         ref
-            .read(activeInviteNotifierProvider.notifier)
+            .read(activeInviteProvider.notifier)
             .loadActiveInviteIfNeeded(householdId);
       }
     }
@@ -52,9 +52,9 @@ class _HouseholdSettingsScreenState
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authNotifierProvider);
-    final householdState = ref.watch(householdNotifierProvider);
-    final inviteState = ref.watch(activeInviteNotifierProvider);
+    final authState = ref.watch(authProvider);
+    final householdState = ref.watch(householdProvider);
+    final inviteState = ref.watch(activeInviteProvider);
 
     final currentUser =
         authState is AuthStateAuthenticated ? authState.user : null;
@@ -472,7 +472,7 @@ class _HouseholdSettingsScreenState
 
   Future<void> _updateSplitMode(HouseholdModel household, String splitMode) async {
     final success =
-        await ref.read(householdNotifierProvider.notifier).updateHousehold(
+        await ref.read(householdProvider.notifier).updateHousehold(
               householdId: household.id,
               splitMode: splitMode,
             );
@@ -494,10 +494,10 @@ class _HouseholdSettingsScreenState
   }
 
   Future<void> _updateIncome(MemberModel member, double income) async {
-    final householdState = ref.read(householdNotifierProvider);
+    final householdState = ref.read(householdProvider);
     if (householdState is HouseholdStateLoaded) {
       final success =
-          await ref.read(householdNotifierProvider.notifier).updateMember(
+          await ref.read(householdProvider.notifier).updateMember(
                 householdId: householdState.household.id,
                 userId: member.userId,
                 income: income,
@@ -516,10 +516,10 @@ class _HouseholdSettingsScreenState
   }
 
   Future<void> _updatePaysExpenses(MemberModel member, bool paysExpenses) async {
-    final householdState = ref.read(householdNotifierProvider);
+    final householdState = ref.read(householdProvider);
     if (householdState is HouseholdStateLoaded) {
       final success =
-          await ref.read(householdNotifierProvider.notifier).updateMember(
+          await ref.read(householdProvider.notifier).updateMember(
                 householdId: householdState.household.id,
                 userId: member.userId,
                 paysExpenses: paysExpenses,
@@ -541,7 +541,7 @@ class _HouseholdSettingsScreenState
     setState(() => _isGeneratingInvite = true);
 
     final invite =
-        await ref.read(activeInviteNotifierProvider.notifier).generateInvite(
+        await ref.read(activeInviteProvider.notifier).generateInvite(
               householdId: householdId,
             );
 
@@ -630,7 +630,7 @@ O ingresa el código manualmente: $code
 
   Future<void> _leaveHousehold(String householdId, String userId) async {
     final success =
-        await ref.read(householdNotifierProvider.notifier).leaveHousehold(
+        await ref.read(householdProvider.notifier).leaveHousehold(
               householdId: householdId,
               userId: userId,
             );
@@ -684,7 +684,7 @@ O ingresa el código manualmente: $code
 
   Future<void> _deleteHousehold(String householdId) async {
     final success =
-        await ref.read(householdNotifierProvider.notifier).deleteHousehold(
+        await ref.read(householdProvider.notifier).deleteHousehold(
               householdId: householdId,
             );
 

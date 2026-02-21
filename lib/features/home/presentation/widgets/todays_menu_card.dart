@@ -14,7 +14,7 @@ class TodaysMenuCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(upcomingMealsNotifierProvider);
+    final state = ref.watch(upcomingMealsProvider);
     final today = DateTime.now();
 
     return Card(

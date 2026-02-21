@@ -6,271 +6,405 @@ part of 'menus_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$menuPlansNotifierHash() => r'2c05f8dd8f9635353442960ea3bb7bca9a701d9b';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// Notifier for menu plans list
+
+@ProviderFor(MenuPlansNotifier)
+final menuPlansProvider = MenuPlansNotifierProvider._();
 
 /// Notifier for menu plans list
-///
-/// Copied from [MenuPlansNotifier].
-@ProviderFor(MenuPlansNotifier)
-final menuPlansNotifierProvider =
-    NotifierProvider<MenuPlansNotifier, MenuPlansState>.internal(
-      MenuPlansNotifier.new,
-      name: r'menuPlansNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$menuPlansNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
+final class MenuPlansNotifierProvider
+    extends $NotifierProvider<MenuPlansNotifier, MenuPlansState> {
+  /// Notifier for menu plans list
+  MenuPlansNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'menuPlansProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
 
-typedef _$MenuPlansNotifier = Notifier<MenuPlansState>;
+  @override
+  String debugGetCreateSourceHash() => _$menuPlansNotifierHash();
+
+  @$internal
+  @override
+  MenuPlansNotifier create() => MenuPlansNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(MenuPlansState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<MenuPlansState>(value),
+    );
+  }
+}
+
+String _$menuPlansNotifierHash() => r'469b5fd604a1c9d71df2ec2d1b0637940868bc54';
+
+/// Notifier for menu plans list
+
+abstract class _$MenuPlansNotifier extends $Notifier<MenuPlansState> {
+  MenuPlansState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<MenuPlansState, MenuPlansState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<MenuPlansState, MenuPlansState>,
+              MenuPlansState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Notifier for upcoming meals (weekly view)
+
+@ProviderFor(UpcomingMealsNotifier)
+final upcomingMealsProvider = UpcomingMealsNotifierProvider._();
+
+/// Notifier for upcoming meals (weekly view)
+final class UpcomingMealsNotifierProvider
+    extends $NotifierProvider<UpcomingMealsNotifier, UpcomingMealsState> {
+  /// Notifier for upcoming meals (weekly view)
+  UpcomingMealsNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'upcomingMealsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$upcomingMealsNotifierHash();
+
+  @$internal
+  @override
+  UpcomingMealsNotifier create() => UpcomingMealsNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(UpcomingMealsState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<UpcomingMealsState>(value),
+    );
+  }
+}
+
 String _$upcomingMealsNotifierHash() =>
     r'3aa1aa0b3c5b621c1880210b46d6fea3ea660171';
 
 /// Notifier for upcoming meals (weekly view)
-///
-/// Copied from [UpcomingMealsNotifier].
-@ProviderFor(UpcomingMealsNotifier)
-final upcomingMealsNotifierProvider =
-    NotifierProvider<UpcomingMealsNotifier, UpcomingMealsState>.internal(
-      UpcomingMealsNotifier.new,
-      name: r'upcomingMealsNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$upcomingMealsNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
 
-typedef _$UpcomingMealsNotifier = Notifier<UpcomingMealsState>;
-String _$menuPlanDetailNotifierHash() =>
-    r'e7294e89d28cca7c36faeb703096314a30e94abc';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
+abstract class _$UpcomingMealsNotifier extends $Notifier<UpcomingMealsState> {
+  UpcomingMealsState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<UpcomingMealsState, UpcomingMealsState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<UpcomingMealsState, UpcomingMealsState>,
+              UpcomingMealsState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
   }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-abstract class _$MenuPlanDetailNotifier
-    extends BuildlessNotifier<MenuPlanDetailState> {
-  late final String menuId;
-
-  MenuPlanDetailState build(String menuId);
 }
 
 /// Notifier for single menu plan detail
-///
-/// Copied from [MenuPlanDetailNotifier].
+
 @ProviderFor(MenuPlanDetailNotifier)
-const menuPlanDetailNotifierProvider = MenuPlanDetailNotifierFamily();
+final menuPlanDetailProvider = MenuPlanDetailNotifierFamily._();
 
 /// Notifier for single menu plan detail
-///
-/// Copied from [MenuPlanDetailNotifier].
-class MenuPlanDetailNotifierFamily extends Family<MenuPlanDetailState> {
+final class MenuPlanDetailNotifierProvider
+    extends $NotifierProvider<MenuPlanDetailNotifier, MenuPlanDetailState> {
   /// Notifier for single menu plan detail
-  ///
-  /// Copied from [MenuPlanDetailNotifier].
-  const MenuPlanDetailNotifierFamily();
+  MenuPlanDetailNotifierProvider._({
+    required MenuPlanDetailNotifierFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'menuPlanDetailProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
-  /// Notifier for single menu plan detail
-  ///
-  /// Copied from [MenuPlanDetailNotifier].
-  MenuPlanDetailNotifierProvider call(String menuId) {
-    return MenuPlanDetailNotifierProvider(menuId);
+  @override
+  String debugGetCreateSourceHash() => _$menuPlanDetailNotifierHash();
+
+  @override
+  String toString() {
+    return r'menuPlanDetailProvider'
+        ''
+        '($argument)';
   }
 
+  @$internal
   @override
-  MenuPlanDetailNotifierProvider getProviderOverride(
-    covariant MenuPlanDetailNotifierProvider provider,
-  ) {
-    return call(provider.menuId);
-  }
+  MenuPlanDetailNotifier create() => MenuPlanDetailNotifier();
 
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'menuPlanDetailNotifierProvider';
-}
-
-/// Notifier for single menu plan detail
-///
-/// Copied from [MenuPlanDetailNotifier].
-class MenuPlanDetailNotifierProvider
-    extends NotifierProviderImpl<MenuPlanDetailNotifier, MenuPlanDetailState> {
-  /// Notifier for single menu plan detail
-  ///
-  /// Copied from [MenuPlanDetailNotifier].
-  MenuPlanDetailNotifierProvider(String menuId)
-    : this._internal(
-        () => MenuPlanDetailNotifier()..menuId = menuId,
-        from: menuPlanDetailNotifierProvider,
-        name: r'menuPlanDetailNotifierProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$menuPlanDetailNotifierHash,
-        dependencies: MenuPlanDetailNotifierFamily._dependencies,
-        allTransitiveDependencies:
-            MenuPlanDetailNotifierFamily._allTransitiveDependencies,
-        menuId: menuId,
-      );
-
-  MenuPlanDetailNotifierProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.menuId,
-  }) : super.internal();
-
-  final String menuId;
-
-  @override
-  MenuPlanDetailState runNotifierBuild(
-    covariant MenuPlanDetailNotifier notifier,
-  ) {
-    return notifier.build(menuId);
-  }
-
-  @override
-  Override overrideWith(MenuPlanDetailNotifier Function() create) {
-    return ProviderOverride(
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(MenuPlanDetailState value) {
+    return $ProviderOverride(
       origin: this,
-      override: MenuPlanDetailNotifierProvider._internal(
-        () => create()..menuId = menuId,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        menuId: menuId,
-      ),
+      providerOverride: $SyncValueProvider<MenuPlanDetailState>(value),
     );
-  }
-
-  @override
-  NotifierProviderElement<MenuPlanDetailNotifier, MenuPlanDetailState>
-  createElement() {
-    return _MenuPlanDetailNotifierProviderElement(this);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is MenuPlanDetailNotifierProvider && other.menuId == menuId;
+    return other is MenuPlanDetailNotifierProvider &&
+        other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, menuId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin MenuPlanDetailNotifierRef on NotifierProviderRef<MenuPlanDetailState> {
-  /// The parameter `menuId` of this provider.
-  String get menuId;
-}
+String _$menuPlanDetailNotifierHash() =>
+    r'd892bc98f3b13c93dc8e143ba39f5cc0b4aa9bf9';
 
-class _MenuPlanDetailNotifierProviderElement
-    extends NotifierProviderElement<MenuPlanDetailNotifier, MenuPlanDetailState>
-    with MenuPlanDetailNotifierRef {
-  _MenuPlanDetailNotifierProviderElement(super.provider);
+/// Notifier for single menu plan detail
+
+final class MenuPlanDetailNotifierFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          MenuPlanDetailNotifier,
+          MenuPlanDetailState,
+          MenuPlanDetailState,
+          MenuPlanDetailState,
+          String
+        > {
+  MenuPlanDetailNotifierFamily._()
+    : super(
+        retry: null,
+        name: r'menuPlanDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: false,
+      );
+
+  /// Notifier for single menu plan detail
+
+  MenuPlanDetailNotifierProvider call(String menuId) =>
+      MenuPlanDetailNotifierProvider._(argument: menuId, from: this);
 
   @override
-  String get menuId => (origin as MenuPlanDetailNotifierProvider).menuId;
+  String toString() => r'menuPlanDetailProvider';
+}
+
+/// Notifier for single menu plan detail
+
+abstract class _$MenuPlanDetailNotifier extends $Notifier<MenuPlanDetailState> {
+  late final _$args = ref.$arg as String;
+  String get menuId => _$args;
+
+  MenuPlanDetailState build(String menuId);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<MenuPlanDetailState, MenuPlanDetailState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<MenuPlanDetailState, MenuPlanDetailState>,
+              MenuPlanDetailState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+/// Provider for selected week start date
+
+@ProviderFor(SelectedWeekStart)
+final selectedWeekStartProvider = SelectedWeekStartProvider._();
+
+/// Provider for selected week start date
+final class SelectedWeekStartProvider
+    extends $NotifierProvider<SelectedWeekStart, DateTime> {
+  /// Provider for selected week start date
+  SelectedWeekStartProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'selectedWeekStartProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$selectedWeekStartHash();
+
+  @$internal
+  @override
+  SelectedWeekStart create() => SelectedWeekStart();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(DateTime value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<DateTime>(value),
+    );
+  }
 }
 
 String _$selectedWeekStartHash() => r'ab31f87fd1b7cf2bbe72839fd5eeb279b1fcbf51';
 
 /// Provider for selected week start date
-///
-/// Copied from [SelectedWeekStart].
-@ProviderFor(SelectedWeekStart)
-final selectedWeekStartProvider =
-    AutoDisposeNotifierProvider<SelectedWeekStart, DateTime>.internal(
-      SelectedWeekStart.new,
-      name: r'selectedWeekStartProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$selectedWeekStartHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
 
-typedef _$SelectedWeekStart = AutoDisposeNotifier<DateTime>;
+abstract class _$SelectedWeekStart extends $Notifier<DateTime> {
+  DateTime build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<DateTime, DateTime>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<DateTime, DateTime>,
+              DateTime,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Provider for currently selected menu plan ID
+
+@ProviderFor(CurrentMenuPlanId)
+final currentMenuPlanIdProvider = CurrentMenuPlanIdProvider._();
+
+/// Provider for currently selected menu plan ID
+final class CurrentMenuPlanIdProvider
+    extends $NotifierProvider<CurrentMenuPlanId, String?> {
+  /// Provider for currently selected menu plan ID
+  CurrentMenuPlanIdProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'currentMenuPlanIdProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$currentMenuPlanIdHash();
+
+  @$internal
+  @override
+  CurrentMenuPlanId create() => CurrentMenuPlanId();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String? value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String?>(value),
+    );
+  }
+}
+
 String _$currentMenuPlanIdHash() => r'd8c7f5b637349bfdc0ee1247277fd7c27b51f302';
 
 /// Provider for currently selected menu plan ID
-///
-/// Copied from [CurrentMenuPlanId].
-@ProviderFor(CurrentMenuPlanId)
-final currentMenuPlanIdProvider =
-    NotifierProvider<CurrentMenuPlanId, String?>.internal(
-      CurrentMenuPlanId.new,
-      name: r'currentMenuPlanIdProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$currentMenuPlanIdHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
 
-typedef _$CurrentMenuPlanId = Notifier<String?>;
+abstract class _$CurrentMenuPlanId extends $Notifier<String?> {
+  String? build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<String?, String?>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<String?, String?>,
+              String?,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Notifier for meal history
+
+@ProviderFor(MealHistoryNotifier)
+final mealHistoryProvider = MealHistoryNotifierProvider._();
+
+/// Notifier for meal history
+final class MealHistoryNotifierProvider
+    extends $NotifierProvider<MealHistoryNotifier, MealHistoryState> {
+  /// Notifier for meal history
+  MealHistoryNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'mealHistoryProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$mealHistoryNotifierHash();
+
+  @$internal
+  @override
+  MealHistoryNotifier create() => MealHistoryNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(MealHistoryState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<MealHistoryState>(value),
+    );
+  }
+}
+
 String _$mealHistoryNotifierHash() =>
     r'10a1e7d5e2903ee5ad712e944d78c7a84c49cf9a';
 
 /// Notifier for meal history
-///
-/// Copied from [MealHistoryNotifier].
-@ProviderFor(MealHistoryNotifier)
-final mealHistoryNotifierProvider =
-    NotifierProvider<MealHistoryNotifier, MealHistoryState>.internal(
-      MealHistoryNotifier.new,
-      name: r'mealHistoryNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$mealHistoryNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
 
-typedef _$MealHistoryNotifier = Notifier<MealHistoryState>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$MealHistoryNotifier extends $Notifier<MealHistoryState> {
+  MealHistoryState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<MealHistoryState, MealHistoryState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<MealHistoryState, MealHistoryState>,
+              MealHistoryState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

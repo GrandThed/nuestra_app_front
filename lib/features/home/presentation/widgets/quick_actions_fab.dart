@@ -189,7 +189,7 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
 
   void _navigateToAddMeal(BuildContext context) {
     // Get current menu plan ID or create one
-    final menuPlansState = ref.read(menuPlansNotifierProvider);
+    final menuPlansState = ref.read(menuPlansProvider);
 
     if (menuPlansState is MenuPlansStateLoaded && menuPlansState.plans.isNotEmpty) {
       final menuId = menuPlansState.plans.first.id;

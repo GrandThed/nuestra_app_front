@@ -30,7 +30,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(wishlistsNotifierProvider.notifier).loadWishlistsIfNeeded();
+      ref.read(wishlistsProvider.notifier).loadWishlistsIfNeeded();
       _loadCollapsedState();
     });
   }
@@ -60,7 +60,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
   }
 
   Future<void> _onRefresh() async {
-    await ref.read(wishlistsNotifierProvider.notifier).loadWishlists();
+    await ref.read(wishlistsProvider.notifier).loadWishlists();
   }
 
   void _showAddItemDialog({String? categoryId}) {
@@ -80,7 +80,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
   }
 
   void _confirmClearChecked() {
-    final state = ref.read(wishlistsNotifierProvider);
+    final state = ref.read(wishlistsProvider);
     if (state is! WishlistsStateLoaded) return;
 
     final checkedCount = state.items.where((i) => i.checked).length;
@@ -106,7 +106,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              ref.read(wishlistsNotifierProvider.notifier).clearCheckedItems(
+              ref.read(wishlistsProvider.notifier).clearCheckedItems(
                     categoryId: _selectedCategoryId,
                   );
             },
@@ -120,7 +120,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(wishlistsNotifierProvider);
+    final state = ref.watch(wishlistsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -348,7 +348,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
   }
 
   Future<void> _quickAddItem(String categoryId, String name) async {
-    await ref.read(wishlistsNotifierProvider.notifier).createItem(
+    await ref.read(wishlistsProvider.notifier).createItem(
           categoryId: categoryId,
           name: name,
         );
@@ -469,7 +469,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
   }
 
   void _toggleItem(WishlistItemModel item) {
-    ref.read(wishlistsNotifierProvider.notifier).toggleItemChecked(
+    ref.read(wishlistsProvider.notifier).toggleItemChecked(
           item.id,
           !item.checked,
         );
@@ -486,7 +486,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
   }
 
   void _deleteItem(WishlistItemModel item) {
-    ref.read(wishlistsNotifierProvider.notifier).deleteItem(item.id);
+    ref.read(wishlistsProvider.notifier).deleteItem(item.id);
   }
 
   void _confirmDeleteItem(WishlistItemModel item) {
@@ -585,7 +585,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
             onPressed: () {
               if (controller.text.trim().isNotEmpty) {
                 Navigator.pop(context);
-                ref.read(wishlistsNotifierProvider.notifier).updateCategory(
+                ref.read(wishlistsProvider.notifier).updateCategory(
                       id: category.id,
                       name: controller.text.trim(),
                     );
@@ -614,7 +614,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
           TextButton(
             onPressed: () {
               Navigator.pop(context);
-              ref.read(wishlistsNotifierProvider.notifier).deleteCategory(category.id);
+              ref.read(wishlistsProvider.notifier).deleteCategory(category.id);
               if (_selectedCategoryId == category.id) {
                 setState(() => _selectedCategoryId = null);
               }

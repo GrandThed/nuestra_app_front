@@ -45,61 +45,50 @@ Map<String, dynamic> _$LinkedMenuPlanModelToJson(
   _LinkedMenuPlanModel instance,
 ) => <String, dynamic>{'id': instance.id, 'name': instance.name};
 
-_CalendarEventModel _$CalendarEventModelFromJson(Map<String, dynamic> json) =>
-    _CalendarEventModel(
-      id: json['id'] as String,
-      householdId: json['householdId'] as String,
-      title: json['title'] as String,
-      description: json['description'] as String?,
-      startDate: DateTime.parse(json['startDate'] as String),
-      endDate:
-          json['endDate'] == null
-              ? null
-              : DateTime.parse(json['endDate'] as String),
-      allDay: json['allDay'] as bool? ?? false,
-      recurrence:
-          $enumDecodeNullable(_$RecurrenceTypeEnumMap, json['recurrence']) ??
-          RecurrenceType.none,
-      recurrenceEndDate:
-          json['recurrenceEndDate'] == null
-              ? null
-              : DateTime.parse(json['recurrenceEndDate'] as String),
-      linkedBoard:
-          json['linkedBoard'] == null
-              ? null
-              : LinkedBoardModel.fromJson(
-                json['linkedBoard'] as Map<String, dynamic>,
-              ),
-      linkedRecipe:
-          json['linkedRecipe'] == null
-              ? null
-              : LinkedRecipeModel.fromJson(
-                json['linkedRecipe'] as Map<String, dynamic>,
-              ),
-      linkedMenuPlan:
-          json['linkedMenuPlan'] == null
-              ? null
-              : LinkedMenuPlanModel.fromJson(
-                json['linkedMenuPlan'] as Map<String, dynamic>,
-              ),
-      createdBy:
-          json['createdBy'] == null
-              ? null
-              : CalendarUserModel.fromJson(
-                json['createdBy'] as Map<String, dynamic>,
-              ),
-      isOccurrence: json['isOccurrence'] as bool? ?? false,
-      occurrenceDate:
-          json['occurrenceDate'] == null
-              ? null
-              : DateTime.parse(json['occurrenceDate'] as String),
-      occurrenceId: json['occurrenceId'] as String?,
-      colorHex: json['colorHex'] as String?,
-      createdAt:
-          json['createdAt'] == null
-              ? null
-              : DateTime.parse(json['createdAt'] as String),
-    );
+_CalendarEventModel _$CalendarEventModelFromJson(
+  Map<String, dynamic> json,
+) => _CalendarEventModel(
+  id: json['id'] as String,
+  householdId: json['householdId'] as String,
+  title: json['title'] as String,
+  description: json['description'] as String?,
+  startDate: DateTime.parse(json['startDate'] as String),
+  endDate: json['endDate'] == null
+      ? null
+      : DateTime.parse(json['endDate'] as String),
+  allDay: json['allDay'] as bool? ?? false,
+  recurrence:
+      $enumDecodeNullable(_$RecurrenceTypeEnumMap, json['recurrence']) ??
+      RecurrenceType.none,
+  recurrenceEndDate: json['recurrenceEndDate'] == null
+      ? null
+      : DateTime.parse(json['recurrenceEndDate'] as String),
+  linkedBoard: json['linkedBoard'] == null
+      ? null
+      : LinkedBoardModel.fromJson(json['linkedBoard'] as Map<String, dynamic>),
+  linkedRecipe: json['linkedRecipe'] == null
+      ? null
+      : LinkedRecipeModel.fromJson(
+          json['linkedRecipe'] as Map<String, dynamic>,
+        ),
+  linkedMenuPlan: json['linkedMenuPlan'] == null
+      ? null
+      : LinkedMenuPlanModel.fromJson(
+          json['linkedMenuPlan'] as Map<String, dynamic>,
+        ),
+  createdBy: json['createdBy'] == null
+      ? null
+      : CalendarUserModel.fromJson(json['createdBy'] as Map<String, dynamic>),
+  isOccurrence: json['isOccurrence'] as bool? ?? false,
+  occurrenceDate: json['occurrenceDate'] == null
+      ? null
+      : DateTime.parse(json['occurrenceDate'] as String),
+  occurrenceId: json['occurrenceId'] as String?,
+  colorHex: json['colorHex'] as String?,
+  createdAt: json['createdAt'] == null
+      ? null
+      : DateTime.parse(json['createdAt'] as String),
+);
 
 Map<String, dynamic> _$CalendarEventModelToJson(_CalendarEventModel instance) =>
     <String, dynamic>{
@@ -165,12 +154,9 @@ _AvailabilityDayModel _$AvailabilityDayModelFromJson(
   Map<String, dynamic> json,
 ) => _AvailabilityDayModel(
   date: json['date'] as String,
-  events:
-      (json['events'] as List<dynamic>)
-          .map(
-            (e) => AvailabilityEventModel.fromJson(e as Map<String, dynamic>),
-          )
-          .toList(),
+  events: (json['events'] as List<dynamic>)
+      .map((e) => AvailabilityEventModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
   isFree: json['isFree'] as bool,
 );
 
@@ -223,16 +209,12 @@ Map<String, dynamic> _$AvailabilityMemberModelToJson(
 _AvailabilityResultModel _$AvailabilityResultModelFromJson(
   Map<String, dynamic> json,
 ) => _AvailabilityResultModel(
-  members:
-      (json['members'] as List<dynamic>)
-          .map(
-            (e) => AvailabilityMemberModel.fromJson(e as Map<String, dynamic>),
-          )
-          .toList(),
-  days:
-      (json['days'] as List<dynamic>)
-          .map((e) => AvailabilityDayModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  members: (json['members'] as List<dynamic>)
+      .map((e) => AvailabilityMemberModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
+  days: (json['days'] as List<dynamic>)
+      .map((e) => AvailabilityDayModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
 );
 
 Map<String, dynamic> _$AvailabilityResultModelToJson(

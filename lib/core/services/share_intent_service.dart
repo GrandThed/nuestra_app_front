@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:nuestra_app/core/providers/shared_content_provider.dart';
 
 // Re-export SharedContent and sharedContentProvider for backward compatibility
 export 'package:nuestra_app/core/providers/shared_content_provider.dart';
@@ -13,7 +12,7 @@ import 'share_intent_service_impl.dart'
 /// Provider for ShareIntentService
 final shareIntentServiceProvider = Provider<platform.ShareIntentService>((ref) {
   // On web, this will use the stub implementation
-  final service = platform.createShareIntentService(ref, sharedContentProvider);
+  final service = platform.createShareIntentService(ref);
   ref.onDispose(() => service.dispose());
   return service;
 });

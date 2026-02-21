@@ -36,13 +36,13 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
     _selectedYear = widget.year ?? now.year;
 
     Future.microtask(() {
-      ref.read(expenseSummaryNotifierProvider.notifier).loadSummary(
+      ref.read(expenseSummaryProvider.notifier).loadSummary(
             month: _selectedMonth,
             year: _selectedYear,
             forceLoading: true,
           );
       // Also load expenses for the same month/year
-      ref.read(expensesNotifierProvider.notifier).loadExpenses(
+      ref.read(expensesProvider.notifier).loadExpenses(
             month: _selectedMonth,
             year: _selectedYear,
             forceLoading: true,
@@ -71,13 +71,13 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
         _selectedMonth = result['month']!;
         _selectedYear = result['year']!;
       });
-      ref.read(expenseSummaryNotifierProvider.notifier).loadSummary(
+      ref.read(expenseSummaryProvider.notifier).loadSummary(
             month: _selectedMonth,
             year: _selectedYear,
             forceLoading: true,
           );
       // Also reload expenses for the new month/year
-      ref.read(expensesNotifierProvider.notifier).loadExpenses(
+      ref.read(expensesProvider.notifier).loadExpenses(
             month: _selectedMonth,
             year: _selectedYear,
             forceLoading: true,
@@ -110,7 +110,7 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
 
     if (confirmed == true && mounted) {
       final result = await ref
-          .read(expenseSummaryNotifierProvider.notifier)
+          .read(expenseSummaryProvider.notifier)
           .recalculateSplits(
             month: _selectedMonth,
             year: _selectedYear,
@@ -126,12 +126,12 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
           ),
         );
         // Reload summary and expenses
-        ref.read(expenseSummaryNotifierProvider.notifier).loadSummary(
+        ref.read(expenseSummaryProvider.notifier).loadSummary(
               month: _selectedMonth,
               year: _selectedYear,
               forceLoading: true,
             );
-        ref.read(expensesNotifierProvider.notifier).loadExpenses(
+        ref.read(expensesProvider.notifier).loadExpenses(
               month: _selectedMonth,
               year: _selectedYear,
               forceLoading: true,
@@ -141,7 +141,7 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
   }
 
   Future<void> _settlePeriod() async {
-    final summaryState = ref.read(expenseSummaryNotifierProvider);
+    final summaryState = ref.read(expenseSummaryProvider);
     if (summaryState is! ExpenseSummaryStateLoaded) return;
 
     final summary = summaryState.summary;
@@ -213,7 +213,7 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
 
     if (confirmed == true && mounted) {
       final result = await ref
-          .read(expenseSummaryNotifierProvider.notifier)
+          .read(expenseSummaryProvider.notifier)
           .settlePeriod(fromDate: fromDate, toDate: toDate);
 
       if (mounted && result != null) {
@@ -225,9 +225,9 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
           ),
         );
         // Also refresh the main expenses list
-        ref.read(expensesNotifierProvider.notifier).loadExpenses();
+        ref.read(expensesProvider.notifier).loadExpenses();
         // Reload summary with current month/year
-        ref.read(expenseSummaryNotifierProvider.notifier).loadSummary(
+        ref.read(expenseSummaryProvider.notifier).loadSummary(
               month: _selectedMonth,
               year: _selectedYear,
               forceLoading: true,
@@ -238,7 +238,7 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(expenseSummaryNotifierProvider);
+    final state = ref.watch(expenseSummaryProvider);
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -273,7 +273,7 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
                 const SizedBox(height: AppSizes.md),
                 FilledButton.icon(
                   onPressed: () => ref
-                      .read(expenseSummaryNotifierProvider.notifier)
+                      .read(expenseSummaryProvider.notifier)
                       .loadSummary(
                         month: _selectedMonth,
                         year: _selectedYear,
@@ -293,7 +293,7 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
 
   Widget _buildContent(ExpenseSummaryModel summary, ColorScheme colorScheme) {
     // Get expenses from the expenses notifier
-    final expensesState = ref.watch(expensesNotifierProvider);
+    final expensesState = ref.watch(expensesProvider);
     final allExpenses = expensesState is ExpensesStateLoaded ? expensesState.expenses : <ExpenseModel>[];
 
     // Separate into pending and settled
@@ -302,7 +302,7 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
 
     return RefreshIndicator(
       onRefresh: () => ref
-          .read(expenseSummaryNotifierProvider.notifier)
+          .read(expenseSummaryProvider.notifier)
           .loadSummary(month: _selectedMonth, year: _selectedYear),
       child: ListView(
         padding: const EdgeInsets.all(AppSizes.lg),

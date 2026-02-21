@@ -2,16 +2,25 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'api_interceptor.g.dart';
 
 /// Provider for secure storage
 final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
   return const FlutterSecureStorage(
-    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+    aOptions: AndroidOptions(),
   );
 });
 
 /// Provider for auth token
-final authTokenProvider = StateProvider<String?>((ref) => null);
+@Riverpod(keepAlive: true)
+class AuthTokenNotifier extends _$AuthTokenNotifier {
+  @override
+  String? build() => null;
+
+  void set(String? token) => state = token;
+}
 
 /// Interceptor to add JWT token to requests
 class AuthInterceptor extends Interceptor {
@@ -36,7 +45,7 @@ class AuthInterceptor extends Interceptor {
       final storage = ref.read(secureStorageProvider);
       token = await storage.read(key: 'auth_token');
       if (token != null) {
-        ref.read(authTokenProvider.notifier).state = token;
+        ref.read(authTokenProvider.notifier).set(token);
       }
     }
 
@@ -53,7 +62,7 @@ class AuthInterceptor extends Interceptor {
     if (err.response?.statusCode == 401) {
       final storage = ref.read(secureStorageProvider);
       await storage.delete(key: 'auth_token');
-      ref.read(authTokenProvider.notifier).state = null;
+      ref.read(authTokenProvider.notifier).set(null);
     }
     handler.next(err);
   }

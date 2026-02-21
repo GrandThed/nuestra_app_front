@@ -27,7 +27,7 @@ class _AddCategoryDialogState extends ConsumerState<AddCategoryDialog> {
 
     setState(() => _isLoading = true);
 
-    final result = await ref.read(wishlistsNotifierProvider.notifier).createCategory(
+    final result = await ref.read(wishlistsProvider.notifier).createCategory(
           name: _nameController.text.trim(),
         );
 

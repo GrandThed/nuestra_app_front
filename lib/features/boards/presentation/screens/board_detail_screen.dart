@@ -40,7 +40,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     // Load board only if not already loaded
     Future.microtask(() {
       ref
-          .read(boardDetailNotifierProvider(widget.boardId).notifier)
+          .read(boardDetailProvider(widget.boardId).notifier)
           .loadBoardIfNeeded();
     });
   }
@@ -49,7 +49,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final boardState = ref.watch(boardDetailNotifierProvider(boardId));
+    final boardState = ref.watch(boardDetailProvider(boardId));
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +64,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
             icon: const Icon(Icons.refresh),
             onPressed: () {
               ref
-                  .read(boardDetailNotifierProvider(boardId).notifier)
+                  .read(boardDetailProvider(boardId).notifier)
                   .loadBoard();
             },
           ),
@@ -123,7 +123,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           ElevatedButton(
             onPressed: () {
               ref
-                  .read(boardDetailNotifierProvider(boardId).notifier)
+                  .read(boardDetailProvider(boardId).notifier)
                   .loadBoard();
             },
             child: const Text(AppStrings.retry),
@@ -139,7 +139,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     return RefreshIndicator(
       onRefresh: () async {
         await ref
-            .read(boardDetailNotifierProvider(boardId).notifier)
+            .read(boardDetailProvider(boardId).notifier)
             .loadBoard();
       },
       child: GridView.builder(
@@ -251,7 +251,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   if (url.isNotEmpty) {
                     Navigator.pop(dialogContext);
                     final item = await ref
-                        .read(boardDetailNotifierProvider(boardId).notifier)
+                        .read(boardDetailProvider(boardId).notifier)
                         .addLinkItem(
                           url: url,
                           title:
@@ -331,7 +331,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
     int successCount = 0;
     for (final photo in photos) {
       final item = await ref
-          .read(boardDetailNotifierProvider(boardId).notifier)
+          .read(boardDetailProvider(boardId).notifier)
           .addPhotoItem(photo: photo);
       if (item != null) successCount++;
     }
@@ -478,7 +478,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 onPressed: () async {
                   Navigator.pop(dialogContext);
                   await ref
-                      .read(boardDetailNotifierProvider(boardId).notifier)
+                      .read(boardDetailProvider(boardId).notifier)
                       .updateItem(
                         itemId: item.id,
                         photoBack: PhotoBackModel(
@@ -520,7 +520,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                 onPressed: () async {
                   Navigator.pop(dialogContext);
                   final success = await ref
-                      .read(boardDetailNotifierProvider(boardId).notifier)
+                      .read(boardDetailProvider(boardId).notifier)
                       .deleteItem(item.id);
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(

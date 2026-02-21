@@ -39,7 +39,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(calendarNotifierProvider.notifier).loadEventsIfNeeded();
+      ref.read(calendarProvider.notifier).loadEventsIfNeeded();
     });
   }
 
@@ -72,7 +72,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(calendarNotifierProvider);
+    final state = ref.watch(calendarProvider);
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -104,7 +104,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               icon: const Icon(Icons.today),
               tooltip: 'Ir a hoy',
               onPressed: () {
-                ref.read(calendarNotifierProvider.notifier).goToToday();
+                ref.read(calendarProvider.notifier).goToToday();
               },
             ),
             if (state is CalendarStateLoaded)
@@ -118,7 +118,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     ? 'Ver timeline'
                     : 'Ver calendario',
                 onPressed: () {
-                  ref.read(calendarNotifierProvider.notifier).setViewMode(
+                  ref.read(calendarProvider.notifier).setViewMode(
                         state.viewMode == CalendarViewMode.month
                             ? CalendarViewMode.timeline
                             : CalendarViewMode.month,
@@ -152,7 +152,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   ),
                 );
                 if (shouldLogout == true) {
-                  await ref.read(authNotifierProvider.notifier).signOut();
+                  await ref.read(authProvider.notifier).signOut();
                   if (context.mounted) {
                     context.go(AppRoutes.login);
                   }
@@ -188,7 +188,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 const SizedBox(height: AppSizes.md),
                 FilledButton.icon(
                   onPressed: () => ref
-                      .read(calendarNotifierProvider.notifier)
+                      .read(calendarProvider.notifier)
                       .loadEvents(forceLoading: true),
                   icon: const Icon(Icons.refresh),
                   label: const Text('Reintentar'),
@@ -238,7 +238,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     }
 
     return RefreshIndicator(
-      onRefresh: () => ref.read(calendarNotifierProvider.notifier).loadEvents(),
+      onRefresh: () => ref.read(calendarProvider.notifier).loadEvents(),
       child: Column(
         children: [
           TableCalendar<CalendarEventModel>(
@@ -331,12 +331,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               return eventMap[dateKey] ?? [];
             },
             onDaySelected: (selectedDay, focusedDay) {
-              ref.read(calendarNotifierProvider.notifier).setSelectedDate(
+              ref.read(calendarProvider.notifier).setSelectedDate(
                     selectedDay,
                   );
             },
             onPageChanged: (focusedDay) {
-              ref.read(calendarNotifierProvider.notifier).setFocusedMonth(
+              ref.read(calendarProvider.notifier).setFocusedMonth(
                     focusedDay,
                   );
             },
@@ -443,7 +443,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     }
 
     return RefreshIndicator(
-      onRefresh: () => ref.read(calendarNotifierProvider.notifier).loadEvents(),
+      onRefresh: () => ref.read(calendarProvider.notifier).loadEvents(),
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
         itemCount: sortedDays.length,

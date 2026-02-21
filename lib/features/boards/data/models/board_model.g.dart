@@ -13,10 +13,9 @@ _BoardModel _$BoardModelFromJson(Map<String, dynamic> json) => _BoardModel(
   compositeThumbnailUrl: json['compositeThumbnailUrl'] as String?,
   itemCount: (json['itemCount'] as num?)?.toInt() ?? 0,
   createdAt: DateTime.parse(json['createdAt'] as String),
-  items:
-      (json['items'] as List<dynamic>?)
-          ?.map((e) => BoardItemModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+  items: (json['items'] as List<dynamic>?)
+      ?.map((e) => BoardItemModel.fromJson(e as Map<String, dynamic>))
+      .toList(),
   previewItems:
       (json['previewItems'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -36,41 +35,41 @@ Map<String, dynamic> _$BoardModelToJson(_BoardModel instance) =>
       'previewItems': instance.previewItems,
     };
 
-_BoardItemModel _$BoardItemModelFromJson(
-  Map<String, dynamic> json,
-) => _BoardItemModel(
-  id: json['id'] as String,
-  type: json['type'] as String,
-  url: json['url'] as String?,
-  thumbnailUrl: json['thumbnailUrl'] as String?,
-  title: json['title'] as String?,
-  description: json['description'] as String?,
-  linkPreviewImage: json['linkPreviewImage'] as String?,
-  photoBack:
-      json['photoBack'] == null
+_BoardItemModel _$BoardItemModelFromJson(Map<String, dynamic> json) =>
+    _BoardItemModel(
+      id: json['id'] as String,
+      type: json['type'] as String,
+      url: json['url'] as String?,
+      thumbnailUrl: json['thumbnailUrl'] as String?,
+      title: json['title'] as String?,
+      description: json['description'] as String?,
+      linkPreviewImage: json['linkPreviewImage'] as String?,
+      photoBack: json['photoBack'] == null
           ? null
           : PhotoBackModel.fromJson(json['photoBack'] as Map<String, dynamic>),
-  createdBy:
-      json['createdBy'] == null
+      createdBy: json['createdBy'] == null
           ? null
           : BoardItemCreatorModel.fromJson(
-            json['createdBy'] as Map<String, dynamic>,
-          ),
-  sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
-  tags:
-      (json['tags'] as List<dynamic>?)
-          ?.map((e) => BoardItemTagModel.fromJson(e as Map<String, dynamic>))
-          .toList() ??
-      const [],
-  comments:
-      (json['comments'] as List<dynamic>?)
-          ?.map(
-            (e) => BoardItemCommentModel.fromJson(e as Map<String, dynamic>),
-          )
-          .toList() ??
-      const [],
-  createdAt: DateTime.parse(json['createdAt'] as String),
-);
+              json['createdBy'] as Map<String, dynamic>,
+            ),
+      sortOrder: (json['sortOrder'] as num?)?.toInt() ?? 0,
+      tags:
+          (json['tags'] as List<dynamic>?)
+              ?.map(
+                (e) => BoardItemTagModel.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          const [],
+      comments:
+          (json['comments'] as List<dynamic>?)
+              ?.map(
+                (e) =>
+                    BoardItemCommentModel.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          const [],
+      createdAt: DateTime.parse(json['createdAt'] as String),
+    );
 
 Map<String, dynamic> _$BoardItemModelToJson(_BoardItemModel instance) =>
     <String, dynamic>{
@@ -173,10 +172,9 @@ _BoardTemplateModel _$BoardTemplateModelFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String,
       name: json['name'] as String,
       description: json['description'] as String,
-      presetItems:
-          (json['presetItems'] as List<dynamic>)
-              .map((e) => e as Map<String, dynamic>)
-              .toList(),
+      presetItems: (json['presetItems'] as List<dynamic>)
+          .map((e) => e as Map<String, dynamic>)
+          .toList(),
     );
 
 Map<String, dynamic> _$BoardTemplateModelToJson(_BoardTemplateModel instance) =>

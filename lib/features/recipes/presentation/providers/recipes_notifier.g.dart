@@ -6,213 +6,232 @@ part of 'recipes_notifier.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$recipesNotifierHash() => r'7e09c6ac38919d9b7b117bb4107ddf031b03eeeb';
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// Notifier for recipes list operations
+
+@ProviderFor(RecipesNotifier)
+final recipesProvider = RecipesNotifierProvider._();
 
 /// Notifier for recipes list operations
-///
-/// Copied from [RecipesNotifier].
-@ProviderFor(RecipesNotifier)
-final recipesNotifierProvider =
-    NotifierProvider<RecipesNotifier, RecipesState>.internal(
-      RecipesNotifier.new,
-      name: r'recipesNotifierProvider',
-      debugGetCreateSourceHash:
-          const bool.fromEnvironment('dart.vm.product')
-              ? null
-              : _$recipesNotifierHash,
-      dependencies: null,
-      allTransitiveDependencies: null,
-    );
-
-typedef _$RecipesNotifier = Notifier<RecipesState>;
-String _$recipeDetailNotifierHash() =>
-    r'54c97089cdee314857e9710b7617e482d3fc0db2';
-
-/// Copied from Dart SDK
-class _SystemHash {
-  _SystemHash._();
-
-  static int combine(int hash, int value) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + value);
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x0007ffff & hash) << 10));
-    return hash ^ (hash >> 6);
-  }
-
-  static int finish(int hash) {
-    // ignore: parameter_assignments
-    hash = 0x1fffffff & (hash + ((0x03ffffff & hash) << 3));
-    // ignore: parameter_assignments
-    hash = hash ^ (hash >> 11);
-    return 0x1fffffff & (hash + ((0x00003fff & hash) << 15));
-  }
-}
-
-abstract class _$RecipeDetailNotifier
-    extends BuildlessNotifier<RecipeDetailState> {
-  late final String recipeId;
-
-  RecipeDetailState build(String recipeId);
-}
-
-/// Notifier for single recipe detail operations
-///
-/// Copied from [RecipeDetailNotifier].
-@ProviderFor(RecipeDetailNotifier)
-const recipeDetailNotifierProvider = RecipeDetailNotifierFamily();
-
-/// Notifier for single recipe detail operations
-///
-/// Copied from [RecipeDetailNotifier].
-class RecipeDetailNotifierFamily extends Family<RecipeDetailState> {
-  /// Notifier for single recipe detail operations
-  ///
-  /// Copied from [RecipeDetailNotifier].
-  const RecipeDetailNotifierFamily();
-
-  /// Notifier for single recipe detail operations
-  ///
-  /// Copied from [RecipeDetailNotifier].
-  RecipeDetailNotifierProvider call(String recipeId) {
-    return RecipeDetailNotifierProvider(recipeId);
-  }
-
-  @override
-  RecipeDetailNotifierProvider getProviderOverride(
-    covariant RecipeDetailNotifierProvider provider,
-  ) {
-    return call(provider.recipeId);
-  }
-
-  static const Iterable<ProviderOrFamily>? _dependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get dependencies => _dependencies;
-
-  static const Iterable<ProviderOrFamily>? _allTransitiveDependencies = null;
-
-  @override
-  Iterable<ProviderOrFamily>? get allTransitiveDependencies =>
-      _allTransitiveDependencies;
-
-  @override
-  String? get name => r'recipeDetailNotifierProvider';
-}
-
-/// Notifier for single recipe detail operations
-///
-/// Copied from [RecipeDetailNotifier].
-class RecipeDetailNotifierProvider
-    extends NotifierProviderImpl<RecipeDetailNotifier, RecipeDetailState> {
-  /// Notifier for single recipe detail operations
-  ///
-  /// Copied from [RecipeDetailNotifier].
-  RecipeDetailNotifierProvider(String recipeId)
-    : this._internal(
-        () => RecipeDetailNotifier()..recipeId = recipeId,
-        from: recipeDetailNotifierProvider,
-        name: r'recipeDetailNotifierProvider',
-        debugGetCreateSourceHash:
-            const bool.fromEnvironment('dart.vm.product')
-                ? null
-                : _$recipeDetailNotifierHash,
-        dependencies: RecipeDetailNotifierFamily._dependencies,
-        allTransitiveDependencies:
-            RecipeDetailNotifierFamily._allTransitiveDependencies,
-        recipeId: recipeId,
+final class RecipesNotifierProvider
+    extends $NotifierProvider<RecipesNotifier, RecipesState> {
+  /// Notifier for recipes list operations
+  RecipesNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'recipesProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
       );
 
-  RecipeDetailNotifierProvider._internal(
-    super._createNotifier, {
-    required super.name,
-    required super.dependencies,
-    required super.allTransitiveDependencies,
-    required super.debugGetCreateSourceHash,
-    required super.from,
-    required this.recipeId,
-  }) : super.internal();
-
-  final String recipeId;
-
   @override
-  RecipeDetailState runNotifierBuild(covariant RecipeDetailNotifier notifier) {
-    return notifier.build(recipeId);
-  }
+  String debugGetCreateSourceHash() => _$recipesNotifierHash();
 
+  @$internal
   @override
-  Override overrideWith(RecipeDetailNotifier Function() create) {
-    return ProviderOverride(
+  RecipesNotifier create() => RecipesNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(RecipesState value) {
+    return $ProviderOverride(
       origin: this,
-      override: RecipeDetailNotifierProvider._internal(
-        () => create()..recipeId = recipeId,
-        from: from,
-        name: null,
-        dependencies: null,
-        allTransitiveDependencies: null,
-        debugGetCreateSourceHash: null,
-        recipeId: recipeId,
-      ),
+      providerOverride: $SyncValueProvider<RecipesState>(value),
     );
   }
+}
+
+String _$recipesNotifierHash() => r'216c975074b1fae0bd0aa9ae1b938ef8370fa74c';
+
+/// Notifier for recipes list operations
+
+abstract class _$RecipesNotifier extends $Notifier<RecipesState> {
+  RecipesState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<RecipesState, RecipesState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<RecipesState, RecipesState>,
+              RecipesState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}
+
+/// Notifier for single recipe detail operations
+
+@ProviderFor(RecipeDetailNotifier)
+final recipeDetailProvider = RecipeDetailNotifierFamily._();
+
+/// Notifier for single recipe detail operations
+final class RecipeDetailNotifierProvider
+    extends $NotifierProvider<RecipeDetailNotifier, RecipeDetailState> {
+  /// Notifier for single recipe detail operations
+  RecipeDetailNotifierProvider._({
+    required RecipeDetailNotifierFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'recipeDetailProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
 
   @override
-  NotifierProviderElement<RecipeDetailNotifier, RecipeDetailState>
-  createElement() {
-    return _RecipeDetailNotifierProviderElement(this);
+  String debugGetCreateSourceHash() => _$recipeDetailNotifierHash();
+
+  @override
+  String toString() {
+    return r'recipeDetailProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  RecipeDetailNotifier create() => RecipeDetailNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(RecipeDetailState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<RecipeDetailState>(value),
+    );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is RecipeDetailNotifierProvider && other.recipeId == recipeId;
+    return other is RecipeDetailNotifierProvider && other.argument == argument;
   }
 
   @override
   int get hashCode {
-    var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, recipeId.hashCode);
-
-    return _SystemHash.finish(hash);
+    return argument.hashCode;
   }
 }
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-mixin RecipeDetailNotifierRef on NotifierProviderRef<RecipeDetailState> {
-  /// The parameter `recipeId` of this provider.
-  String get recipeId;
-}
+String _$recipeDetailNotifierHash() =>
+    r'862a16c923af9cbcbdf55ecefd8309e3887fbcb6';
 
-class _RecipeDetailNotifierProviderElement
-    extends NotifierProviderElement<RecipeDetailNotifier, RecipeDetailState>
-    with RecipeDetailNotifierRef {
-  _RecipeDetailNotifierProviderElement(super.provider);
+/// Notifier for single recipe detail operations
+
+final class RecipeDetailNotifierFamily extends $Family
+    with
+        $ClassFamilyOverride<
+          RecipeDetailNotifier,
+          RecipeDetailState,
+          RecipeDetailState,
+          RecipeDetailState,
+          String
+        > {
+  RecipeDetailNotifierFamily._()
+    : super(
+        retry: null,
+        name: r'recipeDetailProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: false,
+      );
+
+  /// Notifier for single recipe detail operations
+
+  RecipeDetailNotifierProvider call(String recipeId) =>
+      RecipeDetailNotifierProvider._(argument: recipeId, from: this);
 
   @override
-  String get recipeId => (origin as RecipeDetailNotifierProvider).recipeId;
+  String toString() => r'recipeDetailProvider';
+}
+
+/// Notifier for single recipe detail operations
+
+abstract class _$RecipeDetailNotifier extends $Notifier<RecipeDetailState> {
+  late final _$args = ref.$arg as String;
+  String get recipeId => _$args;
+
+  RecipeDetailState build(String recipeId);
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<RecipeDetailState, RecipeDetailState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<RecipeDetailState, RecipeDetailState>,
+              RecipeDetailState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, () => build(_$args));
+  }
+}
+
+/// Notifier for seasonal vegetables
+
+@ProviderFor(SeasonalVegetablesNotifier)
+final seasonalVegetablesProvider = SeasonalVegetablesNotifierProvider._();
+
+/// Notifier for seasonal vegetables
+final class SeasonalVegetablesNotifierProvider
+    extends
+        $NotifierProvider<SeasonalVegetablesNotifier, SeasonalVegetablesState> {
+  /// Notifier for seasonal vegetables
+  SeasonalVegetablesNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'seasonalVegetablesProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$seasonalVegetablesNotifierHash();
+
+  @$internal
+  @override
+  SeasonalVegetablesNotifier create() => SeasonalVegetablesNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SeasonalVegetablesState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SeasonalVegetablesState>(value),
+    );
+  }
 }
 
 String _$seasonalVegetablesNotifierHash() =>
     r'ed7782d05b58bd113835792e1b20be4944ed5620';
 
 /// Notifier for seasonal vegetables
-///
-/// Copied from [SeasonalVegetablesNotifier].
-@ProviderFor(SeasonalVegetablesNotifier)
-final seasonalVegetablesNotifierProvider = NotifierProvider<
-  SeasonalVegetablesNotifier,
-  SeasonalVegetablesState
->.internal(
-  SeasonalVegetablesNotifier.new,
-  name: r'seasonalVegetablesNotifierProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product')
-          ? null
-          : _$seasonalVegetablesNotifierHash,
-  dependencies: null,
-  allTransitiveDependencies: null,
-);
 
-typedef _$SeasonalVegetablesNotifier = Notifier<SeasonalVegetablesState>;
-// ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+abstract class _$SeasonalVegetablesNotifier
+    extends $Notifier<SeasonalVegetablesState> {
+  SeasonalVegetablesState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref =
+        this.ref as $Ref<SeasonalVegetablesState, SeasonalVegetablesState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<SeasonalVegetablesState, SeasonalVegetablesState>,
+              SeasonalVegetablesState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

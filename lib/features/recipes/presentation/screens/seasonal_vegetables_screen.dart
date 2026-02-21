@@ -79,14 +79,14 @@ class _SeasonalVegetablesScreenState
     super.initState();
     Future.microtask(() {
       ref
-          .read(seasonalVegetablesNotifierProvider.notifier)
+          .read(seasonalVegetablesProvider.notifier)
           .loadVegetablesIfNeeded();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(seasonalVegetablesNotifierProvider);
+    final state = ref.watch(seasonalVegetablesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -131,7 +131,7 @@ class _SeasonalVegetablesScreenState
             const SizedBox(height: AppSizes.md),
             ElevatedButton(
               onPressed: () => ref
-                  .read(seasonalVegetablesNotifierProvider.notifier)
+                  .read(seasonalVegetablesProvider.notifier)
                   .loadVegetables(),
               child: const Text('Reintentar'),
             ),
@@ -191,7 +191,7 @@ class _SeasonalVegetablesScreenState
     return RefreshIndicator(
       color: AppColors.recipes,
       onRefresh: () => ref
-          .read(seasonalVegetablesNotifierProvider.notifier)
+          .read(seasonalVegetablesProvider.notifier)
           .loadVegetables(),
       child: ListView(
         padding: const EdgeInsets.all(AppSizes.paddingMd),

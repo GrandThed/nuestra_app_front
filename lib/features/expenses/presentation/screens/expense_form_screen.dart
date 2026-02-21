@@ -53,7 +53,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
 
   ExpenseModel? _getExpense() {
     if (widget.expenseId == null) return null;
-    final state = ref.read(expensesNotifierProvider);
+    final state = ref.read(expensesProvider);
     if (state is ExpensesStateLoaded) {
       try {
         return state.expenses.firstWhere((e) => e.id == widget.expenseId);
@@ -93,7 +93,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
       return;
     }
 
-    final notifier = ref.read(expensesNotifierProvider.notifier);
+    final notifier = ref.read(expensesProvider.notifier);
     dynamic result;
 
     if (isEditing) {
@@ -137,7 +137,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(expensesNotifierProvider);
+    final state = ref.watch(expensesProvider);
     final categories =
         state is ExpensesStateLoaded ? state.categories : <ExpenseCategoryModel>[];
     final colorScheme = Theme.of(context).colorScheme;

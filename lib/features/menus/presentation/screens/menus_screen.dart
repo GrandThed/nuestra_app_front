@@ -24,7 +24,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
     Future.microtask(() {
       final weekStart = ref.read(selectedWeekStartProvider);
       ref
-          .read(upcomingMealsNotifierProvider.notifier)
+          .read(upcomingMealsProvider.notifier)
           .loadWeekIfNeeded(weekStart);
     });
   }
@@ -32,7 +32,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
   @override
   Widget build(BuildContext context) {
     final weekStart = ref.watch(selectedWeekStartProvider);
-    final state = ref.watch(upcomingMealsNotifierProvider);
+    final state = ref.watch(upcomingMealsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -61,14 +61,14 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
               ref.read(selectedWeekStartProvider.notifier).previousWeek();
               final newWeek = ref.read(selectedWeekStartProvider);
               ref
-                  .read(upcomingMealsNotifierProvider.notifier)
+                  .read(upcomingMealsProvider.notifier)
                   .loadWeek(newWeek);
             },
             onNextWeek: () {
               ref.read(selectedWeekStartProvider.notifier).nextWeek();
               final newWeek = ref.read(selectedWeekStartProvider);
               ref
-                  .read(upcomingMealsNotifierProvider.notifier)
+                  .read(upcomingMealsProvider.notifier)
                   .loadWeek(newWeek);
             },
             onToday: () {
@@ -77,7 +77,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
                   .setWeek(DateTime.now());
               final newWeek = ref.read(selectedWeekStartProvider);
               ref
-                  .read(upcomingMealsNotifierProvider.notifier)
+                  .read(upcomingMealsProvider.notifier)
                   .loadWeek(newWeek);
             },
           ),
@@ -106,7 +106,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
                     ElevatedButton(
                       onPressed: () {
                         ref
-                            .read(upcomingMealsNotifierProvider.notifier)
+                            .read(upcomingMealsProvider.notifier)
                             .loadWeek(weekStart);
                       },
                       child: const Text('Reintentar'),
@@ -258,7 +258,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
                 onPressed: () {
                   Navigator.pop(dialogContext);
                   ref
-                      .read(upcomingMealsNotifierProvider.notifier)
+                      .read(upcomingMealsProvider.notifier)
                       .removeMealFromView(meal.id);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -276,7 +276,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
   }
 
   void _showGenerateShoppingDialog(BuildContext context) {
-    final plansState = ref.read(menuPlansNotifierProvider);
+    final plansState = ref.read(menuPlansProvider);
     if (plansState is! MenuPlansStateLoaded || plansState.plans.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

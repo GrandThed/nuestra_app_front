@@ -93,7 +93,7 @@ class _AddWishlistItemDialogState extends ConsumerState<AddWishlistItemDialog> {
     dynamic result;
 
     if (_isEditing) {
-      result = await ref.read(wishlistsNotifierProvider.notifier).updateItem(
+      result = await ref.read(wishlistsProvider.notifier).updateItem(
             id: widget.editingItem!.id,
             name: _nameController.text.trim(),
             categoryId: _selectedCategoryId,
@@ -103,7 +103,7 @@ class _AddWishlistItemDialogState extends ConsumerState<AddWishlistItemDialog> {
             preferenceEmoji: _selectedEmoji,
           );
     } else {
-      result = await ref.read(wishlistsNotifierProvider.notifier).createItem(
+      result = await ref.read(wishlistsProvider.notifier).createItem(
             categoryId: _selectedCategoryId!,
             name: _nameController.text.trim(),
             quantity: quantity,
@@ -133,7 +133,7 @@ class _AddWishlistItemDialogState extends ConsumerState<AddWishlistItemDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(wishlistsNotifierProvider);
+    final state = ref.watch(wishlistsProvider);
     final categories =
         state is WishlistsStateLoaded ? state.categories : <WishlistCategoryModel>[];
 

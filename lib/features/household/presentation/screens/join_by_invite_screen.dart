@@ -35,7 +35,7 @@ class _JoinByInviteScreenState extends ConsumerState<JoinByInviteScreen> {
   }
 
   void _checkUserStatus() {
-    final authState = ref.read(authNotifierProvider);
+    final authState = ref.read(authProvider);
     if (authState is AuthStateAuthenticated) {
       final hasHousehold = authState.user.households?.isNotEmpty ?? false;
       if (hasHousehold) {
@@ -55,7 +55,7 @@ class _JoinByInviteScreenState extends ConsumerState<JoinByInviteScreen> {
     });
 
     final household = await ref
-        .read(householdNotifierProvider.notifier)
+        .read(householdProvider.notifier)
         .joinHousehold(widget.inviteCode);
 
     if (!mounted) return;
@@ -73,7 +73,7 @@ class _JoinByInviteScreenState extends ConsumerState<JoinByInviteScreen> {
       context.go(AppRoutes.home);
     } else {
       // Error
-      final state = ref.read(householdNotifierProvider);
+      final state = ref.read(householdProvider);
       setState(() {
         _errorMessage = state is HouseholdStateError
             ? state.message
@@ -84,7 +84,7 @@ class _JoinByInviteScreenState extends ConsumerState<JoinByInviteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final authState = ref.watch(authNotifierProvider);
+    final authState = ref.watch(authProvider);
     final isAuthenticated = authState is AuthStateAuthenticated;
     final hasHousehold = isAuthenticated &&
         (authState.user.households?.isNotEmpty ?? false);
@@ -210,8 +210,8 @@ class _JoinByInviteScreenState extends ConsumerState<JoinByInviteScreen> {
                 ElevatedButton.icon(
                   onPressed: () {
                     // Store the invite code so we can return after login
-                    ref.read(pendingInviteCodeProvider.notifier).state =
-                        widget.inviteCode;
+                    ref.read(pendingInviteCodeProvider.notifier).set(
+                        widget.inviteCode);
                     context.go(AppRoutes.login);
                   },
                   icon: const Icon(Icons.login),

@@ -12,7 +12,7 @@ class SettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeModeNotifierProvider);
+    final themeMode = ref.watch(themeModeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -66,7 +66,7 @@ class SettingsScreen extends ConsumerWidget {
                         selected: {themeMode},
                         onSelectionChanged: (selection) {
                           ref
-                              .read(themeModeNotifierProvider.notifier)
+                              .read(themeModeProvider.notifier)
                               .setThemeMode(selection.first);
                         },
                       ),
@@ -191,7 +191,7 @@ class SettingsScreen extends ConsumerWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(dialogContext);
-              ref.read(authNotifierProvider.notifier).signOut();
+              ref.read(authProvider.notifier).signOut();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,

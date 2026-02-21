@@ -28,7 +28,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(expensesNotifierProvider.notifier).loadExpensesIfNeeded();
+      ref.read(expensesProvider.notifier).loadExpensesIfNeeded();
     });
   }
 
@@ -75,11 +75,11 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   }
 
   Future<void> _onRefresh() async {
-    await ref.read(expensesNotifierProvider.notifier).loadExpenses();
+    await ref.read(expensesProvider.notifier).loadExpenses();
   }
 
   void _showMonthPicker() async {
-    final state = ref.read(expensesNotifierProvider);
+    final state = ref.read(expensesProvider);
     if (state is! ExpensesStateLoaded) return;
 
     final now = DateTime.now();
@@ -99,7 +99,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
     if (result != null) {
       ref
-          .read(expensesNotifierProvider.notifier)
+          .read(expensesProvider.notifier)
           .setMonth(result['month']!, result['year']!);
     }
   }
@@ -209,7 +209,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
                   Navigator.pop(dialogContext);
                   final result = await ref
-                      .read(expensesNotifierProvider.notifier)
+                      .read(expensesProvider.notifier)
                       .updateCategory(
                         id: category.id,
                         name: name,
@@ -255,7 +255,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                 onPressed: () async {
                   Navigator.pop(dialogContext);
                   final success = await ref
-                      .read(expensesNotifierProvider.notifier)
+                      .read(expensesProvider.notifier)
                       .deleteCategory(category.id);
 
                   if (mounted) {
@@ -324,7 +324,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
                   Navigator.pop(dialogContext);
                   final result = await ref
-                      .read(expensesNotifierProvider.notifier)
+                      .read(expensesProvider.notifier)
                       .createCategory(
                         name: name,
                         icon:
@@ -357,7 +357,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(expensesNotifierProvider);
+    final state = ref.watch(expensesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -611,7 +611,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
               isSelected: selectedCategoryId == null,
               onTap: () {
                 ref
-                    .read(expensesNotifierProvider.notifier)
+                    .read(expensesProvider.notifier)
                     .setCategoryFilter(null);
               },
             ),
@@ -629,7 +629,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                   isSelected: selectedCategoryId == category.id,
                   onTap: () {
                     ref
-                        .read(expensesNotifierProvider.notifier)
+                        .read(expensesProvider.notifier)
                         .setCategoryFilter(category.id);
                   },
                   onLongPress: () => _showCategoryOptions(category),

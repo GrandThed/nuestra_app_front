@@ -25,13 +25,13 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
     super.initState();
     // Load boards only if not already loaded
     Future.microtask(() {
-      ref.read(boardsNotifierProvider.notifier).loadBoardsIfNeeded();
+      ref.read(boardsProvider.notifier).loadBoardsIfNeeded();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final boardsState = ref.watch(boardsNotifierProvider);
+    final boardsState = ref.watch(boardsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -45,7 +45,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
-              ref.read(boardsNotifierProvider.notifier).loadBoards();
+              ref.read(boardsProvider.notifier).loadBoards();
             },
           ),
         ],
@@ -110,7 +110,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
           const SizedBox(height: AppSizes.md),
           ElevatedButton(
             onPressed: () {
-              ref.read(boardsNotifierProvider.notifier).loadBoards();
+              ref.read(boardsProvider.notifier).loadBoards();
             },
             child: const Text(AppStrings.retry),
           ),
@@ -122,7 +122,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
   Widget _buildBoardsGrid(BuildContext context, List<BoardModel> boards) {
     return RefreshIndicator(
       onRefresh: () async {
-        await ref.read(boardsNotifierProvider.notifier).loadBoards();
+        await ref.read(boardsProvider.notifier).loadBoards();
       },
       child: GridView.builder(
         padding: const EdgeInsets.all(AppSizes.paddingSm),
@@ -185,7 +185,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
                   final messenger = ScaffoldMessenger.of(context);
                   Navigator.pop(sheetContext);
                   final board = await ref
-                      .read(boardsNotifierProvider.notifier)
+                      .read(boardsProvider.notifier)
                       .createBoard(template.name);
                   if (board != null && mounted) {
                     messenger.showSnackBar(
@@ -236,7 +236,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
                 final messenger = ScaffoldMessenger.of(context);
                 Navigator.pop(dialogContext);
                 final board = await ref
-                    .read(boardsNotifierProvider.notifier)
+                    .read(boardsProvider.notifier)
                     .createBoard(name);
                 if (board != null && mounted) {
                   messenger.showSnackBar(
@@ -314,7 +314,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
               final name = controller.text.trim();
               if (name.isNotEmpty && name != board.name) {
                 Navigator.pop(dialogContext);
-                ref.read(boardsNotifierProvider.notifier).renameBoard(board.id, name);
+                ref.read(boardsProvider.notifier).renameBoard(board.id, name);
               }
             },
             child: const Text(AppStrings.save),
@@ -343,7 +343,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
               final messenger = ScaffoldMessenger.of(context);
               Navigator.pop(dialogContext);
               final success = await ref
-                  .read(boardsNotifierProvider.notifier)
+                  .read(boardsProvider.notifier)
                   .deleteBoard(board.id);
               if (mounted) {
                 messenger.showSnackBar(

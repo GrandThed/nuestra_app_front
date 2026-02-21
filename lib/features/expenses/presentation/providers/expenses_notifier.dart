@@ -543,7 +543,7 @@ class ExpenseSummaryNotifier extends _$ExpenseSummaryNotifier {
 /// Provider for total expenses in current month
 @riverpod
 double totalExpensesAmount(Ref ref) {
-  final state = ref.watch(expensesNotifierProvider);
+  final state = ref.watch(expensesProvider);
   if (state is ExpensesStateLoaded) {
     return state.expenses.fold(0.0, (sum, e) => sum + e.amount);
   }
@@ -553,7 +553,7 @@ double totalExpensesAmount(Ref ref) {
 /// Provider for unsettled expenses count
 @riverpod
 int unsettledExpensesCount(Ref ref) {
-  final state = ref.watch(expensesNotifierProvider);
+  final state = ref.watch(expensesProvider);
   if (state is ExpensesStateLoaded) {
     return state.expenses.where((e) => !e.allSettled).length;
   }
@@ -563,7 +563,7 @@ int unsettledExpensesCount(Ref ref) {
 /// Provider for expenses filtered by category
 @riverpod
 List<ExpenseModel> expensesByCategory(Ref ref, String? categoryId) {
-  final state = ref.watch(expensesNotifierProvider);
+  final state = ref.watch(expensesProvider);
   if (state is ExpensesStateLoaded) {
     if (categoryId == null) {
       return state.expenses;

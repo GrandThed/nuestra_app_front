@@ -81,7 +81,7 @@ class AuthRepository {
   /// Sign out - clear stored token
   Future<void> signOut() async {
     await _secureStorage.delete(key: _tokenKey);
-    _ref.read(authTokenProvider.notifier).state = null;
+    _ref.read(authTokenProvider.notifier).set(null);
   }
 
   /// Get stored token from secure storage
@@ -92,7 +92,7 @@ class AuthRepository {
   /// Store token in secure storage and update provider
   Future<void> storeToken(String token) async {
     await _secureStorage.write(key: _tokenKey, value: token);
-    _ref.read(authTokenProvider.notifier).state = token;
+    _ref.read(authTokenProvider.notifier).set(token);
   }
 
   /// Check if user has a stored token

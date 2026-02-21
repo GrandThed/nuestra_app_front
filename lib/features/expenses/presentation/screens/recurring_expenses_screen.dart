@@ -32,12 +32,12 @@ class _RecurringExpensesScreenState
   void initState() {
     super.initState();
     Future.microtask(() {
-      ref.read(recurringExpensesNotifierProvider.notifier).loadIfNeeded();
+      ref.read(recurringExpensesProvider.notifier).loadIfNeeded();
       // Load household to get members for the add dialog
       final householdId = ref.read(currentHouseholdIdProvider);
       if (householdId != null) {
         ref
-            .read(householdNotifierProvider.notifier)
+            .read(householdProvider.notifier)
             .loadHouseholdIfNeeded(householdId);
       }
     });
@@ -70,14 +70,14 @@ class _RecurringExpensesScreenState
   }
 
   Future<void> _onRefresh() async {
-    await ref.read(recurringExpensesNotifierProvider.notifier).load();
+    await ref.read(recurringExpensesProvider.notifier).load();
   }
 
   Future<void> _generateFromRecurring() async {
     setState(() => _isGenerating = true);
     try {
       final result = await ref
-          .read(recurringExpensesNotifierProvider.notifier)
+          .read(recurringExpensesProvider.notifier)
           .generateFromRecurring();
 
       if (mounted) {
@@ -139,7 +139,7 @@ class _RecurringExpensesScreenState
 
     if (confirmed == true) {
       final success = await ref
-          .read(recurringExpensesNotifierProvider.notifier)
+          .read(recurringExpensesProvider.notifier)
           .delete(expense.id);
 
       if (mounted) {
@@ -174,7 +174,7 @@ class _RecurringExpensesScreenState
               categoryId) async {
             Navigator.pop(sheetContext);
             final result = await ref
-                .read(recurringExpensesNotifierProvider.notifier)
+                .read(recurringExpensesProvider.notifier)
                 .create(
                   description: description,
                   amount: amount,
@@ -204,7 +204,7 @@ class _RecurringExpensesScreenState
 
   Future<void> _toggleActive(RecurringExpenseModel expense) async {
     final result = await ref
-        .read(recurringExpensesNotifierProvider.notifier)
+        .read(recurringExpensesProvider.notifier)
         .update(expense.id, {'isActive': !expense.isActive});
 
     if (mounted && result == null) {
@@ -219,7 +219,7 @@ class _RecurringExpensesScreenState
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(recurringExpensesNotifierProvider);
+    final state = ref.watch(recurringExpensesProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -670,7 +670,7 @@ class _AddRecurringExpenseSheetState
   void initState() {
     super.initState();
     Future.microtask(() {
-      final authState = ref.read(authNotifierProvider);
+      final authState = ref.read(authProvider);
       if (authState is AuthStateAuthenticated) {
         setState(() {
           _selectedPaidById = authState.user.id;
@@ -726,8 +726,8 @@ class _AddRecurringExpenseSheetState
 
   @override
   Widget build(BuildContext context) {
-    final householdState = ref.watch(householdNotifierProvider);
-    final expensesState = ref.watch(expensesNotifierProvider);
+    final householdState = ref.watch(householdProvider);
+    final expensesState = ref.watch(expensesProvider);
 
     final members = householdState is HouseholdStateLoaded
         ? householdState.household.members ?? []

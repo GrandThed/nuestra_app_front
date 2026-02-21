@@ -52,7 +52,7 @@ class HouseholdNotifier extends _$HouseholdNotifier {
       ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(household.id);
 
       // Refresh auth state so router knows user has a household
-      await ref.read(authNotifierProvider.notifier).refreshUser();
+      await ref.read(authProvider.notifier).refreshUser();
 
       state = HouseholdState.loaded(household);
       return household;
@@ -79,7 +79,7 @@ class HouseholdNotifier extends _$HouseholdNotifier {
       ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(household.id);
 
       // Refresh auth state so router knows user has a household
-      await ref.read(authNotifierProvider.notifier).refreshUser();
+      await ref.read(authProvider.notifier).refreshUser();
 
       state = HouseholdState.loaded(household);
       return household;
@@ -198,7 +198,7 @@ class HouseholdNotifier extends _$HouseholdNotifier {
       await _repository.deleteHousehold(householdId);
       ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(null);
       state = const HouseholdState.initial();
-      await ref.read(authNotifierProvider.notifier).refreshUser();
+      await ref.read(authProvider.notifier).refreshUser();
       return true;
     } on AppException catch (e) {
       debugPrint('Error deleting household: ${e.message}');
@@ -222,7 +222,7 @@ class HouseholdNotifier extends _$HouseholdNotifier {
       ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(null);
       state = const HouseholdState.initial();
       // Refresh auth state so router knows user no longer has a household
-      await ref.read(authNotifierProvider.notifier).refreshUser();
+      await ref.read(authProvider.notifier).refreshUser();
       return true;
     } on AppException catch (e) {
       debugPrint('Error leaving household: ${e.message}');

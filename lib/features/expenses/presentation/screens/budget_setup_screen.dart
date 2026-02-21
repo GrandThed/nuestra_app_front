@@ -44,14 +44,14 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
     _selectedYear = now.year;
     Future.microtask(() {
       ref
-          .read(budgetNotifierProvider.notifier)
+          .read(budgetProvider.notifier)
           .loadIfNeeded(_selectedMonth, _selectedYear);
     });
   }
 
   Future<void> _onRefresh() async {
     await ref
-        .read(budgetNotifierProvider.notifier)
+        .read(budgetProvider.notifier)
         .load(_selectedMonth, _selectedYear);
   }
 
@@ -65,7 +65,7 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
       }
     });
     ref
-        .read(budgetNotifierProvider.notifier)
+        .read(budgetProvider.notifier)
         .load(_selectedMonth, _selectedYear, forceLoading: true);
   }
 
@@ -79,7 +79,7 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
       }
     });
     ref
-        .read(budgetNotifierProvider.notifier)
+        .read(budgetProvider.notifier)
         .load(_selectedMonth, _selectedYear, forceLoading: true);
   }
 
@@ -156,7 +156,7 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
               Navigator.pop(dialogContext);
 
               final result = await ref
-                  .read(budgetNotifierProvider.notifier)
+                  .read(budgetProvider.notifier)
                   .createOrUpdate(
                     categoryId: budget.categoryId,
                     monthlyLimit: limit,
@@ -191,7 +191,7 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(budgetNotifierProvider);
+    final state = ref.watch(budgetProvider);
 
     return Scaffold(
       appBar: AppBar(

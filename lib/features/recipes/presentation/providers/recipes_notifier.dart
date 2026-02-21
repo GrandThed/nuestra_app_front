@@ -231,7 +231,7 @@ class RecipeDetailNotifier extends _$RecipeDetailNotifier {
       state = RecipeDetailState.loaded(recipe);
 
       // Update recipes list
-      ref.read(recipesNotifierProvider.notifier).updateRecipeInList(recipe);
+      ref.read(recipesProvider.notifier).updateRecipeInList(recipe);
 
       return recipe;
     } on AppException catch (e) {
@@ -280,7 +280,7 @@ class RecipeDetailNotifier extends _$RecipeDetailNotifier {
 
       // Also update in the recipes list
       ref
-          .read(recipesNotifierProvider.notifier)
+          .read(recipesProvider.notifier)
           .updateRecipeInList(updatedRecipe);
     }
 
@@ -292,14 +292,14 @@ class RecipeDetailNotifier extends _$RecipeDetailNotifier {
       if (current is RecipeDetailStateLoaded) {
         final synced = current.recipe.copyWith(isFavorite: isFavorite);
         state = RecipeDetailState.loaded(synced);
-        ref.read(recipesNotifierProvider.notifier).updateRecipeInList(synced);
+        ref.read(recipesProvider.notifier).updateRecipeInList(synced);
       }
     } catch (e) {
       state = previousState;
       // Also revert recipes list
       if (previousState is RecipeDetailStateLoaded) {
         ref
-            .read(recipesNotifierProvider.notifier)
+            .read(recipesProvider.notifier)
             .updateRecipeInList(previousState.recipe);
       }
       debugPrint('Error toggling favorite: $e');

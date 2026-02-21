@@ -61,35 +61,40 @@ class AuthNotifier extends _$AuthNotifier {
     state = const AuthState.loading();
 
     try {
-      // On web, use clientId; on mobile, use serverClientId to get idToken for backend
-      final googleSignIn = GoogleSignIn(
-        scopes: ['email', 'profile'],
+      final googleSignIn = GoogleSignIn.instance;
+
+      // Initialize with appropriate client IDs
+      await googleSignIn.initialize(
         clientId: kIsWeb ? AuthConfig.googleWebClientId : null,
         serverClientId: kIsWeb ? null : AuthConfig.googleWebClientId,
       );
 
-      final account = await googleSignIn.signIn();
-      if (account == null) {
-        state = const AuthState.unauthenticated();
-        return;
+      // Authenticate (replaces signIn() in v7)
+      final GoogleSignInAccount account;
+      try {
+        account = await googleSignIn.authenticate(
+          scopeHint: ['email', 'profile'],
+        );
+      } on GoogleSignInException catch (e) {
+        if (e.code == GoogleSignInExceptionCode.canceled) {
+          state = const AuthState.unauthenticated();
+          return;
+        }
+        rethrow;
       }
 
-      final auth = await account.authentication;
+      final auth = account.authentication;
       final idToken = auth.idToken;
-      final accessToken = auth.accessToken;
 
       debugPrint('Google auth - idToken: ${idToken != null ? "present" : "null"}');
-      debugPrint('Google auth - accessToken: ${accessToken != null ? "present" : "null"}');
 
-      // On mobile we get idToken, on web we get accessToken
-      if (idToken == null && accessToken == null) {
+      if (idToken == null) {
         state = const AuthState.error('No se pudo obtener el token de Google');
         return;
       }
 
       await _authRepository.signInWithGoogle(
         idToken: idToken,
-        accessToken: accessToken,
       );
       // Fetch full user data with households
       final user = await _authRepository.getCurrentUser();
@@ -120,11 +125,8 @@ class AuthNotifier extends _$AuthNotifier {
   /// Sign out
   Future<void> signOut() async {
     try {
-      // Sign out from Google if signed in
-      final googleSignIn = GoogleSignIn();
-      if (await googleSignIn.isSignedIn()) {
-        await googleSignIn.signOut();
-      }
+      // Sign out from Google
+      await GoogleSignIn.instance.signOut();
 
       await _authRepository.signOut();
       ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(null);
