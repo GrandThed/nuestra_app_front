@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nuestra_app/core/constants/api_constants.dart';
 import 'package:nuestra_app/core/errors/exceptions.dart';
 import 'package:nuestra_app/core/network/api_interceptor.dart';
+import 'package:nuestra_app/core/network/cache_interceptor.dart';
 
 /// Provider for Dio client
 final dioClientProvider = Provider<DioClient>((ref) {
@@ -32,6 +33,7 @@ class DioClient {
     // Add interceptors
     _dio.interceptors.addAll([
       AuthInterceptor(_ref),
+      CacheInterceptor(ttl: const Duration(minutes: 2)),
       if (kDebugMode) LoggingInterceptor(),
     ]);
   }

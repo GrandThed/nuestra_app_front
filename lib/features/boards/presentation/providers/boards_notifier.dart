@@ -86,40 +86,57 @@ class BoardsNotifier extends _$BoardsNotifier {
     }
   }
 
-  /// Delete a board
+  /// Delete a board (optimistic)
   Future<bool> deleteBoard(String id) async {
+    final previousState = state;
+
+    // Optimistically remove from list
+    final currentState = state;
+    if (currentState is BoardsStateLoaded) {
+      final updatedBoards =
+          currentState.boards.where((b) => b.id != id).toList();
+      state = BoardsState.loaded(updatedBoards);
+    }
+
     try {
       await _repository.deleteBoard(id);
-
-      // Remove from current list
-      final currentState = state;
-      if (currentState is BoardsStateLoaded) {
-        final updatedBoards =
-            currentState.boards.where((b) => b.id != id).toList();
-        state = BoardsState.loaded(updatedBoards);
-      }
-
       return true;
     } on AppException catch (e) {
       debugPrint('Error deleting board: ${e.message}');
+      state = previousState;
       return false;
     } catch (e) {
       debugPrint('Error deleting board: $e');
+      state = previousState;
       return false;
     }
   }
 
-  /// Rename a board
+  /// Rename a board (optimistic)
   Future<bool> renameBoard(String id, String newName) async {
+    final previousState = state;
+
+    // Optimistically update the board name in list
+    final currentState = state;
+    if (currentState is BoardsStateLoaded) {
+      final updatedBoards = currentState.boards.map((b) {
+        return b.id == id ? b.copyWith(name: newName) : b;
+      }).toList();
+      state = BoardsState.loaded(updatedBoards);
+    }
+
     try {
       final board = await _repository.updateBoard(id: id, name: newName);
+      // Replace with server data
       updateBoardInList(board);
       return true;
     } on AppException catch (e) {
       debugPrint('Error renaming board: ${e.message}');
+      state = previousState;
       return false;
     } catch (e) {
       debugPrint('Error renaming board: $e');
+      state = previousState;
       return false;
     }
   }
@@ -227,13 +244,33 @@ class BoardDetailNotifier extends _$BoardDetailNotifier {
     }
   }
 
-  /// Update an item
+  /// Update an item (optimistic)
   Future<BoardItemModel?> updateItem({
     required String itemId,
     String? title,
     String? description,
     PhotoBackModel? photoBack,
   }) async {
+    final previousState = state;
+
+    // Optimistically apply local changes
+    final currentState = state;
+    if (currentState is BoardDetailStateLoaded) {
+      final currentItems = currentState.board.items ?? [];
+      final updatedItems = currentItems.map((i) {
+        if (i.id == itemId) {
+          return i.copyWith(
+            title: title ?? i.title,
+            description: description ?? i.description,
+            photoBack: photoBack ?? i.photoBack,
+          );
+        }
+        return i;
+      }).toList();
+      final updatedBoard = currentState.board.copyWith(items: updatedItems);
+      state = BoardDetailState.loaded(updatedBoard);
+    }
+
     try {
       final item = await _repository.updateItem(
         boardId: boardId,
@@ -243,29 +280,37 @@ class BoardDetailNotifier extends _$BoardDetailNotifier {
         photoBack: photoBack,
       );
 
+      // Replace with server data
       _updateItemInState(item);
       return item;
     } on AppException catch (e) {
       debugPrint('Error updating item: ${e.message}');
+      state = previousState;
       return null;
     } catch (e) {
       debugPrint('Error updating item: $e');
+      state = previousState;
       return null;
     }
   }
 
-  /// Delete an item
+  /// Delete an item (optimistic)
   Future<bool> deleteItem(String itemId) async {
+    final previousState = state;
+
+    // Optimistically remove item from state
+    _removeItemFromState(itemId);
+
     try {
       await _repository.deleteItem(boardId: boardId, itemId: itemId);
-
-      _removeItemFromState(itemId);
       return true;
     } on AppException catch (e) {
       debugPrint('Error deleting item: ${e.message}');
+      state = previousState;
       return false;
     } catch (e) {
       debugPrint('Error deleting item: $e');
+      state = previousState;
       return false;
     }
   }
@@ -276,19 +321,37 @@ class BoardDetailNotifier extends _$BoardDetailNotifier {
   Future<void> addTagToItem(String itemId, String tagId) async {
     try {
       await _repository.addTagToItem(boardId, itemId, tagId);
-      await loadBoard(); // Refresh board
+      // Silently refresh to get updated tag data (fire and forget)
+      loadBoard();
     } catch (e) {
       // silent fail - board still shows
     }
   }
 
-  /// Remove a tag from a board item
+  /// Remove a tag from a board item (optimistic)
   Future<void> removeTagFromItem(String itemId, String tagId) async {
+    final previousState = state;
+
+    // Optimistically remove tag from item
+    final currentState = state;
+    if (currentState is BoardDetailStateLoaded) {
+      final currentItems = currentState.board.items ?? [];
+      final updatedItems = currentItems.map((i) {
+        if (i.id == itemId) {
+          return i.copyWith(
+            tags: i.tags.where((t) => t.tagId != tagId).toList(),
+          );
+        }
+        return i;
+      }).toList();
+      final updatedBoard = currentState.board.copyWith(items: updatedItems);
+      state = BoardDetailState.loaded(updatedBoard);
+    }
+
     try {
       await _repository.removeTagFromItem(boardId, itemId, tagId);
-      await loadBoard();
     } catch (e) {
-      // silent fail
+      state = previousState;
     }
   }
 
@@ -329,13 +392,30 @@ class BoardDetailNotifier extends _$BoardDetailNotifier {
 
   // --- Reorder ---
 
-  /// Reorder items in the board
+  /// Reorder items in the board (optimistic)
   Future<void> reorderItems(List<Map<String, dynamic>> items) async {
+    final previousState = state;
+
+    // Optimistically apply new order
+    final currentState = state;
+    if (currentState is BoardDetailStateLoaded) {
+      final orderMap = {
+        for (var item in items) item['id'] as String: item['sortOrder'] as int,
+      };
+      final currentItems = currentState.board.items ?? [];
+      final updatedItems = currentItems.map((i) {
+        final newOrder = orderMap[i.id];
+        return newOrder != null ? i.copyWith(sortOrder: newOrder) : i;
+      }).toList();
+      updatedItems.sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
+      final updatedBoard = currentState.board.copyWith(items: updatedItems);
+      state = BoardDetailState.loaded(updatedBoard);
+    }
+
     try {
       await _repository.reorderItems(boardId, items);
-      await loadBoard();
     } catch (e) {
-      // silent fail
+      state = previousState;
     }
   }
 

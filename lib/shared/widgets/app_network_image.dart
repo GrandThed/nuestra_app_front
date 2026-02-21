@@ -30,11 +30,18 @@ class AppNetworkImage extends StatelessWidget {
       return _buildPlaceholder();
     }
 
+    // Calculate memory cache dimensions based on display size and pixel ratio
+    final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+    final cacheWidth = width != null ? (width! * pixelRatio).round() : null;
+    final cacheHeight = height != null ? (height! * pixelRatio).round() : null;
+
     Widget image = CachedNetworkImage(
       imageUrl: imageUrl!,
       width: width,
       height: height,
       fit: fit,
+      memCacheWidth: cacheWidth,
+      memCacheHeight: cacheHeight,
       placeholder: (context, url) => _buildShimmer(),
       errorWidget: (context, url, error) => _buildPlaceholder(),
     );
@@ -117,21 +124,28 @@ class BoardItemImage extends StatelessWidget {
               children: [
                 // Image
                 if (imageUrl != null && imageUrl!.isNotEmpty)
-                  CachedNetworkImage(
-                    imageUrl: imageUrl!,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Shimmer.fromColors(
-                      baseColor: AppColors.shimmerBase,
-                      highlightColor: AppColors.shimmerHighlight,
-                      child: Container(color: Colors.white),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      color: AppColors.surfaceVariant,
-                      child: const Icon(
-                        Icons.broken_image,
-                        color: AppColors.textSecondary,
-                      ),
-                    ),
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+                      return CachedNetworkImage(
+                        imageUrl: imageUrl!,
+                        fit: BoxFit.cover,
+                        memCacheWidth: (constraints.maxWidth * pixelRatio).round(),
+                        memCacheHeight: (constraints.maxHeight * pixelRatio).round(),
+                        placeholder: (context, url) => Shimmer.fromColors(
+                          baseColor: AppColors.shimmerBase,
+                          highlightColor: AppColors.shimmerHighlight,
+                          child: Container(color: Colors.white),
+                        ),
+                        errorWidget: (context, url, error) => Container(
+                          color: AppColors.surfaceVariant,
+                          child: const Icon(
+                            Icons.broken_image,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      );
+                    },
                   )
                 else
                   Container(

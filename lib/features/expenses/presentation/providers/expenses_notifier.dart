@@ -190,33 +190,36 @@ class ExpensesNotifier extends _$ExpensesNotifier {
     }
   }
 
-  /// Delete a category
+  /// Delete a category (optimistic)
   Future<bool> deleteCategory(String id) async {
+    final previousState = state;
+
+    // Optimistic: remove from list immediately and clear filter if needed
+    final currentState = state;
+    if (currentState is ExpensesStateLoaded) {
+      final updatedCategories =
+          currentState.categories.where((c) => c.id != id).toList();
+      state = ExpensesState.loaded(
+        categories: updatedCategories,
+        expenses: currentState.expenses,
+        selectedMonth: currentState.selectedMonth,
+        selectedYear: currentState.selectedYear,
+        selectedCategoryId: currentState.selectedCategoryId == id
+            ? null
+            : currentState.selectedCategoryId,
+      );
+    }
+
     try {
       await _repository.deleteCategory(id);
-
-      // Remove from current list, expenses keep their data but category becomes null
-      final currentState = state;
-      if (currentState is ExpensesStateLoaded) {
-        final updatedCategories =
-            currentState.categories.where((c) => c.id != id).toList();
-        state = ExpensesState.loaded(
-          categories: updatedCategories,
-          expenses: currentState.expenses,
-          selectedMonth: currentState.selectedMonth,
-          selectedYear: currentState.selectedYear,
-          selectedCategoryId: currentState.selectedCategoryId == id
-              ? null
-              : currentState.selectedCategoryId,
-        );
-      }
-
       return true;
     } on AppException catch (e) {
       debugPrint('Error deleting category: ${e.message}');
+      state = previousState;
       return false;
     } catch (e) {
       debugPrint('Error deleting category: $e');
+      state = previousState;
       return false;
     }
   }
@@ -275,7 +278,7 @@ class ExpensesNotifier extends _$ExpensesNotifier {
     }
   }
 
-  /// Update an expense
+  /// Update an expense (optimistic)
   Future<ExpenseModel?> updateExpense({
     required String id,
     String? description,
@@ -285,6 +288,37 @@ class ExpensesNotifier extends _$ExpensesNotifier {
     String? categoryId,
     String? receiptUrl,
   }) async {
+    final previousState = state;
+
+    // Optimistic: apply local changes immediately
+    final currentState = state;
+    if (currentState is ExpensesStateLoaded) {
+      final updatedExpenses = currentState.expenses.map((e) {
+        if (e.id != id) return e;
+        // Find matching category model if categoryId changed
+        ExpenseCategoryModel? updatedCategory = e.category;
+        if (categoryId != null) {
+          updatedCategory = currentState.categories
+              .where((c) => c.id == categoryId)
+              .firstOrNull;
+        }
+        return e.copyWith(
+          description: description ?? e.description,
+          amount: amount ?? e.amount,
+          currency: currency ?? e.currency,
+          date: date ?? e.date,
+          category: categoryId != null ? updatedCategory : e.category,
+        );
+      }).toList();
+      state = ExpensesState.loaded(
+        categories: currentState.categories,
+        expenses: updatedExpenses,
+        selectedMonth: currentState.selectedMonth,
+        selectedYear: currentState.selectedYear,
+        selectedCategoryId: currentState.selectedCategoryId,
+      );
+    }
+
     try {
       final expense = await _repository.updateExpense(
         id: id,
@@ -296,56 +330,61 @@ class ExpensesNotifier extends _$ExpensesNotifier {
         receiptUrl: receiptUrl,
       );
 
-      // Update in current list
-      final currentState = state;
-      if (currentState is ExpensesStateLoaded) {
-        final updatedExpenses = currentState.expenses.map((e) {
+      // On success, replace with server response data
+      final latestState = state;
+      if (latestState is ExpensesStateLoaded) {
+        final serverExpenses = latestState.expenses.map((e) {
           return e.id == id ? expense : e;
         }).toList();
         state = ExpensesState.loaded(
-          categories: currentState.categories,
-          expenses: updatedExpenses,
-          selectedMonth: currentState.selectedMonth,
-          selectedYear: currentState.selectedYear,
-          selectedCategoryId: currentState.selectedCategoryId,
+          categories: latestState.categories,
+          expenses: serverExpenses,
+          selectedMonth: latestState.selectedMonth,
+          selectedYear: latestState.selectedYear,
+          selectedCategoryId: latestState.selectedCategoryId,
         );
       }
 
       return expense;
     } on AppException catch (e) {
       debugPrint('Error updating expense: ${e.message}');
+      state = previousState;
       return null;
     } catch (e) {
       debugPrint('Error updating expense: $e');
+      state = previousState;
       return null;
     }
   }
 
-  /// Delete an expense
+  /// Delete an expense (optimistic)
   Future<bool> deleteExpense(String id) async {
+    final previousState = state;
+
+    // Optimistic: remove from list immediately
+    final currentState = state;
+    if (currentState is ExpensesStateLoaded) {
+      final updatedExpenses =
+          currentState.expenses.where((e) => e.id != id).toList();
+      state = ExpensesState.loaded(
+        categories: currentState.categories,
+        expenses: updatedExpenses,
+        selectedMonth: currentState.selectedMonth,
+        selectedYear: currentState.selectedYear,
+        selectedCategoryId: currentState.selectedCategoryId,
+      );
+    }
+
     try {
       await _repository.deleteExpense(id);
-
-      // Remove from current list
-      final currentState = state;
-      if (currentState is ExpensesStateLoaded) {
-        final updatedExpenses =
-            currentState.expenses.where((e) => e.id != id).toList();
-        state = ExpensesState.loaded(
-          categories: currentState.categories,
-          expenses: updatedExpenses,
-          selectedMonth: currentState.selectedMonth,
-          selectedYear: currentState.selectedYear,
-          selectedCategoryId: currentState.selectedCategoryId,
-        );
-      }
-
       return true;
     } on AppException catch (e) {
       debugPrint('Error deleting expense: ${e.message}');
+      state = previousState;
       return false;
     } catch (e) {
       debugPrint('Error deleting expense: $e');
+      state = previousState;
       return false;
     }
   }
@@ -649,24 +688,27 @@ class RecurringExpensesNotifier extends _$RecurringExpensesNotifier {
     }
   }
 
-  /// Delete a recurring expense
+  /// Delete a recurring expense (optimistic)
   Future<bool> delete(String id) async {
+    final previousState = state;
+
+    // Optimistic: remove from list immediately
+    final current = state;
+    if (current is RecurringExpensesStateLoaded) {
+      state = RecurringExpensesState.loaded(
+          current.expenses.where((e) => e.id != id).toList());
+    }
+
     try {
       await _repository.deleteRecurringExpense(id);
-
-      // Remove from current list
-      final current = state;
-      if (current is RecurringExpensesStateLoaded) {
-        state = RecurringExpensesState.loaded(
-            current.expenses.where((e) => e.id != id).toList());
-      }
-
       return true;
     } on AppException catch (e) {
       debugPrint('Error deleting recurring expense: ${e.message}');
+      state = previousState;
       return false;
     } catch (e) {
       debugPrint('Error deleting recurring expense: $e');
+      state = previousState;
       return false;
     }
   }
@@ -759,8 +801,8 @@ class BudgetNotifier extends _$BudgetNotifier {
         year: year,
       );
 
-      // Reload budget status to reflect the change
-      await load(month, year);
+      // Background refresh - don't await
+      load(month, year);
 
       return budget;
     } on AppException catch (e) {

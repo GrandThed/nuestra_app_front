@@ -671,6 +671,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
         final dayTotal = dayExpenses.fold(0.0, (sum, e) => sum + e.amount);
 
         return Column(
+          key: ValueKey(dateKey),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Date header

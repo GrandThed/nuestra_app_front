@@ -261,6 +261,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
       itemBuilder: (context, index) {
         final recipe = recipes[index];
         return _RecipeCard(
+          key: ValueKey(recipe.id),
           recipe: recipe,
           onTap: () => context.push('/recipes/${recipe.id}'),
           onDelete: () => _confirmDelete(recipe),
@@ -404,6 +405,7 @@ class _RecipeCard extends StatelessWidget {
   final VoidCallback onDelete;
 
   const _RecipeCard({
+    super.key,
     required this.recipe,
     required this.onTap,
     required this.onDelete,

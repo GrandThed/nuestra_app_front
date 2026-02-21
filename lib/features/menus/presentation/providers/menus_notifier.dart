@@ -85,22 +85,21 @@ class MenuPlansNotifier extends _$MenuPlansNotifier {
 
   /// Delete a menu plan
   Future<bool> deleteMenuPlan(String id) async {
+    final previousState = state;
+
+    // Optimistically remove
+    final currentState = state;
+    if (currentState is MenuPlansStateLoaded) {
+      state = MenuPlansState.loaded(
+        currentState.plans.where((p) => p.id != id).toList(),
+      );
+    }
+
     try {
       await _repository.deleteMenuPlan(id);
-
-      // Remove from current list
-      final currentState = state;
-      if (currentState is MenuPlansStateLoaded) {
-        final updatedPlans =
-            currentState.plans.where((p) => p.id != id).toList();
-        state = MenuPlansState.loaded(updatedPlans);
-      }
-
       return true;
-    } on AppException catch (e) {
-      debugPrint('Error deleting menu plan: ${e.message}');
-      return false;
     } catch (e) {
+      state = previousState;
       debugPrint('Error deleting menu plan: $e');
       return false;
     }
@@ -336,23 +335,22 @@ class MenuPlanDetailNotifier extends _$MenuPlanDetailNotifier {
 
   /// Delete a meal from the plan
   Future<bool> deleteMeal(String itemId) async {
+    final previousState = state;
+
+    // Optimistically remove
+    final currentState = state;
+    if (currentState is MenuPlanDetailStateLoaded) {
+      final updatedItems =
+          currentState.plan.items?.where((i) => i.id != itemId).toList();
+      final updatedPlan = currentState.plan.copyWith(items: updatedItems);
+      state = MenuPlanDetailState.loaded(updatedPlan);
+    }
+
     try {
       await _repository.deleteMenuItem(menuId: menuId, itemId: itemId);
-
-      // Update state
-      final currentState = state;
-      if (currentState is MenuPlanDetailStateLoaded) {
-        final updatedItems =
-            currentState.plan.items?.where((i) => i.id != itemId).toList();
-        final updatedPlan = currentState.plan.copyWith(items: updatedItems);
-        state = MenuPlanDetailState.loaded(updatedPlan);
-      }
-
       return true;
-    } on AppException catch (e) {
-      debugPrint('Error deleting meal: ${e.message}');
-      return false;
     } catch (e) {
+      state = previousState;
       debugPrint('Error deleting meal: $e');
       return false;
     }

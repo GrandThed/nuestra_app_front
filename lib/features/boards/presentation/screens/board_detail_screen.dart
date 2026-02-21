@@ -152,6 +152,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
         itemBuilder: (context, index) {
           final item = items[index];
           return _BoardItemCard(
+            key: ValueKey(item.id),
             item: item,
             onTap: () => _showItemDetail(context, item),
             onLongPress: () => _showItemOptions(context, item),
@@ -552,6 +553,7 @@ class _BoardItemCard extends StatelessWidget {
   final VoidCallback onLongPress;
 
   const _BoardItemCard({
+    super.key,
     required this.item,
     required this.onTap,
     required this.onLongPress,
@@ -575,18 +577,25 @@ class _BoardItemCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // Image with caching and shimmer
+            // Image with caching, shimmer, and memory optimization
             if (imageUrl != null)
-              CachedNetworkImage(
-                imageUrl: imageUrl,
-                fit: BoxFit.cover,
-                placeholder:
-                    (context, url) => Shimmer.fromColors(
-                      baseColor: AppColors.shimmerBase,
-                      highlightColor: AppColors.shimmerHighlight,
-                      child: Container(color: Colors.white),
-                    ),
-                errorWidget: (context, url, error) => _buildPlaceholder(context),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+                  return CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.cover,
+                    memCacheWidth: (constraints.maxWidth * pixelRatio).round(),
+                    memCacheHeight: (constraints.maxHeight * pixelRatio).round(),
+                    placeholder:
+                        (context, url) => Shimmer.fromColors(
+                          baseColor: AppColors.shimmerBase,
+                          highlightColor: AppColors.shimmerHighlight,
+                          child: Container(color: Colors.white),
+                        ),
+                    errorWidget: (context, url, error) => _buildPlaceholder(context),
+                  );
+                },
               )
             else
               _buildPlaceholder(context),
@@ -816,27 +825,37 @@ class _ItemDetailSheet extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-                    child: CachedNetworkImage(
-                      imageUrl: imageUrl,
-                      fit: BoxFit.cover,
-                      height: 250,
-                      width: double.infinity,
-                      placeholder:
-                          (context, url) => Shimmer.fromColors(
-                            baseColor: colorScheme.surfaceContainerHighest,
-                            highlightColor: colorScheme.surface,
-                            child: Container(height: 250, color: colorScheme.surface),
-                          ),
-                      errorWidget:
-                          (context, url, error) => Container(
-                            height: 250,
-                            color: colorScheme.surfaceContainerHighest,
-                            child: Icon(
-                              Icons.broken_image,
-                              size: 48,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final pixelRatio = MediaQuery.devicePixelRatioOf(context);
+                        final cacheWidth = constraints.maxWidth.isFinite
+                            ? (constraints.maxWidth * pixelRatio).round()
+                            : null;
+                        return CachedNetworkImage(
+                          imageUrl: imageUrl,
+                          fit: BoxFit.cover,
+                          height: 250,
+                          width: double.infinity,
+                          memCacheWidth: cacheWidth,
+                          memCacheHeight: (250 * pixelRatio).round(),
+                          placeholder:
+                              (context, url) => Shimmer.fromColors(
+                                baseColor: colorScheme.surfaceContainerHighest,
+                                highlightColor: colorScheme.surface,
+                                child: Container(height: 250, color: colorScheme.surface),
+                              ),
+                          errorWidget:
+                              (context, url, error) => Container(
+                                height: 250,
+                                color: colorScheme.surfaceContainerHighest,
+                                child: Icon(
+                                  Icons.broken_image,
+                                  size: 48,
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                        );
+                      },
                     ),
                   ),
                   // Zoom hint for photos

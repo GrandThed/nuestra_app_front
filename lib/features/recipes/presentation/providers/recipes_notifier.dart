@@ -110,24 +110,23 @@ class RecipesNotifier extends _$RecipesNotifier {
     }
   }
 
-  /// Delete a recipe
+  /// Delete a recipe (optimistic)
   Future<bool> deleteRecipe(String id) async {
+    final previousState = state;
+
+    // Optimistically remove from list
+    final currentState = state;
+    if (currentState is RecipesStateLoaded) {
+      state = RecipesState.loaded(
+        currentState.recipes.where((r) => r.id != id).toList(),
+      );
+    }
+
     try {
       await _repository.deleteRecipe(id);
-
-      // Remove from current list
-      final currentState = state;
-      if (currentState is RecipesStateLoaded) {
-        final updatedRecipes =
-            currentState.recipes.where((r) => r.id != id).toList();
-        state = RecipesState.loaded(updatedRecipes);
-      }
-
       return true;
-    } on AppException catch (e) {
-      debugPrint('Error deleting recipe: ${e.message}');
-      return false;
     } catch (e) {
+      state = previousState;
       debugPrint('Error deleting recipe: $e');
       return false;
     }
@@ -254,8 +253,8 @@ class RecipeDetailNotifier extends _$RecipeDetailNotifier {
         note: note,
       );
 
-      // Refresh recipe to get updated averageRating and ratings list
-      await loadRecipe();
+      // Background refresh to get updated averageRating and ratings list
+      loadRecipe();
 
       return ratingModel;
     } on AppException catch (e) {
@@ -267,26 +266,42 @@ class RecipeDetailNotifier extends _$RecipeDetailNotifier {
     }
   }
 
-  /// Toggle favorite status for the recipe
+  /// Toggle favorite status for the recipe (optimistic)
   Future<void> toggleFavorite() async {
+    final previousState = state;
+
+    // Optimistically toggle favorite
+    final currentState = state;
+    if (currentState is RecipeDetailStateLoaded) {
+      final updatedRecipe = currentState.recipe.copyWith(
+        isFavorite: !currentState.recipe.isFavorite,
+      );
+      state = RecipeDetailState.loaded(updatedRecipe);
+
+      // Also update in the recipes list
+      ref
+          .read(recipesNotifierProvider.notifier)
+          .updateRecipeInList(updatedRecipe);
+    }
+
     try {
       final isFavorite = await _repository.toggleFavorite(recipeId);
 
-      final currentState = state;
-      if (currentState is RecipeDetailStateLoaded) {
-        final updatedRecipe = currentState.recipe.copyWith(
-          isFavorite: isFavorite,
-        );
-        state = RecipeDetailState.loaded(updatedRecipe);
-
-        // Also update in the recipes list
+      // Sync with server response (in case it differs)
+      final current = state;
+      if (current is RecipeDetailStateLoaded) {
+        final synced = current.recipe.copyWith(isFavorite: isFavorite);
+        state = RecipeDetailState.loaded(synced);
+        ref.read(recipesNotifierProvider.notifier).updateRecipeInList(synced);
+      }
+    } catch (e) {
+      state = previousState;
+      // Also revert recipes list
+      if (previousState is RecipeDetailStateLoaded) {
         ref
             .read(recipesNotifierProvider.notifier)
-            .updateRecipeInList(updatedRecipe);
+            .updateRecipeInList(previousState.recipe);
       }
-    } on AppException catch (e) {
-      debugPrint('Error toggling favorite: ${e.message}');
-    } catch (e) {
       debugPrint('Error toggling favorite: $e');
     }
   }

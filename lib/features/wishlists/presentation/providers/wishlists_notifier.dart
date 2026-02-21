@@ -136,29 +136,24 @@ class WishlistsNotifier extends _$WishlistsNotifier {
     }
   }
 
-  /// Delete a category
+  /// Delete a category (optimistic)
   Future<bool> deleteCategory(String id) async {
+    final previousState = state;
+
+    // Optimistically remove category and its items
+    final currentState = state;
+    if (currentState is WishlistsStateLoaded) {
+      state = WishlistsState.loaded(
+        categories: currentState.categories.where((c) => c.id != id).toList(),
+        items: currentState.items.where((i) => i.category?.id != id).toList(),
+      );
+    }
+
     try {
       await _repository.deleteCategory(id);
-
-      // Remove from current list and remove items in that category
-      final currentState = state;
-      if (currentState is WishlistsStateLoaded) {
-        final updatedCategories =
-            currentState.categories.where((c) => c.id != id).toList();
-        final updatedItems =
-            currentState.items.where((i) => i.category?.id != id).toList();
-        state = WishlistsState.loaded(
-          categories: updatedCategories,
-          items: updatedItems,
-        );
-      }
-
       return true;
-    } on AppException catch (e) {
-      debugPrint('Error deleting category: ${e.message}');
-      return false;
     } catch (e) {
+      state = previousState;
       debugPrint('Error deleting category: $e');
       return false;
     }
@@ -220,7 +215,7 @@ class WishlistsNotifier extends _$WishlistsNotifier {
     }
   }
 
-  /// Update an item
+  /// Update an item (optimistic)
   Future<WishlistItemModel?> updateItem({
     required String id,
     String? name,
@@ -232,6 +227,30 @@ class WishlistsNotifier extends _$WishlistsNotifier {
     String? preferenceEmoji,
     String? categoryId,
   }) async {
+    final previousState = state;
+
+    // Optimistically update item locally
+    final currentState = state;
+    if (currentState is WishlistsStateLoaded) {
+      final updatedItems = currentState.items.map((i) {
+        if (i.id == id) {
+          return i.copyWith(
+            name: name ?? i.name,
+            checked: checked ?? i.checked,
+            quantity: quantity ?? i.quantity,
+            price: price ?? i.price,
+            url: url ?? i.url,
+            preferenceEmoji: preferenceEmoji ?? i.preferenceEmoji,
+          );
+        }
+        return i;
+      }).toList();
+      state = WishlistsState.loaded(
+        categories: currentState.categories,
+        items: updatedItems,
+      );
+    }
+
     try {
       final item = await _repository.updateItem(
         id: id,
@@ -245,23 +264,21 @@ class WishlistsNotifier extends _$WishlistsNotifier {
         categoryId: categoryId,
       );
 
-      // Update in current list
-      final currentState = state;
-      if (currentState is WishlistsStateLoaded) {
-        final updatedItems = currentState.items.map((i) {
+      // Replace optimistic data with server data
+      final currentState2 = state;
+      if (currentState2 is WishlistsStateLoaded) {
+        final updatedItems = currentState2.items.map((i) {
           return i.id == id ? item : i;
         }).toList();
         state = WishlistsState.loaded(
-          categories: currentState.categories,
+          categories: currentState2.categories,
           items: updatedItems,
         );
       }
 
       return item;
-    } on AppException catch (e) {
-      debugPrint('Error updating item: ${e.message}');
-      return null;
     } catch (e) {
+      state = previousState;
       debugPrint('Error updating item: $e');
       return null;
     }
@@ -272,27 +289,24 @@ class WishlistsNotifier extends _$WishlistsNotifier {
     return updateItem(id: id, checked: checked);
   }
 
-  /// Delete an item
+  /// Delete an item (optimistic)
   Future<bool> deleteItem(String id) async {
+    final previousState = state;
+
+    // Optimistically remove
+    final currentState = state;
+    if (currentState is WishlistsStateLoaded) {
+      state = WishlistsState.loaded(
+        categories: currentState.categories,
+        items: currentState.items.where((i) => i.id != id).toList(),
+      );
+    }
+
     try {
       await _repository.deleteItem(id);
-
-      // Remove from current list
-      final currentState = state;
-      if (currentState is WishlistsStateLoaded) {
-        final updatedItems =
-            currentState.items.where((i) => i.id != id).toList();
-        state = WishlistsState.loaded(
-          categories: currentState.categories,
-          items: updatedItems,
-        );
-      }
-
       return true;
-    } on AppException catch (e) {
-      debugPrint('Error deleting item: ${e.message}');
-      return false;
     } catch (e) {
+      state = previousState;
       debugPrint('Error deleting item: $e');
       return false;
     }
@@ -304,8 +318,8 @@ class WishlistsNotifier extends _$WishlistsNotifier {
   Future<void> voteOnItem(String itemId, int priority) async {
     try {
       await _repository.voteOnItem(itemId, priority);
-      // Reload to get updated vote data
-      await loadWishlists();
+      // Background refresh to get updated vote data
+      loadWishlists();
     } catch (e) {
       debugPrint('Error voting on item: $e');
     }
@@ -313,13 +327,24 @@ class WishlistsNotifier extends _$WishlistsNotifier {
 
   // ==================== PURCHASE ====================
 
-  /// Purchase an item with optional expense linking
+  /// Purchase an item with optional expense linking (optimistic)
   Future<void> purchaseItem(
     String itemId, {
     required String householdId,
     bool createExpense = false,
     String? categoryId,
   }) async {
+    final previousState = state;
+
+    // Optimistically remove item
+    final current = state;
+    if (current is WishlistsStateLoaded) {
+      state = WishlistsState.loaded(
+        categories: current.categories,
+        items: current.items.where((i) => i.id != itemId).toList(),
+      );
+    }
+
     try {
       await _repository.purchaseItem(
         itemId,
@@ -327,53 +352,42 @@ class WishlistsNotifier extends _$WishlistsNotifier {
         createExpense: createExpense,
         categoryId: categoryId,
       );
-
-      // Remove item from list (it's archived)
-      final current = state;
-      if (current is WishlistsStateLoaded) {
-        final updatedItems =
-            current.items.where((i) => i.id != itemId).toList();
-        state = WishlistsState.loaded(
-          categories: current.categories,
-          items: updatedItems,
-        );
-      }
     } catch (e) {
+      state = previousState;
       debugPrint('Error purchasing item: $e');
     }
   }
 
-  /// Clear all checked items
+  /// Clear all checked items (optimistic)
   Future<int> clearCheckedItems({String? categoryId}) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) return 0;
+
+    final previousState = state;
+
+    // Optimistically remove checked items
+    final currentState = state;
+    if (currentState is WishlistsStateLoaded) {
+      final updatedItems = currentState.items.where((i) {
+        if (categoryId != null) {
+          return !(i.checked && i.category?.id == categoryId);
+        }
+        return !i.checked;
+      }).toList();
+      state = WishlistsState.loaded(
+        categories: currentState.categories,
+        items: updatedItems,
+      );
+    }
 
     try {
       final deletedCount = await _repository.clearChecked(
         householdId,
         categoryId: categoryId,
       );
-
-      // Remove checked items from current list
-      final currentState = state;
-      if (currentState is WishlistsStateLoaded) {
-        final updatedItems = currentState.items.where((i) {
-          if (categoryId != null) {
-            return !(i.checked && i.category?.id == categoryId);
-          }
-          return !i.checked;
-        }).toList();
-        state = WishlistsState.loaded(
-          categories: currentState.categories,
-          items: updatedItems,
-        );
-      }
-
       return deletedCount;
-    } on AppException catch (e) {
-      debugPrint('Error clearing checked items: ${e.message}');
-      return 0;
     } catch (e) {
+      state = previousState;
       debugPrint('Error clearing checked items: $e');
       return 0;
     }

@@ -412,6 +412,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
         final categoryItems = itemsByCategory[category.id] ?? [];
 
         return _CategorySection(
+          key: ValueKey(category.id),
           categoryId: category.id,
           categoryName: category.name,
           items: categoryItems,
@@ -699,6 +700,7 @@ class _CategorySection extends StatelessWidget {
   final Future<void> Function(String categoryId, String name) onQuickAdd;
 
   const _CategorySection({
+    super.key,
     required this.categoryId,
     required this.categoryName,
     required this.items,

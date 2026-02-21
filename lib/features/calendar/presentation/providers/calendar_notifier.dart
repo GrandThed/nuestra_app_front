@@ -193,7 +193,7 @@ class CalendarNotifier extends _$CalendarNotifier {
     }
   }
 
-  /// Update an event
+  /// Update an event (optimistic)
   Future<CalendarEventModel?> updateEvent({
     required String id,
     String? title,
@@ -208,6 +208,32 @@ class CalendarNotifier extends _$CalendarNotifier {
     String? linkedMenuPlanId,
     String? colorHex,
   }) async {
+    final previousState = state;
+
+    // Optimistically update event locally
+    final currentState = state;
+    if (currentState is CalendarStateLoaded) {
+      final updatedEvents = currentState.events.map((e) {
+        if (e.id == id) {
+          return e.copyWith(
+            title: title ?? e.title,
+            description: description ?? e.description,
+            startDate: startDate ?? e.startDate,
+            endDate: endDate ?? e.endDate,
+            allDay: allDay ?? e.allDay,
+            colorHex: colorHex ?? e.colorHex,
+          );
+        }
+        return e;
+      }).toList();
+      state = CalendarState.loaded(
+        events: updatedEvents,
+        selectedDate: currentState.selectedDate,
+        focusedMonth: currentState.focusedMonth,
+        viewMode: currentState.viewMode,
+      );
+    }
+
     try {
       final event = await _repository.updateEvent(
         id: id,
@@ -224,61 +250,56 @@ class CalendarNotifier extends _$CalendarNotifier {
         colorHex: colorHex,
       );
 
-      // Update in current list
-      final currentState = state;
-      if (currentState is CalendarStateLoaded) {
-        final updatedEvents = currentState.events.map((e) {
+      // Replace with server data
+      final currentState2 = state;
+      if (currentState2 is CalendarStateLoaded) {
+        final updatedEvents = currentState2.events.map((e) {
           return e.id == id ? event : e;
         }).toList();
         state = CalendarState.loaded(
           events: updatedEvents,
-          selectedDate: currentState.selectedDate,
-          focusedMonth: currentState.focusedMonth,
-          viewMode: currentState.viewMode,
+          selectedDate: currentState2.selectedDate,
+          focusedMonth: currentState2.focusedMonth,
+          viewMode: currentState2.viewMode,
         );
       }
 
       return event;
-    } on AppException catch (e) {
-      debugPrint('Error updating event: ${e.message}');
-      return null;
     } catch (e) {
+      state = previousState;
       debugPrint('Error updating event: $e');
       return null;
     }
   }
 
-  /// Delete an event
+  /// Delete an event (optimistic)
   Future<bool> deleteEvent(
     String id, {
     String? deleteRecurring,
     DateTime? occurrenceDate,
   }) async {
+    final previousState = state;
+
+    // Optimistically remove from list
+    final currentState = state;
+    if (currentState is CalendarStateLoaded) {
+      state = CalendarState.loaded(
+        events: currentState.events.where((e) => e.id != id).toList(),
+        selectedDate: currentState.selectedDate,
+        focusedMonth: currentState.focusedMonth,
+        viewMode: currentState.viewMode,
+      );
+    }
+
     try {
       await _repository.deleteEvent(
         id,
         deleteRecurring: deleteRecurring,
         occurrenceDate: occurrenceDate,
       );
-
-      // Remove from current list
-      final currentState = state;
-      if (currentState is CalendarStateLoaded) {
-        final updatedEvents =
-            currentState.events.where((e) => e.id != id).toList();
-        state = CalendarState.loaded(
-          events: updatedEvents,
-          selectedDate: currentState.selectedDate,
-          focusedMonth: currentState.focusedMonth,
-          viewMode: currentState.viewMode,
-        );
-      }
-
       return true;
-    } on AppException catch (e) {
-      debugPrint('Error deleting event: ${e.message}');
-      return false;
     } catch (e) {
+      state = previousState;
       debugPrint('Error deleting event: $e');
       return false;
     }
@@ -318,7 +339,18 @@ class CalendarNotifier extends _$CalendarNotifier {
         householdId: householdId,
         preferredDay: preferredDay,
       );
-      await loadEvents(); // Refresh to show new event
+
+      // Add event to state immediately
+      final currentState = state;
+      if (currentState is CalendarStateLoaded) {
+        state = CalendarState.loaded(
+          events: [...currentState.events, event],
+          selectedDate: currentState.selectedDate,
+          focusedMonth: currentState.focusedMonth,
+          viewMode: currentState.viewMode,
+        );
+      }
+
       return event;
     } catch (e) {
       debugPrint('Error planning date night: $e');

@@ -136,6 +136,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
         itemBuilder: (context, index) {
           final board = boards[index];
           return _BoardCard(
+            key: ValueKey(board.id),
             board: board,
             onTap: () => context.push('${AppRoutes.boards}/${board.id}'),
             onLongPress: () => _showBoardOptions(context, board),
@@ -374,6 +375,7 @@ class _BoardCard extends StatelessWidget {
   final VoidCallback onLongPress;
 
   const _BoardCard({
+    super.key,
     required this.board,
     required this.onTap,
     required this.onLongPress,
