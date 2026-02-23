@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
@@ -22,7 +21,7 @@ class ExpensesSummaryCard extends ConsumerWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        side: BorderSide(color: AppColors.border),
+        side: BorderSide(color: colorScheme.outlineVariant),
       ),
       child: InkWell(
         onTap: () => context.go(AppRoutes.expenses),
@@ -34,12 +33,12 @@ class ExpensesSummaryCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(AppSizes.sm),
                 decoration: BoxDecoration(
-                  color: AppColors.expenses.withValues(alpha: 0.1),
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.account_balance_wallet_outlined,
-                  color: AppColors.expenses,
+                  color: colorScheme.primary,
                   size: AppSizes.iconMd,
                 ),
               ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/features/wishlists/presentation/providers/wishlists_notifier.dart';
@@ -19,7 +18,7 @@ class ShoppingListCard extends ConsumerWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        side: BorderSide(color: AppColors.border),
+        side: BorderSide(color: colorScheme.outlineVariant),
       ),
       child: InkWell(
         onTap: () => context.go(AppRoutes.wishlists),
@@ -31,12 +30,12 @@ class ShoppingListCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(AppSizes.sm),
                 decoration: BoxDecoration(
-                  color: AppColors.wishlists.withValues(alpha: 0.1),
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.checklist,
-                  color: AppColors.wishlists,
+                  color: colorScheme.primary,
                   size: AppSizes.iconMd,
                 ),
               ),
@@ -71,13 +70,13 @@ class ShoppingListCard extends ConsumerWidget {
                     vertical: AppSizes.xs,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.wishlists,
+                    color: colorScheme.primary,
                     borderRadius: BorderRadius.circular(AppSizes.radiusFull),
                   ),
                   child: Text(
                     uncheckedCount.toString(),
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: colorScheme.onPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: AppSizes.fontSm,
                     ),

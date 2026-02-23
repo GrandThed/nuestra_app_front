@@ -224,8 +224,6 @@ class _RecurringExpensesScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Gastos Recurrentes'),
-        backgroundColor: AppColors.expensesDark,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: _isGenerating
@@ -248,7 +246,7 @@ class _RecurringExpensesScreenState
             child: Text('Cargando gastos recurrentes...'),
           ),
         RecurringExpensesStateLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.expenses),
+            child: CircularProgressIndicator(),
           ),
         RecurringExpensesStateError(:final message) => Center(
             child: Column(
@@ -271,8 +269,6 @@ class _RecurringExpensesScreenState
       },
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddRecurringExpenseSheet,
-        backgroundColor: AppColors.expensesDark,
-        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
@@ -294,7 +290,6 @@ class _RecurringExpensesScreenState
 
     return RefreshIndicator(
       onRefresh: _onRefresh,
-      color: AppColors.expenses,
       child: ListView(
         padding: const EdgeInsets.all(AppSizes.md),
         children: [
@@ -366,7 +361,7 @@ class _RecurringExpensesScreenState
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
       ),
-      color: AppColors.expenses.withValues(alpha: 0.1),
+      color: colorScheme.primaryContainer.withValues(alpha: 0.15),
       child: Padding(
         padding: const EdgeInsets.all(AppSizes.md),
         child: Row(
@@ -375,11 +370,11 @@ class _RecurringExpensesScreenState
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: AppColors.expenses.withValues(alpha: 0.2),
+                color: colorScheme.primaryContainer.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               ),
               alignment: Alignment.center,
-              child: const Icon(Icons.repeat, color: AppColors.expenses),
+              child: Icon(Icons.repeat, color: colorScheme.primary),
             ),
             const SizedBox(width: AppSizes.md),
             Expanded(
@@ -396,10 +391,10 @@ class _RecurringExpensesScreenState
                   const SizedBox(height: AppSizes.xs),
                   Text(
                     '${_currencyFormat.format(totalMonthly)} / mes',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: AppSizes.fontXl,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.expenses,
+                      color: colorScheme.primary,
                     ),
                   ),
                 ],
@@ -421,7 +416,7 @@ class _RecurringExpensesScreenState
           Icon(
             Icons.repeat,
             size: 80,
-            color: AppColors.expenses.withValues(alpha: 0.3),
+            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
           ),
           const SizedBox(height: AppSizes.md),
           Text(
@@ -443,10 +438,7 @@ class _RecurringExpensesScreenState
             onPressed: _showAddRecurringExpenseSheet,
             icon: const Icon(Icons.add),
             label: const Text('Agregar gasto recurrente'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.expensesDark,
-              foregroundColor: Colors.white,
-            ),
+            style: ElevatedButton.styleFrom(),
           ),
         ],
       ),
@@ -520,7 +512,7 @@ class _RecurringExpenseCard extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.expenses.withValues(alpha: 0.1),
+                    color: colorScheme.primaryContainer.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                   ),
                   alignment: Alignment.center,
@@ -606,10 +598,10 @@ class _RecurringExpenseCard extends StatelessWidget {
                   children: [
                     Text(
                       currencyFormat.format(expense.amount),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: AppSizes.fontMd,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.expenses,
+                        color: colorScheme.primary,
                       ),
                     ),
                     const SizedBox(height: AppSizes.xs),
@@ -618,7 +610,7 @@ class _RecurringExpenseCard extends StatelessWidget {
                       child: Switch(
                         value: expense.isActive,
                         onChanged: (_) => onToggleActive(),
-                        activeThumbColor: AppColors.expenses,
+                        activeThumbColor: colorScheme.primary,
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
@@ -926,8 +918,6 @@ class _AddRecurringExpenseSheetState
                 ElevatedButton(
                   onPressed: _isSaving ? null : _save,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.expensesDark,
-                    foregroundColor: Colors.white,
                     minimumSize: const Size(double.infinity, AppSizes.buttonHeight),
                   ),
                   child: _isSaving

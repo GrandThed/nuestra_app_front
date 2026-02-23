@@ -37,8 +37,6 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Menu Semanal'),
-        backgroundColor: AppColors.menusDark,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.history),
@@ -89,7 +87,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
                 child: Text('Cargando menu...'),
               ),
               UpcomingMealsStateLoading() => const Center(
-                child: CircularProgressIndicator(color: AppColors.menus),
+                child: CircularProgressIndicator(),
               ),
               UpcomingMealsStateError(:final message) => Center(
                 child: Column(
@@ -125,8 +123,6 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
             () => context.push(
               '/menus/add-meal?date=${DateTime.now().toIso8601String()}',
             ),
-        backgroundColor: AppColors.menusDark,
-        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
@@ -186,11 +182,11 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
                                 ),
                               ),
                             )
-                            : const CircleAvatar(
-                              backgroundColor: AppColors.menusDark,
+                            : CircleAvatar(
+                              backgroundColor: Theme.of(context).colorScheme.primary,
                               child: Icon(
                                 Icons.restaurant,
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.onPrimary,
                               ),
                             ),
                     title: Text(meal.recipe!.title),
@@ -359,7 +355,7 @@ class _WeekSelector extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.chevron_left),
             onPressed: onPreviousWeek,
-            color: AppColors.menus,
+            color: colorScheme.primary,
           ),
           Expanded(
             child: Column(
@@ -374,9 +370,9 @@ class _WeekSelector extends StatelessWidget {
                 if (!isCurrentWeek)
                   TextButton(
                     onPressed: onToday,
-                    child: const Text(
+                    child: Text(
                       'Ir a hoy',
-                      style: TextStyle(color: AppColors.menus),
+                      style: TextStyle(color: colorScheme.primary),
                     ),
                   ),
               ],
@@ -385,7 +381,7 @@ class _WeekSelector extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.chevron_right),
             onPressed: onNextWeek,
-            color: AppColors.menus,
+            color: colorScheme.primary,
           ),
         ],
       ),
@@ -439,7 +435,7 @@ class _DayCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         side:
             isToday
-                ? const BorderSide(color: AppColors.menus, width: 2)
+                ? BorderSide(color: colorScheme.primary, width: 2)
                 : BorderSide.none,
       ),
       child: Column(
@@ -451,8 +447,8 @@ class _DayCard extends StatelessWidget {
             decoration: BoxDecoration(
               color:
                   isToday
-                      ? AppColors.menus.withValues(alpha: 0.1)
-                      : AppColors.menus.withValues(alpha: 0.05),
+                      ? colorScheme.primaryContainer.withValues(alpha: 0.15)
+                      : colorScheme.primaryContainer.withValues(alpha: 0.07),
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(12),
               ),
@@ -467,7 +463,7 @@ class _DayCard extends StatelessWidget {
                       vertical: 2,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.menus,
+                      color: colorScheme.primary,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(
@@ -483,14 +479,14 @@ class _DayCard extends StatelessWidget {
                   '${dayFormat.format(date).capitalize()} ${dateFormat.format(date)}',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: isToday ? AppColors.menus : colorScheme.onSurface,
+                    color: isToday ? colorScheme.primary : colorScheme.onSurface,
                   ),
                 ),
                 const Spacer(),
                 IconButton(
                   icon: const Icon(Icons.add_circle_outline),
                   onPressed: onAddMeal,
-                  color: AppColors.menus,
+                  color: colorScheme.primary,
                   iconSize: 20,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -546,7 +542,7 @@ class _MealTile extends StatelessWidget {
               width: 36,
               height: 36,
               decoration: BoxDecoration(
-                color: _getMealTypeColor(meal.mealType).withValues(alpha: 0.1),
+                color: _getMealTypeColor(context, meal.mealType).withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Center(
@@ -569,7 +565,7 @@ class _MealTile extends StatelessWidget {
                         meal.mealType.mealTypeDisplay,
                         style: TextStyle(
                           fontSize: 12,
-                          color: _getMealTypeColor(meal.mealType),
+                          color: _getMealTypeColor(context, meal.mealType),
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -644,7 +640,7 @@ class _MealTile extends StatelessWidget {
     );
   }
 
-  Color _getMealTypeColor(String mealType) {
+  Color _getMealTypeColor(BuildContext context, String mealType) {
     switch (mealType) {
       case 'breakfast':
         return Colors.orange;
@@ -655,7 +651,7 @@ class _MealTile extends StatelessWidget {
       case 'snack':
         return Colors.pink;
       default:
-        return AppColors.menus;
+        return Theme.of(context).colorScheme.primary;
     }
   }
 }

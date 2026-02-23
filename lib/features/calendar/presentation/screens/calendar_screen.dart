@@ -206,8 +206,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       },
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push(AppRoutes.addEvent),
-        backgroundColor: AppColors.calendarDark,
-        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
@@ -265,11 +263,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             ),
             calendarStyle: CalendarStyle(
               todayDecoration: BoxDecoration(
-                color: AppColors.calendar.withValues(alpha: 0.3),
+                color: colorScheme.primary.withValues(alpha: 0.3),
                 shape: BoxShape.circle,
               ),
-              selectedDecoration: const BoxDecoration(
-                color: AppColors.calendar,
+              selectedDecoration: BoxDecoration(
+                color: colorScheme.primary,
                 shape: BoxShape.circle,
               ),
               todayTextStyle: TextStyle(
@@ -280,8 +278,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
-              markerDecoration: const BoxDecoration(
-                color: AppColors.calendar,
+              markerDecoration: BoxDecoration(
+                color: colorScheme.primary,
                 shape: BoxShape.circle,
               ),
               markersMaxCount: 3,
@@ -302,7 +300,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   if (!seenHex.contains(key)) {
                     seenHex.add(key);
                     colors.add(
-                      hex != null ? _parseHexColor(hex) : AppColors.calendar,
+                      hex != null ? _parseHexColor(hex) : Theme.of(context).colorScheme.primary,
                     );
                   }
                 }
@@ -426,7 +424,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             Icon(
               Icons.calendar_month_outlined,
               size: 64,
-              color: AppColors.calendar,
+              color: colorScheme.primary,
             ),
             const SizedBox(height: AppSizes.md),
             Text(
@@ -468,7 +466,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                       ),
                       decoration: BoxDecoration(
                         color: isToday
-                            ? AppColors.calendar
+                            ? colorScheme.primary
                             : colorScheme.surfaceContainerHighest,
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -490,15 +488,15 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                           vertical: 4,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.calendar.withValues(alpha: 0.2),
+                          color: colorScheme.primaryContainer.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Hoy',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
-                            color: AppColors.calendar,
+                            color: colorScheme.primary,
                           ),
                         ),
                       ),
@@ -542,7 +540,7 @@ class _EventTile extends StatelessWidget {
         event.linkedMenuPlan != null;
     final eventColor = event.colorHex != null
         ? _parseHexColor(event.colorHex!)
-        : AppColors.calendar;
+        : colorScheme.primary;
 
     return Card(
       margin: const EdgeInsets.symmetric(
@@ -575,17 +573,17 @@ class _EventTile extends StatelessWidget {
                   vertical: 4,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.calendar.withValues(alpha: 0.1),
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   event.allDay
                       ? 'Todo\nel dia'
                       : timeFormat.format(event.startDate),
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: AppColors.calendar,
+                    color: colorScheme.primary,
                   ),
                   textAlign: TextAlign.center,
                 ),

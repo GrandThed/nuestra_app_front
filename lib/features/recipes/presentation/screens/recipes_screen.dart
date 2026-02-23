@@ -118,7 +118,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.recipes, width: 2),
+                  borderSide: BorderSide(color: colorScheme.primary, width: 2),
                 ),
                 filled: true,
                 fillColor: colorScheme.surfaceContainerHighest,
@@ -141,9 +141,9 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                         label: Text(_selectedSeason!),
                         deleteIcon: const Icon(Icons.close, size: 18),
                         onDeleted: () => _onSeasonChanged(null),
-                        backgroundColor: AppColors.recipes.withValues(alpha: 0.1),
-                        labelStyle: const TextStyle(color: AppColors.recipes),
-                        deleteIconColor: AppColors.recipes,
+                        backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.15),
+                        labelStyle: TextStyle(color: colorScheme.primary),
+                        deleteIconColor: colorScheme.primary,
                       ),
                     ),
                   if (_maxPrepTime != null)
@@ -158,9 +158,9 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                           });
                           _onSearch();
                         },
-                        backgroundColor: AppColors.recipes.withValues(alpha: 0.1),
-                        labelStyle: const TextStyle(color: AppColors.recipes),
-                        deleteIconColor: AppColors.recipes,
+                        backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.15),
+                        labelStyle: TextStyle(color: colorScheme.primary),
+                        deleteIconColor: colorScheme.primary,
                       ),
                     ),
                   if (_maxCookTime != null)
@@ -173,9 +173,9 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                         });
                         _onSearch();
                       },
-                      backgroundColor: AppColors.recipes.withValues(alpha: 0.1),
-                      labelStyle: const TextStyle(color: AppColors.recipes),
-                      deleteIconColor: AppColors.recipes,
+                      backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.15),
+                      labelStyle: TextStyle(color: colorScheme.primary),
+                      deleteIconColor: colorScheme.primary,
                     ),
                 ],
               ),
@@ -188,7 +188,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                   child: Text('Cargando recetas...'),
                 ),
               RecipesStateLoading() => const Center(
-                  child: CircularProgressIndicator(color: AppColors.recipes),
+                  child: CircularProgressIndicator(),
                 ),
               RecipesStateError(:final message) => Center(
                   child: Column(
@@ -214,8 +214,6 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => context.push('/recipes/new'),
-        backgroundColor: AppColors.recipesDark,
-        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
@@ -231,7 +229,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
           Icon(
             Icons.restaurant_menu,
             size: 80,
-            color: AppColors.recipes.withValues(alpha: 0.3),
+            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
           ),
           const SizedBox(height: 16),
           Text(
@@ -274,7 +272,9 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (context) => StatefulBuilder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        return StatefulBuilder(
         builder: (context, setModalState) => Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -299,8 +299,8 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                       Navigator.pop(context);
                       _onSeasonChanged(null);
                     },
-                    selectedColor: AppColors.recipes.withValues(alpha: 0.2),
-                    checkmarkColor: AppColors.recipes,
+                    selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
+                    checkmarkColor: colorScheme.primary,
                   ),
                   ..._seasons.map((season) => FilterChip(
                         label: Text(season),
@@ -309,8 +309,8 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                           Navigator.pop(context);
                           _onSeasonChanged(season);
                         },
-                        selectedColor: AppColors.recipes.withValues(alpha: 0.2),
-                        checkmarkColor: AppColors.recipes,
+                        selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
+                        checkmarkColor: colorScheme.primary,
                       )),
                 ],
               ),
@@ -342,7 +342,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                       });
                       _onSearch();
                     },
-                    selectedColor: AppColors.recipes.withValues(alpha: 0.2),
+                    selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
                   ),
                   ChoiceChip(
                     label: const Text('< 60 min'),
@@ -360,7 +360,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                       });
                       _onSearch();
                     },
-                    selectedColor: AppColors.recipes.withValues(alpha: 0.2),
+                    selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
                   ),
                 ],
               ),
@@ -368,7 +368,8 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
             ],
           ),
         ),
-      ),
+      );
+      },
     );
   }
 
@@ -434,11 +435,11 @@ class _RecipeCard extends StatelessWidget {
                           fit: BoxFit.cover,
                         )
                       : Container(
-                          color: AppColors.recipes.withValues(alpha: 0.1),
-                          child: const Icon(
+                          color: colorScheme.primaryContainer.withValues(alpha: 0.15),
+                          child: Icon(
                             Icons.restaurant,
                             size: 40,
-                            color: AppColors.recipes,
+                            color: colorScheme.primary,
                           ),
                         ),
                   if (recipe.isFavorite)

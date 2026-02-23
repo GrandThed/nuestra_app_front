@@ -15,7 +15,8 @@ const _kCookingBg = Color(0xFF1A1A2E);
 const _kCookingSurface = Color(0xFF222244);
 
 /// Accent color used for buttons and active indicators.
-const _kCookingAccent = AppColors.recipes;
+/// This is intentionally hardcoded for the cooking mode dark theme overlay.
+const _kCookingAccent = Color(0xFFF97316);
 
 /// Text color on the dark background.
 const _kCookingText = Color(0xFFF0F0F0);

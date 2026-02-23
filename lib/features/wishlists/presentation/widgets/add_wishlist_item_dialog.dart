@@ -301,6 +301,7 @@ class _EmojiChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return FilterChip(
       label: Row(
         mainAxisSize: MainAxisSize.min,
@@ -314,8 +315,8 @@ class _EmojiChip extends StatelessWidget {
       ),
       selected: isSelected,
       onSelected: (_) => onTap(),
-      selectedColor: AppColors.wishlists.withValues(alpha: 0.2),
-      checkmarkColor: AppColors.wishlists,
+      selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.15),
+      checkmarkColor: colorScheme.primary,
       showCheckmark: false,
     );
   }

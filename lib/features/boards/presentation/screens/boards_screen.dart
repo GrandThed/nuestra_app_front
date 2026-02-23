@@ -60,8 +60,6 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showCreateBoardDialog(context),
-        backgroundColor: AppColors.boardsDark,
-        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
@@ -75,7 +73,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
           Icon(
             Icons.dashboard_outlined,
             size: 64,
-            color: AppColors.boards,
+            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
           ),
           const SizedBox(height: AppSizes.md),
           Text(
@@ -90,7 +88,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
             icon: const Icon(Icons.add),
             label: const Text('Crear tablero'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.boardsDark,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Colors.white,
             ),
           ),
@@ -179,7 +177,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
             ),
             ...templates.map(
               (template) => ListTile(
-                leading: Icon(template.icon, color: AppColors.boardsDark),
+                leading: Icon(template.icon, color: Theme.of(context).colorScheme.primary),
                 title: Text(template.name),
                 onTap: () async {
                   final messenger = ScaffoldMessenger.of(context);
@@ -249,7 +247,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.boardsDark,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: Colors.white,
             ),
             child: const Text('Crear'),
@@ -496,21 +494,28 @@ class _BoardCard extends StatelessWidget {
   }
 
   Widget _buildPlaceholder() {
-    return Container(
-      color: AppColors.boards.withValues(alpha: 0.2),
-      child: Center(
-        child: Icon(
-          Icons.dashboard,
-          size: 48,
-          color: AppColors.boards.withValues(alpha: 0.5),
-        ),
-      ),
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        return Container(
+          color: colorScheme.primaryContainer.withValues(alpha: 0.2),
+          child: Center(
+            child: Icon(
+              Icons.dashboard,
+              size: 48,
+              color: colorScheme.primary.withValues(alpha: 0.5),
+            ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildGridPlaceholder() {
-    return Container(
-      color: AppColors.boards.withValues(alpha: 0.15),
+    return Builder(
+      builder: (context) => Container(
+        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.15),
+      ),
     );
   }
 }

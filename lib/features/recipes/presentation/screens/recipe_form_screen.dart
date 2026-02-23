@@ -102,11 +102,9 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
         return Scaffold(
           appBar: AppBar(
             title: const Text('Cargando...'),
-            backgroundColor: AppColors.recipes,
-            foregroundColor: Colors.white,
           ),
           body: const Center(
-            child: CircularProgressIndicator(color: AppColors.recipes),
+            child: CircularProgressIndicator(),
           ),
         );
       }
@@ -115,8 +113,6 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.isEditing ? 'Editar receta' : 'Nueva receta'),
-        backgroundColor: AppColors.recipes,
-        foregroundColor: Colors.white,
         actions: [
           if (_isLoading)
             const Center(
@@ -267,7 +263,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                       Icon(
                         Icons.add_photo_alternate,
                         size: 48,
-                        color: AppColors.recipes.withValues(alpha: 0.5),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                       ),
                       const SizedBox(height: 8),
                       const Text(
@@ -305,9 +301,9 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.recipes.withValues(alpha: 0.1),
+                  color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                  border: Border.all(color: AppColors.recipes),
+                  border: Border.all(color: Theme.of(context).colorScheme.primary),
                 ),
                 child: Column(
                   children: [
@@ -416,7 +412,6 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                         ElevatedButton(
                           onPressed: _saveIngredientEdit,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.recipes,
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                           ),
                           child: const Text('Guardar'),
@@ -575,8 +570,8 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
               icon: const Icon(Icons.add),
               label: const Text('Agregar ingrediente'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.recipes,
-                side: const BorderSide(color: AppColors.recipes),
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                side: BorderSide(color: Theme.of(context).colorScheme.primary),
               ),
             ),
           ),
@@ -610,9 +605,9 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.recipes.withValues(alpha: 0.1),
+                  color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                  border: Border.all(color: AppColors.recipes),
+                  border: Border.all(color: Theme.of(context).colorScheme.primary),
                 ),
                 child: Column(
                   children: [
@@ -620,8 +615,8 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         CircleAvatar(
-                          backgroundColor: AppColors.recipes,
-                          foregroundColor: Colors.white,
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
                           radius: 14,
                           child: Text(
                             '${index + 1}',
@@ -657,7 +652,6 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                         ElevatedButton(
                           onPressed: _saveInstructionEdit,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.recipes,
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                           ),
                           child: const Text('Guardar'),
@@ -718,7 +712,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               CircleAvatar(
-                backgroundColor: AppColors.recipes.withValues(alpha: 0.3),
+                backgroundColor: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                 foregroundColor: Colors.white,
                 radius: 14,
                 child: Text(
@@ -751,8 +745,8 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
               icon: const Icon(Icons.add),
               label: const Text('Agregar paso'),
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.recipes,
-                side: const BorderSide(color: AppColors.recipes),
+                foregroundColor: Theme.of(context).colorScheme.primary,
+                side: BorderSide(color: Theme.of(context).colorScheme.primary),
               ),
             ),
           ),

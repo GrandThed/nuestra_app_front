@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/features/calendar/presentation/providers/calendar_notifier.dart';
@@ -19,7 +18,7 @@ class UpcomingEventsCard extends ConsumerWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        side: BorderSide(color: AppColors.border),
+        side: BorderSide(color: colorScheme.outlineVariant),
       ),
       child: InkWell(
         onTap: () => context.go(AppRoutes.calendar),
@@ -31,12 +30,12 @@ class UpcomingEventsCard extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.all(AppSizes.sm),
                 decoration: BoxDecoration(
-                  color: AppColors.calendar.withValues(alpha: 0.1),
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.event_outlined,
-                  color: AppColors.calendar,
+                  color: colorScheme.primary,
                   size: AppSizes.iconMd,
                 ),
               ),

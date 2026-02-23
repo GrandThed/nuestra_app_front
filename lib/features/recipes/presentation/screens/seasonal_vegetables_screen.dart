@@ -91,15 +91,13 @@ class _SeasonalVegetablesScreenState
     return Scaffold(
       appBar: AppBar(
         title: const Text('Verduras de temporada'),
-        backgroundColor: AppColors.recipes,
-        foregroundColor: Colors.white,
       ),
       body: switch (state) {
         SeasonalVegetablesStateInitial() => const Center(
             child: Text('Cargando verduras de temporada...'),
           ),
         SeasonalVegetablesStateLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.recipes),
+            child: CircularProgressIndicator(),
           ),
         SeasonalVegetablesStateError(:final message) => _buildErrorState(
             message,
@@ -149,7 +147,7 @@ class _SeasonalVegetablesScreenState
           Icon(
             Icons.eco_outlined,
             size: 80,
-            color: AppColors.recipes.withValues(alpha: 0.3),
+            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
           ),
           const SizedBox(height: AppSizes.md),
           const Text(
@@ -189,7 +187,6 @@ class _SeasonalVegetablesScreenState
     }
 
     return RefreshIndicator(
-      color: AppColors.recipes,
       onRefresh: () => ref
           .read(seasonalVegetablesProvider.notifier)
           .loadVegetables(),
@@ -255,33 +252,34 @@ class _SeasonalVegetablesScreenState
   }
 
   Widget _buildWeekIndicator(int currentWeek) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSizes.paddingMd,
         vertical: AppSizes.paddingSm,
       ),
       decoration: BoxDecoration(
-        color: AppColors.recipes.withValues(alpha: 0.1),
+        color: colorScheme.primaryContainer.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         border: Border.all(
-          color: AppColors.recipes.withValues(alpha: 0.3),
+          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
         ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(
+          Icon(
             Icons.calendar_today,
             size: AppSizes.iconSm,
-            color: AppColors.recipes,
+            color: colorScheme.primary,
           ),
           const SizedBox(width: AppSizes.sm),
           Text(
             'Semana actual: $currentWeek',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: AppSizes.fontMd,
               fontWeight: FontWeight.w600,
-              color: AppColors.recipes,
+              color: colorScheme.primary,
             ),
           ),
         ],

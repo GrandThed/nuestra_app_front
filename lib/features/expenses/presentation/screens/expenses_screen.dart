@@ -226,8 +226,6 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.expensesDark,
-                  foregroundColor: Colors.white,
                   minimumSize: const Size(0, AppSizes.buttonHeight),
                 ),
                 child: const Text('Guardar'),
@@ -340,8 +338,6 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.expensesDark,
-                  foregroundColor: Colors.white,
                   minimumSize: const Size(0, AppSizes.buttonHeight),
                 ),
                 child: const Text('Crear'),
@@ -433,7 +429,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
           child: Text('Cargando gastos...'),
         ),
         ExpensesStateLoading() => const Center(
-          child: CircularProgressIndicator(color: AppColors.expenses),
+          child: CircularProgressIndicator(),
         ),
         ExpensesStateError(:final message) => Center(
           child: Column(
@@ -471,8 +467,6 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
       },
       floatingActionButton: FloatingActionButton(
         onPressed: _navigateToAddExpense,
-        backgroundColor: AppColors.expensesDark,
-        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
@@ -493,7 +487,6 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
 
     return RefreshIndicator(
       onRefresh: _onRefresh,
-      color: AppColors.expenses,
       child: Column(
         children: [
           // Month selector and total
@@ -516,9 +509,11 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
   Widget _buildHeader(String monthName, int year, double total) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      padding: const EdgeInsets.all(AppSizes.md),
-      color: AppColors.expenses.withValues(alpha: 0.1),
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSizes.md,
+        vertical: AppSizes.sm,
+      ),
       child: Row(
         children: [
           // Month selector
@@ -534,27 +529,27 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                 color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 border: Border.all(
-                  color: AppColors.expenses.withValues(alpha: 0.3),
+                  color: colorScheme.outlineVariant,
                 ),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.calendar_today,
                     size: 18,
-                    color: AppColors.expenses,
+                    color: colorScheme.primary,
                   ),
                   const SizedBox(width: AppSizes.sm),
                   Text(
                     '${monthName.capitalize()} $year',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.expenses,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(width: AppSizes.xs),
-                  const Icon(Icons.arrow_drop_down, color: AppColors.expenses),
+                  Icon(Icons.arrow_drop_down, color: colorScheme.onSurfaceVariant),
                 ],
               ),
             ),
@@ -573,10 +568,10 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
               ),
               Text(
                 _currencyFormat.format(total),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.expenses,
+                  color: colorScheme.onSurface,
                 ),
               ),
             ],
@@ -691,7 +686,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.expenses.withValues(alpha: 0.8),
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -722,7 +717,7 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
           Icon(
             Icons.account_balance_wallet_outlined,
             size: 80,
-            color: AppColors.expenses.withValues(alpha: 0.3),
+            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
           ),
           const SizedBox(height: 16),
           Text(
@@ -743,10 +738,6 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
             onPressed: _navigateToAddExpense,
             icon: const Icon(Icons.add),
             label: const Text('Agregar gasto'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.expensesDark,
-              foregroundColor: Colors.white,
-            ),
           ),
         ],
       ),
@@ -791,7 +782,7 @@ class _CategoryChip extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: isSelected ? colorScheme.surface : AppColors.expenses,
+                  color: isSelected ? colorScheme.surface : colorScheme.primary,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -800,7 +791,7 @@ class _CategoryChip extends StatelessWidget {
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                     color:
-                        isSelected ? AppColors.expenses : colorScheme.surface,
+                        isSelected ? colorScheme.primary : colorScheme.onPrimary,
                   ),
                 ),
               ),
@@ -809,10 +800,10 @@ class _CategoryChip extends StatelessWidget {
         ),
         selected: isSelected,
         onSelected: (_) => onTap(),
-        selectedColor: AppColors.expenses,
+        selectedColor: colorScheme.primaryContainer,
         backgroundColor: colorScheme.surfaceContainerHighest,
         labelStyle: TextStyle(
-          color: isSelected ? colorScheme.surface : colorScheme.onSurface,
+          color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
         ),
         showCheckmark: false,
       ),
@@ -852,7 +843,7 @@ class _ExpenseItemTile extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: AppColors.expenses.withValues(alpha: 0.1),
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
                 alignment: Alignment.center,
@@ -897,10 +888,10 @@ class _ExpenseItemTile extends StatelessWidget {
                 children: [
                   Text(
                     currencyFormat.format(expense.amount),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.expenses,
+                      color: colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: 2),
@@ -1048,7 +1039,7 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
                     decoration: BoxDecoration(
                       color:
                           isSelected
-                              ? AppColors.expenses
+                              ? colorScheme.primary
                               : colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                     ),
@@ -1080,8 +1071,6 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
                 'month': _selectedMonth,
               }),
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.expensesDark,
-            foregroundColor: Colors.white,
             minimumSize: const Size(0, AppSizes.buttonHeight),
           ),
           child: const Text('Seleccionar'),

@@ -75,15 +75,13 @@ class _ExpenseTrendsScreenState extends ConsumerState<ExpenseTrendsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Tendencias de gastos'),
-        backgroundColor: AppColors.expensesDark,
-        foregroundColor: Colors.white,
       ),
       body: switch (state) {
         ExpenseTrendsStateInitial() => const Center(
             child: Text('Cargando tendencias...'),
           ),
         ExpenseTrendsStateLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.expenses),
+            child: CircularProgressIndicator(),
           ),
         ExpenseTrendsStateError(:final message) => Center(
             child: Column(
@@ -137,7 +135,6 @@ class _ExpenseTrendsScreenState extends ConsumerState<ExpenseTrendsScreen> {
 
     return RefreshIndicator(
       onRefresh: _onRefresh,
-      color: AppColors.expenses,
       child: ListView(
         padding: const EdgeInsets.all(AppSizes.md),
         children: [
@@ -226,7 +223,7 @@ class _ExpenseTrendsScreenState extends ConsumerState<ExpenseTrendsScreen> {
           Icon(
             Icons.trending_up,
             size: 80,
-            color: AppColors.expenses.withValues(alpha: 0.3),
+            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
           ),
           const SizedBox(height: AppSizes.md),
           Text(
@@ -298,10 +295,10 @@ class _TrendMonthCard extends StatelessWidget {
                   children: [
                     Text(
                       currencyFormat.format(trend.total),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: AppSizes.fontMd,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.expenses,
+                        color: colorScheme.primary,
                       ),
                     ),
                     if (monthChange != null) ...[
@@ -392,7 +389,7 @@ class _TrendMonthCard extends StatelessWidget {
             widthFactor: barFraction.clamp(0.0, 1.0),
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.expenses,
+                color: colorScheme.primary,
                 borderRadius: BorderRadius.circular(AppSizes.radiusXs),
               ),
             ),

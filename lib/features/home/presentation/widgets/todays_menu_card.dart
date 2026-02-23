@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/features/menus/data/models/menu_model.dart';
@@ -16,12 +15,13 @@ class TodaysMenuCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(upcomingMealsProvider);
     final today = DateTime.now();
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSizes.radiusMd),
-        side: BorderSide(color: AppColors.border),
+        side: BorderSide(color: colorScheme.outlineVariant),
       ),
       child: InkWell(
         onTap: () => context.go(AppRoutes.menus),
@@ -37,12 +37,12 @@ class TodaysMenuCard extends ConsumerWidget {
                   Container(
                     padding: const EdgeInsets.all(AppSizes.sm),
                     decoration: BoxDecoration(
-                      color: AppColors.menus.withValues(alpha: 0.1),
+                      color: colorScheme.primaryContainer.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.restaurant_menu,
-                      color: AppColors.menus,
+                      color: colorScheme.primary,
                       size: AppSizes.iconMd,
                     ),
                   ),
@@ -57,7 +57,7 @@ class TodaysMenuCard extends ConsumerWidget {
                   ),
                   Icon(
                     Icons.chevron_right,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    color: colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
@@ -99,10 +99,7 @@ class _LoadingContent extends StatelessWidget {
         child: SizedBox(
           width: 24,
           height: 24,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: AppColors.menus,
-          ),
+          child: CircularProgressIndicator(strokeWidth: 2),
         ),
       ),
     );
@@ -122,15 +119,15 @@ class _ErrorContent extends StatelessWidget {
         children: [
           const Icon(
             Icons.error_outline,
-            color: AppColors.error,
+            color: Colors.red,
             size: AppSizes.iconSm,
           ),
           const SizedBox(width: AppSizes.sm),
           Expanded(
             child: Text(
               message,
-              style: TextStyle(
-                color: AppColors.error,
+              style: const TextStyle(
+                color: Colors.red,
                 fontSize: AppSizes.fontSm,
               ),
             ),
@@ -172,7 +169,7 @@ class _MealsContent extends StatelessWidget {
               Text(
                 'Toca para planificar',
                 style: TextStyle(
-                  color: AppColors.menus,
+                  color: colorScheme.primary,
                   fontSize: AppSizes.fontSm,
                   fontWeight: FontWeight.w500,
                 ),

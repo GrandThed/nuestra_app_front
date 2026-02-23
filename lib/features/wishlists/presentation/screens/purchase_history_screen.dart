@@ -78,15 +78,13 @@ class _PurchaseHistoryScreenState extends ConsumerState<PurchaseHistoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Historial de compras'),
-        backgroundColor: AppColors.wishlistsDark,
-        foregroundColor: Colors.white,
       ),
       body: switch (state) {
         PurchaseHistoryStateInitial() => const Center(
             child: Text('Cargando historial...'),
           ),
         PurchaseHistoryStateLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.wishlists),
+            child: CircularProgressIndicator(),
           ),
         PurchaseHistoryStateError(:final message) => Center(
             child: Column(
@@ -155,7 +153,6 @@ class _PurchaseHistoryScreenState extends ConsumerState<PurchaseHistoryScreen> {
     final grouped = _groupByMonth(history);
 
     return RefreshIndicator(
-      color: AppColors.wishlists,
       onRefresh: () async {
         final householdId = ref.read(currentHouseholdIdProvider);
         if (householdId != null) {
@@ -231,15 +228,15 @@ class _MonthSection extends StatelessWidget {
                     vertical: AppSizes.xs,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.wishlists.withValues(alpha: 0.1),
+                    color: colorScheme.primaryContainer.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(AppSizes.radiusFull),
                   ),
                   child: Text(
                     currencyFormat.format(total),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: AppSizes.fontSm,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.wishlistsDark,
+                      color: colorScheme.primary,
                     ),
                   ),
                 ),
@@ -285,12 +282,12 @@ class _PurchaseCard extends StatelessWidget {
               width: 44,
               height: 44,
               decoration: BoxDecoration(
-                color: AppColors.wishlists.withValues(alpha: 0.1),
+                color: colorScheme.primaryContainer.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(AppSizes.radiusSm),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.shopping_bag_outlined,
-                color: AppColors.wishlistsDark,
+                color: colorScheme.primary,
                 size: AppSizes.iconMd,
               ),
             ),
@@ -358,10 +355,10 @@ class _PurchaseCard extends StatelessWidget {
               const SizedBox(width: AppSizes.sm),
               Text(
                 currencyFormat.format(purchase.price),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: AppSizes.fontMd,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.wishlistsDark,
+                  color: colorScheme.primary,
                 ),
               ),
             ],

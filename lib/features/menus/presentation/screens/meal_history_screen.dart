@@ -51,8 +51,6 @@ class _MealHistoryScreenState extends ConsumerState<MealHistoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Historial de comidas'),
-        backgroundColor: AppColors.menusDark,
-        foregroundColor: Colors.white,
         actions: [
           PopupMenuButton<_SortMode>(
             icon: const Icon(Icons.sort),
@@ -70,7 +68,7 @@ class _MealHistoryScreenState extends ConsumerState<MealHistoryScreen> {
                     Icon(
                       Icons.repeat,
                       color: _sortMode == _SortMode.mostCooked
-                          ? AppColors.menus
+                          ? colorScheme.primary
                           : colorScheme.onSurface,
                       size: AppSizes.iconSm,
                     ),
@@ -79,7 +77,7 @@ class _MealHistoryScreenState extends ConsumerState<MealHistoryScreen> {
                       'Mas cocinadas',
                       style: TextStyle(
                         color: _sortMode == _SortMode.mostCooked
-                            ? AppColors.menus
+                            ? colorScheme.primary
                             : null,
                       ),
                     ),
@@ -93,7 +91,7 @@ class _MealHistoryScreenState extends ConsumerState<MealHistoryScreen> {
                     Icon(
                       Icons.access_time,
                       color: _sortMode == _SortMode.mostRecent
-                          ? AppColors.menus
+                          ? colorScheme.primary
                           : colorScheme.onSurface,
                       size: AppSizes.iconSm,
                     ),
@@ -102,7 +100,7 @@ class _MealHistoryScreenState extends ConsumerState<MealHistoryScreen> {
                       'Mas recientes',
                       style: TextStyle(
                         color: _sortMode == _SortMode.mostRecent
-                            ? AppColors.menus
+                            ? colorScheme.primary
                             : null,
                       ),
                     ),
@@ -118,7 +116,7 @@ class _MealHistoryScreenState extends ConsumerState<MealHistoryScreen> {
             child: Text('Cargando historial...'),
           ),
         MealHistoryStateLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.menus),
+            child: CircularProgressIndicator(),
           ),
         MealHistoryStateError(:final message) => Center(
             child: Column(
@@ -186,7 +184,6 @@ class _MealHistoryScreenState extends ConsumerState<MealHistoryScreen> {
     final sorted = _sortedHistory(history);
 
     return RefreshIndicator(
-      color: AppColors.menus,
       onRefresh: () async {
         final householdId = ref.read(currentHouseholdIdProvider);
         if (householdId != null) {
@@ -247,12 +244,12 @@ class _MealHistoryCard extends StatelessWidget {
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  color: AppColors.menus.withValues(alpha: 0.1),
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.restaurant,
-                  color: AppColors.menusDark,
+                  color: colorScheme.primary,
                   size: AppSizes.iconMd,
                 ),
               ),
@@ -349,7 +346,7 @@ class _MealHistoryCard extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: isLongTimeSinceCooked
                         ? AppColors.warning
-                        : AppColors.menus,
+                        : colorScheme.primary,
                   ),
                 ),
                 Text(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/features/menus/presentation/providers/menus_notifier.dart';
@@ -82,7 +81,6 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
             index: 2,
             icon: Icons.attach_money,
             label: 'Agregar gasto',
-            color: AppColors.expensesDark,
             onTap: () {
               _close();
               context.push(AppRoutes.addExpense);
@@ -92,7 +90,6 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
             index: 1,
             icon: Icons.book_outlined,
             label: 'Nueva receta',
-            color: AppColors.recipesDark,
             onTap: () {
               _close();
               context.push(AppRoutes.recipeNew);
@@ -102,7 +99,6 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
             index: 0,
             icon: Icons.restaurant_menu,
             label: 'Planificar comida',
-            color: AppColors.menusDark,
             onTap: () {
               _close();
               _navigateToAddMeal(context);
@@ -112,8 +108,6 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
           // Main FAB
           FloatingActionButton(
             onPressed: _toggle,
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
             child: AnimatedRotation(
               turns: _isOpen ? 0.125 : 0, // 45 degrees
               duration: const Duration(milliseconds: 200),
@@ -129,7 +123,6 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
     required int index,
     required IconData icon,
     required String label,
-    required Color color,
     required VoidCallback onTap,
   }) {
     final offset = 70.0 + (index * 56.0);
@@ -178,8 +171,6 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
           FloatingActionButton.small(
             heroTag: 'fab_action_$index',
             onPressed: onTap,
-            backgroundColor: color,
-            foregroundColor: Colors.white,
             child: Icon(icon),
           ),
         ],
@@ -188,7 +179,6 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
   }
 
   void _navigateToAddMeal(BuildContext context) {
-    // Get current menu plan ID or create one
     final menuPlansState = ref.read(menuPlansProvider);
 
     if (menuPlansState is MenuPlansStateLoaded && menuPlansState.plans.isNotEmpty) {
@@ -196,7 +186,6 @@ class _QuickActionsFabState extends ConsumerState<QuickActionsFab>
       final today = DateTime.now();
       context.push('${AppRoutes.menus}/$menuId/add-meal?date=${today.toIso8601String().split('T').first}');
     } else {
-      // Navigate to menus screen to create a plan first
       context.go(AppRoutes.menus);
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

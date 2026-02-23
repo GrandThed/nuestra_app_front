@@ -40,10 +40,10 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     return Scaffold(
       body: switch (state) {
         RecipeDetailStateInitial() => const Center(
-            child: CircularProgressIndicator(color: AppColors.recipes),
+            child: CircularProgressIndicator(),
           ),
         RecipeDetailStateLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.recipes),
+            child: CircularProgressIndicator(),
           ),
         RecipeDetailStateError(:final message) => _buildErrorState(context, message),
         RecipeDetailStateLoaded(:final recipe) => _buildContent(context, recipe),
@@ -55,8 +55,6 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Error'),
-        backgroundColor: AppColors.recipes,
-        foregroundColor: Colors.white,
       ),
       body: Center(
         child: Column(
@@ -85,8 +83,6 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
         SliverAppBar(
           expandedHeight: recipe.imageUrl != null ? 250 : 0,
           pinned: true,
-          backgroundColor: AppColors.recipes,
-          foregroundColor: Colors.white,
           flexibleSpace: recipe.imageUrl != null
               ? FlexibleSpaceBar(
                   background: AppNetworkImage(
@@ -189,13 +185,13 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                     onTap: () => _openUrl(recipe.sourceUrl!),
                     child: Row(
                       children: [
-                        const Icon(Icons.link, size: 16, color: AppColors.recipes),
+                        Icon(Icons.link, size: 16, color: Theme.of(context).colorScheme.primary),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
                             recipe.sourceUrl!,
-                            style: const TextStyle(
-                              color: AppColors.recipes,
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.primary,
                               decoration: TextDecoration.underline,
                             ),
                             maxLines: 1,
@@ -253,8 +249,6 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                       icon: const Icon(Icons.local_fire_department),
                       label: const Text('Modo cocina'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.recipesDark,
-                        foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         textStyle: const TextStyle(
                           fontSize: 16,
@@ -333,21 +327,22 @@ class _InfoChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: AppColors.recipes.withValues(alpha: 0.1),
+        color: colorScheme.primaryContainer.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(icon, size: 16, color: AppColors.recipes),
+          Icon(icon, size: 16, color: colorScheme.primary),
           const SizedBox(width: 4),
           Text(
             label,
-            style: const TextStyle(
-              color: AppColors.recipes,
+            style: TextStyle(
+              color: colorScheme.primary,
               fontWeight: FontWeight.w500,
             ),
           ),
@@ -409,6 +404,7 @@ class _IngredientTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSizes.sm),
       child: Row(
@@ -416,8 +412,8 @@ class _IngredientTile extends StatelessWidget {
           Container(
             width: 8,
             height: 8,
-            decoration: const BoxDecoration(
-              color: AppColors.recipes,
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
               shape: BoxShape.circle,
             ),
           ),
@@ -425,8 +421,8 @@ class _IngredientTile extends StatelessWidget {
           Expanded(
             child: RichText(
               text: TextSpan(
-                style: const TextStyle(
-                  color: AppColors.textPrimary,
+                style: TextStyle(
+                  color: colorScheme.onSurface,
                   fontSize: 15,
                 ),
                 children: [
@@ -462,6 +458,7 @@ class _InstructionStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSizes.md),
       child: Row(
@@ -470,8 +467,8 @@ class _InstructionStep extends StatelessWidget {
           Container(
             width: 28,
             height: 28,
-            decoration: const BoxDecoration(
-              color: AppColors.recipes,
+            decoration: BoxDecoration(
+              color: colorScheme.primary,
               shape: BoxShape.circle,
             ),
             child: Center(

@@ -157,8 +157,8 @@ class _HouseholdSettingsScreenState
                 'Quien gana más paga más. Si está desactivado, los gastos se dividen en partes iguales.',
               ),
               value: household.splitMode == 'proportional',
-              activeTrackColor: AppColors.expenses.withValues(alpha: 0.5),
-              activeThumbColor: AppColors.expenses,
+              activeTrackColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+              activeThumbColor: Theme.of(context).colorScheme.primary,
               onChanged: (value) => _updateSplitMode(
                 household,
                 value ? 'proportional' : 'equal',
