@@ -20,43 +20,15 @@ class WishlistsScreen extends ConsumerStatefulWidget {
 }
 
 class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
-  static const _collapsedKey = 'wishlist_collapsed_categories';
-
   String? _selectedCategoryId;
   String? _ownerTypeFilter; // null = all, 'shared', 'personal'
-  Set<String> _collapsedCategories = {};
 
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       ref.read(wishlistsProvider.notifier).loadWishlistsIfNeeded();
-      _loadCollapsedState();
     });
-  }
-
-  Future<void> _loadCollapsedState() async {
-    final prefs = await SharedPreferences.getInstance();
-    final collapsed = prefs.getStringList(_collapsedKey) ?? [];
-    if (mounted) {
-      setState(() {
-        _collapsedCategories = collapsed.toSet();
-      });
-    }
-  }
-
-  Future<void> _toggleCategoryCollapsed(String categoryId) async {
-    setState(() {
-      if (_collapsedCategories.contains(categoryId)) {
-        _collapsedCategories.remove(categoryId);
-      } else {
-        _collapsedCategories.add(categoryId);
-      }
-    });
-
-    // Persist to local storage
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setStringList(_collapsedKey, _collapsedCategories.toList());
   }
 
   Future<void> _onRefresh() async {
@@ -125,23 +97,82 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(AppStrings.wishlists),
-        backgroundColor: AppColors.wishlistsDark,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.history),
             tooltip: 'Historial de compras',
             onPressed: () => context.push('/wishlists/history'),
           ),
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline),
-            tooltip: 'Nueva categoria',
-            onPressed: _showAddCategoryDialog,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_sweep_outlined),
-            tooltip: 'Limpiar marcados',
-            onPressed: _confirmClearChecked,
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.more_vert),
+            onSelected: (value) {
+              switch (value) {
+                case 'add_category':
+                  _showAddCategoryDialog();
+                case 'clear_checked':
+                  _confirmClearChecked();
+                case 'filter_all':
+                  setState(() => _ownerTypeFilter = null);
+                case 'filter_shared':
+                  setState(() => _ownerTypeFilter = 'shared');
+                case 'filter_personal':
+                  setState(() => _ownerTypeFilter = 'personal');
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'add_category',
+                child: ListTile(
+                  leading: Icon(Icons.add_circle_outline),
+                  title: Text('Nueva categoria'),
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'clear_checked',
+                child: ListTile(
+                  leading: Icon(Icons.delete_sweep_outlined),
+                  title: Text('Limpiar marcados'),
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                value: 'filter_all',
+                child: ListTile(
+                  leading: Icon(
+                    _ownerTypeFilter == null ? Icons.radio_button_checked : Icons.radio_button_off,
+                  ),
+                  title: const Text('Todos'),
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+              PopupMenuItem(
+                value: 'filter_shared',
+                child: ListTile(
+                  leading: Icon(
+                    _ownerTypeFilter == 'shared' ? Icons.radio_button_checked : Icons.radio_button_off,
+                  ),
+                  title: const Text('Compartidos'),
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+              PopupMenuItem(
+                value: 'filter_personal',
+                child: ListTile(
+                  leading: Icon(
+                    _ownerTypeFilter == 'personal' ? Icons.radio_button_checked : Icons.radio_button_off,
+                  ),
+                  title: const Text('Personales'),
+                  contentPadding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+            ],
           ),
         ],
       ),
@@ -150,7 +181,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
             child: Text('Cargando listas...'),
           ),
         WishlistsStateLoading() => const Center(
-            child: CircularProgressIndicator(color: AppColors.wishlists),
+            child: CircularProgressIndicator(),
           ),
         WishlistsStateError(:final message) => Center(
             child: Column(
@@ -172,8 +203,6 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
       },
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddItemDialog(),
-        backgroundColor: AppColors.wishlistsDark,
-        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
@@ -194,66 +223,13 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
 
     return RefreshIndicator(
       onRefresh: _onRefresh,
-      color: AppColors.wishlists,
       child: Column(
         children: [
-          // Category tabs
+          // Category tabs - single row
           _buildCategoryTabs(categories, filteredItems),
-          // Owner type filter
-          _buildOwnerTypeFilter(items),
           // Items list
           Expanded(
             child: _buildItemsList(categories, filteredItems),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildOwnerTypeFilter(List<WishlistItemModel> allItems) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final sharedCount = allItems.where((i) => i.ownerType == 'shared' && !i.checked).length;
-    final personalCount = allItems.where((i) => i.ownerType == 'personal' && !i.checked).length;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.md, vertical: AppSizes.xs),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        border: Border(
-          bottom: BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.3)),
-        ),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.filter_list, size: 18, color: colorScheme.onSurfaceVariant),
-          const SizedBox(width: AppSizes.sm),
-          Text(
-            'Tipo:',
-            style: TextStyle(
-              fontSize: 12,
-              color: colorScheme.onSurfaceVariant,
-            ),
-          ),
-          const SizedBox(width: AppSizes.sm),
-          _OwnerTypeChip(
-            label: 'Todos',
-            count: null,
-            isSelected: _ownerTypeFilter == null,
-            onTap: () => setState(() => _ownerTypeFilter = null),
-          ),
-          const SizedBox(width: AppSizes.xs),
-          _OwnerTypeChip(
-            label: 'Compartidos',
-            count: sharedCount,
-            isSelected: _ownerTypeFilter == 'shared',
-            onTap: () => setState(() => _ownerTypeFilter = 'shared'),
-          ),
-          const SizedBox(width: AppSizes.xs),
-          _OwnerTypeChip(
-            label: 'Personales',
-            count: personalCount,
-            isSelected: _ownerTypeFilter == 'personal',
-            onTap: () => setState(() => _ownerTypeFilter = 'personal'),
           ),
         ],
       ),
@@ -308,14 +284,14 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
     List<WishlistCategoryModel> categories,
     List<WishlistItemModel> items,
   ) {
-    // If a category is selected, show flat list
+    // If a category is selected, show flat list with quick add
     if (_selectedCategoryId != null) {
       return _buildFlatItemsList(
         items.where((i) => i.category?.id == _selectedCategoryId).toList(),
       );
     }
 
-    // For "All" tab, group by category
+    // For "All" tab, group by category (no quick add)
     return _buildGroupedItemsList(categories, items);
   }
 
@@ -338,7 +314,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
               onEdit: () => _editItem(item),
               onDelete: () => _confirmDeleteItem(item),
             )),
-        // Quick add at the bottom
+        // Single quick add at the bottom
         _QuickAddItem(
           categoryId: _selectedCategoryId!,
           onAdd: _quickAddItem,
@@ -367,7 +343,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
             Icon(
               Icons.checklist_outlined,
               size: 64,
-              color: AppColors.wishlists.withValues(alpha: 0.3),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
             ),
             const SizedBox(height: 16),
             Text(
@@ -413,15 +389,12 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
 
         return _CategorySection(
           key: ValueKey(category.id),
-          categoryId: category.id,
           categoryName: category.name,
           items: categoryItems,
-          isCollapsed: _collapsedCategories.contains(category.id),
-          onToggleCollapsed: () => _toggleCategoryCollapsed(category.id),
+          uncheckedCount: categoryItems.where((i) => !i.checked).length,
           onToggleItem: _toggleItem,
           onEditItem: _editItem,
           onDeleteItem: _confirmDeleteItem,
-          onQuickAdd: _quickAddItem,
         );
       },
     );
@@ -437,7 +410,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
           Icon(
             Icons.checklist_outlined,
             size: 80,
-            color: AppColors.wishlists.withValues(alpha: 0.3),
+            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
           ),
           const SizedBox(height: 16),
           Text(
@@ -458,10 +431,6 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
             onPressed: _showAddCategoryDialog,
             icon: const Icon(Icons.add),
             label: const Text('Nueva categoria'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.wishlistsDark,
-              foregroundColor: Colors.white,
-            ),
           ),
         ],
       ),
@@ -659,7 +628,7 @@ class _CategoryChip extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: isSelected ? colorScheme.surface : AppColors.wishlists,
+                  color: isSelected ? colorScheme.surface : colorScheme.primary,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Text(
@@ -667,7 +636,7 @@ class _CategoryChip extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: isSelected ? AppColors.wishlists : colorScheme.surface,
+                    color: isSelected ? colorScheme.primary : colorScheme.onPrimary,
                   ),
                 ),
               ),
@@ -676,12 +645,12 @@ class _CategoryChip extends StatelessWidget {
         ),
         selected: isSelected,
         onSelected: (_) => onTap(),
-        selectedColor: AppColors.wishlists,
+        selectedColor: colorScheme.primaryContainer,
         backgroundColor: colorScheme.surfaceContainerHighest,
         labelStyle: TextStyle(
-          color: isSelected ? colorScheme.surface : colorScheme.onSurface,
+          color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
         ),
-        checkmarkColor: colorScheme.surface,
+        checkmarkColor: colorScheme.onPrimaryContainer,
         showCheckmark: false,
       ),
     );
@@ -689,119 +658,69 @@ class _CategoryChip extends StatelessWidget {
 }
 
 class _CategorySection extends StatelessWidget {
-  final String categoryId;
   final String categoryName;
   final List<WishlistItemModel> items;
-  final bool isCollapsed;
-  final VoidCallback onToggleCollapsed;
+  final int uncheckedCount;
   final void Function(WishlistItemModel) onToggleItem;
   final void Function(WishlistItemModel) onEditItem;
   final void Function(WishlistItemModel) onDeleteItem;
-  final Future<void> Function(String categoryId, String name) onQuickAdd;
 
   const _CategorySection({
     super.key,
-    required this.categoryId,
     required this.categoryName,
     required this.items,
-    required this.isCollapsed,
-    required this.onToggleCollapsed,
+    required this.uncheckedCount,
     required this.onToggleItem,
     required this.onEditItem,
     required this.onDeleteItem,
-    required this.onQuickAdd,
   });
 
   @override
   Widget build(BuildContext context) {
-    final uncheckedCount = items.where((i) => !i.checked).length;
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Category header (tappable to collapse/expand)
-        GestureDetector(
-          onTap: onToggleCollapsed,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSizes.md,
-              vertical: AppSizes.sm,
-            ),
-            margin: const EdgeInsets.only(bottom: AppSizes.sm),
-            decoration: BoxDecoration(
-              color: AppColors.wishlists.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-            ),
-            child: Row(
-              children: [
-                // Expand/collapse icon
-                AnimatedRotation(
-                  turns: isCollapsed ? -0.25 : 0,
-                  duration: const Duration(milliseconds: 200),
-                  child: const Icon(
-                    Icons.expand_more,
-                    color: AppColors.wishlists,
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: AppSizes.xs),
-                Expanded(
-                  child: Text(
-                    categoryName,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.wishlists,
-                    ),
-                  ),
-                ),
-                if (uncheckedCount > 0)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColors.wishlists,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      uncheckedCount.toString(),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
+        // Simple text section header
+        Padding(
+          padding: const EdgeInsets.only(
+            left: AppSizes.xs,
+            top: AppSizes.sm,
+            bottom: AppSizes.sm,
           ),
-        ),
-        // Items in this category (animated collapse)
-        AnimatedCrossFade(
-          firstChild: Column(
+          child: Row(
             children: [
-              ...items.map((item) => _WishlistItemTile(
-                    item: item,
-                    onToggle: () => onToggleItem(item),
-                    onEdit: () => onEditItem(item),
-                    onDelete: () => onDeleteItem(item),
-                  )),
-              // Quick add at the bottom of each category
-              _QuickAddItem(
-                categoryId: categoryId,
-                onAdd: onQuickAdd,
+              Expanded(
+                child: Text(
+                  categoryName,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ),
+              if (uncheckedCount > 0)
+                Text(
+                  uncheckedCount.toString(),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
             ],
           ),
-          secondChild: const SizedBox.shrink(),
-          crossFadeState:
-              isCollapsed ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-          duration: const Duration(milliseconds: 200),
         ),
-        const SizedBox(height: AppSizes.md),
+        // Items
+        ...items.map((item) => _WishlistItemTile(
+              item: item,
+              onToggle: () => onToggleItem(item),
+              onEdit: () => onEditItem(item),
+              onDelete: () => onDeleteItem(item),
+            )),
+        const SizedBox(height: AppSizes.sm),
       ],
     );
   }
@@ -857,16 +776,13 @@ class _WishlistItemTile extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Checkbox
                 Checkbox(
                   value: item.checked,
                   onChanged: (_) => onToggle(),
-                  activeColor: AppColors.wishlists,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
-                // Item info
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -880,7 +796,6 @@ class _WishlistItemTile extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                           ],
-                          // Priority badge
                           if (item.averagePriority != null &&
                               item.averagePriority! > 0) ...[
                             Container(
@@ -928,7 +843,6 @@ class _WishlistItemTile extends StatelessWidget {
                               ),
                             ),
                           ),
-                          // Secret item indicator
                           if (item.isSecret) ...[
                             const SizedBox(width: 4),
                             const Icon(
@@ -982,68 +896,6 @@ class _WishlistItemTile extends StatelessWidget {
   }
 }
 
-class _OwnerTypeChip extends StatelessWidget {
-  final String label;
-  final int? count;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _OwnerTypeChip({
-    required this.label,
-    required this.count,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? AppColors.wishlists.withValues(alpha: 0.2)
-              : colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isSelected
-                ? AppColors.wishlists
-                : colorScheme.outlineVariant.withValues(alpha: 0.5),
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? AppColors.wishlists : colorScheme.onSurfaceVariant,
-              ),
-            ),
-            if (count != null && count! > 0) ...[
-              const SizedBox(width: 4),
-              Text(
-                '($count)',
-                style: TextStyle(
-                  fontSize: 11,
-                  color: isSelected
-                      ? AppColors.wishlists.withValues(alpha: 0.8)
-                      : colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _QuickAddItem extends StatefulWidget {
   final String categoryId;
   final Future<void> Function(String categoryId, String name) onAdd;
@@ -1072,11 +924,9 @@ class _QuickAddItemState extends State<_QuickAddItem> {
     final name = _controller.text.trim();
     if (name.isEmpty) return;
 
-    // Optimistic - fire and forget
     widget.onAdd(widget.categoryId, name);
 
     _controller.clear();
-    // Keep focus for adding another item
     _focusNode.requestFocus();
   }
 
@@ -1096,16 +946,14 @@ class _QuickAddItemState extends State<_QuickAddItem> {
         ),
         child: Row(
           children: [
-            // Add icon (same position as checkbox)
-            const SizedBox(
+            SizedBox(
               width: 48,
               height: 48,
               child: Icon(
                 Icons.add_circle_outline,
-                color: AppColors.wishlists,
+                color: colorScheme.primary,
               ),
             ),
-            // Text field
             Expanded(
               child: TextField(
                 controller: _controller,
@@ -1134,10 +982,9 @@ class _QuickAddItemState extends State<_QuickAddItem> {
                 onSubmitted: (_) => _submit(),
               ),
             ),
-            // Submit button
             IconButton(
               icon: const Icon(Icons.check, size: 20),
-              color: AppColors.wishlists,
+              color: colorScheme.primary,
               onPressed: _submit,
             ),
           ],

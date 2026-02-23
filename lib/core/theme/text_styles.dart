@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 
@@ -7,14 +8,14 @@ class AppTextStyles {
   AppTextStyles._();
 
   // Display
-  static const TextStyle displayLarge = TextStyle(
+  static final TextStyle displayLarge = GoogleFonts.plusJakartaSans(
     fontSize: 32,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
     height: 1.2,
   );
 
-  static const TextStyle displayMedium = TextStyle(
+  static final TextStyle displayMedium = GoogleFonts.plusJakartaSans(
     fontSize: 28,
     fontWeight: FontWeight.bold,
     color: AppColors.textPrimary,
@@ -22,21 +23,21 @@ class AppTextStyles {
   );
 
   // Headlines
-  static const TextStyle headlineLarge = TextStyle(
+  static final TextStyle headlineLarge = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontXxl,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.3,
   );
 
-  static const TextStyle headlineMedium = TextStyle(
+  static final TextStyle headlineMedium = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontXl,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
     height: 1.3,
   );
 
-  static const TextStyle headlineSmall = TextStyle(
+  static final TextStyle headlineSmall = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontLg,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
@@ -44,21 +45,21 @@ class AppTextStyles {
   );
 
   // Titles
-  static const TextStyle titleLarge = TextStyle(
+  static final TextStyle titleLarge = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontLg,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
     height: 1.4,
   );
 
-  static const TextStyle titleMedium = TextStyle(
+  static final TextStyle titleMedium = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontMd,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
     height: 1.4,
   );
 
-  static const TextStyle titleSmall = TextStyle(
+  static final TextStyle titleSmall = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontSm,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
@@ -66,21 +67,21 @@ class AppTextStyles {
   );
 
   // Body
-  static const TextStyle bodyLarge = TextStyle(
+  static final TextStyle bodyLarge = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontMd,
     fontWeight: FontWeight.normal,
     color: AppColors.textPrimary,
     height: 1.5,
   );
 
-  static const TextStyle bodyMedium = TextStyle(
+  static final TextStyle bodyMedium = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontSm,
     fontWeight: FontWeight.normal,
     color: AppColors.textPrimary,
     height: 1.5,
   );
 
-  static const TextStyle bodySmall = TextStyle(
+  static final TextStyle bodySmall = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontXs,
     fontWeight: FontWeight.normal,
     color: AppColors.textSecondary,
@@ -88,21 +89,21 @@ class AppTextStyles {
   );
 
   // Labels
-  static const TextStyle labelLarge = TextStyle(
+  static final TextStyle labelLarge = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontSm,
     fontWeight: FontWeight.w500,
     color: AppColors.textPrimary,
     letterSpacing: 0.5,
   );
 
-  static const TextStyle labelMedium = TextStyle(
+  static final TextStyle labelMedium = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontXs,
     fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
     letterSpacing: 0.5,
   );
 
-  static const TextStyle labelSmall = TextStyle(
+  static final TextStyle labelSmall = GoogleFonts.plusJakartaSans(
     fontSize: 10,
     fontWeight: FontWeight.w500,
     color: AppColors.textTertiary,
@@ -110,14 +111,14 @@ class AppTextStyles {
   );
 
   // Button
-  static const TextStyle button = TextStyle(
+  static final TextStyle button = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontMd,
     fontWeight: FontWeight.w600,
     letterSpacing: 0.5,
   );
 
   // Caption
-  static const TextStyle caption = TextStyle(
+  static final TextStyle caption = GoogleFonts.plusJakartaSans(
     fontSize: AppSizes.fontXs,
     fontWeight: FontWeight.normal,
     color: AppColors.textTertiary,

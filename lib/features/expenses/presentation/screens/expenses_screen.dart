@@ -366,18 +366,16 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                 ? TextField(
                   controller: _searchController,
                   autofocus: true,
-                  style: const TextStyle(color: Colors.white),
-                  cursorColor: Colors.white,
-                  decoration: const InputDecoration(
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                  cursorColor: Theme.of(context).colorScheme.onSurface,
+                  decoration: InputDecoration(
                     hintText: 'Buscar gastos...',
-                    hintStyle: TextStyle(color: Colors.white70),
+                    hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                     border: InputBorder.none,
                   ),
                   onChanged: (value) => setState(() => _searchQuery = value),
                 )
                 : const Text(AppStrings.expenses),
-        backgroundColor: AppColors.expensesDark,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: Icon(_isSearching ? Icons.close : Icons.search),

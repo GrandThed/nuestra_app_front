@@ -63,8 +63,6 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Recetas'),
-        backgroundColor: AppColors.recipesDark,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.eco_outlined),
@@ -74,7 +72,7 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
           IconButton(
             icon: Icon(
               _showFavoritesOnly ? Icons.favorite : Icons.favorite_border,
-              color: _showFavoritesOnly ? Colors.red : Colors.white,
+              color: _showFavoritesOnly ? Colors.red : null,
             ),
             tooltip: 'Favoritas',
             onPressed: () {

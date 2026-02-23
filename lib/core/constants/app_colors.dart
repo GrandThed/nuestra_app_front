@@ -51,15 +51,18 @@ class AppColors {
 
   // Border colors
   static const Color border = Color(0xFFE5E7EB);
-  static const Color borderDark = Color(0xFF374151);
+  static const Color borderDark = Color(0xFF4B5563);
 
   // Divider
   static const Color divider = Color(0xFFE5E7EB);
-  static const Color dividerDark = Color(0xFF374151);
+  static const Color dividerDark = Color(0xFF4B5563);
 
   // Surface variants
   static const Color surfaceVariant = Color(0xFFF3F4F6);
   static const Color surfaceVariantDark = Color(0xFF374151);
+
+  // Elevated surface (for modals/sheets that float above cards)
+  static const Color surfaceElevatedDark = Color(0xFF273344);
 
   // Shimmer colors
   static const Color shimmerBase = Color(0xFFE5E7EB);

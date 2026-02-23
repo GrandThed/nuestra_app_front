@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -16,6 +17,7 @@ void _log(String message) {
 }
 
 void main() async {
+  enableFlutterDriverExtension();
   _log('[main] Starting app initialization...');
 
   // Catch all Flutter errors and display them

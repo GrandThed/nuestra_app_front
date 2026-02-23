@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 
@@ -8,7 +9,7 @@ class AppTheme {
 
   /// Light theme
   static ThemeData get light {
-    return ThemeData(
+    final base = ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
       colorScheme: const ColorScheme.light(
@@ -124,11 +125,14 @@ class AppTheme {
         ),
       ),
     );
+    return base.copyWith(
+      textTheme: GoogleFonts.plusJakartaSansTextTheme(base.textTheme),
+    );
   }
 
   /// Dark theme
   static ThemeData get dark {
-    return ThemeData(
+    final base = ThemeData(
       useMaterial3: true,
       brightness: Brightness.dark,
       colorScheme: const ColorScheme.dark(
@@ -229,6 +233,9 @@ class AppTheme {
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
         ),
       ),
+    );
+    return base.copyWith(
+      textTheme: GoogleFonts.plusJakartaSansTextTheme(base.textTheme),
     );
   }
 }

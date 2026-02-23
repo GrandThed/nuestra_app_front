@@ -81,18 +81,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             ? TextField(
                 controller: _searchController,
                 autofocus: true,
-                style: const TextStyle(color: Colors.white),
-                cursorColor: Colors.white,
-                decoration: const InputDecoration(
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                cursorColor: Theme.of(context).colorScheme.onSurface,
+                decoration: InputDecoration(
                   hintText: 'Buscar eventos...',
-                  hintStyle: TextStyle(color: Colors.white70),
+                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                   border: InputBorder.none,
                 ),
                 onChanged: (value) => setState(() => _searchQuery = value),
               )
             : const Text(AppStrings.calendar),
-        backgroundColor: AppColors.calendarDark,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: Icon(_isSearching ? Icons.close : Icons.search),
