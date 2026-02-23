@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/features/expenses/data/models/expense_model.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
@@ -179,9 +178,9 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
                           ),
                           Text(
                             _currencyFormat.format(settlement.amount),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: AppColors.expenses,
+                              color: Theme.of(dialogContext).colorScheme.primary,
                             ),
                           ),
                         ],
@@ -244,8 +243,6 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Resumen de gastos'),
-        backgroundColor: AppColors.expenses,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.calculate_outlined),
@@ -323,7 +320,7 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
 
           // Total card
           Card(
-            color: AppColors.expenses.withValues(alpha: 0.1),
+            color: colorScheme.primaryContainer.withValues(alpha: 0.15),
             child: Padding(
               padding: const EdgeInsets.all(AppSizes.xl),
               child: Column(
@@ -335,10 +332,10 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
                   const SizedBox(height: AppSizes.sm),
                   Text(
                     _currencyFormat.format(summary.totalAmount),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.expenses,
+                      color: colorScheme.primary,
                     ),
                   ),
                   const SizedBox(height: AppSizes.xs),
@@ -617,12 +614,12 @@ class _BalanceRow extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: AppColors.expenses.withValues(alpha: 0.2),
+            backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
             child: Text(
               balance.name.substring(0, 1).toUpperCase(),
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: AppColors.expenses,
+                color: colorScheme.primary,
               ),
             ),
           ),
@@ -716,19 +713,24 @@ class _SettlementRow extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: AppColors.expenses.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              currencyFormat.format(settlement.amount),
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: AppColors.expenses,
-              ),
-            ),
+          Builder(
+            builder: (context) {
+              final colorScheme = Theme.of(context).colorScheme;
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  currencyFormat.format(settlement.amount),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.primary,
+                  ),
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -793,7 +795,7 @@ class _ExpenseListTile extends StatelessWidget {
         currencyFormat.format(expense.amount),
         style: TextStyle(
           fontWeight: FontWeight.bold,
-          color: isSettled ? Colors.green : AppColors.expenses,
+          color: isSettled ? Colors.green : colorScheme.primary,
         ),
       ),
     );
@@ -892,7 +894,7 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? AppColors.expenses
+                          ? colorScheme.primary
                           : colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                     ),
@@ -922,10 +924,6 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
             'year': _selectedYear,
             'month': _selectedMonth,
           }),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.expenses,
-            foregroundColor: Colors.white,
-          ),
           child: const Text('Seleccionar'),
         ),
       ],

@@ -97,7 +97,7 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
                       fit: BoxFit.cover,
                     ),
                   )
-                : const Icon(Icons.link, color: AppColors.boards),
+                : Icon(Icons.link, color: Theme.of(context).colorScheme.primary),
           ),
           const SizedBox(width: AppSizes.md),
           // Content info
@@ -120,7 +120,7 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       fontSize: 14,
                     ),
                   ),
@@ -142,25 +142,26 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
         }
         final board = boards[index];
         final isSelected = _selectedBoardId == board.id;
+        final colorScheme = Theme.of(context).colorScheme;
         return ListTile(
           leading: Container(
             width: 48,
             height: 48,
             decoration: BoxDecoration(
               color: isSelected
-                  ? AppColors.boards.withValues(alpha: 0.2)
+                  ? colorScheme.primaryContainer.withValues(alpha: 0.2)
                   : AppColors.surfaceVariant,
               borderRadius: BorderRadius.circular(AppSizes.radiusSm),
             ),
             child: Icon(
               Icons.dashboard,
-              color: isSelected ? AppColors.boards : AppColors.textSecondary,
+              color: isSelected ? colorScheme.primary : colorScheme.onSurfaceVariant,
             ),
           ),
           title: Text(board.name),
           subtitle: Text('${board.itemCount} items'),
           trailing: isSelected
-              ? const Icon(Icons.check_circle, color: AppColors.boards)
+              ? Icon(Icons.check_circle, color: colorScheme.primary)
               : null,
           selected: isSelected,
           onTap: () {
@@ -186,7 +187,7 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
             style: BorderStyle.solid,
           ),
         ),
-        child: const Icon(Icons.add, color: AppColors.boards),
+        child: Icon(Icons.add, color: Theme.of(context).colorScheme.primary),
       ),
       title: const Text('Crear nuevo tablero'),
       onTap: _showCreateBoardDialog,
@@ -201,7 +202,7 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
           Icon(
             Icons.dashboard_outlined,
             size: 64,
-            color: AppColors.boards.withValues(alpha: 0.5),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: AppSizes.md),
           const Text(
@@ -215,9 +216,6 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
             onPressed: _showCreateBoardDialog,
             icon: const Icon(Icons.add),
             label: const Text('Crear tablero'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.boards,
-            ),
           ),
         ],
       ),
@@ -254,7 +252,6 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
             onPressed:
                 _selectedBoardId != null && !_isSaving ? () => _save(content) : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.boards,
               padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
             ),
             child: _isSaving
@@ -310,9 +307,6 @@ class _ShareToBoardScreenState extends ConsumerState<ShareToBoardScreen> {
                 });
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.boards,
-            ),
             child: const Text('Crear'),
           ),
         ],

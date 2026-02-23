@@ -669,7 +669,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
               child: ListTile(
                 dense: true,
                 leading: CircleAvatar(
-                  backgroundColor: AppColors.recipes,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   radius: 14,
                   child: Text(

@@ -125,8 +125,6 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Detalle de evento'),
-          backgroundColor: AppColors.calendar,
-          foregroundColor: Colors.white,
         ),
         body: const Center(
           child: Text('Evento no encontrado'),
@@ -137,8 +135,6 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle de evento'),
-        backgroundColor: AppColors.calendar,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
@@ -157,7 +153,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
         children: [
           // Title card
           Card(
-            color: AppColors.calendar.withValues(alpha: 0.1),
+            color: colorScheme.primaryContainer.withValues(alpha: 0.15),
             child: Padding(
               padding: const EdgeInsets.all(AppSizes.xl),
               child: Column(
@@ -165,7 +161,7 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                   Icon(
                     _getEventIcon(event),
                     size: 48,
-                    color: AppColors.calendar,
+                    color: colorScheme.primary,
                   ),
                   const SizedBox(height: AppSizes.md),
                   Text(
@@ -295,7 +291,6 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                         icon: Icons.restaurant,
                         label: 'Receta',
                         value: event.linkedRecipe!.title,
-                        color: AppColors.recipes,
                       ),
                     ],
                     if (event.linkedBoard != null) ...[
@@ -304,7 +299,6 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                         icon: Icons.dashboard,
                         label: 'Tablero',
                         value: event.linkedBoard!.name,
-                        color: AppColors.boards,
                       ),
                     ],
                     if (event.linkedMenuPlan != null) ...[
@@ -314,7 +308,6 @@ class _EventDetailScreenState extends ConsumerState<EventDetailScreen> {
                         icon: Icons.calendar_view_week,
                         label: 'Menu',
                         value: event.linkedMenuPlan!.name,
-                        color: AppColors.menus,
                       ),
                     ],
                   ],
@@ -406,13 +399,11 @@ class _LinkedItemRow extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  final Color color;
 
   const _LinkedItemRow({
     required this.icon,
     required this.label,
     required this.value,
-    required this.color,
   });
 
   @override
@@ -426,10 +417,10 @@ class _LinkedItemRow extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: colorScheme.primaryContainer.withValues(alpha: 0.2),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, size: 20, color: color),
+            child: Icon(icon, size: 20, color: colorScheme.primary),
           ),
           const SizedBox(width: AppSizes.md),
           Text(

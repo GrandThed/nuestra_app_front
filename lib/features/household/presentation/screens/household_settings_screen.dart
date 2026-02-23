@@ -408,8 +408,8 @@ class _HouseholdSettingsScreenState
                   Switch(
                     value: member.paysExpenses,
                     onChanged: (value) => _updatePaysExpenses(member, value),
-                    activeTrackColor: AppColors.expenses.withValues(alpha: 0.5),
-                    activeThumbColor: AppColors.expenses,
+                    activeTrackColor: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
+                    activeThumbColor: Theme.of(context).colorScheme.primary,
                   ),
                 ],
               ),

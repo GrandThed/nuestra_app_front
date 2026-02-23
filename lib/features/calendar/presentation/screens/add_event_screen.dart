@@ -179,8 +179,8 @@ class _AddEventScreenState extends ConsumerState<AddEventScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Nuevo evento'),
-        backgroundColor: AppColors.calendar,
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         actions: [
           TextButton(
             onPressed: _isSubmitting ? null : _submit,

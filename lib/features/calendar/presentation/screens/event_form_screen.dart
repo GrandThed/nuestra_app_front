@@ -268,8 +268,8 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Editar evento' : 'Nuevo evento'),
-        backgroundColor: AppColors.calendar,
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         actions: [
           TextButton(
             onPressed: _isSubmitting ? null : _submit,
@@ -522,7 +522,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(Icons.dashboard_outlined, color: AppColors.boards),
+      leading: Icon(Icons.dashboard_outlined, color: Theme.of(context).colorScheme.primary),
       title: const Text('Tablero'),
       trailing: DropdownButton<String?>(
         value: _linkedBoardId,
@@ -546,7 +546,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(Icons.restaurant_menu, color: AppColors.recipes),
+      leading: Icon(Icons.restaurant_menu, color: Theme.of(context).colorScheme.primary),
       title: const Text('Receta'),
       trailing: DropdownButton<String?>(
         value: _linkedRecipeId,
@@ -570,7 +570,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
 
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      leading: Icon(Icons.calendar_view_week, color: AppColors.menus),
+      leading: Icon(Icons.calendar_view_week, color: Theme.of(context).colorScheme.primary),
       title: const Text('Plan de menu'),
       trailing: DropdownButton<String?>(
         value: _linkedMenuPlanId,

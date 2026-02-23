@@ -123,8 +123,6 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
       return Scaffold(
         appBar: AppBar(
           title: const Text('Detalle de gasto'),
-          backgroundColor: AppColors.expenses,
-          foregroundColor: Colors.white,
         ),
         body: const Center(
           child: Text('Gasto no encontrado'),
@@ -137,8 +135,6 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detalle de gasto'),
-        backgroundColor: AppColors.expenses,
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.edit_outlined),
@@ -157,7 +153,7 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
         children: [
           // Amount card
           Card(
-            color: AppColors.expenses.withValues(alpha: 0.1),
+            color: colorScheme.primaryContainer.withValues(alpha: 0.15),
             child: Padding(
               padding: const EdgeInsets.all(AppSizes.xl),
               child: Column(
@@ -170,10 +166,10 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                   const SizedBox(height: AppSizes.sm),
                   Text(
                     _currencyFormat.format(expense.amount),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 36,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.expenses,
+                      color: colorScheme.primary,
                     ),
                   ),
                   const SizedBox(height: AppSizes.xs),
@@ -303,12 +299,12 @@ class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
                               // User avatar/initial
                               CircleAvatar(
                                 radius: 18,
-                                backgroundColor: AppColors.expenses.withValues(alpha: 0.2),
+                                backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
                                 child: Text(
                                   split.user?.name.substring(0, 1).toUpperCase() ?? '?',
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.expenses,
+                                    color: colorScheme.primary,
                                   ),
                                 ),
                               ),

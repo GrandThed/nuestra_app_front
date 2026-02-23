@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/features/expenses/data/models/expense_model.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
@@ -154,8 +153,6 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isEditing ? 'Editar gasto' : 'Nuevo gasto'),
-        backgroundColor: AppColors.expenses,
-        foregroundColor: Colors.white,
       ),
       body: Form(
         key: _formKey,
@@ -169,10 +166,10 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[\d.,]')),
               ],
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 32,
                 fontWeight: FontWeight.bold,
-                color: AppColors.expenses,
+                color: colorScheme.primary,
               ),
               textAlign: TextAlign.center,
               decoration: InputDecoration(
@@ -180,7 +177,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
                 prefixStyle: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.expenses.withValues(alpha: 0.5),
+                  color: colorScheme.primary.withValues(alpha: 0.5),
                 ),
                 hintText: '0.00',
                 hintStyle: TextStyle(
@@ -224,7 +221,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
 
             // Date selector
             ListTile(
-              leading: const Icon(Icons.calendar_today, color: AppColors.expenses),
+              leading: Icon(Icons.calendar_today, color: colorScheme.primary),
               title: const Text('Fecha'),
               subtitle: Text(
                 dateFormat.format(_selectedDate),
@@ -259,7 +256,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
                     label: const Text('Sin categoria'),
                     selected: _selectedCategoryId == null,
                     onSelected: (_) => setState(() => _selectedCategoryId = null),
-                    selectedColor: AppColors.expenses.withValues(alpha: 0.2),
+                    selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
                   ),
                   // Category options
                   ...categories.map(
@@ -271,7 +268,7 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
                       selected: _selectedCategoryId == category.id,
                       onSelected: (_) =>
                           setState(() => _selectedCategoryId = category.id),
-                      selectedColor: AppColors.expenses.withValues(alpha: 0.2),
+                      selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
                     ),
                   ),
                 ],
@@ -287,8 +284,6 @@ class _ExpenseFormScreenState extends ConsumerState<ExpenseFormScreen> {
           child: ElevatedButton(
             onPressed: _isLoading ? null : _submit,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.expenses,
-              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppSizes.radiusMd),

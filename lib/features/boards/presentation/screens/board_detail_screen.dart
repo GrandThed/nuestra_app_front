@@ -82,8 +82,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddItemOptions(context),
-        backgroundColor: AppColors.boardsDark,
-        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
       ),
     );
@@ -97,7 +95,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
           Icon(
             Icons.photo_library_outlined,
             size: 64,
-            color: AppColors.boards.withValues(alpha: 0.5),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.5),
           ),
           const SizedBox(height: AppSizes.md),
           Text(
@@ -178,7 +176,7 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   ),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.link, color: AppColors.boards),
+                  leading: Icon(Icons.link, color: Theme.of(sheetContext).colorScheme.primary),
                   title: const Text('Agregar link'),
                   subtitle: const Text('Pega un enlace de cualquier sitio'),
                   onTap: () {
@@ -187,9 +185,9 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   },
                 ),
                 ListTile(
-                  leading: const Icon(
+                  leading: Icon(
                     Icons.photo_camera,
-                    color: AppColors.boards,
+                    color: Theme.of(sheetContext).colorScheme.primary,
                   ),
                   title: const Text('Agregar foto'),
                   subtitle: const Text(
@@ -270,8 +268,6 @@ class _BoardDetailScreenState extends ConsumerState<BoardDetailScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.boardsDark,
-                  foregroundColor: Colors.white,
                   minimumSize: const Size(0, AppSizes.buttonHeight),
                 ),
                 child: const Text('Agregar'),
@@ -644,7 +640,7 @@ class _BoardItemCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
-                    color: AppColors.boards,
+                    color: Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const Icon(Icons.flip, size: 16, color: Colors.white),
@@ -949,10 +945,6 @@ class _ItemDetailSheet extends StatelessWidget {
                 onPressed: () => _launchUrl(item.url!),
                 icon: const Icon(Icons.open_in_browser),
                 label: const Text('Abrir enlace'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.boardsDark,
-                  foregroundColor: Colors.white,
-                ),
               ),
             ),
           ],

@@ -178,8 +178,6 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.expensesDark,
-              foregroundColor: Colors.white,
               minimumSize: const Size(0, AppSizes.buttonHeight),
             ),
             child: const Text('Guardar'),
@@ -196,8 +194,6 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Presupuestos'),
-        backgroundColor: AppColors.expensesDark,
-        foregroundColor: Colors.white,
       ),
       body: Column(
         children: [
@@ -210,7 +206,7 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
                   child: Text('Cargando presupuestos...'),
                 ),
               BudgetStateLoading() => const Center(
-                  child: CircularProgressIndicator(color: AppColors.expenses),
+                  child: CircularProgressIndicator(),
                 ),
               BudgetStateError(:final message) => Center(
                   child: Column(
@@ -237,33 +233,34 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
   }
 
   Widget _buildMonthSelector() {
+    final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppSizes.md,
         vertical: AppSizes.sm,
       ),
-      color: AppColors.expenses.withValues(alpha: 0.1),
+      color: colorScheme.primaryContainer.withValues(alpha: 0.15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           IconButton(
             icon: const Icon(Icons.chevron_left),
             onPressed: _previousMonth,
-            color: AppColors.expenses,
+            color: colorScheme.primary,
           ),
           Text(
             '${_monthNames[_selectedMonth - 1]} $_selectedYear',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: AppSizes.fontLg,
               fontWeight: FontWeight.bold,
-              color: AppColors.expenses,
+              color: colorScheme.primary,
             ),
           ),
           IconButton(
             icon: const Icon(Icons.chevron_right),
             onPressed: _nextMonth,
-            color: AppColors.expenses,
+            color: colorScheme.primary,
           ),
         ],
       ),
@@ -285,7 +282,7 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
 
     return RefreshIndicator(
       onRefresh: _onRefresh,
-      color: AppColors.expenses,
+      color: Theme.of(context).colorScheme.primary,
       child: ListView(
         padding: const EdgeInsets.all(AppSizes.md),
         children: [
@@ -426,7 +423,7 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
             Icon(
               Icons.account_balance_outlined,
               size: 80,
-              color: AppColors.expenses.withValues(alpha: 0.3),
+              color: colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
             ),
             const SizedBox(height: AppSizes.md),
             Text(
