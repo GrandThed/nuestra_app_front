@@ -120,7 +120,7 @@ final class RecipeDetailNotifierProvider
 }
 
 String _$recipeDetailNotifierHash() =>
-    r'862a16c923af9cbcbdf55ecefd8309e3887fbcb6';
+    r'f114223f1b4eda741744c496afe24cbd6133d892';
 
 /// Notifier for single recipe detail operations
 

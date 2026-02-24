@@ -16,6 +16,9 @@ import 'package:nuestra_app/features/menus/presentation/providers/menus_notifier
 import 'package:nuestra_app/features/wishlists/presentation/providers/wishlists_notifier.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/calendar/presentation/providers/calendar_notifier.dart';
+import 'package:nuestra_app/features/tasks/presentation/providers/tasks_notifier.dart';
+import 'package:nuestra_app/features/home/presentation/widgets/pending_tasks_card.dart';
+import 'package:nuestra_app/features/home/presentation/providers/home_card_order_notifier.dart';
 
 /// Home dashboard screen
 class HomeScreen extends ConsumerStatefulWidget {
@@ -83,11 +86,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // Load calendar events for the upcoming events card
     ref.read(calendarProvider.notifier).loadEventsIfNeeded();
+
+    // Load pending tasks
+    ref.read(tasksProvider.notifier).loadTasksIfNeeded();
+  }
+
+  Widget _buildCard(String cardId) {
+    return switch (cardId) {
+      'menu' => const TodaysMenuCard(),
+      'tasks' => const PendingTasksCard(),
+      'shopping' => const ShoppingListCard(),
+      'expenses' => const ExpensesSummaryCard(),
+      'events' => const UpcomingEventsCard(),
+      _ => const SizedBox.shrink(),
+    };
   }
 
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
+    final cardOrder = ref.watch(homeCardOrderProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -105,35 +123,48 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _refreshAll,
-        child: SingleChildScrollView(
+        child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
-          padding: const EdgeInsets.all(AppSizes.paddingMd),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Greeting section
-              _buildGreeting(context, authState),
-              const SizedBox(height: AppSizes.lg),
-
-              // Today's Menu Card
-              const TodaysMenuCard(),
-              const SizedBox(height: AppSizes.md),
-
-              // Shopping List Quick Access
-              const ShoppingListCard(),
-              const SizedBox(height: AppSizes.md),
-
-              // Expenses Summary
-              const ExpensesSummaryCard(),
-              const SizedBox(height: AppSizes.md),
-
-              // Upcoming Events
-              const UpcomingEventsCard(),
-
-              // Space for FAB
-              const SizedBox(height: AppSizes.xxl * 2),
-            ],
-          ),
+          slivers: [
+            // Greeting (not reorderable)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSizes.paddingMd,
+                  AppSizes.paddingMd,
+                  AppSizes.paddingMd,
+                  AppSizes.lg,
+                ),
+                child: _buildGreeting(context, authState),
+              ),
+            ),
+            // Reorderable cards
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
+              sliver: SliverReorderableList(
+                itemCount: cardOrder.length,
+                onReorder: (oldIndex, newIndex) {
+                  ref.read(homeCardOrderProvider.notifier).reorder(oldIndex, newIndex);
+                },
+                itemBuilder: (context, index) {
+                  final cardId = cardOrder[index];
+                  return ReorderableDragStartListener(
+                    key: ValueKey(cardId),
+                    index: index,
+                    enabled: true,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: AppSizes.md),
+                      child: _buildCard(cardId),
+                    ),
+                  );
+                },
+              ),
+            ),
+            // Space for FAB
+            const SliverToBoxAdapter(
+              child: SizedBox(height: AppSizes.xxl * 2),
+            ),
+          ],
         ),
       ),
       floatingActionButton: const QuickActionsFab(),
@@ -194,6 +225,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.read(wishlistsProvider.notifier).loadWishlists(),
       ref.read(expensesProvider.notifier).loadExpenses(),
       ref.read(calendarProvider.notifier).loadEvents(),
+      ref.read(tasksProvider.notifier).loadTasks(),
     ]);
   }
 }

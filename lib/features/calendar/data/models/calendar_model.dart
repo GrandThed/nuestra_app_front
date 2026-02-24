@@ -88,6 +88,9 @@ sealed class CalendarEventModel with _$CalendarEventModel {
     String? occurrenceId,
     String? colorHex,
     DateTime? createdAt,
+    @Default(false) bool isTask,
+    int? recurrenceInterval,
+    String? recurrenceDays,
   }) = _CalendarEventModel;
 
   factory CalendarEventModel.fromJson(Map<String, dynamic> json) =>

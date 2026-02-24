@@ -120,7 +120,7 @@ final class BoardDetailNotifierProvider
 }
 
 String _$boardDetailNotifierHash() =>
-    r'3131aba0355e7944e02c40768a0eeead9a50ef79';
+    r'5b144dd977f94312a6e063fd57aab5b51e056cb5';
 
 /// Notifier for single board detail operations
 

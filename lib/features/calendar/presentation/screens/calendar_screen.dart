@@ -11,6 +11,7 @@ import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.d
 import 'package:nuestra_app/features/calendar/data/models/calendar_model.dart';
 import 'package:nuestra_app/features/calendar/presentation/providers/calendar_notifier.dart';
 import 'package:nuestra_app/features/calendar/presentation/providers/calendar_state.dart';
+import 'package:nuestra_app/features/tasks/presentation/providers/tasks_notifier.dart';
 
 /// Parses a hex color string (with or without leading '#') into a [Color].
 Color _parseHexColor(String hex) {
@@ -521,7 +522,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }
 }
 
-class _EventTile extends StatelessWidget {
+class _EventTile extends ConsumerWidget {
   final CalendarEventModel event;
   final DateFormat timeFormat;
   final VoidCallback onTap;
@@ -533,7 +534,7 @@ class _EventTile extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final hasLinks = event.linkedBoard != null ||
         event.linkedRecipe != null ||
@@ -555,15 +556,18 @@ class _EventTile extends StatelessWidget {
           padding: const EdgeInsets.all(AppSizes.md),
           child: Row(
             children: [
-              // Color stripe for member identification
-              Container(
-                width: 4,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: eventColor,
-                  borderRadius: BorderRadius.circular(2),
+              // Task checkbox or color stripe
+              if (event.isTask)
+                _buildTaskCheckbox(context, ref, eventColor)
+              else
+                Container(
+                  width: 4,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: eventColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
               const SizedBox(width: AppSizes.sm),
               // Time or all-day indicator
               Container(
@@ -614,11 +618,17 @@ class _EventTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
-                    if (hasLinks || event.recurrence != RecurrenceType.none) ...[
+                    if (hasLinks || event.recurrence != RecurrenceType.none || event.isTask) ...[
                       const SizedBox(height: 4),
                       Wrap(
                         spacing: 8,
                         children: [
+                          if (event.isTask)
+                            _buildChip(
+                              Icons.check_circle_outline,
+                              'Tarea',
+                              colorScheme,
+                            ),
                           if (event.recurrence != RecurrenceType.none)
                             _buildChip(
                               Icons.repeat,
@@ -652,6 +662,37 @@ class _EventTile extends StatelessWidget {
               const Icon(Icons.chevron_right),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTaskCheckbox(
+    BuildContext context,
+    WidgetRef ref,
+    Color eventColor,
+  ) {
+    return GestureDetector(
+      onTap: () {
+        final occurrenceDate = event.occurrenceDate ?? event.startDate;
+        ref.read(tasksProvider.notifier).completeCalendarTask(
+              eventId: event.id,
+              occurrenceDate: occurrenceDate.toIso8601String(),
+            );
+        // Also reload calendar events
+        ref.read(calendarProvider.notifier).loadEvents();
+      },
+      child: Container(
+        width: 28,
+        height: 28,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: eventColor, width: 2.5),
+        ),
+        child: Icon(
+          Icons.check,
+          size: 16,
+          color: eventColor.withValues(alpha: 0.3),
         ),
       ),
     );

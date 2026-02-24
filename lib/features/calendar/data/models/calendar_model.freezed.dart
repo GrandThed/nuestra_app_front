@@ -1058,7 +1058,7 @@ as String,
 /// @nodoc
 mixin _$CalendarEventModel {
 
- String get id; String get householdId; String get title; String? get description; DateTime get startDate; DateTime? get endDate; bool get allDay; RecurrenceType get recurrence; DateTime? get recurrenceEndDate; LinkedBoardModel? get linkedBoard; LinkedRecipeModel? get linkedRecipe; LinkedMenuPlanModel? get linkedMenuPlan; CalendarUserModel? get createdBy; bool get isOccurrence; DateTime? get occurrenceDate; String? get occurrenceId; String? get colorHex; DateTime? get createdAt;
+ String get id; String get householdId; String get title; String? get description; DateTime get startDate; DateTime? get endDate; bool get allDay; RecurrenceType get recurrence; DateTime? get recurrenceEndDate; LinkedBoardModel? get linkedBoard; LinkedRecipeModel? get linkedRecipe; LinkedMenuPlanModel? get linkedMenuPlan; CalendarUserModel? get createdBy; bool get isOccurrence; DateTime? get occurrenceDate; String? get occurrenceId; String? get colorHex; DateTime? get createdAt; bool get isTask; int? get recurrenceInterval; String? get recurrenceDays;
 /// Create a copy of CalendarEventModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1071,16 +1071,16 @@ $CalendarEventModelCopyWith<CalendarEventModel> get copyWith => _$CalendarEventM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is CalendarEventModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.allDay, allDay) || other.allDay == allDay)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.linkedBoard, linkedBoard) || other.linkedBoard == linkedBoard)&&(identical(other.linkedRecipe, linkedRecipe) || other.linkedRecipe == linkedRecipe)&&(identical(other.linkedMenuPlan, linkedMenuPlan) || other.linkedMenuPlan == linkedMenuPlan)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.isOccurrence, isOccurrence) || other.isOccurrence == isOccurrence)&&(identical(other.occurrenceDate, occurrenceDate) || other.occurrenceDate == occurrenceDate)&&(identical(other.occurrenceId, occurrenceId) || other.occurrenceId == occurrenceId)&&(identical(other.colorHex, colorHex) || other.colorHex == colorHex)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is CalendarEventModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.allDay, allDay) || other.allDay == allDay)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.linkedBoard, linkedBoard) || other.linkedBoard == linkedBoard)&&(identical(other.linkedRecipe, linkedRecipe) || other.linkedRecipe == linkedRecipe)&&(identical(other.linkedMenuPlan, linkedMenuPlan) || other.linkedMenuPlan == linkedMenuPlan)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.isOccurrence, isOccurrence) || other.isOccurrence == isOccurrence)&&(identical(other.occurrenceDate, occurrenceDate) || other.occurrenceDate == occurrenceDate)&&(identical(other.occurrenceId, occurrenceId) || other.occurrenceId == occurrenceId)&&(identical(other.colorHex, colorHex) || other.colorHex == colorHex)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isTask, isTask) || other.isTask == isTask)&&(identical(other.recurrenceInterval, recurrenceInterval) || other.recurrenceInterval == recurrenceInterval)&&(identical(other.recurrenceDays, recurrenceDays) || other.recurrenceDays == recurrenceDays));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,householdId,title,description,startDate,endDate,allDay,recurrence,recurrenceEndDate,linkedBoard,linkedRecipe,linkedMenuPlan,createdBy,isOccurrence,occurrenceDate,occurrenceId,colorHex,createdAt);
+int get hashCode => Object.hashAll([runtimeType,id,householdId,title,description,startDate,endDate,allDay,recurrence,recurrenceEndDate,linkedBoard,linkedRecipe,linkedMenuPlan,createdBy,isOccurrence,occurrenceDate,occurrenceId,colorHex,createdAt,isTask,recurrenceInterval,recurrenceDays]);
 
 @override
 String toString() {
-  return 'CalendarEventModel(id: $id, householdId: $householdId, title: $title, description: $description, startDate: $startDate, endDate: $endDate, allDay: $allDay, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, linkedBoard: $linkedBoard, linkedRecipe: $linkedRecipe, linkedMenuPlan: $linkedMenuPlan, createdBy: $createdBy, isOccurrence: $isOccurrence, occurrenceDate: $occurrenceDate, occurrenceId: $occurrenceId, colorHex: $colorHex, createdAt: $createdAt)';
+  return 'CalendarEventModel(id: $id, householdId: $householdId, title: $title, description: $description, startDate: $startDate, endDate: $endDate, allDay: $allDay, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, linkedBoard: $linkedBoard, linkedRecipe: $linkedRecipe, linkedMenuPlan: $linkedMenuPlan, createdBy: $createdBy, isOccurrence: $isOccurrence, occurrenceDate: $occurrenceDate, occurrenceId: $occurrenceId, colorHex: $colorHex, createdAt: $createdAt, isTask: $isTask, recurrenceInterval: $recurrenceInterval, recurrenceDays: $recurrenceDays)';
 }
 
 
@@ -1091,7 +1091,7 @@ abstract mixin class $CalendarEventModelCopyWith<$Res>  {
   factory $CalendarEventModelCopyWith(CalendarEventModel value, $Res Function(CalendarEventModel) _then) = _$CalendarEventModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String householdId, String title, String? description, DateTime startDate, DateTime? endDate, bool allDay, RecurrenceType recurrence, DateTime? recurrenceEndDate, LinkedBoardModel? linkedBoard, LinkedRecipeModel? linkedRecipe, LinkedMenuPlanModel? linkedMenuPlan, CalendarUserModel? createdBy, bool isOccurrence, DateTime? occurrenceDate, String? occurrenceId, String? colorHex, DateTime? createdAt
+ String id, String householdId, String title, String? description, DateTime startDate, DateTime? endDate, bool allDay, RecurrenceType recurrence, DateTime? recurrenceEndDate, LinkedBoardModel? linkedBoard, LinkedRecipeModel? linkedRecipe, LinkedMenuPlanModel? linkedMenuPlan, CalendarUserModel? createdBy, bool isOccurrence, DateTime? occurrenceDate, String? occurrenceId, String? colorHex, DateTime? createdAt, bool isTask, int? recurrenceInterval, String? recurrenceDays
 });
 
 
@@ -1108,7 +1108,7 @@ class _$CalendarEventModelCopyWithImpl<$Res>
 
 /// Create a copy of CalendarEventModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? householdId = null,Object? title = null,Object? description = freezed,Object? startDate = null,Object? endDate = freezed,Object? allDay = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? linkedBoard = freezed,Object? linkedRecipe = freezed,Object? linkedMenuPlan = freezed,Object? createdBy = freezed,Object? isOccurrence = null,Object? occurrenceDate = freezed,Object? occurrenceId = freezed,Object? colorHex = freezed,Object? createdAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? householdId = null,Object? title = null,Object? description = freezed,Object? startDate = null,Object? endDate = freezed,Object? allDay = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? linkedBoard = freezed,Object? linkedRecipe = freezed,Object? linkedMenuPlan = freezed,Object? createdBy = freezed,Object? isOccurrence = null,Object? occurrenceDate = freezed,Object? occurrenceId = freezed,Object? colorHex = freezed,Object? createdAt = freezed,Object? isTask = null,Object? recurrenceInterval = freezed,Object? recurrenceDays = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,householdId: null == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
@@ -1128,7 +1128,10 @@ as bool,occurrenceDate: freezed == occurrenceDate ? _self.occurrenceDate : occur
 as DateTime?,occurrenceId: freezed == occurrenceId ? _self.occurrenceId : occurrenceId // ignore: cast_nullable_to_non_nullable
 as String?,colorHex: freezed == colorHex ? _self.colorHex : colorHex // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,isTask: null == isTask ? _self.isTask : isTask // ignore: cast_nullable_to_non_nullable
+as bool,recurrenceInterval: freezed == recurrenceInterval ? _self.recurrenceInterval : recurrenceInterval // ignore: cast_nullable_to_non_nullable
+as int?,recurrenceDays: freezed == recurrenceDays ? _self.recurrenceDays : recurrenceDays // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of CalendarEventModel
@@ -1258,10 +1261,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  String? colorHex,  DateTime? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  String? colorHex,  DateTime? createdAt,  bool isTask,  int? recurrenceInterval,  String? recurrenceDays)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _CalendarEventModel() when $default != null:
-return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.colorHex,_that.createdAt);case _:
+return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.colorHex,_that.createdAt,_that.isTask,_that.recurrenceInterval,_that.recurrenceDays);case _:
   return orElse();
 
 }
@@ -1279,10 +1282,10 @@ return $default(_that.id,_that.householdId,_that.title,_that.description,_that.s
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  String? colorHex,  DateTime? createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  String? colorHex,  DateTime? createdAt,  bool isTask,  int? recurrenceInterval,  String? recurrenceDays)  $default,) {final _that = this;
 switch (_that) {
 case _CalendarEventModel():
-return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.colorHex,_that.createdAt);}
+return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.colorHex,_that.createdAt,_that.isTask,_that.recurrenceInterval,_that.recurrenceDays);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -1296,10 +1299,10 @@ return $default(_that.id,_that.householdId,_that.title,_that.description,_that.s
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  String? colorHex,  DateTime? createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String householdId,  String title,  String? description,  DateTime startDate,  DateTime? endDate,  bool allDay,  RecurrenceType recurrence,  DateTime? recurrenceEndDate,  LinkedBoardModel? linkedBoard,  LinkedRecipeModel? linkedRecipe,  LinkedMenuPlanModel? linkedMenuPlan,  CalendarUserModel? createdBy,  bool isOccurrence,  DateTime? occurrenceDate,  String? occurrenceId,  String? colorHex,  DateTime? createdAt,  bool isTask,  int? recurrenceInterval,  String? recurrenceDays)?  $default,) {final _that = this;
 switch (_that) {
 case _CalendarEventModel() when $default != null:
-return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.colorHex,_that.createdAt);case _:
+return $default(_that.id,_that.householdId,_that.title,_that.description,_that.startDate,_that.endDate,_that.allDay,_that.recurrence,_that.recurrenceEndDate,_that.linkedBoard,_that.linkedRecipe,_that.linkedMenuPlan,_that.createdBy,_that.isOccurrence,_that.occurrenceDate,_that.occurrenceId,_that.colorHex,_that.createdAt,_that.isTask,_that.recurrenceInterval,_that.recurrenceDays);case _:
   return null;
 
 }
@@ -1311,7 +1314,7 @@ return $default(_that.id,_that.householdId,_that.title,_that.description,_that.s
 @JsonSerializable()
 
 class _CalendarEventModel implements CalendarEventModel {
-  const _CalendarEventModel({required this.id, required this.householdId, required this.title, this.description, required this.startDate, this.endDate, this.allDay = false, this.recurrence = RecurrenceType.none, this.recurrenceEndDate, this.linkedBoard, this.linkedRecipe, this.linkedMenuPlan, this.createdBy, this.isOccurrence = false, this.occurrenceDate, this.occurrenceId, this.colorHex, this.createdAt});
+  const _CalendarEventModel({required this.id, required this.householdId, required this.title, this.description, required this.startDate, this.endDate, this.allDay = false, this.recurrence = RecurrenceType.none, this.recurrenceEndDate, this.linkedBoard, this.linkedRecipe, this.linkedMenuPlan, this.createdBy, this.isOccurrence = false, this.occurrenceDate, this.occurrenceId, this.colorHex, this.createdAt, this.isTask = false, this.recurrenceInterval, this.recurrenceDays});
   factory _CalendarEventModel.fromJson(Map<String, dynamic> json) => _$CalendarEventModelFromJson(json);
 
 @override final  String id;
@@ -1332,6 +1335,9 @@ class _CalendarEventModel implements CalendarEventModel {
 @override final  String? occurrenceId;
 @override final  String? colorHex;
 @override final  DateTime? createdAt;
+@override@JsonKey() final  bool isTask;
+@override final  int? recurrenceInterval;
+@override final  String? recurrenceDays;
 
 /// Create a copy of CalendarEventModel
 /// with the given fields replaced by the non-null parameter values.
@@ -1346,16 +1352,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CalendarEventModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.allDay, allDay) || other.allDay == allDay)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.linkedBoard, linkedBoard) || other.linkedBoard == linkedBoard)&&(identical(other.linkedRecipe, linkedRecipe) || other.linkedRecipe == linkedRecipe)&&(identical(other.linkedMenuPlan, linkedMenuPlan) || other.linkedMenuPlan == linkedMenuPlan)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.isOccurrence, isOccurrence) || other.isOccurrence == isOccurrence)&&(identical(other.occurrenceDate, occurrenceDate) || other.occurrenceDate == occurrenceDate)&&(identical(other.occurrenceId, occurrenceId) || other.occurrenceId == occurrenceId)&&(identical(other.colorHex, colorHex) || other.colorHex == colorHex)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _CalendarEventModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.startDate, startDate) || other.startDate == startDate)&&(identical(other.endDate, endDate) || other.endDate == endDate)&&(identical(other.allDay, allDay) || other.allDay == allDay)&&(identical(other.recurrence, recurrence) || other.recurrence == recurrence)&&(identical(other.recurrenceEndDate, recurrenceEndDate) || other.recurrenceEndDate == recurrenceEndDate)&&(identical(other.linkedBoard, linkedBoard) || other.linkedBoard == linkedBoard)&&(identical(other.linkedRecipe, linkedRecipe) || other.linkedRecipe == linkedRecipe)&&(identical(other.linkedMenuPlan, linkedMenuPlan) || other.linkedMenuPlan == linkedMenuPlan)&&(identical(other.createdBy, createdBy) || other.createdBy == createdBy)&&(identical(other.isOccurrence, isOccurrence) || other.isOccurrence == isOccurrence)&&(identical(other.occurrenceDate, occurrenceDate) || other.occurrenceDate == occurrenceDate)&&(identical(other.occurrenceId, occurrenceId) || other.occurrenceId == occurrenceId)&&(identical(other.colorHex, colorHex) || other.colorHex == colorHex)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.isTask, isTask) || other.isTask == isTask)&&(identical(other.recurrenceInterval, recurrenceInterval) || other.recurrenceInterval == recurrenceInterval)&&(identical(other.recurrenceDays, recurrenceDays) || other.recurrenceDays == recurrenceDays));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,householdId,title,description,startDate,endDate,allDay,recurrence,recurrenceEndDate,linkedBoard,linkedRecipe,linkedMenuPlan,createdBy,isOccurrence,occurrenceDate,occurrenceId,colorHex,createdAt);
+int get hashCode => Object.hashAll([runtimeType,id,householdId,title,description,startDate,endDate,allDay,recurrence,recurrenceEndDate,linkedBoard,linkedRecipe,linkedMenuPlan,createdBy,isOccurrence,occurrenceDate,occurrenceId,colorHex,createdAt,isTask,recurrenceInterval,recurrenceDays]);
 
 @override
 String toString() {
-  return 'CalendarEventModel(id: $id, householdId: $householdId, title: $title, description: $description, startDate: $startDate, endDate: $endDate, allDay: $allDay, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, linkedBoard: $linkedBoard, linkedRecipe: $linkedRecipe, linkedMenuPlan: $linkedMenuPlan, createdBy: $createdBy, isOccurrence: $isOccurrence, occurrenceDate: $occurrenceDate, occurrenceId: $occurrenceId, colorHex: $colorHex, createdAt: $createdAt)';
+  return 'CalendarEventModel(id: $id, householdId: $householdId, title: $title, description: $description, startDate: $startDate, endDate: $endDate, allDay: $allDay, recurrence: $recurrence, recurrenceEndDate: $recurrenceEndDate, linkedBoard: $linkedBoard, linkedRecipe: $linkedRecipe, linkedMenuPlan: $linkedMenuPlan, createdBy: $createdBy, isOccurrence: $isOccurrence, occurrenceDate: $occurrenceDate, occurrenceId: $occurrenceId, colorHex: $colorHex, createdAt: $createdAt, isTask: $isTask, recurrenceInterval: $recurrenceInterval, recurrenceDays: $recurrenceDays)';
 }
 
 
@@ -1366,7 +1372,7 @@ abstract mixin class _$CalendarEventModelCopyWith<$Res> implements $CalendarEven
   factory _$CalendarEventModelCopyWith(_CalendarEventModel value, $Res Function(_CalendarEventModel) _then) = __$CalendarEventModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String householdId, String title, String? description, DateTime startDate, DateTime? endDate, bool allDay, RecurrenceType recurrence, DateTime? recurrenceEndDate, LinkedBoardModel? linkedBoard, LinkedRecipeModel? linkedRecipe, LinkedMenuPlanModel? linkedMenuPlan, CalendarUserModel? createdBy, bool isOccurrence, DateTime? occurrenceDate, String? occurrenceId, String? colorHex, DateTime? createdAt
+ String id, String householdId, String title, String? description, DateTime startDate, DateTime? endDate, bool allDay, RecurrenceType recurrence, DateTime? recurrenceEndDate, LinkedBoardModel? linkedBoard, LinkedRecipeModel? linkedRecipe, LinkedMenuPlanModel? linkedMenuPlan, CalendarUserModel? createdBy, bool isOccurrence, DateTime? occurrenceDate, String? occurrenceId, String? colorHex, DateTime? createdAt, bool isTask, int? recurrenceInterval, String? recurrenceDays
 });
 
 
@@ -1383,7 +1389,7 @@ class __$CalendarEventModelCopyWithImpl<$Res>
 
 /// Create a copy of CalendarEventModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? householdId = null,Object? title = null,Object? description = freezed,Object? startDate = null,Object? endDate = freezed,Object? allDay = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? linkedBoard = freezed,Object? linkedRecipe = freezed,Object? linkedMenuPlan = freezed,Object? createdBy = freezed,Object? isOccurrence = null,Object? occurrenceDate = freezed,Object? occurrenceId = freezed,Object? colorHex = freezed,Object? createdAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? householdId = null,Object? title = null,Object? description = freezed,Object? startDate = null,Object? endDate = freezed,Object? allDay = null,Object? recurrence = null,Object? recurrenceEndDate = freezed,Object? linkedBoard = freezed,Object? linkedRecipe = freezed,Object? linkedMenuPlan = freezed,Object? createdBy = freezed,Object? isOccurrence = null,Object? occurrenceDate = freezed,Object? occurrenceId = freezed,Object? colorHex = freezed,Object? createdAt = freezed,Object? isTask = null,Object? recurrenceInterval = freezed,Object? recurrenceDays = freezed,}) {
   return _then(_CalendarEventModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,householdId: null == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
@@ -1403,7 +1409,10 @@ as bool,occurrenceDate: freezed == occurrenceDate ? _self.occurrenceDate : occur
 as DateTime?,occurrenceId: freezed == occurrenceId ? _self.occurrenceId : occurrenceId // ignore: cast_nullable_to_non_nullable
 as String?,colorHex: freezed == colorHex ? _self.colorHex : colorHex // ignore: cast_nullable_to_non_nullable
 as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime?,isTask: null == isTask ? _self.isTask : isTask // ignore: cast_nullable_to_non_nullable
+as bool,recurrenceInterval: freezed == recurrenceInterval ? _self.recurrenceInterval : recurrenceInterval // ignore: cast_nullable_to_non_nullable
+as int?,recurrenceDays: freezed == recurrenceDays ? _self.recurrenceDays : recurrenceDays // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

@@ -88,6 +88,9 @@ _CalendarEventModel _$CalendarEventModelFromJson(
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),
+  isTask: json['isTask'] as bool? ?? false,
+  recurrenceInterval: (json['recurrenceInterval'] as num?)?.toInt(),
+  recurrenceDays: json['recurrenceDays'] as String?,
 );
 
 Map<String, dynamic> _$CalendarEventModelToJson(_CalendarEventModel instance) =>
@@ -110,6 +113,9 @@ Map<String, dynamic> _$CalendarEventModelToJson(_CalendarEventModel instance) =>
       'occurrenceId': instance.occurrenceId,
       'colorHex': instance.colorHex,
       'createdAt': instance.createdAt?.toIso8601String(),
+      'isTask': instance.isTask,
+      'recurrenceInterval': instance.recurrenceInterval,
+      'recurrenceDays': instance.recurrenceDays,
     };
 
 const _$RecurrenceTypeEnumMap = {

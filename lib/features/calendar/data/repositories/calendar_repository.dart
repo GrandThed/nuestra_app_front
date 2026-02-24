@@ -61,6 +61,9 @@ class CalendarRepository {
     String? linkedRecipeId,
     String? linkedMenuPlanId,
     String? colorHex,
+    bool isTask = false,
+    int? recurrenceInterval,
+    String? recurrenceDays,
   }) async {
     final response = await _dioClient.post<Map<String, dynamic>>(
       ApiConstants.calendar,
@@ -78,6 +81,9 @@ class CalendarRepository {
         if (linkedRecipeId != null) 'linkedRecipeId': linkedRecipeId,
         if (linkedMenuPlanId != null) 'linkedMenuPlanId': linkedMenuPlanId,
         if (colorHex != null) 'colorHex': colorHex,
+        if (isTask) 'isTask': isTask,
+        if (recurrenceInterval != null) 'recurrenceInterval': recurrenceInterval,
+        if (recurrenceDays != null) 'recurrenceDays': recurrenceDays,
       },
     );
 
@@ -99,6 +105,9 @@ class CalendarRepository {
     String? linkedRecipeId,
     String? linkedMenuPlanId,
     String? colorHex,
+    bool? isTask,
+    int? recurrenceInterval,
+    String? recurrenceDays,
   }) async {
     final response = await _dioClient.patch<Map<String, dynamic>>(
       ApiConstants.calendarEvent(id),
@@ -115,6 +124,9 @@ class CalendarRepository {
         if (linkedRecipeId != null) 'linkedRecipeId': linkedRecipeId,
         if (linkedMenuPlanId != null) 'linkedMenuPlanId': linkedMenuPlanId,
         if (colorHex != null) 'colorHex': colorHex,
+        if (isTask != null) 'isTask': isTask,
+        if (recurrenceInterval != null) 'recurrenceInterval': recurrenceInterval,
+        if (recurrenceDays != null) 'recurrenceDays': recurrenceDays,
       },
     );
 

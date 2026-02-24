@@ -44,7 +44,7 @@ final class CalendarNotifierProvider
   }
 }
 
-String _$calendarNotifierHash() => r'463f226805aac2b872aed26e6363e0cc3677463e';
+String _$calendarNotifierHash() => r'69a8711fc049a504d7e5b0fea3d676e0e254aeeb';
 
 /// Notifier for calendar operations
 
@@ -192,7 +192,7 @@ final class EventsForDateProvider
   }
 }
 
-String _$eventsForDateHash() => r'ad6677f1e22c0867b0a44fb10ea69bb08eeb3802';
+String _$eventsForDateHash() => r'efca1a1a0b9db3111d6fbd78b64971e4e3e07e22';
 
 /// Provider for events on a specific date
 
@@ -266,7 +266,7 @@ final class EventCountsByDayProvider
   }
 }
 
-String _$eventCountsByDayHash() => r'72889e625d2feea50397ba1d0b9a77e9a4318261';
+String _$eventCountsByDayHash() => r'4f61022347e2881a36166cd279a074b79eefb030';
 
 /// Provider for upcoming events count (for home dashboard)
 
@@ -313,4 +313,4 @@ final class UpcomingEventsCountProvider
 }
 
 String _$upcomingEventsCountHash() =>
-    r'b0bc83e4e0230a58df2a4498ee5c41720cd31622';
+    r'4685a70b2476469918250e81913b21d9d163abb0';

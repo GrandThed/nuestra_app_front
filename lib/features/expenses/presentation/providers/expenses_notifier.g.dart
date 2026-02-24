@@ -170,7 +170,7 @@ final class TotalExpensesAmountProvider
 }
 
 String _$totalExpensesAmountHash() =>
-    r'60d379702e2a5b3c500e99ad4a939b0ce9a535a4';
+    r'0eb6d4c26eb1e58d53298bca45258cd8614139d5';
 
 /// Provider for unsettled expenses count
 
@@ -217,7 +217,7 @@ final class UnsettledExpensesCountProvider
 }
 
 String _$unsettledExpensesCountHash() =>
-    r'6da96052f2c4d08ebd7af19270ad8043e65a994a';
+    r'a1456d511c408c91ab12fa44ab6e3df6cf871cf2';
 
 /// Provider for expenses filtered by category
 
@@ -288,7 +288,7 @@ final class ExpensesByCategoryProvider
 }
 
 String _$expensesByCategoryHash() =>
-    r'dad1768911ec1dfe8dbbfe30e3b5e3bf5c311692';
+    r'9e2f2c81e6e0c46f2a4b7c9261a97c8b00fcf579';
 
 /// Provider for expenses filtered by category
 

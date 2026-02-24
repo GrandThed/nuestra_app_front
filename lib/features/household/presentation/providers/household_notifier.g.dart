@@ -103,7 +103,7 @@ final class HouseholdNotifierProvider
   }
 }
 
-String _$householdNotifierHash() => r'f344357e59030e680daf8a6ed69da6192d8b7be6';
+String _$householdNotifierHash() => r'de43c84a4c38747f5344fe8b055ace39158cf091';
 
 /// Notifier for household operations
 

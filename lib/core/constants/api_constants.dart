@@ -94,6 +94,11 @@ class ApiConstants {
   static String calendarEvent(String id) => '/api/calendar/$id';
   static const String calendarTimeline = '/api/calendar/timeline';
 
+  // Tasks
+  static const String tasks = '/api/tasks';
+  static String task(String id) => '/api/tasks/$id';
+  static String taskComplete(String id) => '/api/tasks/$id/complete';
+
   // Activity
   static const String activity = '/api/activity';
   static const String activityDigest = '/api/activity/digest';

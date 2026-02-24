@@ -112,7 +112,7 @@ final class UncheckedWishlistItemsCountProvider
 }
 
 String _$uncheckedWishlistItemsCountHash() =>
-    r'cba83180de532ff9ded3912741a5acfcca446d5e';
+    r'cb1148ffc1a905a99cc5eae5fb605e4095992de4';
 
 /// Provider for items filtered by category
 
@@ -184,7 +184,7 @@ final class WishlistItemsByCategoryProvider
 }
 
 String _$wishlistItemsByCategoryHash() =>
-    r'38c83ae4473a32cf04130a3209b9a7774c4b7a3f';
+    r'd3604eb0447aa1ec7d31b3d22f46b95616478f37';
 
 /// Provider for items filtered by category
 

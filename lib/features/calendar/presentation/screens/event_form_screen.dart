@@ -49,6 +49,12 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
   String? _linkedRecipeId;
   String? _linkedMenuPlanId;
 
+  // Task-specific fields
+  bool _isTask = false;
+  String _taskRecurrenceMode = 'none'; // 'none', 'interval', 'weekdays'
+  final _intervalController = TextEditingController(text: '1');
+  final Set<int> _selectedWeekdays = {}; // 0=Mon..6=Sun
+
   bool get isEditing => widget.eventId != null;
 
   @override
@@ -68,6 +74,7 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
+    _intervalController.dispose();
     super.dispose();
   }
 
@@ -89,6 +96,25 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
     _linkedBoardId = event.linkedBoard?.id;
     _linkedRecipeId = event.linkedRecipe?.id;
     _linkedMenuPlanId = event.linkedMenuPlan?.id;
+
+    // Task fields
+    _isTask = event.isTask;
+    if (event.isTask) {
+      if (event.recurrenceInterval != null) {
+        _taskRecurrenceMode = 'interval';
+        _intervalController.text = event.recurrenceInterval.toString();
+      } else if (event.recurrenceDays != null) {
+        _taskRecurrenceMode = 'weekdays';
+        const dayMap = {
+          'mon': 0, 'tue': 1, 'wed': 2, 'thu': 3,
+          'fri': 4, 'sat': 5, 'sun': 6,
+        };
+        for (final d in event.recurrenceDays!.split(',')) {
+          final idx = dayMap[d.trim().toLowerCase()];
+          if (idx != null) _selectedWeekdays.add(idx);
+        }
+      }
+    }
   }
 
   CalendarEventModel? _getEvent() {
@@ -196,6 +222,20 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
           : _combineDateTime(_endDate!, _endTime);
     }
 
+    // Build task-specific fields
+    int? recurrenceInterval;
+    String? recurrenceDays;
+    if (_isTask) {
+      if (_taskRecurrenceMode == 'interval') {
+        recurrenceInterval = int.tryParse(_intervalController.text);
+      } else if (_taskRecurrenceMode == 'weekdays' &&
+          _selectedWeekdays.isNotEmpty) {
+        const weekdayNames = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+        recurrenceDays =
+            _selectedWeekdays.map((i) => weekdayNames[i]).join(',');
+      }
+    }
+
     final notifier = ref.read(calendarProvider.notifier);
     dynamic result;
 
@@ -208,12 +248,15 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             : null,
         startDate: startDateTime,
         endDate: endDateTime,
-        allDay: _allDay,
-        recurrence: _recurrence,
+        allDay: _isTask ? true : _allDay,
+        recurrence: _isTask ? RecurrenceType.none : _recurrence,
         recurrenceEndDate: _recurrenceEndDate,
         linkedBoardId: _linkedBoardId,
         linkedRecipeId: _linkedRecipeId,
         linkedMenuPlanId: _linkedMenuPlanId,
+        isTask: _isTask,
+        recurrenceInterval: recurrenceInterval,
+        recurrenceDays: recurrenceDays,
       );
     } else {
       result = await notifier.createEvent(
@@ -223,12 +266,15 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             : null,
         startDate: startDateTime,
         endDate: endDateTime,
-        allDay: _allDay,
-        recurrence: _recurrence,
+        allDay: _isTask ? true : _allDay,
+        recurrence: _isTask ? RecurrenceType.none : _recurrence,
         recurrenceEndDate: _recurrenceEndDate,
         linkedBoardId: _linkedBoardId,
         linkedRecipeId: _linkedRecipeId,
         linkedMenuPlanId: _linkedMenuPlanId,
+        isTask: _isTask,
+        recurrenceInterval: recurrenceInterval,
+        recurrenceDays: recurrenceDays,
       );
     }
 
@@ -327,20 +373,40 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             ),
             const SizedBox(height: AppSizes.lg),
 
-            // All day toggle
+            // Task toggle
             Card(
               child: SwitchListTile(
-                title: const Text('Todo el dia'),
-                subtitle: const Text('Sin hora de inicio/fin'),
-                value: _allDay,
+                title: const Text('Es una tarea'),
+                subtitle: const Text('Se puede marcar como completada'),
+                value: _isTask,
                 onChanged: (value) {
                   setState(() {
-                    _allDay = value;
+                    _isTask = value;
+                    if (value) {
+                      _allDay = true;
+                    }
                   });
                 },
               ),
             ),
             const SizedBox(height: AppSizes.md),
+
+            // All day toggle (hidden when task)
+            if (!_isTask) ...[
+              Card(
+                child: SwitchListTile(
+                  title: const Text('Todo el dia'),
+                  subtitle: const Text('Sin hora de inicio/fin'),
+                  value: _allDay,
+                  onChanged: (value) {
+                    setState(() {
+                      _allDay = value;
+                    });
+                  },
+                ),
+              ),
+              const SizedBox(height: AppSizes.md),
+            ],
 
             // Start date/time
             Card(
@@ -413,73 +479,193 @@ class _EventFormScreenState extends ConsumerState<EventFormScreen> {
             ),
             const SizedBox(height: AppSizes.lg),
 
-            // Recurrence
-            Text(
-              'Repeticion',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: AppSizes.sm),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSizes.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    DropdownButtonFormField<RecurrenceType>(
-                      initialValue: _recurrence,
-                      decoration: const InputDecoration(
-                        labelText: 'Frecuencia',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.repeat),
-                      ),
-                      items: RecurrenceType.values.map((type) {
-                        return DropdownMenuItem<RecurrenceType>(
-                          value: type,
-                          child: Text(_getRecurrenceLabel(type)),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _recurrence = value!;
-                          if (_recurrence == RecurrenceType.none) {
-                            _recurrenceEndDate = null;
-                          }
-                        });
-                      },
-                    ),
-                    if (_recurrence != RecurrenceType.none) ...[
-                      const SizedBox(height: AppSizes.md),
-                      ListTile(
-                        contentPadding: EdgeInsets.zero,
-                        leading: const Icon(Icons.event_busy),
-                        title: const Text('Repetir hasta'),
-                        subtitle: Text(_recurrenceEndDate != null
-                            ? _dateFormat.format(_recurrenceEndDate!)
-                            : 'Sin limite'),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (_recurrenceEndDate != null)
-                              IconButton(
-                                icon: const Icon(Icons.clear),
-                                onPressed: () => setState(() {
-                                  _recurrenceEndDate = null;
-                                }),
-                              ),
-                            const Icon(Icons.chevron_right),
-                          ],
-                        ),
-                        onTap: _selectRecurrenceEndDate,
-                      ),
-                    ],
-                  ],
+            // Recurrence section
+            if (_isTask) ...[
+              // Task-specific recurrence
+              Text(
+                'Repeticion de tarea',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
                 ),
               ),
-            ),
+              const SizedBox(height: AppSizes.sm),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSizes.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SegmentedButton<String>(
+                        segments: const [
+                          ButtonSegment(
+                            value: 'none',
+                            label: Text('Una vez'),
+                          ),
+                          ButtonSegment(
+                            value: 'interval',
+                            label: Text('Cada N dias'),
+                          ),
+                          ButtonSegment(
+                            value: 'weekdays',
+                            label: Text('Dias'),
+                          ),
+                        ],
+                        selected: {_taskRecurrenceMode},
+                        onSelectionChanged: (s) =>
+                            setState(() => _taskRecurrenceMode = s.first),
+                      ),
+                      if (_taskRecurrenceMode == 'interval') ...[
+                        const SizedBox(height: AppSizes.md),
+                        TextFormField(
+                          controller: _intervalController,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: 'Cada cuantos dias',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.replay),
+                            suffixText: 'dias',
+                          ),
+                          validator: (v) {
+                            if (_taskRecurrenceMode != 'interval') return null;
+                            final n = int.tryParse(v ?? '');
+                            if (n == null || n < 1) {
+                              return 'Ingresa un numero valido';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                      if (_taskRecurrenceMode == 'weekdays') ...[
+                        const SizedBox(height: AppSizes.md),
+                        Wrap(
+                          spacing: 8,
+                          children: [
+                            for (final entry in [
+                              ('L', 0),
+                              ('M', 1),
+                              ('X', 2),
+                              ('J', 3),
+                              ('V', 4),
+                              ('S', 5),
+                              ('D', 6),
+                            ])
+                              FilterChip(
+                                label: Text(entry.$1),
+                                selected:
+                                    _selectedWeekdays.contains(entry.$2),
+                                onSelected: (sel) {
+                                  setState(() {
+                                    if (sel) {
+                                      _selectedWeekdays.add(entry.$2);
+                                    } else {
+                                      _selectedWeekdays.remove(entry.$2);
+                                    }
+                                  });
+                                },
+                              ),
+                          ],
+                        ),
+                      ],
+                      if (_taskRecurrenceMode != 'none') ...[
+                        const SizedBox(height: AppSizes.md),
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.event_busy),
+                          title: const Text('Repetir hasta'),
+                          subtitle: Text(_recurrenceEndDate != null
+                              ? _dateFormat.format(_recurrenceEndDate!)
+                              : 'Sin limite'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (_recurrenceEndDate != null)
+                                IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () => setState(() {
+                                    _recurrenceEndDate = null;
+                                  }),
+                                ),
+                              const Icon(Icons.chevron_right),
+                            ],
+                          ),
+                          onTap: _selectRecurrenceEndDate,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ] else ...[
+              // Standard event recurrence
+              Text(
+                'Repeticion',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSurface,
+                ),
+              ),
+              const SizedBox(height: AppSizes.sm),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppSizes.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      DropdownButtonFormField<RecurrenceType>(
+                        initialValue: _recurrence,
+                        decoration: const InputDecoration(
+                          labelText: 'Frecuencia',
+                          border: OutlineInputBorder(),
+                          prefixIcon: Icon(Icons.repeat),
+                        ),
+                        items: RecurrenceType.values.map((type) {
+                          return DropdownMenuItem<RecurrenceType>(
+                            value: type,
+                            child: Text(_getRecurrenceLabel(type)),
+                          );
+                        }).toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _recurrence = value!;
+                            if (_recurrence == RecurrenceType.none) {
+                              _recurrenceEndDate = null;
+                            }
+                          });
+                        },
+                      ),
+                      if (_recurrence != RecurrenceType.none) ...[
+                        const SizedBox(height: AppSizes.md),
+                        ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(Icons.event_busy),
+                          title: const Text('Repetir hasta'),
+                          subtitle: Text(_recurrenceEndDate != null
+                              ? _dateFormat.format(_recurrenceEndDate!)
+                              : 'Sin limite'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (_recurrenceEndDate != null)
+                                IconButton(
+                                  icon: const Icon(Icons.clear),
+                                  onPressed: () => setState(() {
+                                    _recurrenceEndDate = null;
+                                  }),
+                                ),
+                              const Icon(Icons.chevron_right),
+                            ],
+                          ),
+                          onTap: _selectRecurrenceEndDate,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
             const SizedBox(height: AppSizes.lg),
 
             // Linked items

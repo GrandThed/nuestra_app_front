@@ -1,0 +1,388 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'tasks_state.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// dart format off
+T _$identity<T>(T value) => value;
+/// @nodoc
+mixin _$TasksState {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TasksState);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'TasksState()';
+}
+
+
+}
+
+/// @nodoc
+class $TasksStateCopyWith<$Res>  {
+$TasksStateCopyWith(TasksState _, $Res Function(TasksState) __);
+}
+
+
+/// Adds pattern-matching-related methods to [TasksState].
+extension TasksStatePatterns on TasksState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( TasksStateInitial value)?  initial,TResult Function( TasksStateLoading value)?  loading,TResult Function( TasksStateLoaded value)?  loaded,TResult Function( TasksStateError value)?  error,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case TasksStateInitial() when initial != null:
+return initial(_that);case TasksStateLoading() when loading != null:
+return loading(_that);case TasksStateLoaded() when loaded != null:
+return loaded(_that);case TasksStateError() when error != null:
+return error(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( TasksStateInitial value)  initial,required TResult Function( TasksStateLoading value)  loading,required TResult Function( TasksStateLoaded value)  loaded,required TResult Function( TasksStateError value)  error,}){
+final _that = this;
+switch (_that) {
+case TasksStateInitial():
+return initial(_that);case TasksStateLoading():
+return loading(_that);case TasksStateLoaded():
+return loaded(_that);case TasksStateError():
+return error(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( TasksStateInitial value)?  initial,TResult? Function( TasksStateLoading value)?  loading,TResult? Function( TasksStateLoaded value)?  loaded,TResult? Function( TasksStateError value)?  error,}){
+final _that = this;
+switch (_that) {
+case TasksStateInitial() when initial != null:
+return initial(_that);case TasksStateLoading() when loading != null:
+return loading(_that);case TasksStateLoaded() when loaded != null:
+return loaded(_that);case TasksStateError() when error != null:
+return error(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<PendingTaskModel> tasks)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case TasksStateInitial() when initial != null:
+return initial();case TasksStateLoading() when loading != null:
+return loading();case TasksStateLoaded() when loaded != null:
+return loaded(_that.tasks);case TasksStateError() when error != null:
+return error(_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<PendingTaskModel> tasks)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+switch (_that) {
+case TasksStateInitial():
+return initial();case TasksStateLoading():
+return loading();case TasksStateLoaded():
+return loaded(_that.tasks);case TasksStateError():
+return error(_that.message);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<PendingTaskModel> tasks)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+switch (_that) {
+case TasksStateInitial() when initial != null:
+return initial();case TasksStateLoading() when loading != null:
+return loading();case TasksStateLoaded() when loaded != null:
+return loaded(_that.tasks);case TasksStateError() when error != null:
+return error(_that.message);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class TasksStateInitial implements TasksState {
+  const TasksStateInitial();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TasksStateInitial);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'TasksState.initial()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class TasksStateLoading implements TasksState {
+  const TasksStateLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TasksStateLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'TasksState.loading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class TasksStateLoaded implements TasksState {
+  const TasksStateLoaded(final  List<PendingTaskModel> tasks): _tasks = tasks;
+  
+
+ final  List<PendingTaskModel> _tasks;
+ List<PendingTaskModel> get tasks {
+  if (_tasks is EqualUnmodifiableListView) return _tasks;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_tasks);
+}
+
+
+/// Create a copy of TasksState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TasksStateLoadedCopyWith<TasksStateLoaded> get copyWith => _$TasksStateLoadedCopyWithImpl<TasksStateLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TasksStateLoaded&&const DeepCollectionEquality().equals(other._tasks, _tasks));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_tasks));
+
+@override
+String toString() {
+  return 'TasksState.loaded(tasks: $tasks)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TasksStateLoadedCopyWith<$Res> implements $TasksStateCopyWith<$Res> {
+  factory $TasksStateLoadedCopyWith(TasksStateLoaded value, $Res Function(TasksStateLoaded) _then) = _$TasksStateLoadedCopyWithImpl;
+@useResult
+$Res call({
+ List<PendingTaskModel> tasks
+});
+
+
+
+
+}
+/// @nodoc
+class _$TasksStateLoadedCopyWithImpl<$Res>
+    implements $TasksStateLoadedCopyWith<$Res> {
+  _$TasksStateLoadedCopyWithImpl(this._self, this._then);
+
+  final TasksStateLoaded _self;
+  final $Res Function(TasksStateLoaded) _then;
+
+/// Create a copy of TasksState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? tasks = null,}) {
+  return _then(TasksStateLoaded(
+null == tasks ? _self._tasks : tasks // ignore: cast_nullable_to_non_nullable
+as List<PendingTaskModel>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class TasksStateError implements TasksState {
+  const TasksStateError(this.message);
+  
+
+ final  String message;
+
+/// Create a copy of TasksState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TasksStateErrorCopyWith<TasksStateError> get copyWith => _$TasksStateErrorCopyWithImpl<TasksStateError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TasksStateError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'TasksState.error(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TasksStateErrorCopyWith<$Res> implements $TasksStateCopyWith<$Res> {
+  factory $TasksStateErrorCopyWith(TasksStateError value, $Res Function(TasksStateError) _then) = _$TasksStateErrorCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class _$TasksStateErrorCopyWithImpl<$Res>
+    implements $TasksStateErrorCopyWith<$Res> {
+  _$TasksStateErrorCopyWithImpl(this._self, this._then);
+
+  final TasksStateError _self;
+  final $Res Function(TasksStateError) _then;
+
+/// Create a copy of TasksState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(TasksStateError(
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
+// dart format on

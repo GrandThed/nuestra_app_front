@@ -152,6 +152,9 @@ class CalendarNotifier extends _$CalendarNotifier {
     String? linkedRecipeId,
     String? linkedMenuPlanId,
     String? colorHex,
+    bool isTask = false,
+    int? recurrenceInterval,
+    String? recurrenceDays,
   }) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) return null;
@@ -170,6 +173,9 @@ class CalendarNotifier extends _$CalendarNotifier {
         linkedRecipeId: linkedRecipeId,
         linkedMenuPlanId: linkedMenuPlanId,
         colorHex: colorHex,
+        isTask: isTask,
+        recurrenceInterval: recurrenceInterval,
+        recurrenceDays: recurrenceDays,
       );
 
       // Add to current list if in visible range
@@ -207,6 +213,9 @@ class CalendarNotifier extends _$CalendarNotifier {
     String? linkedRecipeId,
     String? linkedMenuPlanId,
     String? colorHex,
+    bool? isTask,
+    int? recurrenceInterval,
+    String? recurrenceDays,
   }) async {
     final previousState = state;
 
@@ -248,6 +257,9 @@ class CalendarNotifier extends _$CalendarNotifier {
         linkedRecipeId: linkedRecipeId,
         linkedMenuPlanId: linkedMenuPlanId,
         colorHex: colorHex,
+        isTask: isTask,
+        recurrenceInterval: recurrenceInterval,
+        recurrenceDays: recurrenceDays,
       );
 
       // Replace with server data
