@@ -153,11 +153,13 @@ class _ChatInputBarState extends State<ChatInputBar> {
                         children: [
                           ClipRRect(
                             borderRadius: BorderRadius.circular(10),
-                            child: Image.file(
-                              createFile(_attachedImagePaths[index]),
+                            child: SizedBox(
                               width: 68,
                               height: 68,
-                              fit: BoxFit.cover,
+                              child: fileImage(
+                                _attachedImagePaths[index],
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           ),
                           Positioned(

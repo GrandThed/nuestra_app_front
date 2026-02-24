@@ -25,6 +25,7 @@ sealed class WishlistCategoryModel with _$WishlistCategoryModel {
   const factory WishlistCategoryModel({
     required String id,
     required String name,
+    String? description,
     required String type, // 'system' | 'custom'
     required int sortOrder,
     @Default(0) int itemCount,

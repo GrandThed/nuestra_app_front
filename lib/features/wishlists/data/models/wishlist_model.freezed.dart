@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WishlistCategoryModel {
 
- String get id; String get name; String get type;// 'system' | 'custom'
+ String get id; String get name; String? get description; String get type;// 'system' | 'custom'
  int get sortOrder; int get itemCount;
 /// Create a copy of WishlistCategoryModel
 /// with the given fields replaced by the non-null parameter values.
@@ -29,16 +29,16 @@ $WishlistCategoryModelCopyWith<WishlistCategoryModel> get copyWith => _$Wishlist
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WishlistCategoryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WishlistCategoryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.type, type) || other.type == type)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,type,sortOrder,itemCount);
+int get hashCode => Object.hash(runtimeType,id,name,description,type,sortOrder,itemCount);
 
 @override
 String toString() {
-  return 'WishlistCategoryModel(id: $id, name: $name, type: $type, sortOrder: $sortOrder, itemCount: $itemCount)';
+  return 'WishlistCategoryModel(id: $id, name: $name, description: $description, type: $type, sortOrder: $sortOrder, itemCount: $itemCount)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $WishlistCategoryModelCopyWith<$Res>  {
   factory $WishlistCategoryModelCopyWith(WishlistCategoryModel value, $Res Function(WishlistCategoryModel) _then) = _$WishlistCategoryModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String type, int sortOrder, int itemCount
+ String id, String name, String? description, String type, int sortOrder, int itemCount
 });
 
 
@@ -66,11 +66,12 @@ class _$WishlistCategoryModelCopyWithImpl<$Res>
 
 /// Create a copy of WishlistCategoryModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? type = null,Object? sortOrder = null,Object? itemCount = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = freezed,Object? type = null,Object? sortOrder = null,Object? itemCount = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,sortOrder: null == sortOrder ? _self.sortOrder : sortOrder // ignore: cast_nullable_to_non_nullable
 as int,itemCount: null == itemCount ? _self.itemCount : itemCount // ignore: cast_nullable_to_non_nullable
 as int,
@@ -155,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String type,  int sortOrder,  int itemCount)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String? description,  String type,  int sortOrder,  int itemCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WishlistCategoryModel() when $default != null:
-return $default(_that.id,_that.name,_that.type,_that.sortOrder,_that.itemCount);case _:
+return $default(_that.id,_that.name,_that.description,_that.type,_that.sortOrder,_that.itemCount);case _:
   return orElse();
 
 }
@@ -176,10 +177,10 @@ return $default(_that.id,_that.name,_that.type,_that.sortOrder,_that.itemCount);
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String type,  int sortOrder,  int itemCount)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String? description,  String type,  int sortOrder,  int itemCount)  $default,) {final _that = this;
 switch (_that) {
 case _WishlistCategoryModel():
-return $default(_that.id,_that.name,_that.type,_that.sortOrder,_that.itemCount);}
+return $default(_that.id,_that.name,_that.description,_that.type,_that.sortOrder,_that.itemCount);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -193,10 +194,10 @@ return $default(_that.id,_that.name,_that.type,_that.sortOrder,_that.itemCount);
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String type,  int sortOrder,  int itemCount)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String? description,  String type,  int sortOrder,  int itemCount)?  $default,) {final _that = this;
 switch (_that) {
 case _WishlistCategoryModel() when $default != null:
-return $default(_that.id,_that.name,_that.type,_that.sortOrder,_that.itemCount);case _:
+return $default(_that.id,_that.name,_that.description,_that.type,_that.sortOrder,_that.itemCount);case _:
   return null;
 
 }
@@ -208,11 +209,12 @@ return $default(_that.id,_that.name,_that.type,_that.sortOrder,_that.itemCount);
 @JsonSerializable()
 
 class _WishlistCategoryModel implements WishlistCategoryModel {
-  const _WishlistCategoryModel({required this.id, required this.name, required this.type, required this.sortOrder, this.itemCount = 0});
+  const _WishlistCategoryModel({required this.id, required this.name, this.description, required this.type, required this.sortOrder, this.itemCount = 0});
   factory _WishlistCategoryModel.fromJson(Map<String, dynamic> json) => _$WishlistCategoryModelFromJson(json);
 
 @override final  String id;
 @override final  String name;
+@override final  String? description;
 @override final  String type;
 // 'system' | 'custom'
 @override final  int sortOrder;
@@ -231,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WishlistCategoryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WishlistCategoryModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.description, description) || other.description == description)&&(identical(other.type, type) || other.type == type)&&(identical(other.sortOrder, sortOrder) || other.sortOrder == sortOrder)&&(identical(other.itemCount, itemCount) || other.itemCount == itemCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,type,sortOrder,itemCount);
+int get hashCode => Object.hash(runtimeType,id,name,description,type,sortOrder,itemCount);
 
 @override
 String toString() {
-  return 'WishlistCategoryModel(id: $id, name: $name, type: $type, sortOrder: $sortOrder, itemCount: $itemCount)';
+  return 'WishlistCategoryModel(id: $id, name: $name, description: $description, type: $type, sortOrder: $sortOrder, itemCount: $itemCount)';
 }
 
 
@@ -251,7 +253,7 @@ abstract mixin class _$WishlistCategoryModelCopyWith<$Res> implements $WishlistC
   factory _$WishlistCategoryModelCopyWith(_WishlistCategoryModel value, $Res Function(_WishlistCategoryModel) _then) = __$WishlistCategoryModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String type, int sortOrder, int itemCount
+ String id, String name, String? description, String type, int sortOrder, int itemCount
 });
 
 
@@ -268,11 +270,12 @@ class __$WishlistCategoryModelCopyWithImpl<$Res>
 
 /// Create a copy of WishlistCategoryModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? type = null,Object? sortOrder = null,Object? itemCount = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = freezed,Object? type = null,Object? sortOrder = null,Object? itemCount = null,}) {
   return _then(_WishlistCategoryModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String?,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String,sortOrder: null == sortOrder ? _self.sortOrder : sortOrder // ignore: cast_nullable_to_non_nullable
 as int,itemCount: null == itemCount ? _self.itemCount : itemCount // ignore: cast_nullable_to_non_nullable
 as int,

@@ -206,7 +206,16 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               : _buildTimelineView(_filterEvents(events), colorScheme),
       },
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(AppRoutes.addEvent),
+        onPressed: () {
+          final calState = ref.read(calendarProvider);
+          if (calState is CalendarStateLoaded) {
+            final dateStr =
+                calState.selectedDate.toIso8601String().split('T')[0];
+            context.push('${AppRoutes.addEvent}?date=$dateStr');
+          } else {
+            context.push(AppRoutes.addEvent);
+          }
+        },
         child: const Icon(Icons.add),
       ),
     );
@@ -328,9 +337,20 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               return eventMap[dateKey] ?? [];
             },
             onDaySelected: (selectedDay, focusedDay) {
+              final currentState = ref.read(calendarProvider);
+              final alreadySelected = currentState is CalendarStateLoaded &&
+                  isSameDay(currentState.selectedDate, selectedDay);
+
               ref.read(calendarProvider.notifier).setSelectedDate(
                     selectedDay,
                   );
+
+              // Second tap on same date opens create form
+              if (alreadySelected) {
+                final dateStr =
+                    selectedDay.toIso8601String().split('T')[0];
+                context.push('${AppRoutes.addEvent}?date=$dateStr');
+              }
             },
             onPageChanged: (focusedDay) {
               ref.read(calendarProvider.notifier).setFocusedMonth(
@@ -342,22 +362,30 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           Expanded(
             child: selectedDateEvents.isEmpty
                 ? Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.event_available,
-                          size: 48,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(height: AppSizes.md),
-                        Text(
-                          'Sin eventos para este dia',
-                          style: TextStyle(
+                    child: GestureDetector(
+                      onTap: () {
+                        final dateStr =
+                            selectedDate.toIso8601String().split('T')[0];
+                        context
+                            .push('${AppRoutes.addEvent}?date=$dateStr');
+                      },
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add_circle_outline,
+                            size: 48,
                             color: colorScheme.onSurfaceVariant,
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: AppSizes.md),
+                          Text(
+                            'Sin eventos. Toca para crear uno',
+                            style: TextStyle(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   )
                 : ListView.builder(

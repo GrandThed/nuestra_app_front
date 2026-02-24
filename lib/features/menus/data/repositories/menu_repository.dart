@@ -124,14 +124,19 @@ class MenuRepository {
   Future<ShoppingListResultModel> generateShoppingList({
     required String menuId,
     double servingsMultiplier = 1.0,
+    List<DateTime>? dates,
   }) async {
     final response = await _dioClient.post<Map<String, dynamic>>(
       ApiConstants.menuGenerateShopping(menuId),
       data: {
         'servingsMultiplier': servingsMultiplier,
+        if (dates != null)
+          'dates': dates
+              .map((d) => d.toIso8601String().split('T')[0])
+              .toList(),
       },
     );
-    return ShoppingListResultModel.fromJson(response['data']['shoppingList'] as Map<String, dynamic>);
+    return ShoppingListResultModel.fromJson(response['data'] as Map<String, dynamic>);
   }
 
   /// Create a leftover from an existing menu item

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:nuestra_app/features/menus/data/models/menu_model.dart';
 import 'package:nuestra_app/features/menus/data/repositories/menu_repository.dart';
 
@@ -7,11 +8,13 @@ import 'package:nuestra_app/features/menus/data/repositories/menu_repository.dar
 class GenerateShoppingListDialog extends ConsumerStatefulWidget {
   final String menuId;
   final String? menuName;
+  final List<MenuItemModel> weekMeals;
 
   const GenerateShoppingListDialog({
     super.key,
     required this.menuId,
     this.menuName,
+    required this.weekMeals,
   });
 
   /// Show the dialog and return the result
@@ -19,12 +22,14 @@ class GenerateShoppingListDialog extends ConsumerStatefulWidget {
     BuildContext context, {
     required String menuId,
     String? menuName,
+    required List<MenuItemModel> weekMeals,
   }) {
     return showDialog<ShoppingListResultModel>(
       context: context,
       builder: (context) => GenerateShoppingListDialog(
         menuId: menuId,
         menuName: menuName,
+        weekMeals: weekMeals,
       ),
     );
   }
@@ -41,7 +46,34 @@ class _GenerateShoppingListDialogState
   ShoppingListResultModel? _result;
   String? _error;
 
+  /// Dates that have meals, sorted
+  late final List<DateTime> _availableDates;
+
+  /// Currently selected dates
+  late final Set<DateTime> _selectedDates;
+
+  @override
+  void initState() {
+    super.initState();
+    // Extract unique dates that have meals
+    final dateSet = <DateTime>{};
+    for (final meal in widget.weekMeals) {
+      dateSet.add(DateTime(meal.date.year, meal.date.month, meal.date.day));
+    }
+    _availableDates = dateSet.toList()..sort();
+    _selectedDates = Set.from(_availableDates);
+  }
+
+  List<MenuItemModel> get _selectedMeals {
+    return widget.weekMeals.where((meal) {
+      final mealDate = DateTime(meal.date.year, meal.date.month, meal.date.day);
+      return _selectedDates.contains(mealDate);
+    }).toList();
+  }
+
   Future<void> _generate() async {
+    if (_selectedDates.isEmpty) return;
+
     setState(() {
       _isGenerating = true;
       _error = null;
@@ -52,6 +84,7 @@ class _GenerateShoppingListDialogState
       final result = await repository.generateShoppingList(
         menuId: widget.menuId,
         servingsMultiplier: _servingsMultiplier,
+        dates: _selectedDates.toList(),
       );
 
       setState(() {
@@ -72,7 +105,7 @@ class _GenerateShoppingListDialogState
 
     return Dialog(
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 400, maxHeight: 600),
+        constraints: const BoxConstraints(maxWidth: 420, maxHeight: 650),
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: _result != null ? _buildResult(theme) : _buildForm(theme),
@@ -82,6 +115,28 @@ class _GenerateShoppingListDialogState
   }
 
   Widget _buildForm(ThemeData theme) {
+    final selectedMeals = _selectedMeals;
+    // Group selected meals by date
+    final mealsByDate = <DateTime, List<MenuItemModel>>{};
+    for (final meal in selectedMeals) {
+      final key = DateTime(meal.date.year, meal.date.month, meal.date.day);
+      mealsByDate.putIfAbsent(key, () => []).add(meal);
+    }
+    // Sort meals within each date by meal type
+    const mealTypeOrder = ['breakfast', 'lunch', 'dinner', 'snack'];
+    for (final meals in mealsByDate.values) {
+      meals.sort((a, b) {
+        final aIdx = mealTypeOrder.indexOf(a.mealType);
+        final bIdx = mealTypeOrder.indexOf(b.mealType);
+        return aIdx.compareTo(bIdx);
+      });
+    }
+    final sortedDates = mealsByDate.keys.toList()..sort();
+
+    // Count unique recipes
+    final recipeCount =
+        selectedMeals.where((m) => m.recipe != null).map((m) => m.recipeId).toSet().length;
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -89,10 +144,7 @@ class _GenerateShoppingListDialogState
         // Header
         Row(
           children: [
-            Icon(
-              Icons.shopping_cart,
-              color: theme.colorScheme.primary,
-            ),
+            Icon(Icons.shopping_cart, color: theme.colorScheme.primary),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -106,80 +158,172 @@ class _GenerateShoppingListDialogState
             ),
           ],
         ),
-        const SizedBox(height: 16),
 
-        if (widget.menuName != null)
+        if (widget.menuName != null) ...[
+          const SizedBox(height: 4),
           Text(
             'Menu: ${widget.menuName}',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
           ),
+        ],
 
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
 
-        // Servings multiplier
-        Text(
-          'Multiplicador de porciones',
-          style: theme.textTheme.labelLarge,
-        ),
+        // Date selection
+        Text('Seleccionar dias', style: theme.textTheme.labelLarge),
         const SizedBox(height: 8),
-        Text(
-          'Ajusta las cantidades segun el numero de personas',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: _availableDates.map((date) {
+            final isSelected = _selectedDates.contains(date);
+            final dayFormat = DateFormat('EEE', 'es');
+            final dateFormat = DateFormat('d/M');
+            final label =
+                '${dayFormat.format(date).substring(0, 3).toUpperCase()} ${dateFormat.format(date)}';
+            return FilterChip(
+              label: Text(label),
+              selected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedDates.add(date);
+                  } else {
+                    _selectedDates.remove(date);
+                  }
+                });
+              },
+              showCheckmark: false,
+              selectedColor: theme.colorScheme.primaryContainer,
+            );
+          }).toList(),
         ),
+
         const SizedBox(height: 12),
 
+        // Meal preview
+        if (selectedMeals.isNotEmpty) ...[
+          Row(
+            children: [
+              Text(
+                '${selectedMeals.length} comida${selectedMeals.length != 1 ? 's' : ''} ($recipeCount receta${recipeCount != 1 ? 's' : ''})',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Flexible(
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ListView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                itemCount: sortedDates.length,
+                itemBuilder: (context, index) {
+                  final date = sortedDates[index];
+                  final meals = mealsByDate[date]!;
+                  final dayFormat = DateFormat('EEEE d', 'es');
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (index > 0)
+                        const Divider(height: 1, indent: 12, endIndent: 12),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+                        child: Text(
+                          dayFormat.format(date),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      ...meals.map((meal) => Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                            child: Row(
+                              children: [
+                                Text(
+                                  meal.mealType.mealTypeIcon,
+                                  style: const TextStyle(fontSize: 14),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    meal.recipe?.title ?? 'Sin receta',
+                                    style: theme.textTheme.bodySmall,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          )),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        ] else
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Center(
+              child: Text(
+                'Selecciona al menos un dia',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ),
+
+        const SizedBox(height: 12),
+
+        // Servings multiplier (compact)
         Row(
           children: [
+            Text('Porciones:', style: theme.textTheme.labelLarge),
             IconButton(
               onPressed: _servingsMultiplier > 0.5
                   ? () => setState(() => _servingsMultiplier -= 0.5)
                   : null,
-              icon: const Icon(Icons.remove_circle_outline),
+              icon: const Icon(Icons.remove_circle_outline, size: 20),
+              visualDensity: VisualDensity.compact,
             ),
-            Expanded(
-              child: Slider(
-                value: _servingsMultiplier,
-                min: 0.5,
-                max: 4.0,
-                divisions: 7,
-                label: '${_servingsMultiplier}x',
-                onChanged: (value) {
-                  setState(() => _servingsMultiplier = value);
-                },
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primaryContainer,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                '${_servingsMultiplier}x',
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.colorScheme.onPrimaryContainer,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             IconButton(
               onPressed: _servingsMultiplier < 4.0
                   ? () => setState(() => _servingsMultiplier += 0.5)
                   : null,
-              icon: const Icon(Icons.add_circle_outline),
+              icon: const Icon(Icons.add_circle_outline, size: 20),
+              visualDensity: VisualDensity.compact,
             ),
           ],
         ),
 
-        Center(
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              '${_servingsMultiplier}x porciones',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
-        ),
-
         if (_error != null) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
@@ -188,10 +332,7 @@ class _GenerateShoppingListDialogState
             ),
             child: Row(
               children: [
-                Icon(
-                  Icons.error_outline,
-                  color: theme.colorScheme.error,
-                ),
+                Icon(Icons.error_outline, color: theme.colorScheme.error),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -204,7 +345,7 @@ class _GenerateShoppingListDialogState
           ),
         ],
 
-        const SizedBox(height: 24),
+        const SizedBox(height: 16),
 
         // Actions
         Row(
@@ -216,7 +357,8 @@ class _GenerateShoppingListDialogState
             ),
             const SizedBox(width: 8),
             FilledButton.icon(
-              onPressed: _isGenerating ? null : _generate,
+              onPressed:
+                  _isGenerating || _selectedDates.isEmpty ? null : _generate,
               icon: _isGenerating
                   ? const SizedBox(
                       width: 20,

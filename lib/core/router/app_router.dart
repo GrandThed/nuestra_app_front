@@ -30,7 +30,6 @@ import 'package:nuestra_app/features/expenses/presentation/screens/expense_detai
 import 'package:nuestra_app/features/expenses/presentation/screens/expense_summary_screen.dart';
 import 'package:nuestra_app/features/expenses/presentation/screens/expense_form_screen.dart';
 import 'package:nuestra_app/features/calendar/presentation/screens/calendar_screen.dart';
-import 'package:nuestra_app/features/calendar/presentation/screens/add_event_screen.dart';
 import 'package:nuestra_app/features/calendar/presentation/screens/event_detail_screen.dart';
 import 'package:nuestra_app/features/calendar/presentation/screens/event_form_screen.dart';
 import 'package:nuestra_app/features/home/presentation/screens/home_screen.dart';
@@ -335,7 +334,12 @@ final routerProvider = Provider<GoRouter>((ref) {
       // Calendar add event (no shell) - must be before detail to match first
       GoRoute(
         path: AppRoutes.addEvent,
-        builder: (context, state) => const AddEventScreen(),
+        builder: (context, state) {
+          final dateStr = state.uri.queryParameters['date'];
+          final initialDate =
+              dateStr != null ? DateTime.tryParse(dateStr) : null;
+          return EventFormScreen(initialDate: initialDate);
+        },
       ),
 
       // Calendar event edit (no shell) - must be before detail to match first

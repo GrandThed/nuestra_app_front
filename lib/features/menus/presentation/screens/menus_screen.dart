@@ -283,9 +283,25 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
       return;
     }
 
+    // Get current week meals for the preview
+    final mealsState = ref.read(upcomingMealsProvider);
+    final weekMeals = mealsState is UpcomingMealsStateLoaded
+        ? mealsState.items
+        : <MenuItemModel>[];
+
+    if (weekMeals.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('No hay comidas planificadas esta semana'),
+          backgroundColor: AppColors.warning,
+        ),
+      );
+      return;
+    }
+
     final plans = plansState.plans;
     if (plans.length == 1) {
-      _openShoppingListDialog(context, plans.first);
+      _openShoppingListDialog(context, plans.first, weekMeals);
     } else {
       showDialog(
         context: context,
@@ -297,7 +313,7 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
                     return SimpleDialogOption(
                       onPressed: () {
                         Navigator.pop(dialogContext);
-                        _openShoppingListDialog(context, plan);
+                        _openShoppingListDialog(context, plan, weekMeals);
                       },
                       child: Text(plan.name ?? 'Plan sin nombre'),
                     );
@@ -310,11 +326,13 @@ class _MenusScreenState extends ConsumerState<MenusScreen> {
   Future<void> _openShoppingListDialog(
     BuildContext context,
     MenuPlanModel plan,
+    List<MenuItemModel> weekMeals,
   ) async {
     final result = await GenerateShoppingListDialog.show(
       context,
       menuId: plan.id,
       menuName: plan.name,
+      weekMeals: weekMeals,
     );
     if (result != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(

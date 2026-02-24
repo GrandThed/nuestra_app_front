@@ -11,6 +11,7 @@ _WishlistCategoryModel _$WishlistCategoryModelFromJson(
 ) => _WishlistCategoryModel(
   id: json['id'] as String,
   name: json['name'] as String,
+  description: json['description'] as String?,
   type: json['type'] as String,
   sortOrder: (json['sortOrder'] as num).toInt(),
   itemCount: (json['itemCount'] as num?)?.toInt() ?? 0,
@@ -21,6 +22,7 @@ Map<String, dynamic> _$WishlistCategoryModelToJson(
 ) => <String, dynamic>{
   'id': instance.id,
   'name': instance.name,
+  'description': instance.description,
   'type': instance.type,
   'sortOrder': instance.sortOrder,
   'itemCount': instance.itemCount,

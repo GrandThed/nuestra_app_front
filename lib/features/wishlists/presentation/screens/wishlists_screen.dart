@@ -389,6 +389,7 @@ class _WishlistsScreenState extends ConsumerState<WishlistsScreen> {
         return _CategorySection(
           key: ValueKey(category.id),
           categoryName: category.name,
+          categoryDescription: category.description,
           items: categoryItems,
           uncheckedCount: categoryItems.where((i) => !i.checked).length,
           onToggleItem: _toggleItem,
@@ -658,6 +659,7 @@ class _CategoryChip extends StatelessWidget {
 
 class _CategorySection extends StatelessWidget {
   final String categoryName;
+  final String? categoryDescription;
   final List<WishlistItemModel> items;
   final int uncheckedCount;
   final void Function(WishlistItemModel) onToggleItem;
@@ -667,6 +669,7 @@ class _CategorySection extends StatelessWidget {
   const _CategorySection({
     super.key,
     required this.categoryName,
+    this.categoryDescription,
     required this.items,
     required this.uncheckedCount,
     required this.onToggleItem,
@@ -691,13 +694,26 @@ class _CategorySection extends StatelessWidget {
           child: Row(
             children: [
               Expanded(
-                child: Text(
-                  categoryName,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      categoryName,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    if (categoryDescription != null)
+                      Text(
+                        categoryDescription!,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        ),
+                      ),
+                  ],
                 ),
               ),
               if (uncheckedCount > 0)
