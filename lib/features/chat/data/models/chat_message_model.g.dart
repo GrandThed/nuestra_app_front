@@ -20,6 +20,11 @@ _ChatMessageModel _$ChatMessageModelFromJson(
           ?.map((e) => ChatToolCallModel.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  suggestions:
+      (json['suggestions'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
   user: json['user'] == null
       ? null
       : ChatUserModel.fromJson(json['user'] as Map<String, dynamic>),
@@ -33,6 +38,7 @@ Map<String, dynamic> _$ChatMessageModelToJson(_ChatMessageModel instance) =>
       'content': instance.content,
       'imageUrls': instance.imageUrls,
       'toolCalls': instance.toolCalls,
+      'suggestions': instance.suggestions,
       'user': instance.user,
       'createdAt': instance.createdAt.toIso8601String(),
     };

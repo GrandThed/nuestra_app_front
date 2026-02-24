@@ -5,6 +5,18 @@ import 'package:nuestra_app/features/chat/presentation/widgets/chat_bubble.dart'
 import 'package:nuestra_app/features/chat/presentation/widgets/chat_input_bar.dart';
 import 'package:nuestra_app/features/chat/presentation/widgets/quick_action_chips.dart';
 
+/// Default suggestions shown when starting a fresh chat
+const _defaultSuggestions = [
+  'Sugerime recetas para esta semana',
+  '¿Qué tenemos pendiente en la lista de compras?',
+  'Planificá el menú de la semana',
+  '¿Cuánto gastamos este mes?',
+  '¿Qué eventos tenemos esta semana?',
+  'Agregame una receta nueva',
+  '¿Qué verduras son de temporada?',
+  'Quiero agregar un gasto',
+];
+
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key});
 
@@ -14,6 +26,14 @@ class ChatScreen extends ConsumerStatefulWidget {
 
 class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(chatProvider.notifier).loadHistoryIfNeeded();
+    });
+  }
 
   @override
   void dispose() {
@@ -80,6 +100,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     final isEmpty = state.messages.isEmpty;
 
+    // Determine which suggestions to show
+    final suggestions = isEmpty
+        ? _defaultSuggestions
+        : state.suggestions;
+
     ref.listen(chatProvider, (prev, next) {
       if (prev != null && prev.messages.length != next.messages.length) {
         _scrollToBottom();
@@ -109,10 +134,14 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 Text(
-                  state.isSending ? 'escribiendo...' : 'online',
+                  state.isGatheringData
+                      ? 'recopilando info...'
+                      : state.isSending
+                          ? 'escribiendo...'
+                          : 'online',
                   style: TextStyle(
                     fontSize: 12,
-                    color: state.isSending
+                    color: (state.isSending || state.isGatheringData)
                         ? colorScheme.primary
                         : colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                     fontWeight: FontWeight.normal,
@@ -156,9 +185,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     ),
             ),
 
-            // Quick actions
-            if (!state.isSending)
+            // Quick action / suggestion chips
+            if (!state.isSending && suggestions.isNotEmpty)
               QuickActionChips(
+                suggestions: suggestions,
                 onTap: (text) => _handleSend(text, []),
               ),
 

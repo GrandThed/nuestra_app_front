@@ -105,6 +105,7 @@ class ApiConstants {
 
   // Chat
   static const String chat = '/api/chat';
+  static const String chatContinue = '/api/chat/continue';
   static const String chatHistory = '/api/chat/history';
 
   // Upload

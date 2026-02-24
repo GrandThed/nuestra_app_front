@@ -11,6 +11,7 @@ sealed class ChatMessageModel with _$ChatMessageModel {
     String? content,
     @Default([]) List<String> imageUrls,
     @Default([]) List<ChatToolCallModel> toolCalls,
+    @Default([]) List<String> suggestions,
     ChatUserModel? user,
     required DateTime createdAt,
   }) = _ChatMessageModel;

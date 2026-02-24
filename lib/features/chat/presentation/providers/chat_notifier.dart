@@ -1,210 +1,222 @@
+import 'package:dio/dio.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:nuestra_app/core/constants/api_constants.dart';
+import 'package:nuestra_app/core/errors/exceptions.dart';
+import 'package:nuestra_app/core/network/dio_client.dart';
+import 'package:nuestra_app/features/chat/data/models/chat_api_response.dart';
 import 'package:nuestra_app/features/chat/data/models/chat_message_model.dart';
+import 'package:nuestra_app/features/chat/data/repositories/chat_repository.dart';
+import 'package:nuestra_app/features/chat/data/services/chat_tool_executor.dart';
 import 'package:nuestra_app/features/chat/presentation/providers/chat_state.dart';
 
 part 'chat_notifier.g.dart';
 
+const _maxContinueRounds = 2;
+
 @Riverpod(keepAlive: true)
 class ChatNotifier extends _$ChatNotifier {
+  late final ChatRepository _repository;
+  late final ChatToolExecutor _toolExecutor;
+  late final DioClient _dioClient;
+
   @override
   ChatState build() {
+    _repository = ref.watch(chatRepositoryProvider);
+    _toolExecutor = ref.watch(chatToolExecutorProvider);
+    _dioClient = ref.watch(dioClientProvider);
     return const ChatState();
   }
 
-  Future<void> sendMessage(String text, {List<String> imageUrls = const []}) async {
+  /// Load chat history from backend (call in screen initState)
+  Future<void> loadHistoryIfNeeded() async {
+    if (state.messages.isNotEmpty) return;
+    await loadHistory();
+  }
+
+  /// Load chat history
+  Future<void> loadHistory() async {
+    try {
+      final response = await _repository.getHistory();
+      final suggestions = _extractLastSuggestions(response.messages);
+      state = state.copyWith(
+        messages: response.messages,
+        suggestions: suggestions,
+      );
+    } on AppException catch (_) {
+      // Silently fail — chat history is not critical
+    }
+  }
+
+  /// Send a message to the assistant.
+  /// [imagePaths] are local file paths — they'll be uploaded first.
+  Future<void> sendMessage(
+    String text, {
+    List<String> imageUrls = const [],
+  }) async {
+    // Upload local images first
+    final uploadedUrls = await _uploadImages(imageUrls);
+
+    // Add user message optimistically
     final userMessage = ChatMessageModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       role: 'user',
       content: text,
-      imageUrls: imageUrls,
+      imageUrls: uploadedUrls,
       createdAt: DateTime.now(),
     );
 
     state = state.copyWith(
       messages: [...state.messages, userMessage],
       isSending: true,
+      suggestions: [],
     );
 
-    // Simulate network delay
-    await Future<void>.delayed(const Duration(milliseconds: 1500));
+    try {
+      var response = await _repository.sendMessage(
+        text,
+        imageUrls: uploadedUrls,
+      );
 
-    final response = _generateMockResponse(text, imageUrls);
+      // Handle data gathering loop (max rounds)
+      var round = 0;
+      while (response is ChatApiResponseDataRequest &&
+          round < _maxContinueRounds) {
+        round++;
 
-    state = state.copyWith(
-      messages: [...state.messages, response],
-      isSending: false,
-    );
+        // Show gathering indicator
+        state = state.copyWith(isGatheringData: true);
+
+        // Execute query tools and collect results
+        final results = await _executeQueryRequests(response.requests);
+
+        // Send results back to LLM
+        response = await _repository.continueWithData(results);
+      }
+
+      // Handle final response
+      if (response is ChatApiResponseResponse) {
+        final assistantMessage = ChatMessageModel(
+          id: response.messageId,
+          role: 'assistant',
+          content: response.reply,
+          toolCalls: response.toolCalls,
+          suggestions: response.suggestions,
+          createdAt: DateTime.now(),
+        );
+
+        state = state.copyWith(
+          messages: [...state.messages, assistantMessage],
+          isSending: false,
+          isGatheringData: false,
+          suggestions: response.suggestions,
+        );
+      } else {
+        // Fallback: max rounds exceeded
+        state = state.copyWith(
+          isSending: false,
+          isGatheringData: false,
+        );
+      }
+    } on AppException catch (e) {
+      _addErrorMessage('Error: ${e.message}');
+    } catch (e) {
+      _addErrorMessage(
+        'Hubo un error al comunicarse con el asistente. Intenta de nuevo.',
+      );
+    }
   }
 
-  void clearHistory() {
+  /// Clear all chat history
+  Future<void> clearHistory() async {
+    try {
+      await _repository.clearHistory();
+    } catch (_) {
+      // Clear locally even if API fails
+    }
     state = const ChatState();
   }
 
-  ChatMessageModel _generateMockResponse(String text, List<String> imageUrls) {
-    final lower = text.toLowerCase();
-    final now = DateTime.now();
-    final id = (now.millisecondsSinceEpoch + 1).toString();
+  /// Upload local image files and return their server URLs.
+  Future<List<String>> _uploadImages(List<String> localPaths) async {
+    if (localPaths.isEmpty) return [];
 
-    // Image attached → recipe extraction
-    if (imageUrls.isNotEmpty) {
-      return ChatMessageModel(
-        id: id,
-        role: 'assistant',
-        content: 'Encontré una receta en la foto. Acá están los detalles:',
-        toolCalls: [
-          ChatToolCallModel(
-            tool: 'create_recipe',
-            params: {
-              'title': 'Tarta de manzana de la abuela',
-              'ingredients': [
-                {'name': 'Manzanas', 'quantity': 6, 'unit': 'unidades'},
-                {'name': 'Azúcar', 'quantity': 200, 'unit': 'g'},
-                {'name': 'Harina', 'quantity': 300, 'unit': 'g'},
-              ],
-              'instructions': [
-                'Pelar y cortar las manzanas',
-                'Mezclar con azúcar y canela',
-                'Preparar la masa con harina y manteca',
-                'Armar la tarta y hornear 40 minutos',
-              ],
-              'servings': 8,
-            },
+    final urls = <String>[];
+    for (final path in localPaths) {
+      try {
+        final formData = FormData.fromMap({
+          'image': await MultipartFile.fromFile(
+            path,
+            filename: path.split('/').last,
           ),
-        ],
-        createdAt: now,
-      );
+        });
+
+        final response = await _dioClient.dio.post<Map<String, dynamic>>(
+          '${ApiConstants.baseUrl}${ApiConstants.upload}/image',
+          data: formData,
+        );
+
+        final data = response.data;
+        if (data != null && data['success'] == true) {
+          final fileData = data['data']?['file'] as Map<String, dynamic>?;
+          final url = fileData?['url'] as String?;
+          if (url != null) urls.add(url);
+        }
+      } catch (_) {
+        // Skip failed uploads
+      }
     }
 
-    // Shopping list / wishlist
-    if (lower.contains('lista') ||
-        lower.contains('compra') ||
-        lower.contains('super') ||
-        lower.contains('leche')) {
-      return ChatMessageModel(
-        id: id,
-        role: 'assistant',
-        content: '¡Listo! Agregué los items a tu lista de compras.',
-        toolCalls: [
-          ChatToolCallModel(
-            tool: 'add_wishlist_items',
-            params: {
-              'categoryName': 'Comprar ahora',
-              'items': [
-                {'name': 'Leche'},
-                {'name': 'Huevos'},
-                {'name': 'Pan'},
-              ],
-            },
-          ),
-        ],
-        createdAt: now,
-      );
+    return urls;
+  }
+
+  /// Execute query tool requests from a data_request response.
+  Future<List<Map<String, dynamic>>> _executeQueryRequests(
+    List<ChatToolCallModel> requests,
+  ) async {
+    final results = <Map<String, dynamic>>[];
+
+    for (final request in requests) {
+      try {
+        final result = await _toolExecutor.executeQuery(request);
+        results.add({
+          'tool': request.tool,
+          'result': result,
+        });
+      } catch (e) {
+        results.add({
+          'tool': request.tool,
+          'result': <String, dynamic>{'error': e.toString()},
+        });
+      }
     }
 
-    // Expense
-    if (lower.contains('gast') || lower.contains('pagu') || lower.contains('ticket')) {
-      return ChatMessageModel(
-        id: id,
-        role: 'assistant',
-        content: 'Registré el gasto. Se dividió automáticamente.',
-        toolCalls: [
-          ChatToolCallModel(
-            tool: 'create_expense',
-            params: {
-              'description': 'Supermercado',
-              'amount': 15000,
-              'date': now.toIso8601String().substring(0, 10),
-              'categoryName': 'Comida',
-            },
-          ),
-        ],
-        createdAt: now,
-      );
-    }
+    return results;
+  }
 
-    // Calendar event
-    if (lower.contains('evento') ||
-        lower.contains('calendario') ||
-        lower.contains('cumple') ||
-        lower.contains('semana')) {
-      return ChatMessageModel(
-        id: id,
-        role: 'assistant',
-        content: 'Te agendé el evento en el calendario.',
-        toolCalls: [
-          ChatToolCallModel(
-            tool: 'create_calendar_event',
-            params: {
-              'title': 'Cena con los viejos',
-              'startDate': now.add(const Duration(days: 3)).toIso8601String(),
-              'allDay': false,
-            },
-          ),
-        ],
-        createdAt: now,
-      );
-    }
-
-    // Recipe
-    if (lower.contains('receta') || lower.contains('cocin') || lower.contains('suger')) {
-      return ChatMessageModel(
-        id: id,
-        role: 'assistant',
-        content: '¿Qué te parece esta receta? Es perfecta para la temporada.',
-        toolCalls: [
-          ChatToolCallModel(
-            tool: 'create_recipe',
-            params: {
-              'title': 'Guiso de lentejas',
-              'ingredients': [
-                {'name': 'Lentejas', 'quantity': 500, 'unit': 'g'},
-                {'name': 'Cebolla', 'quantity': 2, 'unit': 'unidades'},
-                {'name': 'Zanahoria', 'quantity': 2, 'unit': 'unidades'},
-                {'name': 'Papa', 'quantity': 3, 'unit': 'unidades'},
-              ],
-              'instructions': [
-                'Remojar las lentejas 2 horas',
-                'Rehogar cebolla y zanahoria',
-                'Agregar lentejas, papa y caldo',
-                'Cocinar a fuego lento 45 minutos',
-              ],
-              'servings': 4,
-            },
-          ),
-        ],
-        createdAt: now,
-      );
-    }
-
-    // Board / link
-    if (lower.contains('tablero') || lower.contains('link') || lower.contains('guard')) {
-      return ChatMessageModel(
-        id: id,
-        role: 'assistant',
-        content: 'Guardé el link en tu tablero.',
-        toolCalls: [
-          ChatToolCallModel(
-            tool: 'add_board_link',
-            params: {
-              'boardName': 'Viajes',
-              'url': 'https://example.com/destino',
-              'title': 'Destino guardado',
-            },
-          ),
-        ],
-        createdAt: now,
-      );
-    }
-
-    // Default conversational response
-    return ChatMessageModel(
-      id: id,
+  /// Add an error message as an assistant bubble
+  void _addErrorMessage(String text) {
+    final errorMessage = ChatMessageModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       role: 'assistant',
-      content:
-          '¡Hola! Puedo ayudarte a agregar recetas, crear eventos, '
-          'registrar gastos, manejar tu lista de compras y más. '
-          '¿Qué necesitás?',
-      createdAt: now,
+      content: text,
+      createdAt: DateTime.now(),
     );
+
+    state = state.copyWith(
+      messages: [...state.messages, errorMessage],
+      isSending: false,
+      isGatheringData: false,
+    );
+  }
+
+  /// Extract suggestions from the last assistant message in history
+  List<String> _extractLastSuggestions(List<ChatMessageModel> messages) {
+    for (var i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role == 'assistant' &&
+          messages[i].suggestions.isNotEmpty) {
+        return messages[i].suggestions;
+      }
+    }
+    return [];
   }
 }

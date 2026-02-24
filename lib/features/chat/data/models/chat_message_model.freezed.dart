@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$ChatMessageModel {
 
  String get id; String get role;// "user" | "assistant"
- String? get content; List<String> get imageUrls; List<ChatToolCallModel> get toolCalls; ChatUserModel? get user; DateTime get createdAt;
+ String? get content; List<String> get imageUrls; List<ChatToolCallModel> get toolCalls; List<String> get suggestions; ChatUserModel? get user; DateTime get createdAt;
 /// Create a copy of ChatMessageModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $ChatMessageModelCopyWith<ChatMessageModel> get copyWith => _$ChatMessageModelCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessageModel&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.content, content) || other.content == content)&&const DeepCollectionEquality().equals(other.imageUrls, imageUrls)&&const DeepCollectionEquality().equals(other.toolCalls, toolCalls)&&(identical(other.user, user) || other.user == user)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatMessageModel&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.content, content) || other.content == content)&&const DeepCollectionEquality().equals(other.imageUrls, imageUrls)&&const DeepCollectionEquality().equals(other.toolCalls, toolCalls)&&const DeepCollectionEquality().equals(other.suggestions, suggestions)&&(identical(other.user, user) || other.user == user)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,role,content,const DeepCollectionEquality().hash(imageUrls),const DeepCollectionEquality().hash(toolCalls),user,createdAt);
+int get hashCode => Object.hash(runtimeType,id,role,content,const DeepCollectionEquality().hash(imageUrls),const DeepCollectionEquality().hash(toolCalls),const DeepCollectionEquality().hash(suggestions),user,createdAt);
 
 @override
 String toString() {
-  return 'ChatMessageModel(id: $id, role: $role, content: $content, imageUrls: $imageUrls, toolCalls: $toolCalls, user: $user, createdAt: $createdAt)';
+  return 'ChatMessageModel(id: $id, role: $role, content: $content, imageUrls: $imageUrls, toolCalls: $toolCalls, suggestions: $suggestions, user: $user, createdAt: $createdAt)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $ChatMessageModelCopyWith<$Res>  {
   factory $ChatMessageModelCopyWith(ChatMessageModel value, $Res Function(ChatMessageModel) _then) = _$ChatMessageModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String role, String? content, List<String> imageUrls, List<ChatToolCallModel> toolCalls, ChatUserModel? user, DateTime createdAt
+ String id, String role, String? content, List<String> imageUrls, List<ChatToolCallModel> toolCalls, List<String> suggestions, ChatUserModel? user, DateTime createdAt
 });
 
 
@@ -66,14 +66,15 @@ class _$ChatMessageModelCopyWithImpl<$Res>
 
 /// Create a copy of ChatMessageModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? role = null,Object? content = freezed,Object? imageUrls = null,Object? toolCalls = null,Object? user = freezed,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? role = null,Object? content = freezed,Object? imageUrls = null,Object? toolCalls = null,Object? suggestions = null,Object? user = freezed,Object? createdAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
 as String?,imageUrls: null == imageUrls ? _self.imageUrls : imageUrls // ignore: cast_nullable_to_non_nullable
 as List<String>,toolCalls: null == toolCalls ? _self.toolCalls : toolCalls // ignore: cast_nullable_to_non_nullable
-as List<ChatToolCallModel>,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as List<ChatToolCallModel>,suggestions: null == suggestions ? _self.suggestions : suggestions // ignore: cast_nullable_to_non_nullable
+as List<String>,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as ChatUserModel?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
@@ -169,10 +170,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String role,  String? content,  List<String> imageUrls,  List<ChatToolCallModel> toolCalls,  ChatUserModel? user,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String role,  String? content,  List<String> imageUrls,  List<ChatToolCallModel> toolCalls,  List<String> suggestions,  ChatUserModel? user,  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatMessageModel() when $default != null:
-return $default(_that.id,_that.role,_that.content,_that.imageUrls,_that.toolCalls,_that.user,_that.createdAt);case _:
+return $default(_that.id,_that.role,_that.content,_that.imageUrls,_that.toolCalls,_that.suggestions,_that.user,_that.createdAt);case _:
   return orElse();
 
 }
@@ -190,10 +191,10 @@ return $default(_that.id,_that.role,_that.content,_that.imageUrls,_that.toolCall
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String role,  String? content,  List<String> imageUrls,  List<ChatToolCallModel> toolCalls,  ChatUserModel? user,  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String role,  String? content,  List<String> imageUrls,  List<ChatToolCallModel> toolCalls,  List<String> suggestions,  ChatUserModel? user,  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _ChatMessageModel():
-return $default(_that.id,_that.role,_that.content,_that.imageUrls,_that.toolCalls,_that.user,_that.createdAt);}
+return $default(_that.id,_that.role,_that.content,_that.imageUrls,_that.toolCalls,_that.suggestions,_that.user,_that.createdAt);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -207,10 +208,10 @@ return $default(_that.id,_that.role,_that.content,_that.imageUrls,_that.toolCall
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String role,  String? content,  List<String> imageUrls,  List<ChatToolCallModel> toolCalls,  ChatUserModel? user,  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String role,  String? content,  List<String> imageUrls,  List<ChatToolCallModel> toolCalls,  List<String> suggestions,  ChatUserModel? user,  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatMessageModel() when $default != null:
-return $default(_that.id,_that.role,_that.content,_that.imageUrls,_that.toolCalls,_that.user,_that.createdAt);case _:
+return $default(_that.id,_that.role,_that.content,_that.imageUrls,_that.toolCalls,_that.suggestions,_that.user,_that.createdAt);case _:
   return null;
 
 }
@@ -222,7 +223,7 @@ return $default(_that.id,_that.role,_that.content,_that.imageUrls,_that.toolCall
 @JsonSerializable()
 
 class _ChatMessageModel implements ChatMessageModel {
-  const _ChatMessageModel({required this.id, required this.role, this.content, final  List<String> imageUrls = const [], final  List<ChatToolCallModel> toolCalls = const [], this.user, required this.createdAt}): _imageUrls = imageUrls,_toolCalls = toolCalls;
+  const _ChatMessageModel({required this.id, required this.role, this.content, final  List<String> imageUrls = const [], final  List<ChatToolCallModel> toolCalls = const [], final  List<String> suggestions = const [], this.user, required this.createdAt}): _imageUrls = imageUrls,_toolCalls = toolCalls,_suggestions = suggestions;
   factory _ChatMessageModel.fromJson(Map<String, dynamic> json) => _$ChatMessageModelFromJson(json);
 
 @override final  String id;
@@ -243,6 +244,13 @@ class _ChatMessageModel implements ChatMessageModel {
   return EqualUnmodifiableListView(_toolCalls);
 }
 
+ final  List<String> _suggestions;
+@override@JsonKey() List<String> get suggestions {
+  if (_suggestions is EqualUnmodifiableListView) return _suggestions;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_suggestions);
+}
+
 @override final  ChatUserModel? user;
 @override final  DateTime createdAt;
 
@@ -259,16 +267,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatMessageModel&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.content, content) || other.content == content)&&const DeepCollectionEquality().equals(other._imageUrls, _imageUrls)&&const DeepCollectionEquality().equals(other._toolCalls, _toolCalls)&&(identical(other.user, user) || other.user == user)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatMessageModel&&(identical(other.id, id) || other.id == id)&&(identical(other.role, role) || other.role == role)&&(identical(other.content, content) || other.content == content)&&const DeepCollectionEquality().equals(other._imageUrls, _imageUrls)&&const DeepCollectionEquality().equals(other._toolCalls, _toolCalls)&&const DeepCollectionEquality().equals(other._suggestions, _suggestions)&&(identical(other.user, user) || other.user == user)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,role,content,const DeepCollectionEquality().hash(_imageUrls),const DeepCollectionEquality().hash(_toolCalls),user,createdAt);
+int get hashCode => Object.hash(runtimeType,id,role,content,const DeepCollectionEquality().hash(_imageUrls),const DeepCollectionEquality().hash(_toolCalls),const DeepCollectionEquality().hash(_suggestions),user,createdAt);
 
 @override
 String toString() {
-  return 'ChatMessageModel(id: $id, role: $role, content: $content, imageUrls: $imageUrls, toolCalls: $toolCalls, user: $user, createdAt: $createdAt)';
+  return 'ChatMessageModel(id: $id, role: $role, content: $content, imageUrls: $imageUrls, toolCalls: $toolCalls, suggestions: $suggestions, user: $user, createdAt: $createdAt)';
 }
 
 
@@ -279,7 +287,7 @@ abstract mixin class _$ChatMessageModelCopyWith<$Res> implements $ChatMessageMod
   factory _$ChatMessageModelCopyWith(_ChatMessageModel value, $Res Function(_ChatMessageModel) _then) = __$ChatMessageModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String role, String? content, List<String> imageUrls, List<ChatToolCallModel> toolCalls, ChatUserModel? user, DateTime createdAt
+ String id, String role, String? content, List<String> imageUrls, List<ChatToolCallModel> toolCalls, List<String> suggestions, ChatUserModel? user, DateTime createdAt
 });
 
 
@@ -296,14 +304,15 @@ class __$ChatMessageModelCopyWithImpl<$Res>
 
 /// Create a copy of ChatMessageModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? role = null,Object? content = freezed,Object? imageUrls = null,Object? toolCalls = null,Object? user = freezed,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? role = null,Object? content = freezed,Object? imageUrls = null,Object? toolCalls = null,Object? suggestions = null,Object? user = freezed,Object? createdAt = null,}) {
   return _then(_ChatMessageModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String,content: freezed == content ? _self.content : content // ignore: cast_nullable_to_non_nullable
 as String?,imageUrls: null == imageUrls ? _self._imageUrls : imageUrls // ignore: cast_nullable_to_non_nullable
 as List<String>,toolCalls: null == toolCalls ? _self._toolCalls : toolCalls // ignore: cast_nullable_to_non_nullable
-as List<ChatToolCallModel>,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+as List<ChatToolCallModel>,suggestions: null == suggestions ? _self._suggestions : suggestions // ignore: cast_nullable_to_non_nullable
+as List<String>,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as ChatUserModel?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
