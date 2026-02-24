@@ -111,7 +111,7 @@ final class TopPendingTasksProvider
   }
 }
 
-String _$topPendingTasksHash() => r'6a39702dcd9a9b3b6d49bbdef541587ad3a5155d';
+String _$topPendingTasksHash() => r'b51e8fc45ad01747b80eed3db68cf6fe95f13289';
 
 /// Total pending task count (for overflow display)
 
@@ -156,4 +156,4 @@ final class PendingTasksCountProvider extends $FunctionalProvider<int, int, int>
   }
 }
 
-String _$pendingTasksCountHash() => r'113f5162f153eec72bde770160d38c4531238920';
+String _$pendingTasksCountHash() => r'233969dd2f542036309389ee1776fe3ef4dabfa4';

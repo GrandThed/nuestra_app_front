@@ -103,6 +103,10 @@ class ApiConstants {
   static const String activity = '/api/activity';
   static const String activityDigest = '/api/activity/digest';
 
+  // Chat
+  static const String chat = '/api/chat';
+  static const String chatHistory = '/api/chat/history';
+
   // Upload
   static const String upload = '/api/upload';
 }

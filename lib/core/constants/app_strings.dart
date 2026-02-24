@@ -30,6 +30,7 @@ class AppStrings {
   static const String calendar = 'Calendario';
   static const String settings = 'Configuración';
   static const String profile = 'Perfil';
+  static const String assistant = 'Asistente';
 
   // Common actions
   static const String save = 'Guardar';

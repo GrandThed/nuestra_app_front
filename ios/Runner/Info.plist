@@ -45,6 +45,10 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Esta app usa reconocimiento de voz para dictar mensajes al asistente.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Esta app necesita acceso al micrófono para dictar mensajes por voz.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>

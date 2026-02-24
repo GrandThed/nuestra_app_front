@@ -52,6 +52,11 @@ class _BottomNavBar extends StatelessWidget {
           selectedIcon: Icon(Icons.account_balance_wallet),
           label: AppStrings.expenses,
         ),
+        NavigationDestination(
+          icon: Icon(Icons.auto_awesome_outlined),
+          selectedIcon: Icon(Icons.auto_awesome),
+          label: AppStrings.assistant,
+        ),
       ],
     );
   }
@@ -61,6 +66,7 @@ class _BottomNavBar extends StatelessWidget {
     if (location.startsWith(AppRoutes.recipes)) return 2;
     if (location.startsWith(AppRoutes.wishlists)) return 3;
     if (location.startsWith(AppRoutes.expenses)) return 4;
+    if (location.startsWith(AppRoutes.chat)) return 5;
     return 0; // Home
   }
 
@@ -80,6 +86,9 @@ class _BottomNavBar extends StatelessWidget {
         break;
       case 4:
         context.go(AppRoutes.expenses);
+        break;
+      case 5:
+        context.go(AppRoutes.chat);
         break;
     }
   }

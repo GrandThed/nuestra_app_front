@@ -17,7 +17,7 @@ void _log(String message) {
 }
 
 void main() async {
-  enableFlutterDriverExtension();
+  enableFlutterDriverExtension(enableTextEntryEmulation: false);
   _log('[main] Starting app initialization...');
 
   // Catch all Flutter errors and display them

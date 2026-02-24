@@ -148,7 +148,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 },
                 itemBuilder: (context, index) {
                   final cardId = cardOrder[index];
-                  return ReorderableDragStartListener(
+                  return ReorderableDelayedDragStartListener(
                     key: ValueKey(cardId),
                     index: index,
                     enabled: true,

@@ -44,6 +44,7 @@ import 'package:nuestra_app/features/expenses/presentation/screens/budget_setup_
 import 'package:nuestra_app/features/expenses/presentation/screens/expense_trends_screen.dart';
 import 'package:nuestra_app/features/menus/presentation/screens/meal_history_screen.dart';
 import 'package:nuestra_app/features/wishlists/presentation/screens/purchase_history_screen.dart';
+import 'package:nuestra_app/features/chat/presentation/screens/chat_screen.dart';
 
 /// Route names
 class AppRoutes {
@@ -66,6 +67,7 @@ class AppRoutes {
   static const String wishlists = '/wishlists';
   static const String expenses = '/expenses';
   static const String calendar = '/calendar';
+  static const String chat = '/chat';
 
   // Detail screens
   static const String boardDetail = '/boards/:id';
@@ -475,6 +477,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.calendar,
             pageBuilder: (context, state) => const NoTransitionPage(
               child: CalendarScreen(),
+            ),
+          ),
+
+          // Chat / Assistant
+          GoRoute(
+            path: AppRoutes.chat,
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: ChatScreen(),
             ),
           ),
         ],
