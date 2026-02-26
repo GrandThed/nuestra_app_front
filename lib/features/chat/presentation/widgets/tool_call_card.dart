@@ -1,69 +1,152 @@
 import 'package:flutter/material.dart';
 import 'package:nuestra_app/features/chat/data/models/chat_message_model.dart';
+import 'package:nuestra_app/features/chat/presentation/providers/chat_state.dart';
 
 class ToolCallCard extends StatelessWidget {
   final ChatToolCallModel toolCall;
+  final ToolExecutionStatus status;
+  final String? resultMessage;
+  final VoidCallback? onTap;
 
-  const ToolCallCard({super.key, required this.toolCall});
+  const ToolCallCard({
+    super.key,
+    required this.toolCall,
+    this.status = ToolExecutionStatus.pending,
+    this.resultMessage,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final config = _getToolConfig(toolCall.tool);
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Container(
-      margin: const EdgeInsets.only(top: 8),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: config.color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: config.color.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: config.color.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(config.icon, size: 18, color: config.color),
-          ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+      onTap: status == ToolExecutionStatus.pending ? onTap : null,
+      child: Container(
+        margin: const EdgeInsets.only(top: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: _getBackgroundColor(config.color, colorScheme),
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: _getBorderColor(config.color)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
               children: [
-                Text(
-                  config.label,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: config.color,
-                    letterSpacing: 0.5,
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: config.color.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(config.icon, size: 18, color: config.color),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        config.label,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          color: config.color,
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        _getDescription(toolCall),
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: colorScheme.onSurface,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  _getDescription(toolCall),
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colorScheme.onSurface,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                _buildTrailing(colorScheme),
               ],
             ),
-          ),
-          Icon(
-            Icons.chevron_right,
-            size: 18,
-            color: colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-          ),
-        ],
+            // Result message for success/error
+            if (resultMessage != null &&
+                (status == ToolExecutionStatus.success ||
+                    status == ToolExecutionStatus.error)) ...[
+              const SizedBox(height: 6),
+              Text(
+                resultMessage!,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: status == ToolExecutionStatus.success
+                      ? const Color(0xFF22C55E)
+                      : colorScheme.error,
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     );
+  }
+
+  Widget _buildTrailing(ColorScheme colorScheme) {
+    switch (status) {
+      case ToolExecutionStatus.pending:
+        return Icon(
+          Icons.touch_app_outlined,
+          size: 18,
+          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+        );
+      case ToolExecutionStatus.executing:
+        return SizedBox(
+          width: 18,
+          height: 18,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: colorScheme.primary,
+          ),
+        );
+      case ToolExecutionStatus.success:
+        return const Icon(
+          Icons.check_circle,
+          size: 18,
+          color: Color(0xFF22C55E),
+        );
+      case ToolExecutionStatus.error:
+        return Icon(
+          Icons.error_outline,
+          size: 18,
+          color: colorScheme.error,
+        );
+    }
+  }
+
+  Color _getBackgroundColor(Color toolColor, ColorScheme colorScheme) {
+    switch (status) {
+      case ToolExecutionStatus.success:
+        return const Color(0xFF22C55E).withValues(alpha: 0.08);
+      case ToolExecutionStatus.error:
+        return colorScheme.error.withValues(alpha: 0.08);
+      default:
+        return toolColor.withValues(alpha: 0.1);
+    }
+  }
+
+  Color _getBorderColor(Color toolColor) {
+    switch (status) {
+      case ToolExecutionStatus.success:
+        return const Color(0xFF22C55E).withValues(alpha: 0.3);
+      case ToolExecutionStatus.error:
+        return const Color(0xFFEF4444).withValues(alpha: 0.3);
+      default:
+        return toolColor.withValues(alpha: 0.3);
+    }
   }
 
   String _getDescription(ChatToolCallModel tc) {
@@ -148,13 +231,13 @@ class ToolCallCard extends StatelessWidget {
       case 'generate_shopping_list':
         return _ToolConfig(
           icon: Icons.calendar_view_week,
-          label: 'MENÚ',
+          label: 'MENU',
           color: const Color(0xFF14B8A6),
         );
       default:
         return _ToolConfig(
           icon: Icons.auto_awesome,
-          label: 'ACCIÓN',
+          label: 'ACCION',
           color: const Color(0xFF6366F1),
         );
     }

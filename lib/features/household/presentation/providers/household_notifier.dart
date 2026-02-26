@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:nuestra_app/core/errors/exceptions.dart';
+import 'package:nuestra_app/features/auth/data/models/user_model.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:nuestra_app/features/household/data/models/household_model.dart';
 import 'package:nuestra_app/features/household/data/repositories/household_repository.dart';
@@ -51,8 +52,14 @@ class HouseholdNotifier extends _$HouseholdNotifier {
       // Set as current household
       ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(household.id);
 
-      // Refresh auth state so router knows user has a household
-      await ref.read(authProvider.notifier).refreshUser();
+      // Update auth state locally so router immediately knows user has a household
+      ref.read(authProvider.notifier).setUserHouseholds([
+        HouseholdMembershipModel(
+          id: household.id,
+          name: household.name,
+          role: 'owner',
+        ),
+      ]);
 
       state = HouseholdState.loaded(household);
       return household;
@@ -78,8 +85,14 @@ class HouseholdNotifier extends _$HouseholdNotifier {
       // Set as current household
       ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(household.id);
 
-      // Refresh auth state so router knows user has a household
-      await ref.read(authProvider.notifier).refreshUser();
+      // Update auth state locally so router immediately knows user has a household
+      ref.read(authProvider.notifier).setUserHouseholds([
+        HouseholdMembershipModel(
+          id: household.id,
+          name: household.name,
+          role: 'member',
+        ),
+      ]);
 
       state = HouseholdState.loaded(household);
       return household;
@@ -198,7 +211,8 @@ class HouseholdNotifier extends _$HouseholdNotifier {
       await _repository.deleteHousehold(householdId);
       ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(null);
       state = const HouseholdState.initial();
-      await ref.read(authProvider.notifier).refreshUser();
+      // Update auth state locally so router immediately knows user has no household
+      ref.read(authProvider.notifier).setUserHouseholds([]);
       return true;
     } on AppException catch (e) {
       debugPrint('Error deleting household: ${e.message}');
@@ -221,8 +235,8 @@ class HouseholdNotifier extends _$HouseholdNotifier {
       );
       ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(null);
       state = const HouseholdState.initial();
-      // Refresh auth state so router knows user no longer has a household
-      await ref.read(authProvider.notifier).refreshUser();
+      // Update auth state locally so router immediately knows user has no household
+      ref.read(authProvider.notifier).setUserHouseholds([]);
       return true;
     } on AppException catch (e) {
       debugPrint('Error leaving household: ${e.message}');

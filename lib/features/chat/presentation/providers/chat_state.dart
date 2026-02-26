@@ -3,6 +3,8 @@ import 'package:nuestra_app/features/chat/data/models/chat_message_model.dart';
 
 part 'chat_state.freezed.dart';
 
+enum ToolExecutionStatus { pending, executing, success, error }
+
 @freezed
 sealed class ChatState with _$ChatState {
   const factory ChatState({
@@ -10,5 +12,9 @@ sealed class ChatState with _$ChatState {
     @Default(false) bool isSending,
     @Default(false) bool isGatheringData,
     @Default([]) List<String> suggestions,
+    /// Tracks execution status per tool call: key = "messageId_toolIndex"
+    @Default({}) Map<String, ToolExecutionStatus> toolExecutionStatuses,
+    /// Stores result messages per tool call: key = "messageId_toolIndex"
+    @Default({}) Map<String, String> toolExecutionResults,
   }) = _ChatState;
 }

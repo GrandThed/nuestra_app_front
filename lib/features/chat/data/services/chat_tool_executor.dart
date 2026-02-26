@@ -18,20 +18,25 @@ class ChatToolExecutor {
   ChatToolExecutor({required DioClient dioClient}) : _dioClient = dioClient;
 
   /// Execute a query tool and return the result data.
+  /// [householdId] is injected into query params that need it.
   /// Used during the data gathering loop.
-  Future<Map<String, dynamic>> executeQuery(ChatToolCallModel request) async {
+  Future<Map<String, dynamic>> executeQuery(
+    ChatToolCallModel request, {
+    required String householdId,
+  }) async {
     try {
+      final params = {...request.params, 'householdId': householdId};
       switch (request.tool) {
         case 'search_recipes':
-          return await _searchRecipes(request.params);
+          return await _searchRecipes(params);
         case 'list_calendar_events':
-          return await _listCalendarEvents(request.params);
+          return await _listCalendarEvents(params);
         case 'list_wishlist_items':
-          return await _listWishlistItems(request.params);
+          return await _listWishlistItems(params);
         case 'list_boards':
-          return await _listBoards(request.params);
+          return await _listBoards(params);
         case 'get_expense_summary':
-          return await _getExpenseSummary(request.params);
+          return await _getExpenseSummary(params);
         default:
           return {'error': 'Unknown query tool: ${request.tool}'};
       }
@@ -41,27 +46,37 @@ class ChatToolExecutor {
   }
 
   /// Execute an action tool (create, add, etc.)
+  /// [householdId] is injected into params that need it.
   /// Returns a user-friendly result message.
-  Future<ToolExecutionResult> executeAction(ChatToolCallModel toolCall) async {
+  Future<ToolExecutionResult> executeAction(
+    ChatToolCallModel toolCall, {
+    required String householdId,
+  }) async {
+    // Inject householdId into params for backend endpoints that require it
+    final params = {...toolCall.params, 'householdId': householdId};
+    final enrichedToolCall = ChatToolCallModel(
+      tool: toolCall.tool,
+      params: params,
+    );
     try {
-      switch (toolCall.tool) {
+      switch (enrichedToolCall.tool) {
         case 'create_recipe':
-          return await _createRecipe(toolCall.params);
+          return await _createRecipe(params);
         case 'add_wishlist_items':
-          return await _addWishlistItems(toolCall.params);
+          return await _addWishlistItems(params);
         case 'create_expense':
-          return await _createExpense(toolCall.params);
+          return await _createExpense(params);
         case 'create_calendar_event':
-          return await _createCalendarEvent(toolCall.params);
+          return await _createCalendarEvent(params);
         case 'add_board_link':
-          return await _addBoardLink(toolCall.params);
+          return await _addBoardLink(params);
         case 'add_menu_item':
-          return await _addMenuItem(toolCall.params);
+          return await _addMenuItem(params);
         case 'generate_shopping_list':
-          return await _generateShoppingList(toolCall.params);
+          return await _generateShoppingList(params);
         default:
           return ToolExecutionResult.error(
-            'Herramienta no soportada: ${toolCall.tool}',
+            'Herramienta no soportada: ${enrichedToolCall.tool}',
           );
       }
     } catch (e) {
@@ -75,6 +90,7 @@ class ChatToolExecutor {
     final response = await _dioClient.get<Map<String, dynamic>>(
       ApiConstants.recipes,
       queryParameters: {
+        'householdId': params['householdId'],
         if (params['query'] != null) 'search': params['query'],
       },
     );
@@ -85,6 +101,7 @@ class ChatToolExecutor {
     final response = await _dioClient.get<Map<String, dynamic>>(
       ApiConstants.calendarTimeline,
       queryParameters: {
+        'householdId': params['householdId'],
         if (params['startDate'] != null) 'from': params['startDate'],
         if (params['endDate'] != null) 'to': params['endDate'],
       },
@@ -96,6 +113,7 @@ class ChatToolExecutor {
     final response = await _dioClient.get<Map<String, dynamic>>(
       ApiConstants.wishlists,
       queryParameters: {
+        'householdId': params['householdId'],
         if (params['categoryName'] != null) 'category': params['categoryName'],
       },
     );
@@ -106,6 +124,7 @@ class ChatToolExecutor {
     final response = await _dioClient.get<Map<String, dynamic>>(
       ApiConstants.boards,
       queryParameters: {
+        'householdId': params['householdId'],
         if (params['boardName'] != null) 'search': params['boardName'],
       },
     );
@@ -116,6 +135,7 @@ class ChatToolExecutor {
     final response = await _dioClient.get<Map<String, dynamic>>(
       ApiConstants.expenseSummary,
       queryParameters: {
+        'householdId': params['householdId'],
         if (params['month'] != null) 'month': params['month'],
         if (params['year'] != null) 'year': params['year'],
       },

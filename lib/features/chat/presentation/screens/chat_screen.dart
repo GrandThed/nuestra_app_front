@@ -180,7 +180,16 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                         if (index == state.messages.length) {
                           return _buildTypingIndicator(colorScheme);
                         }
-                        return ChatBubble(message: state.messages[index]);
+                        return ChatBubble(
+                          message: state.messages[index],
+                          toolStatuses: state.toolExecutionStatuses,
+                          toolResults: state.toolExecutionResults,
+                          onExecuteToolCall: (messageId, toolIndex) {
+                            ref
+                                .read(chatProvider.notifier)
+                                .executeToolCall(messageId, toolIndex);
+                          },
+                        );
                       },
                     ),
             ),

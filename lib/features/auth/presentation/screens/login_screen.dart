@@ -10,12 +10,27 @@ import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.d
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 import 'package:nuestra_app/features/household/presentation/providers/pending_invite_provider.dart';
 
+import '../widgets/web_wrapper.dart' as web;
+
 /// Login screen with Google and Apple sign-in options
-class LoginScreen extends ConsumerWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(authProvider.notifier).initializeGoogleSignIn();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final isLoading = authState is AuthStateLoading;
 
@@ -88,19 +103,22 @@ class LoginScreen extends ConsumerWidget {
               ),
               const Spacer(),
 
-              // Google Sign In
-              _SocialLoginButton(
-                onPressed: isLoading
-                    ? null
-                    : () {
-                        ref.read(authProvider.notifier).signInWithGoogle();
-                      },
-                icon: Icons.g_mobiledata,
-                label: AppStrings.signInWithGoogle,
-                backgroundColor: Colors.white,
-                foregroundColor: Colors.black87,
-                borderColor: AppColors.border,
-              ),
+              // Google Sign In — use SDK button on web, custom button on mobile
+              if (kIsWeb)
+                web.renderButton()
+              else
+                _SocialLoginButton(
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          ref.read(authProvider.notifier).signInWithGoogle();
+                        },
+                  icon: Icons.g_mobiledata,
+                  label: AppStrings.signInWithGoogle,
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black87,
+                  borderColor: AppColors.border,
+                ),
               const SizedBox(height: AppSizes.md),
 
               // Apple Sign In (iOS only, not on web)

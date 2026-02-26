@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -13,10 +15,15 @@ part 'auth_notifier.g.dart';
 @Riverpod(keepAlive: true)
 class AuthNotifier extends _$AuthNotifier {
   late final AuthRepository _authRepository;
+  StreamSubscription<GoogleSignInAuthenticationEvent>? _authEventsSub;
+  bool _googleInitialized = false;
 
   @override
   AuthState build() {
     _authRepository = ref.watch(authRepositoryProvider);
+    ref.onDispose(() {
+      _authEventsSub?.cancel();
+    });
     // Check auth status on initialization
     _checkAuthStatus();
     return const AuthState.initial();
@@ -56,20 +63,88 @@ class AuthNotifier extends _$AuthNotifier {
     }
   }
 
-  /// Sign in with Google
+  /// Initialize Google Sign-In and listen to auth events (needed for web).
+  /// Call this from the login screen's initState.
+  Future<void> initializeGoogleSignIn() async {
+    if (_googleInitialized) return;
+    _googleInitialized = true;
+
+    final googleSignIn = GoogleSignIn.instance;
+    await googleSignIn.initialize(
+      clientId: kIsWeb ? AuthConfig.googleWebClientId : null,
+      serverClientId: kIsWeb ? null : AuthConfig.googleWebClientId,
+    );
+
+    // Listen to auth events (fired by renderButton on web)
+    _authEventsSub?.cancel();
+    _authEventsSub = googleSignIn.authenticationEvents.listen(
+      _handleGoogleAuthEvent,
+      onError: _handleGoogleAuthError,
+    );
+
+    // Try silent sign-in if user was previously authenticated
+    googleSignIn.attemptLightweightAuthentication();
+  }
+
+  Future<void> _handleGoogleAuthEvent(
+    GoogleSignInAuthenticationEvent event,
+  ) async {
+    switch (event) {
+      case GoogleSignInAuthenticationEventSignIn():
+        await _processGoogleAccount(event.user);
+      case GoogleSignInAuthenticationEventSignOut():
+        break;
+    }
+  }
+
+  void _handleGoogleAuthError(Object error) {
+    if (error is GoogleSignInException &&
+        error.code == GoogleSignInExceptionCode.canceled) {
+      state = const AuthState.unauthenticated();
+      return;
+    }
+    state = AuthState.error('Error al iniciar sesión con Google: $error');
+  }
+
+  /// Process a GoogleSignInAccount (shared by both mobile authenticate and web events)
+  Future<void> _processGoogleAccount(GoogleSignInAccount account) async {
+    state = const AuthState.loading();
+
+    try {
+      final auth = account.authentication;
+      final idToken = auth.idToken;
+
+      debugPrint('Google auth - idToken: ${idToken != null ? "present" : "null"}');
+
+      if (idToken == null) {
+        state = const AuthState.error('No se pudo obtener el token de Google');
+        return;
+      }
+
+      await _authRepository.signInWithGoogle(idToken: idToken);
+      // Fetch full user data with households
+      final user = await _authRepository.getCurrentUser();
+      _setCurrentHouseholdFromUser(user);
+      state = AuthState.authenticated(user);
+    } on AppException catch (e) {
+      state = AuthState.error(e.message);
+    } catch (e) {
+      state = AuthState.error('Error al iniciar sesión con Google: $e');
+    }
+  }
+
+  /// Sign in with Google (mobile only — on web, renderButton triggers auth events)
   Future<void> signInWithGoogle() async {
     state = const AuthState.loading();
 
     try {
       final googleSignIn = GoogleSignIn.instance;
 
-      // Initialize with appropriate client IDs
-      await googleSignIn.initialize(
-        clientId: kIsWeb ? AuthConfig.googleWebClientId : null,
-        serverClientId: kIsWeb ? null : AuthConfig.googleWebClientId,
-      );
+      if (!_googleInitialized) {
+        await initializeGoogleSignIn();
+      }
 
-      // Authenticate (replaces signIn() in v7)
+      // authenticate() only works on mobile, not web
       final GoogleSignInAccount account;
       try {
         account = await googleSignIn.authenticate(
@@ -83,23 +158,7 @@ class AuthNotifier extends _$AuthNotifier {
         rethrow;
       }
 
-      final auth = account.authentication;
-      final idToken = auth.idToken;
-
-      debugPrint('Google auth - idToken: ${idToken != null ? "present" : "null"}');
-
-      if (idToken == null) {
-        state = const AuthState.error('No se pudo obtener el token de Google');
-        return;
-      }
-
-      await _authRepository.signInWithGoogle(
-        idToken: idToken,
-      );
-      // Fetch full user data with households
-      final user = await _authRepository.getCurrentUser();
-      _setCurrentHouseholdFromUser(user);
-      state = AuthState.authenticated(user);
+      await _processGoogleAccount(account);
     } on AppException catch (e) {
       state = AuthState.error(e.message);
     } catch (e) {
@@ -151,6 +210,18 @@ class AuthNotifier extends _$AuthNotifier {
     } catch (e) {
       debugPrint('Error refreshing user: $e');
       // Don't change state on error, keep current auth state
+    }
+  }
+
+  /// Update the authenticated user's households list locally (no API call).
+  /// Used after create/delete/join/leave household to synchronously update
+  /// the router's view of whether the user has a household.
+  void setUserHouseholds(List<HouseholdMembershipModel> households) {
+    final currentState = state;
+    if (currentState is AuthStateAuthenticated) {
+      state = AuthState.authenticated(
+        currentState.user.copyWith(households: households),
+      );
     }
   }
 }

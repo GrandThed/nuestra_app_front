@@ -8,6 +8,7 @@ import 'package:nuestra_app/features/chat/data/models/chat_message_model.dart';
 import 'package:nuestra_app/features/chat/data/repositories/chat_repository.dart';
 import 'package:nuestra_app/features/chat/data/services/chat_tool_executor.dart';
 import 'package:nuestra_app/features/chat/presentation/providers/chat_state.dart';
+import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
 
 part 'chat_notifier.g.dart';
 
@@ -173,11 +174,17 @@ class ChatNotifier extends _$ChatNotifier {
   Future<List<Map<String, dynamic>>> _executeQueryRequests(
     List<ChatToolCallModel> requests,
   ) async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null) return [];
+
     final results = <Map<String, dynamic>>[];
 
     for (final request in requests) {
       try {
-        final result = await _toolExecutor.executeQuery(request);
+        final result = await _toolExecutor.executeQuery(
+          request,
+          householdId: householdId,
+        );
         results.add({
           'tool': request.tool,
           'result': result,
@@ -207,6 +214,71 @@ class ChatNotifier extends _$ChatNotifier {
       isSending: false,
       isGatheringData: false,
     );
+  }
+
+  /// Execute a single action tool call (triggered by user confirmation).
+  /// [messageId] and [toolIndex] identify which tool call to execute.
+  Future<void> executeToolCall(String messageId, int toolIndex) async {
+    final key = '${messageId}_$toolIndex';
+
+    // Find the message and tool call
+    final message = state.messages.where((m) => m.id == messageId).firstOrNull;
+    if (message == null || toolIndex >= message.toolCalls.length) {
+      print('[ChatNotifier] executeToolCall FAILED: message=$messageId not found or toolIndex=$toolIndex out of range. Messages: ${state.messages.map((m) => m.id).toList()}');
+      state = state.copyWith(
+        toolExecutionStatuses: {...state.toolExecutionStatuses, key: ToolExecutionStatus.error},
+        toolExecutionResults: {...state.toolExecutionResults, key: 'No se encontró la acción'},
+      );
+      return;
+    }
+
+    final toolCall = message.toolCalls[toolIndex];
+
+    // Get householdId
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null) {
+      print('[ChatNotifier] executeToolCall FAILED: householdId is null');
+      state = state.copyWith(
+        toolExecutionStatuses: {...state.toolExecutionStatuses, key: ToolExecutionStatus.error},
+        toolExecutionResults: {...state.toolExecutionResults, key: 'Hogar no disponible'},
+      );
+      return;
+    }
+
+    // Mark as executing
+    state = state.copyWith(
+      toolExecutionStatuses: {
+        ...state.toolExecutionStatuses,
+        key: ToolExecutionStatus.executing,
+      },
+    );
+
+    try {
+      final result = await _toolExecutor.executeAction(toolCall, householdId: householdId);
+      state = state.copyWith(
+        toolExecutionStatuses: {
+          ...state.toolExecutionStatuses,
+          key: result.isSuccess
+              ? ToolExecutionStatus.success
+              : ToolExecutionStatus.error,
+        },
+        toolExecutionResults: {
+          ...state.toolExecutionResults,
+          key: result.message,
+        },
+      );
+    } catch (e) {
+      state = state.copyWith(
+        toolExecutionStatuses: {
+          ...state.toolExecutionStatuses,
+          key: ToolExecutionStatus.error,
+        },
+        toolExecutionResults: {
+          ...state.toolExecutionResults,
+          key: 'Error inesperado: $e',
+        },
+      );
+    }
   }
 
   /// Extract suggestions from the last assistant message in history

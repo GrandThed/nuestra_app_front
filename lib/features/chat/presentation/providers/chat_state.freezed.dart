@@ -14,7 +14,9 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatState {
 
- List<ChatMessageModel> get messages; bool get isSending; bool get isGatheringData; List<String> get suggestions;
+ List<ChatMessageModel> get messages; bool get isSending; bool get isGatheringData; List<String> get suggestions;/// Tracks execution status per tool call: key = "messageId_toolIndex"
+ Map<String, ToolExecutionStatus> get toolExecutionStatuses;/// Stores result messages per tool call: key = "messageId_toolIndex"
+ Map<String, String> get toolExecutionResults;
 /// Create a copy of ChatState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +27,16 @@ $ChatStateCopyWith<ChatState> get copyWith => _$ChatStateCopyWithImpl<ChatState>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatState&&const DeepCollectionEquality().equals(other.messages, messages)&&(identical(other.isSending, isSending) || other.isSending == isSending)&&(identical(other.isGatheringData, isGatheringData) || other.isGatheringData == isGatheringData)&&const DeepCollectionEquality().equals(other.suggestions, suggestions));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatState&&const DeepCollectionEquality().equals(other.messages, messages)&&(identical(other.isSending, isSending) || other.isSending == isSending)&&(identical(other.isGatheringData, isGatheringData) || other.isGatheringData == isGatheringData)&&const DeepCollectionEquality().equals(other.suggestions, suggestions)&&const DeepCollectionEquality().equals(other.toolExecutionStatuses, toolExecutionStatuses)&&const DeepCollectionEquality().equals(other.toolExecutionResults, toolExecutionResults));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(messages),isSending,isGatheringData,const DeepCollectionEquality().hash(suggestions));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(messages),isSending,isGatheringData,const DeepCollectionEquality().hash(suggestions),const DeepCollectionEquality().hash(toolExecutionStatuses),const DeepCollectionEquality().hash(toolExecutionResults));
 
 @override
 String toString() {
-  return 'ChatState(messages: $messages, isSending: $isSending, isGatheringData: $isGatheringData, suggestions: $suggestions)';
+  return 'ChatState(messages: $messages, isSending: $isSending, isGatheringData: $isGatheringData, suggestions: $suggestions, toolExecutionStatuses: $toolExecutionStatuses, toolExecutionResults: $toolExecutionResults)';
 }
 
 
@@ -45,7 +47,7 @@ abstract mixin class $ChatStateCopyWith<$Res>  {
   factory $ChatStateCopyWith(ChatState value, $Res Function(ChatState) _then) = _$ChatStateCopyWithImpl;
 @useResult
 $Res call({
- List<ChatMessageModel> messages, bool isSending, bool isGatheringData, List<String> suggestions
+ List<ChatMessageModel> messages, bool isSending, bool isGatheringData, List<String> suggestions, Map<String, ToolExecutionStatus> toolExecutionStatuses, Map<String, String> toolExecutionResults
 });
 
 
@@ -62,13 +64,15 @@ class _$ChatStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? messages = null,Object? isSending = null,Object? isGatheringData = null,Object? suggestions = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? messages = null,Object? isSending = null,Object? isGatheringData = null,Object? suggestions = null,Object? toolExecutionStatuses = null,Object? toolExecutionResults = null,}) {
   return _then(_self.copyWith(
 messages: null == messages ? _self.messages : messages // ignore: cast_nullable_to_non_nullable
 as List<ChatMessageModel>,isSending: null == isSending ? _self.isSending : isSending // ignore: cast_nullable_to_non_nullable
 as bool,isGatheringData: null == isGatheringData ? _self.isGatheringData : isGatheringData // ignore: cast_nullable_to_non_nullable
 as bool,suggestions: null == suggestions ? _self.suggestions : suggestions // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,toolExecutionStatuses: null == toolExecutionStatuses ? _self.toolExecutionStatuses : toolExecutionStatuses // ignore: cast_nullable_to_non_nullable
+as Map<String, ToolExecutionStatus>,toolExecutionResults: null == toolExecutionResults ? _self.toolExecutionResults : toolExecutionResults // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,
   ));
 }
 
@@ -150,10 +154,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<ChatMessageModel> messages,  bool isSending,  bool isGatheringData,  List<String> suggestions)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<ChatMessageModel> messages,  bool isSending,  bool isGatheringData,  List<String> suggestions,  Map<String, ToolExecutionStatus> toolExecutionStatuses,  Map<String, String> toolExecutionResults)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatState() when $default != null:
-return $default(_that.messages,_that.isSending,_that.isGatheringData,_that.suggestions);case _:
+return $default(_that.messages,_that.isSending,_that.isGatheringData,_that.suggestions,_that.toolExecutionStatuses,_that.toolExecutionResults);case _:
   return orElse();
 
 }
@@ -171,10 +175,10 @@ return $default(_that.messages,_that.isSending,_that.isGatheringData,_that.sugge
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<ChatMessageModel> messages,  bool isSending,  bool isGatheringData,  List<String> suggestions)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<ChatMessageModel> messages,  bool isSending,  bool isGatheringData,  List<String> suggestions,  Map<String, ToolExecutionStatus> toolExecutionStatuses,  Map<String, String> toolExecutionResults)  $default,) {final _that = this;
 switch (_that) {
 case _ChatState():
-return $default(_that.messages,_that.isSending,_that.isGatheringData,_that.suggestions);}
+return $default(_that.messages,_that.isSending,_that.isGatheringData,_that.suggestions,_that.toolExecutionStatuses,_that.toolExecutionResults);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -188,10 +192,10 @@ return $default(_that.messages,_that.isSending,_that.isGatheringData,_that.sugge
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<ChatMessageModel> messages,  bool isSending,  bool isGatheringData,  List<String> suggestions)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<ChatMessageModel> messages,  bool isSending,  bool isGatheringData,  List<String> suggestions,  Map<String, ToolExecutionStatus> toolExecutionStatuses,  Map<String, String> toolExecutionResults)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatState() when $default != null:
-return $default(_that.messages,_that.isSending,_that.isGatheringData,_that.suggestions);case _:
+return $default(_that.messages,_that.isSending,_that.isGatheringData,_that.suggestions,_that.toolExecutionStatuses,_that.toolExecutionResults);case _:
   return null;
 
 }
@@ -203,7 +207,7 @@ return $default(_that.messages,_that.isSending,_that.isGatheringData,_that.sugge
 
 
 class _ChatState implements ChatState {
-  const _ChatState({final  List<ChatMessageModel> messages = const [], this.isSending = false, this.isGatheringData = false, final  List<String> suggestions = const []}): _messages = messages,_suggestions = suggestions;
+  const _ChatState({final  List<ChatMessageModel> messages = const [], this.isSending = false, this.isGatheringData = false, final  List<String> suggestions = const [], final  Map<String, ToolExecutionStatus> toolExecutionStatuses = const {}, final  Map<String, String> toolExecutionResults = const {}}): _messages = messages,_suggestions = suggestions,_toolExecutionStatuses = toolExecutionStatuses,_toolExecutionResults = toolExecutionResults;
   
 
  final  List<ChatMessageModel> _messages;
@@ -222,6 +226,24 @@ class _ChatState implements ChatState {
   return EqualUnmodifiableListView(_suggestions);
 }
 
+/// Tracks execution status per tool call: key = "messageId_toolIndex"
+ final  Map<String, ToolExecutionStatus> _toolExecutionStatuses;
+/// Tracks execution status per tool call: key = "messageId_toolIndex"
+@override@JsonKey() Map<String, ToolExecutionStatus> get toolExecutionStatuses {
+  if (_toolExecutionStatuses is EqualUnmodifiableMapView) return _toolExecutionStatuses;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_toolExecutionStatuses);
+}
+
+/// Stores result messages per tool call: key = "messageId_toolIndex"
+ final  Map<String, String> _toolExecutionResults;
+/// Stores result messages per tool call: key = "messageId_toolIndex"
+@override@JsonKey() Map<String, String> get toolExecutionResults {
+  if (_toolExecutionResults is EqualUnmodifiableMapView) return _toolExecutionResults;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_toolExecutionResults);
+}
+
 
 /// Create a copy of ChatState
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +255,16 @@ _$ChatStateCopyWith<_ChatState> get copyWith => __$ChatStateCopyWithImpl<_ChatSt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatState&&const DeepCollectionEquality().equals(other._messages, _messages)&&(identical(other.isSending, isSending) || other.isSending == isSending)&&(identical(other.isGatheringData, isGatheringData) || other.isGatheringData == isGatheringData)&&const DeepCollectionEquality().equals(other._suggestions, _suggestions));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatState&&const DeepCollectionEquality().equals(other._messages, _messages)&&(identical(other.isSending, isSending) || other.isSending == isSending)&&(identical(other.isGatheringData, isGatheringData) || other.isGatheringData == isGatheringData)&&const DeepCollectionEquality().equals(other._suggestions, _suggestions)&&const DeepCollectionEquality().equals(other._toolExecutionStatuses, _toolExecutionStatuses)&&const DeepCollectionEquality().equals(other._toolExecutionResults, _toolExecutionResults));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_messages),isSending,isGatheringData,const DeepCollectionEquality().hash(_suggestions));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_messages),isSending,isGatheringData,const DeepCollectionEquality().hash(_suggestions),const DeepCollectionEquality().hash(_toolExecutionStatuses),const DeepCollectionEquality().hash(_toolExecutionResults));
 
 @override
 String toString() {
-  return 'ChatState(messages: $messages, isSending: $isSending, isGatheringData: $isGatheringData, suggestions: $suggestions)';
+  return 'ChatState(messages: $messages, isSending: $isSending, isGatheringData: $isGatheringData, suggestions: $suggestions, toolExecutionStatuses: $toolExecutionStatuses, toolExecutionResults: $toolExecutionResults)';
 }
 
 
@@ -253,7 +275,7 @@ abstract mixin class _$ChatStateCopyWith<$Res> implements $ChatStateCopyWith<$Re
   factory _$ChatStateCopyWith(_ChatState value, $Res Function(_ChatState) _then) = __$ChatStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<ChatMessageModel> messages, bool isSending, bool isGatheringData, List<String> suggestions
+ List<ChatMessageModel> messages, bool isSending, bool isGatheringData, List<String> suggestions, Map<String, ToolExecutionStatus> toolExecutionStatuses, Map<String, String> toolExecutionResults
 });
 
 
@@ -270,13 +292,15 @@ class __$ChatStateCopyWithImpl<$Res>
 
 /// Create a copy of ChatState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? messages = null,Object? isSending = null,Object? isGatheringData = null,Object? suggestions = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? messages = null,Object? isSending = null,Object? isGatheringData = null,Object? suggestions = null,Object? toolExecutionStatuses = null,Object? toolExecutionResults = null,}) {
   return _then(_ChatState(
 messages: null == messages ? _self._messages : messages // ignore: cast_nullable_to_non_nullable
 as List<ChatMessageModel>,isSending: null == isSending ? _self.isSending : isSending // ignore: cast_nullable_to_non_nullable
 as bool,isGatheringData: null == isGatheringData ? _self.isGatheringData : isGatheringData // ignore: cast_nullable_to_non_nullable
 as bool,suggestions: null == suggestions ? _self._suggestions : suggestions // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,toolExecutionStatuses: null == toolExecutionStatuses ? _self._toolExecutionStatuses : toolExecutionStatuses // ignore: cast_nullable_to_non_nullable
+as Map<String, ToolExecutionStatus>,toolExecutionResults: null == toolExecutionResults ? _self._toolExecutionResults : toolExecutionResults // ignore: cast_nullable_to_non_nullable
+as Map<String, String>,
   ));
 }
 

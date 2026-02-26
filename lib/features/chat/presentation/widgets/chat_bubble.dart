@@ -2,12 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import 'package:nuestra_app/features/chat/data/models/chat_message_model.dart';
+import 'package:nuestra_app/features/chat/presentation/providers/chat_state.dart';
 import 'package:nuestra_app/features/chat/presentation/widgets/tool_call_card.dart';
+import 'package:nuestra_app/features/chat/presentation/widgets/tool_call_detail_sheet.dart';
 
 class ChatBubble extends StatelessWidget {
   final ChatMessageModel message;
+  final Map<String, ToolExecutionStatus> toolStatuses;
+  final Map<String, String> toolResults;
+  final void Function(String messageId, int toolIndex)? onExecuteToolCall;
 
-  const ChatBubble({super.key, required this.message});
+  const ChatBubble({
+    super.key,
+    required this.message,
+    this.toolStatuses = const {},
+    this.toolResults = const {},
+    this.onExecuteToolCall,
+  });
 
   bool get _isUser => message.role == 'user';
 
@@ -93,9 +104,21 @@ class ChatBubble extends StatelessWidget {
               // Tool call cards (assistant only)
               if (!_isUser && message.toolCalls.isNotEmpty) ...[
                 const SizedBox(height: 4),
-                ...message.toolCalls.map(
-                  (tc) => ToolCallCard(toolCall: tc),
-                ),
+                ...message.toolCalls.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final tc = entry.value;
+                  final key = '${message.id}_$index';
+                  final status =
+                      toolStatuses[key] ?? ToolExecutionStatus.pending;
+                  final result = toolResults[key];
+
+                  return ToolCallCard(
+                    toolCall: tc,
+                    status: status,
+                    resultMessage: result,
+                    onTap: () => _showDetailSheet(context, tc, index),
+                  );
+                }),
                 const SizedBox(height: 2),
                 Align(
                   alignment: Alignment.bottomRight,
@@ -109,6 +132,24 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
+  void _showDetailSheet(
+      BuildContext context, ChatToolCallModel toolCall, int index) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(ctx).size.height * 0.85,
+        ),
+        child: ToolCallDetailSheet(
+          toolCall: toolCall,
+          onConfirm: () => onExecuteToolCall?.call(message.id, index),
+        ),
+      ),
+    );
+  }
+
   Widget _buildTextWithTime(BuildContext context, String time) {
     final colorScheme = Theme.of(context).colorScheme;
     final textColor =
@@ -117,8 +158,6 @@ class ChatBubble extends StatelessWidget {
         ? colorScheme.onPrimary.withValues(alpha: 0.6)
         : colorScheme.onSurfaceVariant.withValues(alpha: 0.6);
 
-    // Use a Wrap so the timestamp sits at the end of the last line
-    // when there's room, or drops to the next line when text is long.
     return Wrap(
       alignment: WrapAlignment.end,
       crossAxisAlignment: WrapCrossAlignment.end,
