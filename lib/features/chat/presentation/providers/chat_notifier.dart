@@ -8,7 +8,14 @@ import 'package:nuestra_app/features/chat/data/models/chat_message_model.dart';
 import 'package:nuestra_app/features/chat/data/repositories/chat_repository.dart';
 import 'package:nuestra_app/features/chat/data/services/chat_tool_executor.dart';
 import 'package:nuestra_app/features/chat/presentation/providers/chat_state.dart';
+import 'package:nuestra_app/features/boards/presentation/providers/boards_notifier.dart';
+import 'package:nuestra_app/features/calendar/presentation/providers/calendar_notifier.dart';
+import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
+import 'package:nuestra_app/features/menus/presentation/providers/menus_notifier.dart';
+import 'package:nuestra_app/features/menus/presentation/providers/menus_state.dart';
+import 'package:nuestra_app/features/recipes/presentation/providers/recipes_notifier.dart';
+import 'package:nuestra_app/features/wishlists/presentation/providers/wishlists_notifier.dart';
 
 part 'chat_notifier.g.dart';
 
@@ -267,6 +274,11 @@ class ChatNotifier extends _$ChatNotifier {
           key: result.message,
         },
       );
+
+      // Refresh the related feature provider so UI updates immediately
+      if (result.isSuccess) {
+        _refreshRelatedProvider(toolCall.tool);
+      }
     } catch (e) {
       state = state.copyWith(
         toolExecutionStatuses: {
@@ -278,6 +290,41 @@ class ChatNotifier extends _$ChatNotifier {
           key: 'Error inesperado: $e',
         },
       );
+    }
+  }
+
+  /// Refresh the feature provider affected by a tool action so the UI
+  /// reflects the change without requiring a manual reload.
+  void _refreshRelatedProvider(String toolName) {
+    switch (toolName) {
+      case 'create_recipe':
+        ref.read(recipesProvider.notifier).loadRecipes();
+        break;
+      case 'add_wishlist_items':
+        ref.read(wishlistsProvider.notifier).loadWishlists();
+        break;
+      case 'create_expense':
+        ref.read(expensesProvider.notifier).loadExpenses();
+        ref.read(expenseSummaryProvider.notifier).loadSummary();
+        break;
+      case 'create_calendar_event':
+        ref.read(calendarProvider.notifier).loadEvents();
+        break;
+      case 'add_board_link':
+        ref.read(boardsProvider.notifier).loadBoards();
+        break;
+      case 'add_menu_item':
+      case 'generate_shopping_list':
+        ref.read(menuPlansProvider.notifier).loadMenuPlans();
+        // Reload upcoming meals for the currently loaded week
+        final mealsState = ref.read(upcomingMealsProvider);
+        if (mealsState is UpcomingMealsStateLoaded) {
+          ref.read(upcomingMealsProvider.notifier).loadWeek(mealsState.weekStart);
+        }
+        if (toolName == 'generate_shopping_list') {
+          ref.read(wishlistsProvider.notifier).loadWishlists();
+        }
+        break;
     }
   }
 

@@ -5,10 +5,21 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:nuestra_app/core/constants/auth_config.dart';
 import 'package:nuestra_app/core/errors/exceptions.dart';
+import 'package:nuestra_app/core/network/api_interceptor.dart';
+import 'package:nuestra_app/features/activity/presentation/providers/activity_notifier.dart';
 import 'package:nuestra_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 import 'package:nuestra_app/features/auth/data/models/user_model.dart';
+import 'package:nuestra_app/features/boards/presentation/providers/boards_notifier.dart';
+import 'package:nuestra_app/features/calendar/presentation/providers/calendar_notifier.dart';
+import 'package:nuestra_app/features/chat/presentation/providers/chat_notifier.dart';
+import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
+import 'package:nuestra_app/features/home/presentation/providers/home_card_order_notifier.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
+import 'package:nuestra_app/features/menus/presentation/providers/menus_notifier.dart';
+import 'package:nuestra_app/features/recipes/presentation/providers/recipes_notifier.dart';
+import 'package:nuestra_app/features/tasks/presentation/providers/tasks_notifier.dart';
+import 'package:nuestra_app/features/wishlists/presentation/providers/wishlists_notifier.dart';
 
 part 'auth_notifier.g.dart';
 
@@ -32,19 +43,17 @@ class AuthNotifier extends _$AuthNotifier {
   /// Check if user is already authenticated
   Future<void> _checkAuthStatus() async {
     try {
-      final hasToken = await _authRepository.hasStoredToken();
-      if (hasToken) {
-        // Restore token to provider
-        final token = await _authRepository.getStoredToken();
-        if (token != null) {
-          await _authRepository.storeToken(token);
-          // Verify token is still valid
-          final user = await _authRepository.getCurrentUser();
-          _setCurrentHouseholdFromUser(user);
-          state = AuthState.authenticated(user);
-        } else {
-          state = const AuthState.unauthenticated();
-        }
+      final token = await _authRepository.getStoredToken();
+      if (token != null && token.isNotEmpty) {
+        // Restore token to the in-memory provider immediately so the router
+        // knows we are logged in and does NOT redirect to /login (which would
+        // trigger initializeGoogleSignIn and a redundant OAuth prompt).
+        await _authRepository.storeToken(token);
+
+        // Verify token is still valid
+        final user = await _authRepository.getCurrentUser();
+        _setCurrentHouseholdFromUser(user);
+        state = AuthState.authenticated(user);
       } else {
         state = const AuthState.unauthenticated();
       }
@@ -82,8 +91,12 @@ class AuthNotifier extends _$AuthNotifier {
       onError: _handleGoogleAuthError,
     );
 
-    // Try silent sign-in if user was previously authenticated
-    googleSignIn.attemptLightweightAuthentication();
+    // Only attempt silent sign-in if we don't already have a valid session.
+    // Otherwise this triggers a redundant Google auth flow on every app restart.
+    final hasToken = await _authRepository.hasStoredToken();
+    if (!hasToken) {
+      googleSignIn.attemptLightweightAuthentication();
+    }
   }
 
   Future<void> _handleGoogleAuthEvent(
@@ -188,13 +201,45 @@ class AuthNotifier extends _$AuthNotifier {
       await GoogleSignIn.instance.signOut();
 
       await _authRepository.signOut();
-      ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(null);
-      state = const AuthState.unauthenticated();
     } catch (e) {
       debugPrint('Error signing out: $e');
-      ref.read(currentHouseholdIdProvider.notifier).setHouseholdId(null);
-      state = const AuthState.unauthenticated();
     }
+
+    // Clear all cached data providers
+    _invalidateAllProviders();
+    state = const AuthState.unauthenticated();
+  }
+
+  /// Invalidate all keepAlive providers so no stale data remains after logout
+  void _invalidateAllProviders() {
+    ref.invalidate(currentHouseholdIdProvider);
+    ref.invalidate(householdProvider);
+    ref.invalidate(activeInviteProvider);
+    ref.invalidate(authTokenProvider);
+    ref.invalidate(boardsProvider);
+    ref.invalidate(boardDetailProvider);
+    ref.invalidate(tagsProvider);
+    ref.invalidate(recipesProvider);
+    ref.invalidate(recipeDetailProvider);
+    ref.invalidate(seasonalVegetablesProvider);
+    ref.invalidate(menuPlansProvider);
+    ref.invalidate(upcomingMealsProvider);
+    ref.invalidate(menuPlanDetailProvider);
+    ref.invalidate(currentMenuPlanIdProvider);
+    ref.invalidate(mealHistoryProvider);
+    ref.invalidate(wishlistsProvider);
+    ref.invalidate(purchaseHistoryProvider);
+    ref.invalidate(expensesProvider);
+    ref.invalidate(expenseSummaryProvider);
+    ref.invalidate(recurringExpensesProvider);
+    ref.invalidate(budgetProvider);
+    ref.invalidate(expenseTrendsProvider);
+    ref.invalidate(calendarProvider);
+    ref.invalidate(timelineProvider);
+    ref.invalidate(chatProvider);
+    ref.invalidate(tasksProvider);
+    ref.invalidate(activityFeedProvider);
+    ref.invalidate(homeCardOrderProvider);
   }
 
   /// Clear error and go back to unauthenticated

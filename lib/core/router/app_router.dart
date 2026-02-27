@@ -244,6 +244,12 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const RecipeFormScreen(),
       ),
 
+      // Seasonal vegetables (no shell) - must be before /recipes/:id
+      GoRoute(
+        path: AppRoutes.seasonalVegetables,
+        builder: (context, state) => const SeasonalVegetablesScreen(),
+      ),
+
       // Recipe edit (no shell)
       GoRoute(
         path: AppRoutes.recipeEdit,
@@ -370,12 +376,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.settings,
         builder: (context, state) => const SettingsScreen(),
-      ),
-
-      // Seasonal vegetables (no shell) - must be before /recipes/:id
-      GoRoute(
-        path: AppRoutes.seasonalVegetables,
-        builder: (context, state) => const SeasonalVegetablesScreen(),
       ),
 
       // Cooking mode (no shell) - must be before /recipes/:id
