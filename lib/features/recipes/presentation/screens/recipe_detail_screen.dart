@@ -109,6 +109,7 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
               },
             ),
             IconButton(
+              tooltip: 'Editar',
               icon: const Icon(Icons.edit),
               onPressed: () => context.push('/recipes/${recipe.id}/edit'),
             ),
@@ -206,12 +207,12 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 // Ingredients section
                 if (recipe.ingredients != null && recipe.ingredients!.isNotEmpty) ...[
                   const SizedBox(height: AppSizes.xl),
-                  const Text(
+                  Text(
                     'Ingredientes',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: AppSizes.md),
@@ -223,12 +224,12 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                 // Instructions section
                 if (recipe.instructions != null && recipe.instructions!.isNotEmpty) ...[
                   const SizedBox(height: AppSizes.xl),
-                  const Text(
+                  Text(
                     'Instrucciones',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                   const SizedBox(height: AppSizes.md),
@@ -378,18 +379,18 @@ class _RatingDisplay extends StatelessWidget {
         const SizedBox(width: 8),
         Text(
           averageRating.toStringAsFixed(1),
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(width: 4),
         Text(
           '($ratingsCount valoraciones)',
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 13,
-            color: AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
           ),
         ),
       ],
@@ -486,8 +487,8 @@ class _InstructionStep extends StatelessWidget {
           Expanded(
             child: Text(
               instruction,
-              style: const TextStyle(
-                color: AppColors.textPrimary,
+              style: TextStyle(
+                color: colorScheme.onSurface,
                 fontSize: 15,
                 height: 1.5,
               ),

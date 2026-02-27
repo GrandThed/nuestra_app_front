@@ -413,6 +413,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                           onPressed: _saveIngredientEdit,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
+                            minimumSize: Size.zero,
                           ),
                           child: const Text('Guardar'),
                         ),
@@ -507,15 +508,10 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                   fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
                     // Store reference to Autocomplete's focus node
                     _ingredientUnitFocus = focusNode;
-                    // Sync with our controller
+                    // Sync initial value only (don't add listeners - causes disposed controller errors)
                     if (controller.text != _ingredientUnitController.text) {
                       controller.text = _ingredientUnitController.text;
                     }
-                    _ingredientUnitController.addListener(() {
-                      if (controller.text != _ingredientUnitController.text) {
-                        controller.text = _ingredientUnitController.text;
-                      }
-                    });
                     return TextField(
                       controller: controller,
                       focusNode: focusNode,
@@ -526,6 +522,9 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                         border: OutlineInputBorder(),
                       ),
                       textInputAction: TextInputAction.done,
+                      onChanged: (value) {
+                        _ingredientUnitController.text = value;
+                      },
                       onSubmitted: (_) {
                         _ingredientUnitController.text = controller.text;
                         onFieldSubmitted();
@@ -653,6 +652,7 @@ class _RecipeFormScreenState extends ConsumerState<RecipeFormScreen> {
                           onPressed: _saveInstructionEdit,
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
+                            minimumSize: Size.zero,
                           ),
                           child: const Text('Guardar'),
                         ),
