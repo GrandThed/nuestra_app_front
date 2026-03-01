@@ -114,6 +114,27 @@ class AppRoutes {
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 final shellNavigatorKey = GlobalKey<NavigatorState>();
 
+/// Custom back button dispatcher that navigates to home
+/// instead of closing the app when on a non-home shell route.
+class ShellBackButtonDispatcher extends RootBackButtonDispatcher {
+  late GoRouter _router;
+
+  void attach(GoRouter router) => _router = router;
+
+  @override
+  Future<bool> didPopRoute() async {
+    final path = _router.routeInformationProvider.value.uri.path;
+    if (path != AppRoutes.home) {
+      _router.go(AppRoutes.home);
+      return true;
+    }
+    return super.didPopRoute();
+  }
+}
+
+/// Singleton dispatcher shared between router provider and App widget.
+final shellBackButtonDispatcher = ShellBackButtonDispatcher();
+
 /// Listenable that notifies GoRouter when auth state changes or shared content arrives
 class AuthChangeNotifier extends ChangeNotifier {
   AuthChangeNotifier(this._ref) {
@@ -143,7 +164,7 @@ final authChangeNotifierProvider = Provider<AuthChangeNotifier>((ref) {
 final routerProvider = Provider<GoRouter>((ref) {
   final authChangeNotifier = ref.watch(authChangeNotifierProvider);
 
-  return GoRouter(
+  final router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.home,
     debugLogDiagnostics: true,
@@ -512,4 +533,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
     ),
   );
+
+  shellBackButtonDispatcher.attach(router);
+  return router;
 });

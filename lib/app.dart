@@ -23,8 +23,11 @@ class App extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       themeMode: themeMode,
 
-      // Router
-      routerConfig: router,
+      // Router - use individual params so we can inject custom back button handling
+      routerDelegate: router.routerDelegate,
+      routeInformationParser: router.routeInformationParser,
+      routeInformationProvider: router.routeInformationProvider,
+      backButtonDispatcher: shellBackButtonDispatcher,
 
       // Localization
       locale: const Locale('es', 'AR'),

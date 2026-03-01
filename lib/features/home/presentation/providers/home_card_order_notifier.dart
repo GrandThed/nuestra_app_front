@@ -8,7 +8,7 @@ part 'home_card_order_notifier.g.dart';
 const _homeCardOrderKey = 'home_card_order';
 
 /// Default card order
-const defaultCardOrder = ['menu', 'tasks', 'shopping', 'expenses', 'events'];
+const defaultCardOrder = ['menu', 'recipes', 'tasks', 'shopping', 'expenses', 'events'];
 
 @Riverpod(keepAlive: true)
 class HomeCardOrderNotifier extends _$HomeCardOrderNotifier {

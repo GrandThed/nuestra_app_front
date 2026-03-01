@@ -38,9 +38,9 @@ class _BottomNavBar extends StatelessWidget {
           label: AppStrings.boards,
         ),
         NavigationDestination(
-          icon: Icon(Icons.restaurant_menu_outlined),
-          selectedIcon: Icon(Icons.restaurant_menu),
-          label: AppStrings.recipes,
+          icon: Icon(Icons.auto_awesome_outlined),
+          selectedIcon: Icon(Icons.auto_awesome),
+          label: AppStrings.assistant,
         ),
         NavigationDestination(
           icon: Icon(Icons.checklist_outlined),
@@ -52,21 +52,15 @@ class _BottomNavBar extends StatelessWidget {
           selectedIcon: Icon(Icons.account_balance_wallet),
           label: AppStrings.expenses,
         ),
-        NavigationDestination(
-          icon: Icon(Icons.auto_awesome_outlined),
-          selectedIcon: Icon(Icons.auto_awesome),
-          label: AppStrings.assistant,
-        ),
       ],
     );
   }
 
   int _getSelectedIndex(String location) {
     if (location.startsWith(AppRoutes.boards)) return 1;
-    if (location.startsWith(AppRoutes.recipes)) return 2;
+    if (location.startsWith(AppRoutes.chat)) return 2;
     if (location.startsWith(AppRoutes.wishlists)) return 3;
     if (location.startsWith(AppRoutes.expenses)) return 4;
-    if (location.startsWith(AppRoutes.chat)) return 5;
     return 0; // Home
   }
 
@@ -79,16 +73,13 @@ class _BottomNavBar extends StatelessWidget {
         context.go(AppRoutes.boards);
         break;
       case 2:
-        context.go(AppRoutes.recipes);
+        context.go(AppRoutes.chat);
         break;
       case 3:
         context.go(AppRoutes.wishlists);
         break;
       case 4:
         context.go(AppRoutes.expenses);
-        break;
-      case 5:
-        context.go(AppRoutes.chat);
         break;
     }
   }

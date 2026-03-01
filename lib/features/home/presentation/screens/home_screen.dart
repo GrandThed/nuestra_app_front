@@ -19,6 +19,8 @@ import 'package:nuestra_app/features/calendar/presentation/providers/calendar_no
 import 'package:nuestra_app/features/tasks/presentation/providers/tasks_notifier.dart';
 import 'package:nuestra_app/features/home/presentation/widgets/pending_tasks_card.dart';
 import 'package:nuestra_app/features/home/presentation/providers/home_card_order_notifier.dart';
+import 'package:nuestra_app/features/home/presentation/widgets/recipes_card.dart';
+import 'package:nuestra_app/features/recipes/presentation/providers/recipes_notifier.dart';
 
 /// Home dashboard screen
 class HomeScreen extends ConsumerStatefulWidget {
@@ -89,11 +91,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     // Load pending tasks
     ref.read(tasksProvider.notifier).loadTasksIfNeeded();
+
+    // Load recipes for the recipes card
+    ref.read(recipesProvider.notifier).loadRecipesIfNeeded();
   }
 
   Widget _buildCard(String cardId) {
     return switch (cardId) {
       'menu' => const TodaysMenuCard(),
+      'recipes' => const RecipesCard(),
       'tasks' => const PendingTasksCard(),
       'shopping' => const ShoppingListCard(),
       'expenses' => const ExpensesSummaryCard(),
@@ -226,6 +232,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ref.read(expensesProvider.notifier).loadExpenses(),
       ref.read(calendarProvider.notifier).loadEvents(),
       ref.read(tasksProvider.notifier).loadTasks(),
+      ref.read(recipesProvider.notifier).loadRecipes(),
     ]);
   }
 }
