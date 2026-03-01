@@ -80,4 +80,11 @@ class ChatRepository {
   Future<void> clearHistory() async {
     await _dioClient.delete<Map<String, dynamic>>(ApiConstants.chatHistory);
   }
+
+  /// Delete a message and all messages after it (backtrack)
+  Future<void> backtrackFrom(String messageId) async {
+    await _dioClient.delete<Map<String, dynamic>>(
+      '${ApiConstants.chatHistoryFrom}/$messageId',
+    );
+  }
 }

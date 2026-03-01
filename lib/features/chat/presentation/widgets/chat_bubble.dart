@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
 import 'package:nuestra_app/features/chat/data/models/chat_message_model.dart';
@@ -11,6 +13,7 @@ class ChatBubble extends StatelessWidget {
   final Map<String, ToolExecutionStatus> toolStatuses;
   final Map<String, String> toolResults;
   final void Function(String messageId, int toolIndex)? onExecuteToolCall;
+  final void Function(String messageId)? onBacktrack;
 
   const ChatBubble({
     super.key,
@@ -18,9 +21,88 @@ class ChatBubble extends StatelessWidget {
     this.toolStatuses = const {},
     this.toolResults = const {},
     this.onExecuteToolCall,
+    this.onBacktrack,
   });
 
   bool get _isUser => message.role == 'user';
+
+  void _showContextMenu(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final hasContent =
+        message.content != null && message.content!.trim().isNotEmpty;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (hasContent)
+              ListTile(
+                leading: const Icon(Icons.copy),
+                title: const Text('Copiar mensaje'),
+                onTap: () {
+                  Clipboard.setData(ClipboardData(text: message.content!));
+                  Navigator.pop(ctx);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Mensaje copiado'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+              ),
+            if (_isUser && onBacktrack != null)
+              ListTile(
+                leading: Icon(Icons.replay, color: colorScheme.error),
+                title: Text(
+                  'Volver a este punto',
+                  style: TextStyle(color: colorScheme.error),
+                ),
+                subtitle: const Text(
+                  'Elimina este mensaje y los siguientes',
+                  style: TextStyle(fontSize: 12),
+                ),
+                onTap: () {
+                  Navigator.pop(ctx);
+                  _confirmBacktrack(context);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _confirmBacktrack(BuildContext context) {
+    showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Volver a este punto'),
+        content: const Text(
+          '¿Querés eliminar este mensaje y todos los que vinieron después? '
+          'Vas a poder escribir un mensaje nuevo desde acá.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(
+              'Eliminar',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    ).then((confirmed) {
+      if (confirmed == true) {
+        onBacktrack?.call(message.id);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,95 +119,105 @@ class ChatBubble extends StatelessWidget {
       ),
       child: Align(
         alignment: _isUser ? Alignment.centerRight : Alignment.centerLeft,
-        child: Container(
-          constraints: BoxConstraints(maxWidth: screenWidth * 0.78),
-          padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
-          decoration: BoxDecoration(
-            color: _isUser
-                ? colorScheme.primary
-                : colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(12),
-              topRight: const Radius.circular(12),
-              bottomLeft: Radius.circular(_isUser ? 12 : 2),
-              bottomRight: Radius.circular(_isUser ? 2 : 12),
+        child: GestureDetector(
+          onLongPress: () => _showContextMenu(context),
+          child: Container(
+            constraints: BoxConstraints(maxWidth: screenWidth * 0.78),
+            padding: const EdgeInsets.fromLTRB(10, 8, 10, 6),
+            decoration: BoxDecoration(
+              color: _isUser
+                  ? colorScheme.primary
+                  : colorScheme.surfaceContainerHighest,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(12),
+                topRight: const Radius.circular(12),
+                bottomLeft: Radius.circular(_isUser ? 12 : 2),
+                bottomRight: Radius.circular(_isUser ? 2 : 12),
+              ),
             ),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image thumbnails
-              if (message.imageUrls.isNotEmpty) ...[
-                Wrap(
-                  spacing: 4,
-                  runSpacing: 4,
-                  children: message.imageUrls.map((url) {
-                    return ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: CachedNetworkImage(
-                        imageUrl: url,
-                        width: 160,
-                        height: 160,
-                        fit: BoxFit.cover,
-                        placeholder: (_, _) => Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Image thumbnails
+                if (message.imageUrls.isNotEmpty) ...[
+                  Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    children: message.imageUrls.map((url) {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child: CachedNetworkImage(
+                          imageUrl: url,
                           width: 160,
                           height: 160,
-                          color: colorScheme.surfaceContainerHighest,
-                          child: const Center(
-                            child: CircularProgressIndicator(strokeWidth: 2),
+                          fit: BoxFit.cover,
+                          placeholder: (_, _) => Container(
+                            width: 160,
+                            height: 160,
+                            color: colorScheme.surfaceContainerHighest,
+                            child: const Center(
+                              child:
+                                  CircularProgressIndicator(strokeWidth: 2),
+                            ),
+                          ),
+                          errorWidget: (_, _, _) => Container(
+                            width: 160,
+                            height: 160,
+                            color: colorScheme.surfaceContainerHighest,
+                            child:
+                                const Icon(Icons.broken_image, size: 32),
                           ),
                         ),
-                        errorWidget: (_, _, _) => Container(
-                          width: 160,
-                          height: 160,
-                          color: colorScheme.surfaceContainerHighest,
-                          child: const Icon(Icons.broken_image, size: 32),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
+                      );
+                    }).toList(),
+                  ),
+                  if (message.content != null &&
+                      message.content!.isNotEmpty)
+                    const SizedBox(height: 6),
+                ],
+
+                // Text + timestamp row
                 if (message.content != null && message.content!.isNotEmpty)
-                  const SizedBox(height: 6),
+                  _isUser
+                      ? _buildUserTextWithTime(context, time)
+                      : _buildAssistantMarkdownWithTime(context, time),
+
+                // If no text but has images, show timestamp alone
+                if ((message.content == null ||
+                        message.content!.isEmpty) &&
+                    message.toolCalls.isEmpty)
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: _buildTimeLabel(context, time),
+                  ),
+
+                // Tool call cards (assistant only)
+                if (!_isUser && message.toolCalls.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  ...message.toolCalls.asMap().entries.map((entry) {
+                    final index = entry.key;
+                    final tc = entry.value;
+                    final key = '${message.id}_$index';
+                    final status =
+                        toolStatuses[key] ?? ToolExecutionStatus.pending;
+                    final result = toolResults[key];
+
+                    return ToolCallCard(
+                      toolCall: tc,
+                      status: status,
+                      resultMessage: result,
+                      onTap: () =>
+                          _showDetailSheet(context, tc, index),
+                    );
+                  }),
+                  const SizedBox(height: 2),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: _buildTimeLabel(context, time),
+                  ),
+                ],
               ],
-
-              // Text + timestamp row
-              if (message.content != null && message.content!.isNotEmpty)
-                _buildTextWithTime(context, time),
-
-              // If no text but has images, show timestamp alone
-              if ((message.content == null || message.content!.isEmpty) &&
-                  message.toolCalls.isEmpty)
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: _buildTimeLabel(context, time),
-                ),
-
-              // Tool call cards (assistant only)
-              if (!_isUser && message.toolCalls.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                ...message.toolCalls.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final tc = entry.value;
-                  final key = '${message.id}_$index';
-                  final status =
-                      toolStatuses[key] ?? ToolExecutionStatus.pending;
-                  final result = toolResults[key];
-
-                  return ToolCallCard(
-                    toolCall: tc,
-                    status: status,
-                    resultMessage: result,
-                    onTap: () => _showDetailSheet(context, tc, index),
-                  );
-                }),
-                const SizedBox(height: 2),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: _buildTimeLabel(context, time),
-                ),
-              ],
-            ],
+            ),
           ),
         ),
       ),
@@ -150,13 +242,11 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildTextWithTime(BuildContext context, String time) {
+  /// User messages: plain text with inline timestamp
+  Widget _buildUserTextWithTime(BuildContext context, String time) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textColor =
-        _isUser ? colorScheme.onPrimary : colorScheme.onSurface;
-    final timeColor = _isUser
-        ? colorScheme.onPrimary.withValues(alpha: 0.6)
-        : colorScheme.onSurfaceVariant.withValues(alpha: 0.6);
+    final textColor = colorScheme.onPrimary;
+    final timeColor = colorScheme.onPrimary.withValues(alpha: 0.6);
 
     return Wrap(
       alignment: WrapAlignment.end,
@@ -175,10 +265,74 @@ class ChatBubble extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 1),
           child: Text(
             time,
-            style: TextStyle(
-              fontSize: 11,
-              color: timeColor,
+            style: TextStyle(fontSize: 11, color: timeColor),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Assistant messages: rendered as markdown with timestamp below
+  Widget _buildAssistantMarkdownWithTime(BuildContext context, String time) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textColor = colorScheme.onSurface;
+    final timeColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.6);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        MarkdownBody(
+          data: message.content!,
+          selectable: false,
+          shrinkWrap: true,
+          styleSheet: MarkdownStyleSheet(
+            p: TextStyle(fontSize: 15, color: textColor, height: 1.35),
+            h1: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: textColor,
             ),
+            h2: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
+            h3: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: textColor,
+            ),
+            listBullet:
+                TextStyle(fontSize: 15, color: textColor, height: 1.35),
+            code: TextStyle(
+              fontSize: 13,
+              color: textColor,
+              backgroundColor:
+                  colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            ),
+            codeblockDecoration: BoxDecoration(
+              color:
+                  colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            blockquoteDecoration: BoxDecoration(
+              border: Border(
+                left: BorderSide(color: colorScheme.primary, width: 3),
+              ),
+            ),
+            blockquotePadding:
+                const EdgeInsets.only(left: 12, top: 4, bottom: 4),
+            strong:
+                TextStyle(fontWeight: FontWeight.bold, color: textColor),
+            em: TextStyle(fontStyle: FontStyle.italic, color: textColor),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: Text(
+            time,
+            style: TextStyle(fontSize: 11, color: timeColor),
           ),
         ),
       ],

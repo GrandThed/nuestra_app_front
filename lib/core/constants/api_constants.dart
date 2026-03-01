@@ -107,6 +107,7 @@ class ApiConstants {
   static const String chat = '/api/chat';
   static const String chatContinue = '/api/chat/continue';
   static const String chatHistory = '/api/chat/history';
+  static const String chatHistoryFrom = '/api/chat/history/from'; // + /:messageId
 
   // Upload
   static const String upload = '/api/upload';

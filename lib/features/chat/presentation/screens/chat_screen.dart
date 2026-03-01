@@ -189,6 +189,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                                 .read(chatProvider.notifier)
                                 .executeToolCall(messageId, toolIndex);
                           },
+                          onBacktrack: (messageId) {
+                            ref
+                                .read(chatProvider.notifier)
+                                .backtrackFrom(messageId);
+                          },
                         );
                       },
                     ),

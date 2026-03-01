@@ -144,6 +144,28 @@ class ChatNotifier extends _$ChatNotifier {
     state = const ChatState();
   }
 
+  /// Backtrack conversation: delete the given message and all messages after it.
+  /// Removes them from the backend and updates local state.
+  Future<void> backtrackFrom(String messageId) async {
+    final index = state.messages.indexWhere((m) => m.id == messageId);
+    if (index == -1) return;
+
+    try {
+      await _repository.backtrackFrom(messageId);
+    } catch (_) {
+      // Remove locally even if API call fails
+    }
+
+    final remaining = state.messages.sublist(0, index);
+    final suggestions = _extractLastSuggestions(remaining);
+    state = state.copyWith(
+      messages: remaining,
+      suggestions: suggestions,
+      toolExecutionStatuses: {},
+      toolExecutionResults: {},
+    );
+  }
+
   /// Upload local image files and return their server URLs.
   Future<List<String>> _uploadImages(List<String> localPaths) async {
     if (localPaths.isEmpty) return [];
