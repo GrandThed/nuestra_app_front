@@ -41,28 +41,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     super.dispose();
   }
 
-  void _scrollToBottom() {
-    if (_scrollController.hasClients) {
-      Future<void>.delayed(const Duration(milliseconds: 100), () {
-        if (_scrollController.hasClients) {
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
-          );
-        }
-      });
-    }
-  }
-
   void _handleSend(String text, List<String> imageUrls) {
     if (text.isEmpty && imageUrls.isEmpty) return;
     ref.read(chatProvider.notifier).sendMessage(
           text,
           imageUrls: imageUrls,
         );
-    _scrollToBottom();
-    Future<void>.delayed(const Duration(milliseconds: 1800), _scrollToBottom);
   }
 
   void _clearHistory() {
@@ -104,12 +88,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final suggestions = isEmpty
         ? _defaultSuggestions
         : state.suggestions;
-
-    ref.listen(chatProvider, (prev, next) {
-      if (prev != null && prev.messages.length != next.messages.length) {
-        _scrollToBottom();
-      }
-    });
 
     return Scaffold(
       appBar: AppBar(
@@ -173,15 +151,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   ? _buildEmptyState(colorScheme)
                   : ListView.builder(
                       controller: _scrollController,
+                      reverse: true,
                       padding: const EdgeInsets.only(top: 8, bottom: 4),
                       itemCount:
                           state.messages.length + (state.isSending ? 1 : 0),
                       itemBuilder: (context, index) {
-                        if (index == state.messages.length) {
+                        // reverse: true flips the list, so index 0 = bottom
+                        if (index == 0 && state.isSending) {
                           return _buildTypingIndicator(colorScheme);
                         }
+                        final msgIndex = state.messages.length -
+                            1 -
+                            (state.isSending ? index - 1 : index);
                         return ChatBubble(
-                          message: state.messages[index],
+                          message: state.messages[msgIndex],
                           toolStatuses: state.toolExecutionStatuses,
                           toolResults: state.toolExecutionResults,
                           onExecuteToolCall: (messageId, toolIndex) {
