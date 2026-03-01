@@ -162,6 +162,7 @@ class ChatToolExecutor {
     await _dioClient.post<Map<String, dynamic>>(
       ApiConstants.wishlistBulk,
       data: {
+        'householdId': params['householdId'],
         'categoryName': params['categoryName'],
         'items': items,
       },
