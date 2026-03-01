@@ -59,10 +59,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         unauthenticated: () {},
         error: (message) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              backgroundColor: AppColors.error,
-            ),
+            SnackBar(content: Text(message), backgroundColor: AppColors.error),
           );
           // Clear error after showing
           ref.read(authProvider.notifier).clearError();
@@ -72,80 +69,88 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSizes.paddingLg),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Spacer(),
-              // Logo/Title
-              const Icon(
-                Icons.home_rounded,
-                size: 80,
-                color: AppColors.primary,
-              ),
-              const SizedBox(height: AppSizes.md),
-              Text(
-                AppStrings.appName,
-                style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: Padding(
+              padding: const EdgeInsets.all(AppSizes.paddingLg),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Spacer(),
+                  // Logo/Title
+                  const Icon(
+                    Icons.home_rounded,
+                    size: 80,
+                    color: AppColors.primary,
+                  ),
+                  const SizedBox(height: AppSizes.md),
+                  Text(
+                    AppStrings.appName,
+                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppSizes.sm),
-              Text(
-                'Organiza tu hogar juntos',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: AppSizes.sm),
+                  Text(
+                    'Organiza tu hogar juntos',
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                       color: AppColors.textSecondary,
                     ),
-                textAlign: TextAlign.center,
+                    textAlign: TextAlign.center,
+                  ),
+                  const Spacer(),
+
+                  // Google Sign In — use SDK button on web, custom button on mobile
+                  if (kIsWeb)
+                    web.renderButton()
+                  else
+                    _SocialLoginButton(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              ref
+                                  .read(authProvider.notifier)
+                                  .signInWithGoogle();
+                            },
+                      icon: Icons.g_mobiledata,
+                      label: AppStrings.signInWithGoogle,
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.black87,
+                      borderColor: AppColors.border,
+                    ),
+                  const SizedBox(height: AppSizes.md),
+
+                  // Apple Sign In (iOS only, not on web)
+                  if (!kIsWeb &&
+                      defaultTargetPlatform == TargetPlatform.iOS) ...[
+                    _SocialLoginButton(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              ref.read(authProvider.notifier).signInWithApple();
+                            },
+                      icon: Icons.apple,
+                      label: AppStrings.signInWithApple,
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.white,
+                    ),
+                    const SizedBox(height: AppSizes.md),
+                  ],
+
+                  // Loading indicator
+                  if (isLoading)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: AppSizes.md),
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+
+                  const SizedBox(height: AppSizes.xl),
+                ],
               ),
-              const Spacer(),
-
-              // Google Sign In — use SDK button on web, custom button on mobile
-              if (kIsWeb)
-                web.renderButton()
-              else
-                _SocialLoginButton(
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          ref.read(authProvider.notifier).signInWithGoogle();
-                        },
-                  icon: Icons.g_mobiledata,
-                  label: AppStrings.signInWithGoogle,
-                  backgroundColor: Colors.white,
-                  foregroundColor: Colors.black87,
-                  borderColor: AppColors.border,
-                ),
-              const SizedBox(height: AppSizes.md),
-
-              // Apple Sign In (iOS only, not on web)
-              if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) ...[
-                _SocialLoginButton(
-                  onPressed: isLoading
-                      ? null
-                      : () {
-                          ref.read(authProvider.notifier).signInWithApple();
-                        },
-                  icon: Icons.apple,
-                  label: AppStrings.signInWithApple,
-                  backgroundColor: Colors.black,
-                  foregroundColor: Colors.white,
-                ),
-                const SizedBox(height: AppSizes.md),
-              ],
-
-              // Loading indicator
-              if (isLoading)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: AppSizes.md),
-                  child: Center(child: CircularProgressIndicator()),
-                ),
-
-              const SizedBox(height: AppSizes.xl),
-            ],
+            ),
           ),
         ),
       ),

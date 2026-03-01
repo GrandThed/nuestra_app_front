@@ -21,6 +21,7 @@ import 'package:nuestra_app/features/home/presentation/widgets/pending_tasks_car
 import 'package:nuestra_app/features/home/presentation/providers/home_card_order_notifier.dart';
 import 'package:nuestra_app/features/home/presentation/widgets/recipes_card.dart';
 import 'package:nuestra_app/features/recipes/presentation/providers/recipes_notifier.dart';
+import 'package:nuestra_app/core/utils/responsive.dart';
 
 /// Home dashboard screen
 class HomeScreen extends ConsumerStatefulWidget {
@@ -73,9 +74,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // Load today's meals
     final today = DateTime.now();
     final weekStart = DateTime(today.year, today.month, today.day);
-    ref
-        .read(upcomingMealsProvider.notifier)
-        .loadWeekIfNeeded(weekStart);
+    ref.read(upcomingMealsProvider.notifier).loadWeekIfNeeded(weekStart);
 
     // Load menu plans for the FAB
     ref.read(menuPlansProvider.notifier).loadMenuPlansIfNeeded();
@@ -112,6 +111,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final cardOrder = ref.watch(homeCardOrderProvider);
+    final useWideLayout = context.isExpanded;
 
     return Scaffold(
       appBar: AppBar(
@@ -144,32 +144,53 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: _buildGreeting(context, authState),
               ),
             ),
-            // Reorderable cards
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSizes.paddingMd),
-              sliver: SliverReorderableList(
-                itemCount: cardOrder.length,
-                onReorder: (oldIndex, newIndex) {
-                  ref.read(homeCardOrderProvider.notifier).reorder(oldIndex, newIndex);
-                },
-                itemBuilder: (context, index) {
-                  final cardId = cardOrder[index];
-                  return ReorderableDelayedDragStartListener(
-                    key: ValueKey(cardId),
-                    index: index,
-                    enabled: true,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: AppSizes.md),
-                      child: _buildCard(cardId),
-                    ),
-                  );
-                },
+            // Cards — 2-column grid on wide, single-column reorderable on compact
+            if (useWideLayout)
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.paddingMd,
+                ),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: AppSizes.md,
+                    mainAxisSpacing: AppSizes.md,
+                    mainAxisExtent: 220,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) => _buildCard(cardOrder[index]),
+                    childCount: cardOrder.length,
+                  ),
+                ),
+              )
+            else
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSizes.paddingMd,
+                ),
+                sliver: SliverReorderableList(
+                  itemCount: cardOrder.length,
+                  onReorder: (oldIndex, newIndex) {
+                    ref
+                        .read(homeCardOrderProvider.notifier)
+                        .reorder(oldIndex, newIndex);
+                  },
+                  itemBuilder: (context, index) {
+                    final cardId = cardOrder[index];
+                    return ReorderableDelayedDragStartListener(
+                      key: ValueKey(cardId),
+                      index: index,
+                      enabled: true,
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: AppSizes.md),
+                        child: _buildCard(cardId),
+                      ),
+                    );
+                  },
+                ),
               ),
-            ),
             // Space for FAB
-            const SliverToBoxAdapter(
-              child: SizedBox(height: AppSizes.xxl * 2),
-            ),
+            const SliverToBoxAdapter(child: SizedBox(height: AppSizes.xxl * 2)),
           ],
         ),
       ),

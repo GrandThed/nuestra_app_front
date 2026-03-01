@@ -28,13 +28,15 @@ class AppTheme {
       appBarTheme: const AppBarTheme(
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
-        elevation: 0,
+        elevation: 0.5,
+        shadowColor: AppColors.border,
         centerTitle: true,
         surfaceTintColor: Colors.transparent,
       ),
       cardTheme: CardThemeData(
         color: AppColors.surface,
-        elevation: 0,
+        elevation: 0.5,
+        shadowColor: Colors.black12,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusMd),
           side: const BorderSide(color: AppColors.border),
@@ -111,9 +113,13 @@ class AppTheme {
         foregroundColor: Colors.white,
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.background,
+        backgroundColor: AppColors.surfaceVariant,
         selectedColor: AppColors.primaryLight,
-        labelStyle: const TextStyle(fontSize: AppSizes.fontSm),
+        labelStyle: const TextStyle(
+          fontSize: AppSizes.fontSm,
+          color: AppColors.textPrimary,
+        ),
+        side: const BorderSide(color: AppColors.border),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusFull),
         ),
@@ -221,8 +227,13 @@ class AppTheme {
         foregroundColor: Colors.black,
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.backgroundDark,
+        backgroundColor: AppColors.surfaceVariantDark,
         selectedColor: AppColors.primaryDark,
+        labelStyle: const TextStyle(
+          fontSize: AppSizes.fontSm,
+          color: AppColors.textPrimaryDark,
+        ),
+        side: const BorderSide(color: AppColors.borderDark),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppSizes.radiusFull),
         ),

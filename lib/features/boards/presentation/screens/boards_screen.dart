@@ -9,6 +9,7 @@ import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/features/boards/data/models/board_model.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_notifier.dart';
 import 'package:nuestra_app/features/boards/presentation/providers/boards_state.dart';
+import 'package:nuestra_app/core/utils/responsive.dart';
 import 'package:shimmer/shimmer.dart';
 
 /// Boards screen - Pinterest-style boards list
@@ -73,7 +74,9 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
           Icon(
             Icons.dashboard_outlined,
             size: 64,
-            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+            color: Theme.of(
+              context,
+            ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
           ),
           const SizedBox(height: AppSizes.md),
           Text(
@@ -124,8 +127,8 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
       },
       child: GridView.builder(
         padding: const EdgeInsets.all(AppSizes.paddingSm),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: context.adaptiveGridColumns,
           crossAxisSpacing: AppSizes.sm,
           mainAxisSpacing: AppSizes.sm,
           childAspectRatio: 1.0,
@@ -170,14 +173,17 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
               ),
               child: Text(
                 'Crear desde plantilla',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
             ...templates.map(
               (template) => ListTile(
-                leading: Icon(template.icon, color: Theme.of(context).colorScheme.primary),
+                leading: Icon(
+                  template.icon,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
                 title: Text(template.name),
                 onTap: () async {
                   final messenger = ScaffoldMessenger.of(context);
@@ -188,9 +194,7 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
                   if (board != null && mounted) {
                     messenger.showSnackBar(
                       SnackBar(
-                        content: Text(
-                          'Tablero "${template.name}" creado',
-                        ),
+                        content: Text('Tablero "${template.name}" creado'),
                         backgroundColor: AppColors.success,
                       ),
                     );
@@ -274,7 +278,10 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
             ),
             ListTile(
               leading: const Icon(Icons.delete, color: AppColors.error),
-              title: const Text('Eliminar', style: TextStyle(color: AppColors.error)),
+              title: const Text(
+                'Eliminar',
+                style: TextStyle(color: AppColors.error),
+              ),
               onTap: () {
                 Navigator.pop(sheetContext);
                 _showDeleteConfirmation(context, board);
@@ -349,7 +356,9 @@ class _BoardsScreenState extends ConsumerState<BoardsScreen> {
                     content: Text(
                       success ? 'Tablero eliminado' : 'Error al eliminar',
                     ),
-                    backgroundColor: success ? AppColors.success : AppColors.error,
+                    backgroundColor: success
+                        ? AppColors.success
+                        : AppColors.error,
                   ),
                 );
               }
@@ -421,18 +430,18 @@ class _BoardCard extends StatelessWidget {
                   Text(
                     board.name,
                     style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                        ),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     '${board.itemCount} items',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: Colors.white70,
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: Colors.white70),
                   ),
                 ],
               ),
@@ -514,7 +523,9 @@ class _BoardCard extends StatelessWidget {
   Widget _buildGridPlaceholder() {
     return Builder(
       builder: (context) => Container(
-        color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.15),
+        color: Theme.of(
+          context,
+        ).colorScheme.primaryContainer.withValues(alpha: 0.15),
       ),
     );
   }

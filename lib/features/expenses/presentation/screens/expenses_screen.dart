@@ -985,7 +985,7 @@ class _MonthYearPickerDialogState extends State<_MonthYearPickerDialog> {
     return AlertDialog(
       title: const Text('Seleccionar mes'),
       content: SizedBox(
-        width: double.maxFinite,
+        width: 400,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

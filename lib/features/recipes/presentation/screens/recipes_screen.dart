@@ -7,6 +7,7 @@ import 'package:nuestra_app/features/recipes/presentation/providers/recipes_noti
 import 'package:nuestra_app/features/recipes/presentation/providers/recipes_state.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/shared/widgets/app_network_image.dart';
+import 'package:nuestra_app/core/utils/responsive.dart';
 
 class RecipesScreen extends ConsumerStatefulWidget {
   const RecipesScreen({super.key});
@@ -39,8 +40,12 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
   }
 
   void _onSearch() {
-    ref.read(recipesProvider.notifier).loadRecipes(
-          search: _searchController.text.isEmpty ? null : _searchController.text,
+    ref
+        .read(recipesProvider.notifier)
+        .loadRecipes(
+          search: _searchController.text.isEmpty
+              ? null
+              : _searchController.text,
           season: _selectedSeason,
           favorites: _showFavoritesOnly ? true : null,
           maxPrepTime: _maxPrepTime,
@@ -128,7 +133,9 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
           ),
 
           // Active filter chips
-          if (_selectedSeason != null || _maxPrepTime != null || _maxCookTime != null)
+          if (_selectedSeason != null ||
+              _maxPrepTime != null ||
+              _maxCookTime != null)
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               color: colorScheme.surface,
@@ -141,7 +148,8 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                         label: Text(_selectedSeason!),
                         deleteIcon: const Icon(Icons.close, size: 18),
                         onDeleted: () => _onSeasonChanged(null),
-                        backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.15),
+                        backgroundColor: colorScheme.primaryContainer
+                            .withValues(alpha: 0.15),
                         labelStyle: TextStyle(color: colorScheme.primary),
                         deleteIconColor: colorScheme.primary,
                       ),
@@ -158,7 +166,8 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                           });
                           _onSearch();
                         },
-                        backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.15),
+                        backgroundColor: colorScheme.primaryContainer
+                            .withValues(alpha: 0.15),
                         labelStyle: TextStyle(color: colorScheme.primary),
                         deleteIconColor: colorScheme.primary,
                       ),
@@ -173,7 +182,9 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
                         });
                         _onSearch();
                       },
-                      backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.15),
+                      backgroundColor: colorScheme.primaryContainer.withValues(
+                        alpha: 0.15,
+                      ),
                       labelStyle: TextStyle(color: colorScheme.primary),
                       deleteIconColor: colorScheme.primary,
                     ),
@@ -185,29 +196,35 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
           Expanded(
             child: switch (state) {
               RecipesStateInitial() => const Center(
-                  child: Text('Cargando recetas...'),
-                ),
+                child: Text('Cargando recetas...'),
+              ),
               RecipesStateLoading() => const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                child: CircularProgressIndicator(),
+              ),
               RecipesStateError(:final message) => Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.error_outline, size: 48, color: AppColors.error),
-                      const SizedBox(height: 16),
-                      Text(message, textAlign: TextAlign.center),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => ref.read(recipesProvider.notifier).loadRecipes(),
-                        child: const Text('Reintentar'),
-                      ),
-                    ],
-                  ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color: AppColors.error,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(message, textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () =>
+                          ref.read(recipesProvider.notifier).loadRecipes(),
+                      child: const Text('Reintentar'),
+                    ),
+                  ],
                 ),
-              RecipesStateLoaded(:final recipes) => recipes.isEmpty
-                  ? _buildEmptyState()
-                  : _buildRecipesList(recipes),
+              ),
+              RecipesStateLoaded(:final recipes) =>
+                recipes.isEmpty
+                    ? _buildEmptyState()
+                    : _buildRecipesList(recipes),
             },
           ),
         ],
@@ -251,8 +268,36 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
   }
 
   Widget _buildRecipesList(List<RecipeModel> recipes) {
-    return ListView.builder(
+    final columns = context.isMedium
+        ? 2
+        : context.isExpanded
+        ? 3
+        : 1;
+
+    if (columns == 1) {
+      return ListView.builder(
+        padding: const EdgeInsets.all(16),
+        itemCount: recipes.length,
+        itemBuilder: (context, index) {
+          final recipe = recipes[index];
+          return _RecipeCard(
+            key: ValueKey(recipe.id),
+            recipe: recipe,
+            onTap: () => context.push('/recipes/${recipe.id}'),
+            onDelete: () => _confirmDelete(recipe),
+          );
+        },
+      );
+    }
+
+    return GridView.builder(
       padding: const EdgeInsets.all(16),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: columns,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 0,
+        mainAxisExtent: 112,
+      ),
       itemCount: recipes.length,
       itemBuilder: (context, index) {
         final recipe = recipes[index];
@@ -275,100 +320,104 @@ class _RecipesScreenState extends ConsumerState<RecipesScreen> {
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
         return StatefulBuilder(
-        builder: (context, setModalState) => Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Filtrar por temporada',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+          builder: (context, setModalState) => Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Filtrar por temporada',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                children: [
-                  FilterChip(
-                    label: const Text('Todas'),
-                    selected: _selectedSeason == null,
-                    onSelected: (_) {
-                      Navigator.pop(context);
-                      _onSeasonChanged(null);
-                    },
-                    selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
-                    checkmarkColor: colorScheme.primary,
-                  ),
-                  ..._seasons.map((season) => FilterChip(
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    FilterChip(
+                      label: const Text('Todas'),
+                      selected: _selectedSeason == null,
+                      onSelected: (_) {
+                        Navigator.pop(context);
+                        _onSeasonChanged(null);
+                      },
+                      selectedColor: colorScheme.primaryContainer.withValues(
+                        alpha: 0.2,
+                      ),
+                      checkmarkColor: colorScheme.primary,
+                    ),
+                    ..._seasons.map(
+                      (season) => FilterChip(
                         label: Text(season),
                         selected: _selectedSeason == season,
                         onSelected: (_) {
                           Navigator.pop(context);
                           _onSeasonChanged(season);
                         },
-                        selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
+                        selectedColor: colorScheme.primaryContainer.withValues(
+                          alpha: 0.2,
+                        ),
                         checkmarkColor: colorScheme.primary,
-                      )),
-                ],
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Filtrar por tiempo',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 16),
-              Wrap(
-                spacing: 8,
-                children: [
-                  ChoiceChip(
-                    label: const Text('< 30 min'),
-                    selected: _maxPrepTime == 30 && _maxCookTime == 30,
-                    onSelected: (selected) {
-                      Navigator.pop(context);
-                      setState(() {
-                        if (selected) {
-                          _maxPrepTime = 30;
-                          _maxCookTime = 30;
-                        } else {
-                          _maxPrepTime = null;
-                          _maxCookTime = null;
-                        }
-                      });
-                      _onSearch();
-                    },
-                    selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
-                  ),
-                  ChoiceChip(
-                    label: const Text('< 60 min'),
-                    selected: _maxPrepTime == 60 && _maxCookTime == 60,
-                    onSelected: (selected) {
-                      Navigator.pop(context);
-                      setState(() {
-                        if (selected) {
-                          _maxPrepTime = 60;
-                          _maxCookTime = 60;
-                        } else {
-                          _maxPrepTime = null;
-                          _maxCookTime = null;
-                        }
-                      });
-                      _onSearch();
-                    },
-                    selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 24),
+                const Text(
+                  'Filtrar por tiempo',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    ChoiceChip(
+                      label: const Text('< 30 min'),
+                      selected: _maxPrepTime == 30 && _maxCookTime == 30,
+                      onSelected: (selected) {
+                        Navigator.pop(context);
+                        setState(() {
+                          if (selected) {
+                            _maxPrepTime = 30;
+                            _maxCookTime = 30;
+                          } else {
+                            _maxPrepTime = null;
+                            _maxCookTime = null;
+                          }
+                        });
+                        _onSearch();
+                      },
+                      selectedColor: colorScheme.primaryContainer.withValues(
+                        alpha: 0.2,
+                      ),
+                    ),
+                    ChoiceChip(
+                      label: const Text('< 60 min'),
+                      selected: _maxPrepTime == 60 && _maxCookTime == 60,
+                      onSelected: (selected) {
+                        Navigator.pop(context);
+                        setState(() {
+                          if (selected) {
+                            _maxPrepTime = 60;
+                            _maxCookTime = 60;
+                          } else {
+                            _maxPrepTime = null;
+                            _maxCookTime = null;
+                          }
+                        });
+                        _onSearch();
+                      },
+                      selectedColor: colorScheme.primaryContainer.withValues(
+                        alpha: 0.2,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
-        ),
-      );
+        );
       },
     );
   }
@@ -435,7 +484,9 @@ class _RecipeCard extends StatelessWidget {
                           fit: BoxFit.cover,
                         )
                       : Container(
-                          color: colorScheme.primaryContainer.withValues(alpha: 0.15),
+                          color: colorScheme.primaryContainer.withValues(
+                            alpha: 0.15,
+                          ),
                           child: Icon(
                             Icons.restaurant,
                             size: 40,
@@ -446,11 +497,7 @@ class _RecipeCard extends StatelessWidget {
                     const Positioned(
                       top: 6,
                       right: 6,
-                      child: Icon(
-                        Icons.favorite,
-                        color: Colors.red,
-                        size: 16,
-                      ),
+                      child: Icon(Icons.favorite, color: Colors.red, size: 16),
                     ),
                 ],
               ),
@@ -477,7 +524,11 @@ class _RecipeCard extends StatelessWidget {
                     if (recipe.servings != null)
                       Row(
                         children: [
-                          Icon(Icons.people, size: 16, color: colorScheme.onSurfaceVariant),
+                          Icon(
+                            Icons.people,
+                            size: 16,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             '${recipe.servings} porciones',
@@ -488,7 +539,8 @@ class _RecipeCard extends StatelessWidget {
                           ),
                         ],
                       ),
-                    if (recipe.ingredients != null && recipe.ingredients!.isNotEmpty)
+                    if (recipe.ingredients != null &&
+                        recipe.ingredients!.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Text(
@@ -504,7 +556,11 @@ class _RecipeCard extends StatelessWidget {
                         padding: const EdgeInsets.only(top: 4),
                         child: Row(
                           children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 14),
+                            const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 14,
+                            ),
                             const SizedBox(width: 3),
                             Text(
                               recipe.averageRating!.toStringAsFixed(1),
@@ -524,7 +580,10 @@ class _RecipeCard extends StatelessWidget {
 
             // Delete button
             IconButton(
-              icon: Icon(Icons.delete_outline, color: colorScheme.onSurfaceVariant),
+              icon: Icon(
+                Icons.delete_outline,
+                color: colorScheme.onSurfaceVariant,
+              ),
               onPressed: onDelete,
             ),
           ],
