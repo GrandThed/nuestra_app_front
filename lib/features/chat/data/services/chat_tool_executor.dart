@@ -209,12 +209,16 @@ class ChatToolExecutor {
   }
 
   Future<ToolExecutionResult> _addMenuItem(Map<String, dynamic> params) async {
-    await _dioClient.post<Map<String, dynamic>>(
-      ApiConstants.menus,
+    final response = await _dioClient.post<Map<String, dynamic>>(
+      ApiConstants.chatAddMenuItem,
       data: params,
     );
+    final item = response['data']?['item'] as Map<String, dynamic>?;
+    final recipeName = (item?['recipe'] as Map<String, dynamic>?)?['title']
+        ?? params['recipeName']
+        ?? params['customName'];
     return ToolExecutionResult.success(
-      'Comida agregada al menú: ${params['recipeName'] ?? params['customName']}',
+      'Comida agregada al menú: $recipeName',
     );
   }
 

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nuestra_app/core/services/image_picker_service.dart';
 import 'package:nuestra_app/core/utils/file_utils.dart';
@@ -221,31 +223,63 @@ class _ChatInputBarState extends State<ChatInputBar> {
 
                         // Text field
                         Expanded(
-                          child: TextField(
-                            controller: _controller,
-                            focusNode: _focusNode,
-                            enabled: !widget.isSending,
-                            maxLines: 5,
-                            minLines: 1,
-                            textCapitalization: TextCapitalization.sentences,
-                            style: const TextStyle(fontSize: 16),
-                            decoration: InputDecoration(
-                              hintText: _isListening
-                                  ? 'Escuchando...'
-                                  : 'Mensaje',
-                              hintStyle: TextStyle(
-                                color: colorScheme.onSurfaceVariant
-                                    .withValues(alpha: 0.5),
+                          child: KeyboardListener(
+                            focusNode: FocusNode(skipTraversal: true),
+                            onKeyEvent: kIsWeb
+                                ? (event) {
+                                    if (event is KeyDownEvent &&
+                                        event.logicalKey ==
+                                            LogicalKeyboardKey.enter &&
+                                        !HardwareKeyboard
+                                            .instance.isShiftPressed) {
+                                      // Prevent newline insertion on web
+                                      WidgetsBinding.instance
+                                          .addPostFrameCallback((_) {
+                                        // Remove the trailing newline that was just inserted
+                                        final text = _controller.text;
+                                        if (text.endsWith('\n')) {
+                                          _controller.text =
+                                              text.substring(0, text.length - 1);
+                                          _controller.selection =
+                                              TextSelection.fromPosition(
+                                            TextPosition(
+                                                offset:
+                                                    _controller.text.length),
+                                          );
+                                        }
+                                        _handleSend();
+                                      });
+                                    }
+                                  }
+                                : null,
+                            child: TextField(
+                              controller: _controller,
+                              focusNode: _focusNode,
+                              enabled: !widget.isSending,
+                              maxLines: 5,
+                              minLines: 1,
+                              textCapitalization:
+                                  TextCapitalization.sentences,
+                              style: const TextStyle(fontSize: 16),
+                              decoration: InputDecoration(
+                                hintText: _isListening
+                                    ? 'Escuchando...'
+                                    : 'Mensaje',
+                                hintStyle: TextStyle(
+                                  color: colorScheme.onSurfaceVariant
+                                      .withValues(alpha: 0.5),
+                                ),
+                                border: InputBorder.none,
+                                contentPadding:
+                                    const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 12,
+                                ),
+                                isDense: true,
                               ),
-                              border: InputBorder.none,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 12,
-                              ),
-                              isDense: true,
+                              onChanged: (_) => setState(() {}),
+                              onSubmitted: (_) => _handleSend(),
                             ),
-                            onChanged: (_) => setState(() {}),
-                            onSubmitted: (_) => _handleSend(),
                           ),
                         ),
 
