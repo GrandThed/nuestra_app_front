@@ -111,18 +111,19 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   'Asistente',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                Text(
-                  state.isGatheringData
-                      ? 'recopilando info...'
-                      : state.isSending
-                          ? 'escribiendo...'
-                          : 'online',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: (state.isSending || state.isGatheringData)
-                        ? colorScheme.primary
-                        : colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                    fontWeight: FontWeight.normal,
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  child: Text(
+                    state.isSending ? 'activo' : 'online',
+                    key: ValueKey(state.isSending),
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: state.isSending
+                          ? colorScheme.primary
+                          : colorScheme.onSurfaceVariant
+                              .withValues(alpha: 0.6),
+                      fontWeight: FontWeight.normal,
+                    ),
                   ),
                 ),
               ],
@@ -158,7 +159,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       itemBuilder: (context, index) {
                         // reverse: true flips the list, so index 0 = bottom
                         if (index == 0 && state.isSending) {
-                          return _buildTypingIndicator(colorScheme);
+                          return _buildTypingIndicator(
+                            colorScheme,
+                            state.statusMessage,
+                          );
                         }
                         final msgIndex = state.messages.length -
                             1 -
@@ -245,7 +249,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
   }
 
-  Widget _buildTypingIndicator(ColorScheme colorScheme) {
+  Widget _buildTypingIndicator(
+    ColorScheme colorScheme,
+    String? statusMessage,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(left: 12, top: 2, bottom: 2, right: 64),
       child: Align(
@@ -264,31 +271,71 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildAnimatedDot(colorScheme, 0),
-              const SizedBox(width: 4),
-              _buildAnimatedDot(colorScheme, 1),
-              const SizedBox(width: 4),
-              _buildAnimatedDot(colorScheme, 2),
+              _PulsingIcon(color: colorScheme.primary),
+              const SizedBox(width: 10),
+              AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: Text(
+                  statusMessage ?? 'Pensando...',
+                  key: ValueKey(statusMessage),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: colorScheme.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildAnimatedDot(ColorScheme colorScheme, int index) {
-    return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.3, end: 1.0),
-      duration: Duration(milliseconds: 600 + (index * 200)),
-      curve: Curves.easeInOut,
-      builder: (context, value, child) {
-        return Container(
-          width: 7,
-          height: 7,
-          decoration: BoxDecoration(
-            color:
-                colorScheme.onSurfaceVariant.withValues(alpha: value * 0.5),
-            shape: BoxShape.circle,
+/// Smoothly pulsing sparkle icon used in the typing indicator.
+class _PulsingIcon extends StatefulWidget {
+  final Color color;
+  const _PulsingIcon({required this.color});
+
+  @override
+  State<_PulsingIcon> createState() => _PulsingIconState();
+}
+
+class _PulsingIconState extends State<_PulsingIcon>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+    _animation = Tween(begin: 0.4, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Opacity(
+          opacity: _animation.value,
+          child: Icon(
+            Icons.auto_awesome,
+            size: 16,
+            color: widget.color,
           ),
         );
       },

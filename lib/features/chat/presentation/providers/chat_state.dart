@@ -12,6 +12,8 @@ sealed class ChatState with _$ChatState {
     @Default(false) bool isSending,
     @Default(false) bool isGatheringData,
     @Default([]) List<String> suggestions,
+    /// Human-readable status shown in the typing indicator bubble
+    String? statusMessage,
     /// Tracks execution status per tool call: key = "messageId_toolIndex"
     @Default({}) Map<String, ToolExecutionStatus> toolExecutionStatuses,
     /// Stores result messages per tool call: key = "messageId_toolIndex"

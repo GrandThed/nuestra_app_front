@@ -76,6 +76,7 @@ class ChatNotifier extends _$ChatNotifier {
     state = state.copyWith(
       messages: [...state.messages, userMessage],
       isSending: true,
+      statusMessage: 'Pensando...',
       suggestions: [],
     );
 
@@ -86,16 +87,22 @@ class ChatNotifier extends _$ChatNotifier {
       );
 
       // Handle data gathering loop (max rounds)
-      var round = 0;
-      while (response is ChatApiResponseDataRequest &&
-          round < _maxContinueRounds) {
-        round++;
+      for (var round = 0; round < _maxContinueRounds; round++) {
+        final current = response;
+        if (current is! ChatApiResponseDataRequest) break;
 
-        // Show gathering indicator
-        state = state.copyWith(isGatheringData: true);
+        // Show gathering indicator with tool-specific status
+        final statusMsg = _describeQueryRequests(current.requests);
+        state = state.copyWith(
+          isGatheringData: true,
+          statusMessage: statusMsg,
+        );
 
         // Execute query tools and collect results
-        final results = await _executeQueryRequests(response.requests);
+        final results = await _executeQueryRequests(current.requests);
+
+        // Update status before sending back
+        state = state.copyWith(statusMessage: 'Preparando respuesta...');
 
         // Send results back to LLM
         response = await _repository.continueWithData(results);
@@ -116,6 +123,7 @@ class ChatNotifier extends _$ChatNotifier {
           messages: [...state.messages, assistantMessage],
           isSending: false,
           isGatheringData: false,
+          statusMessage: null,
           suggestions: response.suggestions,
         );
       } else {
@@ -123,6 +131,7 @@ class ChatNotifier extends _$ChatNotifier {
         state = state.copyWith(
           isSending: false,
           isGatheringData: false,
+          statusMessage: null,
         );
       }
     } on AppException catch (e) {
@@ -242,7 +251,31 @@ class ChatNotifier extends _$ChatNotifier {
       messages: [...state.messages, errorMessage],
       isSending: false,
       isGatheringData: false,
+      statusMessage: null,
     );
+  }
+
+  /// Build a human-readable description of what query tools are being run.
+  String _describeQueryRequests(List<ChatToolCallModel> requests) {
+    if (requests.isEmpty) return 'Recopilando información...';
+
+    const toolLabels = {
+      'search_recipes': 'Buscando recetas',
+      'list_calendar_events': 'Revisando el calendario',
+      'list_wishlist_items': 'Revisando listas de compras',
+      'list_boards': 'Revisando tableros',
+      'get_expense_summary': 'Consultando gastos',
+    };
+
+    final labels = requests
+        .map((r) => toolLabels[r.tool])
+        .whereType<String>()
+        .toSet()
+        .toList();
+
+    if (labels.isEmpty) return 'Recopilando información...';
+    if (labels.length == 1) return '${labels.first}...';
+    return '${labels.first} y más...';
   }
 
   /// Execute a single action tool call (triggered by user confirmation).
