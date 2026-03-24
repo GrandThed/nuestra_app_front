@@ -1136,4 +1136,378 @@ as String,
 
 }
 
+/// @nodoc
+mixin _$SeasonalFruitsState {
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SeasonalFruitsState);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'SeasonalFruitsState()';
+}
+
+
+}
+
+/// @nodoc
+class $SeasonalFruitsStateCopyWith<$Res>  {
+$SeasonalFruitsStateCopyWith(SeasonalFruitsState _, $Res Function(SeasonalFruitsState) __);
+}
+
+
+/// Adds pattern-matching-related methods to [SeasonalFruitsState].
+extension SeasonalFruitsStatePatterns on SeasonalFruitsState {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( SeasonalFruitsStateInitial value)?  initial,TResult Function( SeasonalFruitsStateLoading value)?  loading,TResult Function( SeasonalFruitsStateLoaded value)?  loaded,TResult Function( SeasonalFruitsStateError value)?  error,required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case SeasonalFruitsStateInitial() when initial != null:
+return initial(_that);case SeasonalFruitsStateLoading() when loading != null:
+return loading(_that);case SeasonalFruitsStateLoaded() when loaded != null:
+return loaded(_that);case SeasonalFruitsStateError() when error != null:
+return error(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( SeasonalFruitsStateInitial value)  initial,required TResult Function( SeasonalFruitsStateLoading value)  loading,required TResult Function( SeasonalFruitsStateLoaded value)  loaded,required TResult Function( SeasonalFruitsStateError value)  error,}){
+final _that = this;
+switch (_that) {
+case SeasonalFruitsStateInitial():
+return initial(_that);case SeasonalFruitsStateLoading():
+return loading(_that);case SeasonalFruitsStateLoaded():
+return loaded(_that);case SeasonalFruitsStateError():
+return error(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( SeasonalFruitsStateInitial value)?  initial,TResult? Function( SeasonalFruitsStateLoading value)?  loading,TResult? Function( SeasonalFruitsStateLoaded value)?  loaded,TResult? Function( SeasonalFruitsStateError value)?  error,}){
+final _that = this;
+switch (_that) {
+case SeasonalFruitsStateInitial() when initial != null:
+return initial(_that);case SeasonalFruitsStateLoading() when loading != null:
+return loading(_that);case SeasonalFruitsStateLoaded() when loaded != null:
+return loaded(_that);case SeasonalFruitsStateError() when error != null:
+return error(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( List<SeasonalVegetableModel> fruits)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case SeasonalFruitsStateInitial() when initial != null:
+return initial();case SeasonalFruitsStateLoading() when loading != null:
+return loading();case SeasonalFruitsStateLoaded() when loaded != null:
+return loaded(_that.fruits);case SeasonalFruitsStateError() when error != null:
+return error(_that.message);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( List<SeasonalVegetableModel> fruits)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+switch (_that) {
+case SeasonalFruitsStateInitial():
+return initial();case SeasonalFruitsStateLoading():
+return loading();case SeasonalFruitsStateLoaded():
+return loaded(_that.fruits);case SeasonalFruitsStateError():
+return error(_that.message);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( List<SeasonalVegetableModel> fruits)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+switch (_that) {
+case SeasonalFruitsStateInitial() when initial != null:
+return initial();case SeasonalFruitsStateLoading() when loading != null:
+return loading();case SeasonalFruitsStateLoaded() when loaded != null:
+return loaded(_that.fruits);case SeasonalFruitsStateError() when error != null:
+return error(_that.message);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class SeasonalFruitsStateInitial implements SeasonalFruitsState {
+  const SeasonalFruitsStateInitial();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SeasonalFruitsStateInitial);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'SeasonalFruitsState.initial()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class SeasonalFruitsStateLoading implements SeasonalFruitsState {
+  const SeasonalFruitsStateLoading();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SeasonalFruitsStateLoading);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'SeasonalFruitsState.loading()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class SeasonalFruitsStateLoaded implements SeasonalFruitsState {
+  const SeasonalFruitsStateLoaded(final  List<SeasonalVegetableModel> fruits): _fruits = fruits;
+  
+
+ final  List<SeasonalVegetableModel> _fruits;
+ List<SeasonalVegetableModel> get fruits {
+  if (_fruits is EqualUnmodifiableListView) return _fruits;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_fruits);
+}
+
+
+/// Create a copy of SeasonalFruitsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SeasonalFruitsStateLoadedCopyWith<SeasonalFruitsStateLoaded> get copyWith => _$SeasonalFruitsStateLoadedCopyWithImpl<SeasonalFruitsStateLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SeasonalFruitsStateLoaded&&const DeepCollectionEquality().equals(other._fruits, _fruits));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_fruits));
+
+@override
+String toString() {
+  return 'SeasonalFruitsState.loaded(fruits: $fruits)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SeasonalFruitsStateLoadedCopyWith<$Res> implements $SeasonalFruitsStateCopyWith<$Res> {
+  factory $SeasonalFruitsStateLoadedCopyWith(SeasonalFruitsStateLoaded value, $Res Function(SeasonalFruitsStateLoaded) _then) = _$SeasonalFruitsStateLoadedCopyWithImpl;
+@useResult
+$Res call({
+ List<SeasonalVegetableModel> fruits
+});
+
+
+
+
+}
+/// @nodoc
+class _$SeasonalFruitsStateLoadedCopyWithImpl<$Res>
+    implements $SeasonalFruitsStateLoadedCopyWith<$Res> {
+  _$SeasonalFruitsStateLoadedCopyWithImpl(this._self, this._then);
+
+  final SeasonalFruitsStateLoaded _self;
+  final $Res Function(SeasonalFruitsStateLoaded) _then;
+
+/// Create a copy of SeasonalFruitsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? fruits = null,}) {
+  return _then(SeasonalFruitsStateLoaded(
+null == fruits ? _self._fruits : fruits // ignore: cast_nullable_to_non_nullable
+as List<SeasonalVegetableModel>,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class SeasonalFruitsStateError implements SeasonalFruitsState {
+  const SeasonalFruitsStateError(this.message);
+  
+
+ final  String message;
+
+/// Create a copy of SeasonalFruitsState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SeasonalFruitsStateErrorCopyWith<SeasonalFruitsStateError> get copyWith => _$SeasonalFruitsStateErrorCopyWithImpl<SeasonalFruitsStateError>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SeasonalFruitsStateError&&(identical(other.message, message) || other.message == message));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,message);
+
+@override
+String toString() {
+  return 'SeasonalFruitsState.error(message: $message)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SeasonalFruitsStateErrorCopyWith<$Res> implements $SeasonalFruitsStateCopyWith<$Res> {
+  factory $SeasonalFruitsStateErrorCopyWith(SeasonalFruitsStateError value, $Res Function(SeasonalFruitsStateError) _then) = _$SeasonalFruitsStateErrorCopyWithImpl;
+@useResult
+$Res call({
+ String message
+});
+
+
+
+
+}
+/// @nodoc
+class _$SeasonalFruitsStateErrorCopyWithImpl<$Res>
+    implements $SeasonalFruitsStateErrorCopyWith<$Res> {
+  _$SeasonalFruitsStateErrorCopyWithImpl(this._self, this._then);
+
+  final SeasonalFruitsStateError _self;
+  final $Res Function(SeasonalFruitsStateError) _then;
+
+/// Create a copy of SeasonalFruitsState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? message = null,}) {
+  return _then(SeasonalFruitsStateError(
+null == message ? _self.message : message // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
+}
+
 // dart format on

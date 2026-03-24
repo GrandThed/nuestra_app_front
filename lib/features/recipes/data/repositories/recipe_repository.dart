@@ -181,6 +181,21 @@ class RecipeRepository {
         .toList();
   }
 
+  /// Get seasonal fruits for a household
+  Future<List<SeasonalVegetableModel>> getSeasonalFruits(
+    String householdId,
+  ) async {
+    final response = await _dioClient.get<Map<String, dynamic>>(
+      ApiConstants.seasonalFruits,
+      queryParameters: {'householdId': householdId},
+    );
+
+    final fruits = response['data']['fruits'] as List<dynamic>? ?? [];
+    return fruits
+        .map((f) => SeasonalVegetableModel.fromJson(f as Map<String, dynamic>))
+        .toList();
+  }
+
   /// Rate a recipe (create or update rating)
   Future<RecipeRatingModel> rateRecipe(
     String recipeId,

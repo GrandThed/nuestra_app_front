@@ -120,6 +120,8 @@ _SeasonalVegetableModel _$SeasonalVegetableModelFromJson(
 ) => _SeasonalVegetableModel(
   id: json['id'] as String,
   name: json['name'] as String,
+  nameEs: json['nameEs'] as String?,
+  namePt: json['namePt'] as String?,
   startWeek: (json['startWeek'] as num).toInt(),
   endWeek: (json['endWeek'] as num).toInt(),
   inSeason: json['inSeason'] as bool? ?? false,
@@ -130,6 +132,8 @@ Map<String, dynamic> _$SeasonalVegetableModelToJson(
 ) => <String, dynamic>{
   'id': instance.id,
   'name': instance.name,
+  'nameEs': instance.nameEs,
+  'namePt': instance.namePt,
   'startWeek': instance.startWeek,
   'endWeek': instance.endWeek,
   'inSeason': instance.inSeason,

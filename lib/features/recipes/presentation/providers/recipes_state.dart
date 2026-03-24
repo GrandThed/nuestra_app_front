@@ -29,3 +29,12 @@ sealed class SeasonalVegetablesState with _$SeasonalVegetablesState {
   const factory SeasonalVegetablesState.loaded(List<SeasonalVegetableModel> vegetables) = SeasonalVegetablesStateLoaded;
   const factory SeasonalVegetablesState.error(String message) = SeasonalVegetablesStateError;
 }
+
+/// State for seasonal fruits
+@freezed
+sealed class SeasonalFruitsState with _$SeasonalFruitsState {
+  const factory SeasonalFruitsState.initial() = SeasonalFruitsStateInitial;
+  const factory SeasonalFruitsState.loading() = SeasonalFruitsStateLoading;
+  const factory SeasonalFruitsState.loaded(List<SeasonalVegetableModel> fruits) = SeasonalFruitsStateLoaded;
+  const factory SeasonalFruitsState.error(String message) = SeasonalFruitsStateError;
+}

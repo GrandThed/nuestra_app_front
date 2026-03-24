@@ -74,12 +74,14 @@ sealed class RecipeRatingModel with _$RecipeRatingModel {
       _$RecipeRatingModelFromJson(json);
 }
 
-/// Model for seasonal vegetables
+/// Model for seasonal produce (vegetables and fruits)
 @freezed
 sealed class SeasonalVegetableModel with _$SeasonalVegetableModel {
   const factory SeasonalVegetableModel({
     required String id,
     required String name,
+    String? nameEs,
+    String? namePt,
     required int startWeek,
     required int endWeek,
     @Default(false) bool inSeason,

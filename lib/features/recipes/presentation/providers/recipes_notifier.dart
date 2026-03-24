@@ -355,3 +355,52 @@ class SeasonalVegetablesNotifier extends _$SeasonalVegetablesNotifier {
     }
   }
 }
+
+/// Notifier for seasonal fruits
+@Riverpod(keepAlive: true)
+class SeasonalFruitsNotifier extends _$SeasonalFruitsNotifier {
+  late final RecipeRepository _repository;
+
+  @override
+  SeasonalFruitsState build() {
+    _repository = ref.watch(recipeRepositoryProvider);
+    return const SeasonalFruitsState.initial();
+  }
+
+  /// Load fruits only if not already loaded (for screen init)
+  Future<void> loadFruitsIfNeeded() async {
+    if (state is SeasonalFruitsStateInitial ||
+        state is SeasonalFruitsStateError) {
+      await loadFruits();
+    }
+  }
+
+  /// Load seasonal fruits for current household
+  /// Shows loading only on first load, refreshes silently otherwise
+  Future<void> loadFruits({bool forceLoading = false}) async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null) {
+      state = const SeasonalFruitsState.error('No hay hogar seleccionado');
+      return;
+    }
+
+    final hasData = state is SeasonalFruitsStateLoaded;
+
+    if (!hasData || forceLoading) {
+      state = const SeasonalFruitsState.loading();
+    }
+
+    try {
+      final fruits = await _repository.getSeasonalFruits(householdId);
+      state = SeasonalFruitsState.loaded(fruits);
+    } on AppException catch (e) {
+      if (!hasData) {
+        state = SeasonalFruitsState.error(e.message);
+      }
+    } catch (e) {
+      if (!hasData) {
+        state = SeasonalFruitsState.error('Error al cargar frutas: $e');
+      }
+    }
+  }
+}

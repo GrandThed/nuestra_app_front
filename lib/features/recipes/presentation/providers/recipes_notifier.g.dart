@@ -235,3 +235,62 @@ abstract class _$SeasonalVegetablesNotifier
     element.handleCreate(ref, build);
   }
 }
+
+/// Notifier for seasonal fruits
+
+@ProviderFor(SeasonalFruitsNotifier)
+final seasonalFruitsProvider = SeasonalFruitsNotifierProvider._();
+
+/// Notifier for seasonal fruits
+final class SeasonalFruitsNotifierProvider
+    extends $NotifierProvider<SeasonalFruitsNotifier, SeasonalFruitsState> {
+  /// Notifier for seasonal fruits
+  SeasonalFruitsNotifierProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'seasonalFruitsProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$seasonalFruitsNotifierHash();
+
+  @$internal
+  @override
+  SeasonalFruitsNotifier create() => SeasonalFruitsNotifier();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(SeasonalFruitsState value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<SeasonalFruitsState>(value),
+    );
+  }
+}
+
+String _$seasonalFruitsNotifierHash() =>
+    r'db681b33ae0015972c92c31b1144c94fa3b3b6b6';
+
+/// Notifier for seasonal fruits
+
+abstract class _$SeasonalFruitsNotifier extends $Notifier<SeasonalFruitsState> {
+  SeasonalFruitsState build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<SeasonalFruitsState, SeasonalFruitsState>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<SeasonalFruitsState, SeasonalFruitsState>,
+              SeasonalFruitsState,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

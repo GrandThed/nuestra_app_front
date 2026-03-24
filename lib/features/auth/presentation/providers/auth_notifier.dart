@@ -222,6 +222,7 @@ class AuthNotifier extends _$AuthNotifier {
     ref.invalidate(recipesProvider);
     ref.invalidate(recipeDetailProvider);
     ref.invalidate(seasonalVegetablesProvider);
+    ref.invalidate(seasonalFruitsProvider);
     ref.invalidate(menuPlansProvider);
     ref.invalidate(upcomingMealsProvider);
     ref.invalidate(menuPlanDetailProvider);

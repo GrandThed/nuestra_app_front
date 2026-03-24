@@ -1196,7 +1196,7 @@ $RecipeCreatorModelCopyWith<$Res> get user {
 /// @nodoc
 mixin _$SeasonalVegetableModel {
 
- String get id; String get name; int get startWeek; int get endWeek; bool get inSeason;
+ String get id; String get name; String? get nameEs; String? get namePt; int get startWeek; int get endWeek; bool get inSeason;
 /// Create a copy of SeasonalVegetableModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1209,16 +1209,16 @@ $SeasonalVegetableModelCopyWith<SeasonalVegetableModel> get copyWith => _$Season
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SeasonalVegetableModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.startWeek, startWeek) || other.startWeek == startWeek)&&(identical(other.endWeek, endWeek) || other.endWeek == endWeek)&&(identical(other.inSeason, inSeason) || other.inSeason == inSeason));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SeasonalVegetableModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.nameEs, nameEs) || other.nameEs == nameEs)&&(identical(other.namePt, namePt) || other.namePt == namePt)&&(identical(other.startWeek, startWeek) || other.startWeek == startWeek)&&(identical(other.endWeek, endWeek) || other.endWeek == endWeek)&&(identical(other.inSeason, inSeason) || other.inSeason == inSeason));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,startWeek,endWeek,inSeason);
+int get hashCode => Object.hash(runtimeType,id,name,nameEs,namePt,startWeek,endWeek,inSeason);
 
 @override
 String toString() {
-  return 'SeasonalVegetableModel(id: $id, name: $name, startWeek: $startWeek, endWeek: $endWeek, inSeason: $inSeason)';
+  return 'SeasonalVegetableModel(id: $id, name: $name, nameEs: $nameEs, namePt: $namePt, startWeek: $startWeek, endWeek: $endWeek, inSeason: $inSeason)';
 }
 
 
@@ -1229,7 +1229,7 @@ abstract mixin class $SeasonalVegetableModelCopyWith<$Res>  {
   factory $SeasonalVegetableModelCopyWith(SeasonalVegetableModel value, $Res Function(SeasonalVegetableModel) _then) = _$SeasonalVegetableModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, int startWeek, int endWeek, bool inSeason
+ String id, String name, String? nameEs, String? namePt, int startWeek, int endWeek, bool inSeason
 });
 
 
@@ -1246,11 +1246,13 @@ class _$SeasonalVegetableModelCopyWithImpl<$Res>
 
 /// Create a copy of SeasonalVegetableModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? startWeek = null,Object? endWeek = null,Object? inSeason = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? nameEs = freezed,Object? namePt = freezed,Object? startWeek = null,Object? endWeek = null,Object? inSeason = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,startWeek: null == startWeek ? _self.startWeek : startWeek // ignore: cast_nullable_to_non_nullable
+as String,nameEs: freezed == nameEs ? _self.nameEs : nameEs // ignore: cast_nullable_to_non_nullable
+as String?,namePt: freezed == namePt ? _self.namePt : namePt // ignore: cast_nullable_to_non_nullable
+as String?,startWeek: null == startWeek ? _self.startWeek : startWeek // ignore: cast_nullable_to_non_nullable
 as int,endWeek: null == endWeek ? _self.endWeek : endWeek // ignore: cast_nullable_to_non_nullable
 as int,inSeason: null == inSeason ? _self.inSeason : inSeason // ignore: cast_nullable_to_non_nullable
 as bool,
@@ -1335,10 +1337,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  int startWeek,  int endWeek,  bool inSeason)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String? nameEs,  String? namePt,  int startWeek,  int endWeek,  bool inSeason)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SeasonalVegetableModel() when $default != null:
-return $default(_that.id,_that.name,_that.startWeek,_that.endWeek,_that.inSeason);case _:
+return $default(_that.id,_that.name,_that.nameEs,_that.namePt,_that.startWeek,_that.endWeek,_that.inSeason);case _:
   return orElse();
 
 }
@@ -1356,10 +1358,10 @@ return $default(_that.id,_that.name,_that.startWeek,_that.endWeek,_that.inSeason
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  int startWeek,  int endWeek,  bool inSeason)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String? nameEs,  String? namePt,  int startWeek,  int endWeek,  bool inSeason)  $default,) {final _that = this;
 switch (_that) {
 case _SeasonalVegetableModel():
-return $default(_that.id,_that.name,_that.startWeek,_that.endWeek,_that.inSeason);}
+return $default(_that.id,_that.name,_that.nameEs,_that.namePt,_that.startWeek,_that.endWeek,_that.inSeason);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -1373,10 +1375,10 @@ return $default(_that.id,_that.name,_that.startWeek,_that.endWeek,_that.inSeason
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  int startWeek,  int endWeek,  bool inSeason)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String? nameEs,  String? namePt,  int startWeek,  int endWeek,  bool inSeason)?  $default,) {final _that = this;
 switch (_that) {
 case _SeasonalVegetableModel() when $default != null:
-return $default(_that.id,_that.name,_that.startWeek,_that.endWeek,_that.inSeason);case _:
+return $default(_that.id,_that.name,_that.nameEs,_that.namePt,_that.startWeek,_that.endWeek,_that.inSeason);case _:
   return null;
 
 }
@@ -1388,11 +1390,13 @@ return $default(_that.id,_that.name,_that.startWeek,_that.endWeek,_that.inSeason
 @JsonSerializable()
 
 class _SeasonalVegetableModel implements SeasonalVegetableModel {
-  const _SeasonalVegetableModel({required this.id, required this.name, required this.startWeek, required this.endWeek, this.inSeason = false});
+  const _SeasonalVegetableModel({required this.id, required this.name, this.nameEs, this.namePt, required this.startWeek, required this.endWeek, this.inSeason = false});
   factory _SeasonalVegetableModel.fromJson(Map<String, dynamic> json) => _$SeasonalVegetableModelFromJson(json);
 
 @override final  String id;
 @override final  String name;
+@override final  String? nameEs;
+@override final  String? namePt;
 @override final  int startWeek;
 @override final  int endWeek;
 @override@JsonKey() final  bool inSeason;
@@ -1410,16 +1414,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SeasonalVegetableModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.startWeek, startWeek) || other.startWeek == startWeek)&&(identical(other.endWeek, endWeek) || other.endWeek == endWeek)&&(identical(other.inSeason, inSeason) || other.inSeason == inSeason));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SeasonalVegetableModel&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.nameEs, nameEs) || other.nameEs == nameEs)&&(identical(other.namePt, namePt) || other.namePt == namePt)&&(identical(other.startWeek, startWeek) || other.startWeek == startWeek)&&(identical(other.endWeek, endWeek) || other.endWeek == endWeek)&&(identical(other.inSeason, inSeason) || other.inSeason == inSeason));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,startWeek,endWeek,inSeason);
+int get hashCode => Object.hash(runtimeType,id,name,nameEs,namePt,startWeek,endWeek,inSeason);
 
 @override
 String toString() {
-  return 'SeasonalVegetableModel(id: $id, name: $name, startWeek: $startWeek, endWeek: $endWeek, inSeason: $inSeason)';
+  return 'SeasonalVegetableModel(id: $id, name: $name, nameEs: $nameEs, namePt: $namePt, startWeek: $startWeek, endWeek: $endWeek, inSeason: $inSeason)';
 }
 
 
@@ -1430,7 +1434,7 @@ abstract mixin class _$SeasonalVegetableModelCopyWith<$Res> implements $Seasonal
   factory _$SeasonalVegetableModelCopyWith(_SeasonalVegetableModel value, $Res Function(_SeasonalVegetableModel) _then) = __$SeasonalVegetableModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, int startWeek, int endWeek, bool inSeason
+ String id, String name, String? nameEs, String? namePt, int startWeek, int endWeek, bool inSeason
 });
 
 
@@ -1447,11 +1451,13 @@ class __$SeasonalVegetableModelCopyWithImpl<$Res>
 
 /// Create a copy of SeasonalVegetableModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? startWeek = null,Object? endWeek = null,Object? inSeason = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? nameEs = freezed,Object? namePt = freezed,Object? startWeek = null,Object? endWeek = null,Object? inSeason = null,}) {
   return _then(_SeasonalVegetableModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,startWeek: null == startWeek ? _self.startWeek : startWeek // ignore: cast_nullable_to_non_nullable
+as String,nameEs: freezed == nameEs ? _self.nameEs : nameEs // ignore: cast_nullable_to_non_nullable
+as String?,namePt: freezed == namePt ? _self.namePt : namePt // ignore: cast_nullable_to_non_nullable
+as String?,startWeek: null == startWeek ? _self.startWeek : startWeek // ignore: cast_nullable_to_non_nullable
 as int,endWeek: null == endWeek ? _self.endWeek : endWeek // ignore: cast_nullable_to_non_nullable
 as int,inSeason: null == inSeason ? _self.inSeason : inSeason // ignore: cast_nullable_to_non_nullable
 as bool,

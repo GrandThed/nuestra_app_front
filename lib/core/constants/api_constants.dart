@@ -48,6 +48,7 @@ class ApiConstants {
   static String recipeFavorite(String id) => '/api/recipes/$id/favorite';
   static const String recipeImportUrl = '/api/recipes/import-url';
   static const String seasonalVegetables = '/api/recipes/seasonal-vegetables';
+  static const String seasonalFruits = '/api/recipes/seasonal-fruits';
 
   // Menus
   static const String menus = '/api/menus';

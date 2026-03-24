@@ -33,11 +33,11 @@ enum _SeasonStatus {
   outOfSeason,
 }
 
-_SeasonStatus _classifyVegetable(SeasonalVegetableModel veg, int currentWeek) {
-  if (_isInSeason(veg.startWeek, veg.endWeek, currentWeek)) {
+_SeasonStatus _classifyItem(SeasonalVegetableModel item, int currentWeek) {
+  if (_isInSeason(item.startWeek, item.endWeek, currentWeek)) {
     return _SeasonStatus.inSeason;
   }
-  if (_isComingSoon(veg.startWeek, currentWeek)) {
+  if (_isComingSoon(item.startWeek, currentWeek)) {
     return _SeasonStatus.comingSoon;
   }
   return _SeasonStatus.outOfSeason;
@@ -53,7 +53,7 @@ bool _isInSeason(int startWeek, int endWeek, int currentWeek) {
   return currentWeek >= startWeek || currentWeek <= endWeek;
 }
 
-/// Checks whether the vegetable's season starts within the next 4 weeks.
+/// Checks whether the item's season starts within the next 4 weeks.
 bool _isComingSoon(int startWeek, int currentWeek) {
   for (int i = 1; i <= 4; i++) {
     final futureWeek = ((currentWeek - 1 + i) % 52) + 1;
@@ -62,6 +62,16 @@ bool _isComingSoon(int startWeek, int currentWeek) {
     }
   }
   return false;
+}
+
+/// Returns the localized name based on device locale.
+/// Falls back: nameEs -> namePt -> name (English)
+String _localizedName(SeasonalVegetableModel item, Locale locale) {
+  final lang = locale.languageCode;
+  if (lang == 'es' && item.nameEs != null) return item.nameEs!;
+  if (lang == 'pt' && item.namePt != null) return item.namePt!;
+  // Default to Spanish if available, then English
+  return item.nameEs ?? item.name;
 }
 
 class SeasonalVegetablesScreen extends ConsumerStatefulWidget {
@@ -73,42 +83,124 @@ class SeasonalVegetablesScreen extends ConsumerStatefulWidget {
 }
 
 class _SeasonalVegetablesScreenState
-    extends ConsumerState<SeasonalVegetablesScreen> {
+    extends ConsumerState<SeasonalVegetablesScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
     Future.microtask(() {
       ref
           .read(seasonalVegetablesProvider.notifier)
           .loadVegetablesIfNeeded();
+      ref
+          .read(seasonalFruitsProvider.notifier)
+          .loadFruitsIfNeeded();
     });
   }
 
   @override
-  Widget build(BuildContext context) {
-    final state = ref.watch(seasonalVegetablesProvider);
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Verduras de temporada'),
-      ),
-      body: switch (state) {
-        SeasonalVegetablesStateInitial() => const Center(
-            child: Text('Cargando verduras de temporada...'),
-          ),
-        SeasonalVegetablesStateLoading() => const Center(
-            child: CircularProgressIndicator(),
-          ),
-        SeasonalVegetablesStateError(:final message) => _buildErrorState(
-            message,
-          ),
-        SeasonalVegetablesStateLoaded(:final vegetables) =>
-          vegetables.isEmpty ? _buildEmptyState() : _buildContent(vegetables),
-      },
-    );
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
   }
 
-  Widget _buildErrorState(String message) {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Productos de temporada'),
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'Verduras', icon: Icon(Icons.eco)),
+            Tab(text: 'Frutas', icon: Icon(Icons.apple)),
+          ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _VegetablesTab(),
+          _FruitsTab(),
+        ],
+      ),
+    );
+  }
+}
+
+class _VegetablesTab extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(seasonalVegetablesProvider);
+
+    return switch (state) {
+      SeasonalVegetablesStateInitial() => const Center(
+          child: Text('Cargando verduras de temporada...'),
+        ),
+      SeasonalVegetablesStateLoading() => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      SeasonalVegetablesStateError(:final message) => _ErrorView(
+          message: message,
+          onRetry: () => ref
+              .read(seasonalVegetablesProvider.notifier)
+              .loadVegetables(),
+        ),
+      SeasonalVegetablesStateLoaded(:final vegetables) =>
+        vegetables.isEmpty
+            ? _EmptyView(message: 'No hay verduras de temporada')
+            : _ProduceList(
+                items: vegetables,
+                onRefresh: () => ref
+                    .read(seasonalVegetablesProvider.notifier)
+                    .loadVegetables(),
+              ),
+    };
+  }
+}
+
+class _FruitsTab extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(seasonalFruitsProvider);
+
+    return switch (state) {
+      SeasonalFruitsStateInitial() => const Center(
+          child: Text('Cargando frutas de temporada...'),
+        ),
+      SeasonalFruitsStateLoading() => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      SeasonalFruitsStateError(:final message) => _ErrorView(
+          message: message,
+          onRetry: () => ref
+              .read(seasonalFruitsProvider.notifier)
+              .loadFruits(),
+        ),
+      SeasonalFruitsStateLoaded(:final fruits) =>
+        fruits.isEmpty
+            ? _EmptyView(message: 'No hay frutas de temporada')
+            : _ProduceList(
+                items: fruits,
+                onRefresh: () => ref
+                    .read(seasonalFruitsProvider.notifier)
+                    .loadFruits(),
+              ),
+    };
+  }
+}
+
+class _ErrorView extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const _ErrorView({required this.message, required this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSizes.paddingLg),
@@ -128,9 +220,7 @@ class _SeasonalVegetablesScreenState
             ),
             const SizedBox(height: AppSizes.md),
             ElevatedButton(
-              onPressed: () => ref
-                  .read(seasonalVegetablesProvider.notifier)
-                  .loadVegetables(),
+              onPressed: onRetry,
               child: const Text('Reintentar'),
             ),
           ],
@@ -138,8 +228,15 @@ class _SeasonalVegetablesScreenState
       ),
     );
   }
+}
 
-  Widget _buildEmptyState() {
+class _EmptyView extends StatelessWidget {
+  final String message;
+
+  const _EmptyView({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -147,68 +244,74 @@ class _SeasonalVegetablesScreenState
           Icon(
             Icons.eco_outlined,
             size: 80,
-            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
+            color: Theme.of(context)
+                .colorScheme
+                .onSurfaceVariant
+                .withValues(alpha: 0.4),
           ),
           const SizedBox(height: AppSizes.md),
-          const Text(
-            'No hay verduras de temporada',
-            style: TextStyle(
+          Text(
+            message,
+            style: const TextStyle(
               fontSize: AppSizes.fontXl,
               fontWeight: FontWeight.bold,
               color: AppColors.textPrimary,
             ),
           ),
-          const SizedBox(height: AppSizes.sm),
-          const Text(
-            'Agrega verduras desde el backend',
-            style: TextStyle(color: AppColors.textSecondary),
-          ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildContent(List<SeasonalVegetableModel> vegetables) {
+class _ProduceList extends StatelessWidget {
+  final List<SeasonalVegetableModel> items;
+  final Future<void> Function() onRefresh;
+
+  const _ProduceList({required this.items, required this.onRefresh});
+
+  @override
+  Widget build(BuildContext context) {
     final currentWeek = _weekOfYear(DateTime.now());
+    final locale = Localizations.localeOf(context);
 
     final inSeason = <SeasonalVegetableModel>[];
     final comingSoon = <SeasonalVegetableModel>[];
     final outOfSeason = <SeasonalVegetableModel>[];
 
-    for (final veg in vegetables) {
-      switch (_classifyVegetable(veg, currentWeek)) {
+    for (final item in items) {
+      switch (_classifyItem(item, currentWeek)) {
         case _SeasonStatus.inSeason:
-          inSeason.add(veg);
+          inSeason.add(item);
         case _SeasonStatus.comingSoon:
-          comingSoon.add(veg);
+          comingSoon.add(item);
         case _SeasonStatus.outOfSeason:
-          outOfSeason.add(veg);
+          outOfSeason.add(item);
       }
     }
 
     return RefreshIndicator(
-      onRefresh: () => ref
-          .read(seasonalVegetablesProvider.notifier)
-          .loadVegetables(),
+      onRefresh: onRefresh,
       child: ListView(
         padding: const EdgeInsets.all(AppSizes.paddingMd),
         children: [
           // Current week indicator
-          _buildWeekIndicator(currentWeek),
+          _WeekIndicator(currentWeek: currentWeek),
           const SizedBox(height: AppSizes.lg),
 
           // In season
           if (inSeason.isNotEmpty) ...[
-            _buildSectionHeader(
+            _SectionHeader(
               title: 'En temporada',
               color: AppColors.success,
               icon: Icons.check_circle,
             ),
             const SizedBox(height: AppSizes.sm),
             ...inSeason.map(
-              (veg) => _VegetableCard(
-                vegetable: veg,
+              (item) => _ProduceCard(
+                item: item,
                 status: _SeasonStatus.inSeason,
+                locale: locale,
               ),
             ),
             const SizedBox(height: AppSizes.lg),
@@ -216,16 +319,17 @@ class _SeasonalVegetablesScreenState
 
           // Coming soon
           if (comingSoon.isNotEmpty) ...[
-            _buildSectionHeader(
+            _SectionHeader(
               title: 'Proximamente',
               color: AppColors.warning,
               icon: Icons.schedule,
             ),
             const SizedBox(height: AppSizes.sm),
             ...comingSoon.map(
-              (veg) => _VegetableCard(
-                vegetable: veg,
+              (item) => _ProduceCard(
+                item: item,
                 status: _SeasonStatus.comingSoon,
+                locale: locale,
               ),
             ),
             const SizedBox(height: AppSizes.lg),
@@ -233,16 +337,17 @@ class _SeasonalVegetablesScreenState
 
           // Out of season
           if (outOfSeason.isNotEmpty) ...[
-            _buildSectionHeader(
+            _SectionHeader(
               title: 'Fuera de temporada',
               color: AppColors.textSecondary,
               icon: Icons.hourglass_empty,
             ),
             const SizedBox(height: AppSizes.sm),
             ...outOfSeason.map(
-              (veg) => _VegetableCard(
-                vegetable: veg,
+              (item) => _ProduceCard(
+                item: item,
                 status: _SeasonStatus.outOfSeason,
+                locale: locale,
               ),
             ),
           ],
@@ -250,8 +355,15 @@ class _SeasonalVegetablesScreenState
       ),
     );
   }
+}
 
-  Widget _buildWeekIndicator(int currentWeek) {
+class _WeekIndicator extends StatelessWidget {
+  final int currentWeek;
+
+  const _WeekIndicator({required this.currentWeek});
+
+  @override
+  Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(
@@ -286,12 +398,21 @@ class _SeasonalVegetablesScreenState
       ),
     );
   }
+}
 
-  Widget _buildSectionHeader({
-    required String title,
-    required Color color,
-    required IconData icon,
-  }) {
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final Color color;
+  final IconData icon;
+
+  const _SectionHeader({
+    required this.title,
+    required this.color,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Row(
       children: [
         Icon(icon, size: AppSizes.iconSm, color: color),
@@ -309,13 +430,15 @@ class _SeasonalVegetablesScreenState
   }
 }
 
-class _VegetableCard extends StatelessWidget {
-  final SeasonalVegetableModel vegetable;
+class _ProduceCard extends StatelessWidget {
+  final SeasonalVegetableModel item;
   final _SeasonStatus status;
+  final Locale locale;
 
-  const _VegetableCard({
-    required this.vegetable,
+  const _ProduceCard({
+    required this.item,
     required this.status,
+    required this.locale,
   });
 
   Color get _statusColor => switch (status) {
@@ -365,7 +488,7 @@ class _VegetableCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    vegetable.name,
+                    _localizedName(item, locale),
                     style: TextStyle(
                       fontSize: AppSizes.fontMd,
                       fontWeight: FontWeight.w600,
@@ -374,7 +497,7 @@ class _VegetableCard extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSizes.xs),
                   Text(
-                    'Semana ${vegetable.startWeek} - Semana ${vegetable.endWeek}',
+                    'Semana ${item.startWeek} - Semana ${item.endWeek}',
                     style: const TextStyle(
                       fontSize: AppSizes.fontSm,
                       color: AppColors.textSecondary,
