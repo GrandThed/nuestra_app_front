@@ -42,7 +42,11 @@ class ChatBubble extends StatelessWidget {
                 leading: const Icon(Icons.copy),
                 title: const Text('Copiar mensaje'),
                 onTap: () {
-                  Clipboard.setData(ClipboardData(text: message.content!));
+                  final cleanContent = message.content!
+                      .replaceAll(RegExp(r'\{\{tool:\d+\}\}'), '')
+                      .replaceAll(RegExp(r'\n{3,}'), '\n\n')
+                      .trim();
+                  Clipboard.setData(ClipboardData(text: cleanContent));
                   Navigator.pop(ctx);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -176,46 +180,20 @@ class ChatBubble extends StatelessWidget {
                     const SizedBox(height: 6),
                 ],
 
-                // Text + timestamp row
-                if (message.content != null && message.content!.isNotEmpty)
-                  _isUser
-                      ? _buildUserTextWithTime(context, time)
-                      : _buildAssistantMarkdownWithTime(context, time),
+                // Content: text with inline tool cards, or just text, or just tools
+                if (_isUser && message.content != null && message.content!.isNotEmpty)
+                  _buildUserTextWithTime(context, time),
 
-                // If no text but has images, show timestamp alone
-                if ((message.content == null ||
-                        message.content!.isEmpty) &&
-                    message.toolCalls.isEmpty)
+                if (!_isUser)
+                  ..._buildAssistantContentWithInlineTools(context, time),
+
+                // If no text, no tools, show timestamp alone
+                if (_isUser &&
+                    (message.content == null || message.content!.isEmpty))
                   Align(
                     alignment: Alignment.bottomRight,
                     child: _buildTimeLabel(context, time),
                   ),
-
-                // Tool call cards (assistant only)
-                if (!_isUser && message.toolCalls.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  ...message.toolCalls.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final tc = entry.value;
-                    final key = '${message.id}_$index';
-                    final status =
-                        toolStatuses[key] ?? ToolExecutionStatus.pending;
-                    final result = toolResults[key];
-
-                    return ToolCallCard(
-                      toolCall: tc,
-                      status: status,
-                      resultMessage: result,
-                      onTap: () =>
-                          _showDetailSheet(context, tc, index),
-                    );
-                  }),
-                  const SizedBox(height: 2),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: _buildTimeLabel(context, time),
-                  ),
-                ],
               ],
             ),
           ),
@@ -242,6 +220,139 @@ class ChatBubble extends StatelessWidget {
     );
   }
 
+  /// Build a tool card widget for a given index
+  Widget _buildToolCard(BuildContext context, int index) {
+    if (index < 0 || index >= message.toolCalls.length) {
+      return const SizedBox.shrink();
+    }
+    final tc = message.toolCalls[index];
+    final key = '${message.id}_$index';
+    final status = toolStatuses[key] ?? ToolExecutionStatus.pending;
+    final result = toolResults[key];
+
+    return ToolCallCard(
+      toolCall: tc,
+      status: status,
+      resultMessage: result,
+      onTap: () => _showDetailSheet(context, tc, index),
+    );
+  }
+
+  /// Build a markdown segment widget
+  Widget _buildMarkdownSegment(BuildContext context, String text) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textColor = colorScheme.onSurface;
+
+    return MarkdownBody(
+      data: text,
+      selectable: false,
+      shrinkWrap: true,
+      styleSheet: MarkdownStyleSheet(
+        p: TextStyle(fontSize: 15, color: textColor, height: 1.35),
+        h1: TextStyle(
+            fontSize: 20, fontWeight: FontWeight.bold, color: textColor),
+        h2: TextStyle(
+            fontSize: 18, fontWeight: FontWeight.bold, color: textColor),
+        h3: TextStyle(
+            fontSize: 16, fontWeight: FontWeight.bold, color: textColor),
+        listBullet: TextStyle(fontSize: 15, color: textColor, height: 1.35),
+        code: TextStyle(
+          fontSize: 13,
+          color: textColor,
+          backgroundColor:
+              colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        ),
+        codeblockDecoration: BoxDecoration(
+          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        blockquoteDecoration: BoxDecoration(
+          border: Border(
+            left: BorderSide(color: colorScheme.primary, width: 3),
+          ),
+        ),
+        blockquotePadding: const EdgeInsets.only(left: 12, top: 4, bottom: 4),
+        strong: TextStyle(fontWeight: FontWeight.bold, color: textColor),
+        em: TextStyle(fontStyle: FontStyle.italic, color: textColor),
+      ),
+    );
+  }
+
+  /// Assistant messages: interleave text segments with inline tool cards
+  List<Widget> _buildAssistantContentWithInlineTools(
+      BuildContext context, String time) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final timeColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.6);
+    final content = message.content ?? '';
+    final hasToolCalls = message.toolCalls.isNotEmpty;
+
+    // Check if the reply contains {{tool:N}} markers
+    final markerPattern = RegExp(r'\{\{tool:(\d+)\}\}');
+    final hasMarkers = hasToolCalls && markerPattern.hasMatch(content);
+
+    if (!hasMarkers) {
+      // No markers — fall back to old layout: text block then all tools at bottom
+      final widgets = <Widget>[];
+      if (content.isNotEmpty) {
+        widgets.add(_buildMarkdownSegment(context, content));
+      }
+      if (hasToolCalls) {
+        if (content.isNotEmpty) widgets.add(const SizedBox(height: 4));
+        for (var i = 0; i < message.toolCalls.length; i++) {
+          widgets.add(_buildToolCard(context, i));
+        }
+      }
+      widgets.add(const SizedBox(height: 4));
+      widgets.add(Align(
+        alignment: Alignment.bottomRight,
+        child: Text(time, style: TextStyle(fontSize: 11, color: timeColor)),
+      ));
+      return widgets;
+    }
+
+    // Split content by markers and interleave text + tool cards
+    final widgets = <Widget>[];
+    final usedToolIndices = <int>{};
+    int lastEnd = 0;
+
+    for (final match in markerPattern.allMatches(content)) {
+      // Text before this marker
+      final textBefore = content.substring(lastEnd, match.start).trim();
+      if (textBefore.isNotEmpty) {
+        widgets.add(_buildMarkdownSegment(context, textBefore));
+      }
+
+      // The tool card
+      final toolIndex = int.parse(match.group(1)!);
+      widgets.add(_buildToolCard(context, toolIndex));
+      usedToolIndices.add(toolIndex);
+
+      lastEnd = match.end;
+    }
+
+    // Text after the last marker
+    final textAfter = content.substring(lastEnd).trim();
+    if (textAfter.isNotEmpty) {
+      widgets.add(_buildMarkdownSegment(context, textAfter));
+    }
+
+    // Any tool cards not referenced by markers go at the bottom
+    for (var i = 0; i < message.toolCalls.length; i++) {
+      if (!usedToolIndices.contains(i)) {
+        widgets.add(_buildToolCard(context, i));
+      }
+    }
+
+    // Timestamp
+    widgets.add(const SizedBox(height: 4));
+    widgets.add(Align(
+      alignment: Alignment.bottomRight,
+      child: Text(time, style: TextStyle(fontSize: 11, color: timeColor)),
+    ));
+
+    return widgets;
+  }
+
   /// User messages: plain text with inline timestamp
   Widget _buildUserTextWithTime(BuildContext context, String time) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -263,73 +374,6 @@ class ChatBubble extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.only(bottom: 1),
-          child: Text(
-            time,
-            style: TextStyle(fontSize: 11, color: timeColor),
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Assistant messages: rendered as markdown with timestamp below
-  Widget _buildAssistantMarkdownWithTime(BuildContext context, String time) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textColor = colorScheme.onSurface;
-    final timeColor = colorScheme.onSurfaceVariant.withValues(alpha: 0.6);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        MarkdownBody(
-          data: message.content!,
-          selectable: false,
-          shrinkWrap: true,
-          styleSheet: MarkdownStyleSheet(
-            p: TextStyle(fontSize: 15, color: textColor, height: 1.35),
-            h1: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
-            h2: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
-            h3: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: textColor,
-            ),
-            listBullet:
-                TextStyle(fontSize: 15, color: textColor, height: 1.35),
-            code: TextStyle(
-              fontSize: 13,
-              color: textColor,
-              backgroundColor:
-                  colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-            ),
-            codeblockDecoration: BoxDecoration(
-              color:
-                  colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            blockquoteDecoration: BoxDecoration(
-              border: Border(
-                left: BorderSide(color: colorScheme.primary, width: 3),
-              ),
-            ),
-            blockquotePadding:
-                const EdgeInsets.only(left: 12, top: 4, bottom: 4),
-            strong:
-                TextStyle(fontWeight: FontWeight.bold, color: textColor),
-            em: TextStyle(fontStyle: FontStyle.italic, color: textColor),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Align(
-          alignment: Alignment.bottomRight,
           child: Text(
             time,
             style: TextStyle(fontSize: 11, color: timeColor),
