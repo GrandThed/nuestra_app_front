@@ -491,6 +491,60 @@ abstract class _$ExpenseTrendsNotifier extends $Notifier<ExpenseTrendsState> {
   }
 }
 
+/// Provider that loads recent expenses (last ~90 days) for building
+/// description/category suggestions in the add-expense form. Auto-disposes so
+/// it re-fetches fresh data each time the form opens.
+
+@ProviderFor(recentExpensesForSuggestions)
+final recentExpensesForSuggestionsProvider =
+    RecentExpensesForSuggestionsProvider._();
+
+/// Provider that loads recent expenses (last ~90 days) for building
+/// description/category suggestions in the add-expense form. Auto-disposes so
+/// it re-fetches fresh data each time the form opens.
+
+final class RecentExpensesForSuggestionsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ExpenseModel>>,
+          List<ExpenseModel>,
+          FutureOr<List<ExpenseModel>>
+        >
+    with
+        $FutureModifier<List<ExpenseModel>>,
+        $FutureProvider<List<ExpenseModel>> {
+  /// Provider that loads recent expenses (last ~90 days) for building
+  /// description/category suggestions in the add-expense form. Auto-disposes so
+  /// it re-fetches fresh data each time the form opens.
+  RecentExpensesForSuggestionsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'recentExpensesForSuggestionsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$recentExpensesForSuggestionsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<ExpenseModel>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<ExpenseModel>> create(Ref ref) {
+    return recentExpensesForSuggestions(ref);
+  }
+}
+
+String _$recentExpensesForSuggestionsHash() =>
+    r'6cb24a84ee44a6dfa7265edb02a7783a0b6a8f71';
+
 /// Utility provider for exporting expenses as CSV
 /// Returns the CSV string or null on error
 

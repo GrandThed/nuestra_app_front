@@ -104,6 +104,28 @@ class ExpenseRepository {
         .toList();
   }
 
+  /// Get expenses within an arbitrary date range.
+  /// Used to build description/category suggestions from recent activity.
+  Future<List<ExpenseModel>> getExpensesInRange(
+    String householdId, {
+    required DateTime from,
+    required DateTime to,
+  }) async {
+    final response = await _dioClient.get<Map<String, dynamic>>(
+      ApiConstants.expenses,
+      queryParameters: {
+        'householdId': householdId,
+        'from': from.toIso8601String(),
+        'to': to.toIso8601String(),
+      },
+    );
+
+    final expenses = response['data']['expenses'] as List<dynamic>? ?? [];
+    return expenses
+        .map((e) => ExpenseModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   /// Get a single expense by ID
   Future<ExpenseModel> getExpense(String id) async {
     final response = await _dioClient.get<Map<String, dynamic>>(
@@ -208,8 +230,10 @@ class ExpenseRepository {
       ApiConstants.expenseSettlePeriod,
       data: {
         'householdId': householdId,
-        'fromDate': fromDate.toIso8601String().split('T').first,
-        'toDate': toDate.toIso8601String().split('T').first,
+        // Send full timestamps so the backend's inclusive date range catches
+        // expenses recorded at any time of day (especially on the last day).
+        'fromDate': fromDate.toIso8601String(),
+        'toDate': toDate.toIso8601String(),
       },
     );
 
@@ -337,7 +361,7 @@ class ExpenseRepository {
       data: {'householdId': householdId},
     );
 
-    final generated = response['data']['generated'] as List<dynamic>? ?? [];
+    final generated = response['data']['expenses'] as List<dynamic>? ?? [];
     return generated
         .map((e) => ExpenseModel.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -393,11 +417,38 @@ class ExpenseRepository {
       },
     );
 
-    final status =
-        response['data']['budgetStatus'] as List<dynamic>? ?? [];
-    return status
-        .map((b) => BudgetStatusModel.fromJson(b as Map<String, dynamic>))
-        .toList();
+    // Backend returns one entry per household category under `categories`,
+    // with a null `monthlyLimit` when no budget has been set for that category.
+    final status = response['data']['categories'] as List<dynamic>? ?? [];
+    return status.map((raw) {
+      final b = raw as Map<String, dynamic>;
+      final category = b['category'] as Map<String, dynamic>?;
+      final limit = _toDouble(b['monthlyLimit']);
+      final spent = _toDouble(b['actualSpending']);
+      final remaining =
+          b['remaining'] != null ? _toDouble(b['remaining']) : limit - spent;
+      final percentUsed = b['percentUsed'] != null
+          ? _toDouble(b['percentUsed'])
+          : (limit > 0 ? (spent / limit) * 100 : 0.0);
+
+      return BudgetStatusModel(
+        categoryId: category?['id'] as String? ?? '',
+        categoryName: category?['name'] as String? ?? 'Sin categoria',
+        budgetLimit: limit,
+        actualSpent: spent,
+        remaining: remaining,
+        percentUsed: percentUsed,
+      );
+    }).toList();
+  }
+
+  /// Coerce a JSON number/string/null (Prisma Decimal can serialize as String)
+  /// into a double, defaulting to 0.
+  double _toDouble(Object? value) {
+    if (value == null) return 0.0;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value) ?? 0.0;
+    return 0.0;
   }
 
   // ==================== TRENDS ====================

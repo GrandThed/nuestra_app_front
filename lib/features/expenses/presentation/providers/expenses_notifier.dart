@@ -866,6 +866,31 @@ class ExpenseTrendsNotifier extends _$ExpenseTrendsNotifier {
   }
 }
 
+/// Provider that loads recent expenses (last ~90 days) for building
+/// description/category suggestions in the add-expense form. Auto-disposes so
+/// it re-fetches fresh data each time the form opens.
+@riverpod
+Future<List<ExpenseModel>> recentExpensesForSuggestions(Ref ref) async {
+  final householdId = ref.read(currentHouseholdIdProvider);
+  if (householdId == null) return [];
+
+  final now = DateTime.now();
+  final from = DateTime(now.year, now.month, now.day)
+      .subtract(const Duration(days: 90));
+
+  try {
+    final repository = ref.read(expenseRepositoryProvider);
+    return await repository.getExpensesInRange(
+      householdId,
+      from: from,
+      to: now,
+    );
+  } catch (e) {
+    debugPrint('Error loading recent expenses for suggestions: $e');
+    return [];
+  }
+}
+
 /// Utility provider for exporting expenses as CSV
 /// Returns the CSV string or null on error
 @riverpod

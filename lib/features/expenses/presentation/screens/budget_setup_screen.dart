@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
+import 'package:nuestra_app/core/utils/currency_input_formatter.dart';
 import 'package:nuestra_app/features/expenses/data/models/expense_model.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_state.dart';
@@ -91,9 +91,7 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
 
   void _showEditBudgetDialog(BudgetStatusModel budget) {
     final controller = TextEditingController(
-      text: budget.budgetLimit > 0
-          ? budget.budgetLimit.toStringAsFixed(0)
-          : '',
+      text: CurrencyInputFormatter.formatValue(budget.budgetLimit),
     );
 
     showDialog(
@@ -117,14 +115,12 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
               decoration: const InputDecoration(
                 labelText: 'Limite mensual',
                 border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.attach_money),
+                prefixText: '\$ ',
               ),
               keyboardType:
                   const TextInputType.numberWithOptions(decimal: true),
               inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                  RegExp(r'^\d+\.?\d{0,2}'),
-                ),
+                CurrencyInputFormatter(),
               ],
               autofocus: true,
             ),
@@ -150,7 +146,7 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
               final text = controller.text.trim();
               if (text.isEmpty) return;
 
-              final limit = double.tryParse(text);
+              final limit = CurrencyInputFormatter.parse(text);
               if (limit == null || limit <= 0) return;
 
               Navigator.pop(dialogContext);
@@ -268,15 +264,21 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
   }
 
   Widget _buildContent(List<BudgetStatusModel> budgets) {
-    if (budgets.isEmpty) {
+    // Only show categories that have a budget set or some spending this month,
+    // so the list stays relevant instead of listing every empty category.
+    final visible = budgets
+        .where((b) => b.budgetLimit > 0 || b.actualSpent > 0)
+        .toList();
+
+    if (visible.isEmpty) {
       return _buildEmptyState();
     }
 
-    // Calculate overall totals
-    final totalBudget =
-        budgets.fold(0.0, (sum, b) => sum + b.budgetLimit);
-    final totalSpent =
-        budgets.fold(0.0, (sum, b) => sum + b.actualSpent);
+    // Overall totals only consider categories that actually have a budget, so
+    // unbudgeted spending doesn't distort the percentage.
+    final budgeted = visible.where((b) => b.budgetLimit > 0);
+    final totalBudget = budgeted.fold(0.0, (sum, b) => sum + b.budgetLimit);
+    final totalSpent = budgeted.fold(0.0, (sum, b) => sum + b.actualSpent);
     final overallPercent =
         totalBudget > 0 ? (totalSpent / totalBudget * 100) : 0.0;
 
@@ -286,12 +288,14 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
       child: ListView(
         padding: const EdgeInsets.all(AppSizes.md),
         children: [
-          // Overall summary card
-          _buildOverallSummary(totalBudget, totalSpent, overallPercent),
-          const SizedBox(height: AppSizes.md),
+          // Overall summary card (only when at least one budget is set)
+          if (totalBudget > 0) ...[
+            _buildOverallSummary(totalBudget, totalSpent, overallPercent),
+            const SizedBox(height: AppSizes.md),
+          ],
 
           // Individual category budgets
-          ...budgets.map(
+          ...visible.map(
             (budget) => _BudgetCategoryCard(
               budget: budget,
               currencyFormat: _currencyFormat,
@@ -464,9 +468,75 @@ class _BudgetCategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final progressValue = budget.budgetLimit > 0
-        ? (budget.actualSpent / budget.budgetLimit).clamp(0.0, 1.0)
-        : 0.0;
+    final hasBudget = budget.budgetLimit > 0;
+
+    // Category with spending but no budget set yet: show a lightweight card
+    // inviting the user to define a limit, instead of a misleading 0% / red.
+    if (!hasBudget) {
+      return Card(
+        margin: const EdgeInsets.only(bottom: AppSizes.sm),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppSizes.radiusSm),
+          child: Padding(
+            padding: const EdgeInsets.all(AppSizes.md),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        budget.categoryName,
+                        style: const TextStyle(
+                          fontSize: AppSizes.fontMd,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'Gastado: ${currencyFormat.format(budget.actualSpent)}',
+                        style: TextStyle(
+                          fontSize: AppSizes.fontXs,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: AppSizes.sm),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.add_circle_outline,
+                      size: 16,
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(width: AppSizes.xs),
+                    Text(
+                      'Definir presupuesto',
+                      style: TextStyle(
+                        fontSize: AppSizes.fontXs,
+                        fontWeight: FontWeight.w500,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final progressValue =
+        (budget.actualSpent / budget.budgetLimit).clamp(0.0, 1.0);
 
     return Card(
       margin: const EdgeInsets.only(bottom: AppSizes.sm),

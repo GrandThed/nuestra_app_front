@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
+import 'package:nuestra_app/core/utils/currency_input_formatter.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 import 'package:nuestra_app/features/expenses/data/models/expense_model.dart';
@@ -70,19 +70,57 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     }
   }
 
-  /// Get unique descriptions from previous expenses for autocomplete
-  List<String> _getDescriptionSuggestions(String query) {
-    final state = ref.read(expensesProvider);
-    if (state is! ExpensesStateLoaded) return [];
+  /// Recent expenses used to build suggestions. Prefers the last ~90 days
+  /// loaded by [recentExpensesForSuggestionsProvider], falling back to the
+  /// currently loaded month if that hasn't finished loading yet.
+  List<ExpenseModel> _recentExpenses() {
+    final recent =
+        ref.read(recentExpensesForSuggestionsProvider).asData?.value;
+    if (recent != null && recent.isNotEmpty) return recent;
 
-    final descriptions = state.expenses
+    final state = ref.read(expensesProvider);
+    if (state is ExpensesStateLoaded) return state.expenses;
+    return [];
+  }
+
+  /// Get unique descriptions from recent expenses for autocomplete
+  List<String> _getDescriptionSuggestions(String query) {
+    final lowerQuery = query.toLowerCase();
+    final descriptions = _recentExpenses()
         .map((e) => e.description)
         .toSet()
-        .where((d) => d.toLowerCase().contains(query.toLowerCase()))
+        .where((d) => d.toLowerCase().contains(lowerQuery))
         .take(8)
         .toList();
 
     return descriptions;
+  }
+
+  /// Apply a selected suggestion: fills the description and, when the same
+  /// description was used before with a category, pre-selects that category.
+  void _applyDescriptionSelection(String selection) {
+    _descriptionController.text = selection;
+
+    // Dismiss the suggestions dropdown after picking one.
+    _descriptionFocusNode?.unfocus();
+
+    final matches = _recentExpenses()
+        .where((e) => e.description == selection && e.category != null)
+        .toList()
+      ..sort((a, b) => b.date.compareTo(a.date));
+
+    if (matches.isEmpty) return;
+
+    final categoryId = matches.first.category!.id;
+    final expensesState = ref.read(expensesProvider);
+    final categories = expensesState is ExpensesStateLoaded
+        ? expensesState.categories
+        : <ExpenseCategoryModel>[];
+
+    // Only apply if the category still exists in this household.
+    if (categories.any((c) => c.id == categoryId)) {
+      setState(() => _selectedCategoryId = categoryId);
+    }
   }
 
   Future<void> _submit() async {
@@ -90,9 +128,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
     setState(() => _isLoading = true);
 
-    final amount = double.tryParse(
-      _amountController.text.replaceAll(',', '.'),
-    );
+    final amount = CurrencyInputFormatter.parse(_amountController.text);
 
     if (amount == null || amount <= 0) {
       setState(() => _isLoading = false);
@@ -193,6 +229,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Keep recent expenses loading while the form is open (for suggestions).
+    ref.watch(recentExpensesForSuggestionsProvider);
     final expensesState = ref.watch(expensesProvider);
     final householdState = ref.watch(householdProvider);
     final categories = expensesState is ExpensesStateLoaded ? expensesState.categories : <ExpenseCategoryModel>[];
@@ -218,7 +256,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 _descriptionFocusNode?.requestFocus();
               },
               inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[\d.,]')),
+                CurrencyInputFormatter(),
               ],
               style: TextStyle(
                 fontSize: 32,
@@ -245,7 +283,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 if (value == null || value.isEmpty) {
                   return 'Ingresa el monto';
                 }
-                final amount = double.tryParse(value.replaceAll(',', '.'));
+                final amount = CurrencyInputFormatter.parse(value);
                 if (amount == null || amount <= 0) {
                   return 'Monto invalido';
                 }
@@ -262,9 +300,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 }
                 return _getDescriptionSuggestions(textEditingValue.text);
               },
-              onSelected: (selection) {
-                _descriptionController.text = selection;
-              },
+              onSelected: _applyDescriptionSelection,
               fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
                 // Store the focus node reference for keyboard navigation
                 _descriptionFocusNode = focusNode;

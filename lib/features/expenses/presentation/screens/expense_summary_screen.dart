@@ -1,4 +1,7 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
@@ -139,99 +142,63 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
     }
   }
 
-  Future<void> _settlePeriod() async {
+  /// Opens the itemized breakdown for the period: every expense colored by who
+  /// paid it, the per-person calculations, plus options to copy it or settle.
+  Future<void> _showSettlementBreakdown() async {
     final summaryState = ref.read(expenseSummaryProvider);
     if (summaryState is! ExpenseSummaryStateLoaded) return;
 
-    final summary = summaryState.summary;
-    final fromDate = DateTime(_selectedYear, _selectedMonth, 1);
-    final toDate = DateTime(_selectedYear, _selectedMonth + 1, 0);
+    final expensesState = ref.read(expensesProvider);
+    // Only consider expenses that still have pending splits — already-settled
+    // ones were paid in a previous round and shouldn't be counted again.
+    final expenses = expensesState is ExpensesStateLoaded
+        ? expensesState.expenses.where((e) => !e.allSettled).toList()
+        : <ExpenseModel>[];
 
-    final confirmed = await showDialog<bool>(
+    await showModalBottomSheet<void>(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Saldar periodo'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                '${_getMonthName(_selectedMonth)} $_selectedYear',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: AppSizes.md),
-              if (summary.settlements.isEmpty)
-                const Text('No hay pagos pendientes entre miembros.')
-              else ...[
-                const Text('Pagos pendientes:'),
-                const SizedBox(height: AppSizes.sm),
-                ...summary.settlements.map((settlement) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '${settlement.from.name} debe a ${settlement.to.name}',
-                              style: const TextStyle(fontSize: 14),
-                            ),
-                          ),
-                          Text(
-                            _currencyFormat.format(settlement.amount),
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Theme.of(dialogContext).colorScheme.primary,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
-              ],
-              const SizedBox(height: AppSizes.md),
-              Text(
-                '¿Marcar todos los gastos como saldados?',
-                style: TextStyle(
-                  color: Theme.of(dialogContext).colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext, false),
-            child: const Text('Cancelar'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(dialogContext, true),
-            child: const Text('Saldar'),
-          ),
-        ],
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (sheetContext) => _SettlementBreakdownSheet(
+        monthLabel: '${_getMonthName(_selectedMonth)} $_selectedYear',
+        expenses: expenses,
+        currencyFormat: _currencyFormat,
+        onSettle: () {
+          Navigator.pop(sheetContext);
+          _runSettlePeriod();
+        },
       ),
     );
+  }
 
-    if (confirmed == true && mounted) {
-      final result = await ref
-          .read(expenseSummaryProvider.notifier)
-          .settlePeriod(fromDate: fromDate, toDate: toDate);
+  Future<void> _runSettlePeriod() async {
+    final fromDate = DateTime(_selectedYear, _selectedMonth, 1);
+    // End of the last day of the month so late-in-the-day expenses are included.
+    final toDate =
+        DateTime(_selectedYear, _selectedMonth + 1, 0, 23, 59, 59, 999);
 
-      if (mounted && result != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Se saldaron ${result.settledCount} divisiones en ${result.expensesAffected} gastos',
-            ),
+    final result = await ref
+        .read(expenseSummaryProvider.notifier)
+        .settlePeriod(fromDate: fromDate, toDate: toDate);
+
+    if (mounted && result != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Se saldaron ${result.settledCount} divisiones en ${result.expensesAffected} gastos',
           ),
-        );
-        // Also refresh the main expenses list
-        ref.read(expensesProvider.notifier).loadExpenses();
-        // Reload summary with current month/year
-        ref.read(expenseSummaryProvider.notifier).loadSummary(
-              month: _selectedMonth,
-              year: _selectedYear,
-              forceLoading: true,
-            );
-      }
+        ),
+      );
+      // Refresh the main expenses list for the same period and the summary.
+      ref.read(expensesProvider.notifier).loadExpenses(
+            month: _selectedMonth,
+            year: _selectedYear,
+          );
+      ref.read(expenseSummaryProvider.notifier).loadSummary(
+            month: _selectedMonth,
+            year: _selectedYear,
+            forceLoading: true,
+          );
     }
   }
 
@@ -252,7 +219,7 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
           IconButton(
             icon: const Icon(Icons.check_circle_outline),
             tooltip: 'Saldar período',
-            onPressed: _settlePeriod,
+            onPressed: _showSettlementBreakdown,
           ),
         ],
       ),
@@ -799,6 +766,454 @@ class _ExpenseListTile extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+/// Color + emoji assigned to each member. The dot color is used in the UI; the
+/// emoji is used in the copied plain-text breakdown so colors survive copy.
+const List<({Color color, String emoji})> _kMemberPalette = [
+  (color: Color(0xFF3B82F6), emoji: '🔵'), // blue
+  (color: Color(0xFFF97316), emoji: '🟠'), // orange
+  (color: Color(0xFF22C55E), emoji: '🟢'), // green
+  (color: Color(0xFF8B5CF6), emoji: '🟣'), // purple
+  (color: Color(0xFFEF4444), emoji: '🔴'), // red
+  (color: Color(0xFFEAB308), emoji: '🟡'), // yellow
+];
+
+/// Per-member running totals for the settlement breakdown.
+class _MemberCalc {
+  _MemberCalc({
+    required this.userId,
+    required this.name,
+    required this.colorIndex,
+  });
+
+  final String userId;
+  final String name;
+  final int colorIndex;
+  double paid = 0;
+  double share = 0;
+
+  double get balance => paid - share;
+  ({Color color, String emoji}) get palette =>
+      _kMemberPalette[colorIndex % _kMemberPalette.length];
+}
+
+/// Bottom sheet showing the itemized breakdown of a period: every expense
+/// colored by who paid it, a member legend, the per-person calculations, and
+/// buttons to copy the breakdown or settle the whole period.
+class _SettlementBreakdownSheet extends StatelessWidget {
+  const _SettlementBreakdownSheet({
+    required this.monthLabel,
+    required this.expenses,
+    required this.currencyFormat,
+    required this.onSettle,
+  });
+
+  final String monthLabel;
+  final List<ExpenseModel> expenses;
+  final NumberFormat currencyFormat;
+  final VoidCallback onSettle;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    // Build a stable member ordering by first appearance (payers first).
+    final order = <String>[];
+    final calcs = <String, _MemberCalc>{};
+    void touch(String id, String name) {
+      if (!calcs.containsKey(id)) {
+        calcs[id] = _MemberCalc(
+          userId: id,
+          name: name,
+          colorIndex: order.length,
+        );
+        order.add(id);
+      }
+    }
+
+    for (final e in expenses) {
+      touch(e.paidBy.id, e.paidBy.name);
+      for (final s in e.splits) {
+        touch(s.userId, s.user?.name ?? 'Usuario');
+      }
+    }
+
+    var total = 0.0;
+    for (final e in expenses) {
+      total += e.amount;
+      calcs[e.paidBy.id]?.paid += e.amount;
+      for (final s in e.splits) {
+        calcs[s.userId]?.share += s.amount;
+      }
+    }
+
+    final members = order.map((id) => calcs[id]!).toList();
+    final sortedExpenses = [...expenses]
+      ..sort((a, b) => b.date.compareTo(a.date));
+    final settlements = _computeSettlements(members);
+    final copyText =
+        _buildCopyText(sortedExpenses, calcs, members, total, settlements);
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.85,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                AppSizes.lg,
+                0,
+                AppSizes.lg,
+                AppSizes.sm,
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Saldar $monthLabel',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${expenses.length} gastos pendientes · ${currencyFormat.format(total)}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const Divider(height: 1),
+
+            if (expenses.isEmpty)
+              const Expanded(
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(AppSizes.xl),
+                    child: Text('No hay gastos pendientes en este periodo.'),
+                  ),
+                ),
+              )
+            else
+              Flexible(
+                child: ListView(
+                  padding: const EdgeInsets.all(AppSizes.lg),
+                  children: [
+                    // Member legend
+                    _buildLegend(context, members),
+                    const SizedBox(height: AppSizes.md),
+
+                    // Itemized list colored by payer
+                    ...sortedExpenses.map(
+                      (e) => _buildExpenseRow(context, e, calcs),
+                    ),
+
+                    const SizedBox(height: AppSizes.sm),
+                    const Divider(),
+                    const SizedBox(height: AppSizes.sm),
+
+                    // Per-member calculations
+                    Text(
+                      'Cálculos',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: AppSizes.sm),
+                    ...members.map(
+                      (m) => _buildMemberCalc(context, m, total),
+                    ),
+
+                    // Who owes whom
+                    if (settlements.isNotEmpty) ...[
+                      const SizedBox(height: AppSizes.md),
+                      Text(
+                        'Para saldar',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: AppSizes.sm),
+                      ...settlements.map(
+                        (s) => Padding(
+                          padding:
+                              const EdgeInsets.symmetric(vertical: AppSizes.xs),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text('${s.from} le debe a ${s.to}'),
+                              ),
+                              Text(
+                                currencyFormat.format(s.amount),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+
+            // Action buttons
+            SafeArea(
+              top: false,
+              child: Padding(
+                padding: const EdgeInsets.all(AppSizes.lg),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () async {
+                          await Clipboard.setData(
+                            ClipboardData(text: copyText),
+                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Copiado al portapapeles'),
+                              ),
+                            );
+                          }
+                        },
+                        icon: const Icon(Icons.copy),
+                        label: const Text('Copiar'),
+                      ),
+                    ),
+                    const SizedBox(width: AppSizes.md),
+                    Expanded(
+                      child: FilledButton.icon(
+                        onPressed: expenses.isEmpty ? null : onSettle,
+                        icon: const Icon(Icons.check_circle_outline),
+                        label: const Text('Saldar'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegend(BuildContext context, List<_MemberCalc> members) {
+    return Wrap(
+      spacing: AppSizes.md,
+      runSpacing: AppSizes.xs,
+      children: members.map((m) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: m.palette.color,
+                shape: BoxShape.circle,
+              ),
+            ),
+            const SizedBox(width: AppSizes.xs),
+            Text(m.name, style: const TextStyle(fontSize: 13)),
+          ],
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildExpenseRow(
+    BuildContext context,
+    ExpenseModel expense,
+    Map<String, _MemberCalc> calcs,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final color =
+        calcs[expense.paidBy.id]?.palette.color ?? colorScheme.outline;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
+      child: Row(
+        children: [
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: AppSizes.sm),
+          Expanded(
+            child: Text(
+              expense.description,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(width: AppSizes.sm),
+          Text(
+            currencyFormat.format(expense.amount),
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMemberCalc(
+    BuildContext context,
+    _MemberCalc member,
+    double total,
+  ) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final pctPaid = total > 0 ? (member.paid / total * 100) : 0.0;
+    final pctShare = total > 0 ? (member.share / total * 100) : 0.0;
+    final balance = member.balance;
+    final isPositive = balance >= 0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
+      child: Row(
+        children: [
+          Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: member.palette.color,
+              shape: BoxShape.circle,
+            ),
+          ),
+          const SizedBox(width: AppSizes.sm),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  member.name,
+                  style: const TextStyle(fontWeight: FontWeight.w500),
+                ),
+                Text(
+                  'Pagó ${currencyFormat.format(member.paid)} (${pctPaid.toStringAsFixed(0)}%) · '
+                  'le corresponde ${currencyFormat.format(member.share)} (${pctShare.toStringAsFixed(0)}%)',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: AppSizes.sm),
+          Text(
+            '${isPositive ? '+' : ''}${currencyFormat.format(balance)}',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: isPositive ? Colors.green : Colors.red,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Greedy debtor/creditor matching over the full-period balances.
+  List<({String from, String to, double amount})> _computeSettlements(
+    List<_MemberCalc> members,
+  ) {
+    final debtors = members
+        .where((m) => m.balance < -0.01)
+        .map((m) => (name: m.name, amount: m.balance))
+        .toList()
+      ..sort((a, b) => a.amount.compareTo(b.amount));
+    final creditors = members
+        .where((m) => m.balance > 0.01)
+        .map((m) => (name: m.name, amount: m.balance))
+        .toList()
+      ..sort((a, b) => b.amount.compareTo(a.amount));
+
+    final result = <({String from, String to, double amount})>[];
+    var debts = debtors.map((d) => d.amount).toList();
+    var credits = creditors.map((c) => c.amount).toList();
+
+    var i = 0;
+    var j = 0;
+    while (i < debtors.length && j < creditors.length) {
+      final amount = math.min(-debts[i], credits[j]);
+      if (amount > 0.01) {
+        result.add((
+          from: debtors[i].name,
+          to: creditors[j].name,
+          amount: (amount * 100).round() / 100,
+        ));
+      }
+      debts[i] += amount;
+      credits[j] -= amount;
+      if (debts[i].abs() < 0.01) i++;
+      if (credits[j] < 0.01) j++;
+    }
+
+    return result;
+  }
+
+  String _buildCopyText(
+    List<ExpenseModel> sortedExpenses,
+    Map<String, _MemberCalc> calcs,
+    List<_MemberCalc> members,
+    double total,
+    List<({String from, String to, double amount})> settlements,
+  ) {
+    final buf = StringBuffer();
+    buf.writeln('Gastos $monthLabel');
+    buf.writeln('');
+    for (final e in sortedExpenses) {
+      final emoji = calcs[e.paidBy.id]?.palette.emoji ?? '•';
+      buf.writeln(
+        '$emoji ${e.description} — ${currencyFormat.format(e.amount)} (${e.paidBy.name})',
+      );
+    }
+    buf.writeln('');
+    buf.writeln('Total: ${currencyFormat.format(total)}');
+    buf.writeln('');
+    for (final m in members) {
+      final pctPaid = total > 0 ? (m.paid / total * 100) : 0.0;
+      final pctShare = total > 0 ? (m.share / total * 100) : 0.0;
+      buf.writeln(
+        '${m.palette.emoji} ${m.name}: pagó ${currencyFormat.format(m.paid)} '
+        '(${pctPaid.toStringAsFixed(0)}%) · le corresponde '
+        '${currencyFormat.format(m.share)} (${pctShare.toStringAsFixed(0)}%)',
+      );
+    }
+    if (settlements.isNotEmpty) {
+      buf.writeln('');
+      for (final s in settlements) {
+        buf.writeln(
+          '${s.from} le debe a ${s.to} ${currencyFormat.format(s.amount)}',
+        );
+      }
+    }
+    return buf.toString();
   }
 }
 
