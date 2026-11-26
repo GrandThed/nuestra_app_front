@@ -191,7 +191,6 @@ class _Slot extends ConsumerWidget {
         : e.freeText != null
             ? null
             : [
-                if (e.isLeftovers) 'sobras',
                 if (!e.isLeftovers && (e.recipe?.totalMinutes ?? 0) > 0) '${e.recipe!.totalMinutes} min',
                 if (e.servings != null) '${e.servings} porciones',
                 if (e.rating == 3) '★ para repetir',

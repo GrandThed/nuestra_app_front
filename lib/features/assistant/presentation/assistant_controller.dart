@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:a2ui_core/a2ui_core.dart';
 import 'package:a2ui_flutter/a2ui_flutter.dart';
@@ -14,6 +15,12 @@ import 'package:nuestra_app/features/assistant/data/assistant_engine.dart';
 import 'package:nuestra_app/features/assistant/data/assistant_history_repository.dart';
 import 'package:nuestra_app/features/assistant/data/assistant_tools.dart';
 import 'package:nuestra_app/features/expenses/data/repositories/expense_repository.dart';
+import 'package:nuestra_app/features/food/assistant/food_tools.dart';
+import 'package:nuestra_app/features/food/data/food_repository.dart';
+import 'package:nuestra_app/features/food/forms/food_form_handler.dart';
+import 'package:nuestra_app/features/food/forms/food_forms.dart';
+import 'package:nuestra_app/features/food/presentation/food_providers.dart';
+import 'package:nuestra_app/features/food/presentation/recipe_photo_flow.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
 
@@ -77,6 +84,13 @@ class ProposalItem extends AssistantItem {
 
   ProposalItem withMessageId(String? m) =>
       ProposalItem(id, proposal, status, messageId: m);
+}
+
+/// A recipe the user can open from the chat (after a form or a search).
+class RecipeLinkItem extends AssistantItem {
+  final String slug;
+  final int? servings;
+  const RecipeLinkItem(this.slug, {this.servings});
 }
 
 /// A note from the app (errors, context resets). Not saved in history.
@@ -167,9 +181,13 @@ class AssistantController extends Notifier<AssistantState> {
   List<Message> _replay = const [];
 
   /// Rough size of the conversation in characters, to reset the context
-  /// before it overflows the model's window (~4k tokens ≈ 16k chars).
+  /// before it overflows the model's window (8k tokens ≈ 32k chars).
   int _contextChars = 0;
-  static const _contextBudgetChars = 11000;
+  static const _contextBudgetChars = 24000;
+
+  /// Food tools keep state per conversation (first-time profile question).
+  FoodToolExecutor? _foodTools;
+  int _formCounter = 0;
 
   /// How much of a saved conversation is replayed into a new chat.
   static const _replayBudgetChars = 3000;
@@ -179,7 +197,26 @@ class AssistantController extends Notifier<AssistantState> {
     'listar_gastos': 'Revisando tus gastos…',
     'gastos_fijos_sugeridos': 'Buscando gastos fijos…',
     'proponer_gasto': 'Preparando el gasto…',
+    'buscar_recetas': 'Buscando recetas…',
+    'ver_receta': 'Leyendo la receta…',
+    'opciones_menu': 'Viendo opciones…',
+    'poner_en_menu': 'Armando el menú…',
+    'ver_menu': 'Mirando el menú…',
+    'guardar_preferencia': 'Guardando…',
+    'mostrar_formulario': 'Preparando el formulario…',
   };
+
+  FoodToolExecutor _food(String householdId) => _foodTools ??= FoodToolExecutor(
+        ref.read(foodRepositoryProvider),
+        householdId,
+        members: ref.read(foodMembersProvider),
+      );
+
+  /// Show an app-built form in the chat.
+  void _showForm(List<Map<String, Object?>> Function(String surfaceId) build) {
+    final surface = _ui.render(build('form-${DateTime.now().millisecondsSinceEpoch}-${++_formCounter}'));
+    if (surface != null) _append(SurfaceItem(surface));
+  }
 
   AssistantHistoryRepository get _history =>
       ref.read(assistantHistoryRepositoryProvider);
@@ -441,6 +478,7 @@ class AssistantController extends Notifier<AssistantState> {
     await _disposeConversation();
     _conversationId = AssistantHistoryRepository.newConversationId();
     _replay = const [];
+    _foodTools = null;
     state = state.copyWith(
       items: const [],
       conversationId: _conversationId,
@@ -460,9 +498,14 @@ class AssistantController extends Notifier<AssistantState> {
     await _runTurn(trimmed, StoredMessage(role: 'user', content: trimmed));
   }
 
-  /// A button on a card was tapped: tell the model, like a user message.
+  /// A button on a card was tapped. Food forms are handled in code; other
+  /// buttons are told to the model, like a user message.
   void _onSurfaceAction(A2uiRendererAction action) {
     if (state.isBusy) return;
+    if (FoodFormHandler.handles(action.name)) {
+      unawaited(_handleForm(action));
+      return;
+    }
     final label = action.userMessage ?? action.name.replaceAll('_', ' ');
     final context = action.context.isEmpty ? '' : ' ${jsonEncode(action.context)}';
     final modelText = '[El usuario tocó "${action.name}" en la tarjeta$context]';
@@ -477,7 +520,91 @@ class AssistantController extends Notifier<AssistantState> {
     ));
   }
 
-  Future<void> _runTurn(String message, StoredMessage userMessage) async {
+  /// Run a submitted food form, then let the model continue from its summary.
+  Future<void> _handleForm(A2uiRendererAction action) async {
+    state = state.copyWith(busyLabel: () => 'Guardando…');
+    final FormOutcome outcome;
+    try {
+      outcome = await ref.read(foodFormHandlerProvider).handle(action);
+    } catch (e) {
+      _finishWithNotice('No se pudo enviar el formulario: $e');
+      return;
+    }
+    refreshFood(ref.invalidate, outcome.changed);
+    state = state.copyWith(busyLabel: () => null);
+
+    if (action.name == FoodFormAction.cancelar) {
+      _append(const NoticeItem('Cancelado.'));
+      return;
+    }
+    _append(UserItem(outcome.summary, fromAction: true));
+    if (outcome.next != null) _showForm(outcome.next!);
+    final recipe = outcome.openRecipe;
+    if (recipe != null) _append(RecipeLinkItem(recipe.slug, servings: recipe.servings));
+    if (!outcome.done) return;
+
+    if (action.name == FoodFormAction.armarSemana) {
+      await _planWeek(action.context);
+      return;
+    }
+    final modelText = '[Formulario enviado] ${outcome.summary}';
+    await _runTurn(
+      modelText,
+      StoredMessage(role: 'user', content: outcome.summary, metadata: {'fromAction': true, 'modelText': modelText}),
+    );
+  }
+
+  /// Plan the week one day at a time: each turn the model looks at that
+  /// day's options and picks (small turns fit the phone's context).
+  Future<void> _planWeek(Map<String, dynamic> form) async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null || state.modelStatus != ModelStatus.ready) {
+      _append(const NoticeItem('El asistente necesita el modelo descargado para armar el menú.'));
+      return;
+    }
+    final days = [for (final d in form['dias'] as List? ?? const []) '$d']..sort();
+    final meals = [for (final m in form['comidas'] as List? ?? const []) '$m'];
+    final servings = (form['porciones'] as num?)?.round();
+    final leftovers = form['sobras'] == true;
+    final notes = '${form['notas'] ?? ''}'.trim();
+    final food = _food(householdId)..planningServings = servings;
+    const names = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
+
+    for (final iso in days) {
+      final day = DateTime.parse(iso);
+      final dayName = '${names[day.weekday - 1]} ${day.day}';
+      _append(NoticeItem('Armando el $dayName…'));
+      final message = '[Planificación del menú] Elegí ${meals.join(' y ')} para el $dayName ($iso). '
+          'Para cada comida llamá opciones_menu y después poner_en_menu con el id que más convenga. '
+          '${leftovers ? 'Si el día anterior hubo cena, podés poner "sobras" en el almuerzo. ' : ''}'
+          '${notes.isEmpty ? '' : 'Tené en cuenta: $notes. '}'
+          'Respondé en una línea qué elegiste.';
+      // A fresh context per day keeps every turn small
+      if (_contextChars > _contextBudgetChars ~/ 2) await _closeChat();
+      await _runTurn(message, null, maxToolTurns: meals.length * 2 + 2);
+    }
+    food.planningServings = null;
+    refreshFood(ref.invalidate, const {FoodData.menu});
+    _append(const AssistantTextItem('Listo: el menú quedó en la pestaña Comida. Podés cambiar cualquier comida tocándola.'));
+  }
+
+  /// A photo or screenshot of a recipe sent in the chat: read it on the
+  /// phone and show the pre-filled form to review it.
+  Future<void> addRecipePhoto(Uint8List bytes) async {
+    if (state.isBusy || state.modelStatus != ModelStatus.ready) return;
+    _append(const UserItem('📷 Foto de una receta', fromAction: true));
+    state = state.copyWith(busyLabel: () => 'Leyendo la receta…', streamingText: () => '');
+    try {
+      final json = await _engine.extractRecipeFromImage(bytes);
+      state = state.copyWith(busyLabel: () => null, streamingText: () => null);
+      _append(const AssistantTextItem('La leí: revisala y guardala.'));
+      _showForm((id) => recipeFormFromExtraction(id, json));
+    } catch (e) {
+      _finishWithNotice(e is FormatException ? e.message : 'No pude leer la imagen.');
+    }
+  }
+
+  Future<void> _runTurn(String message, StoredMessage? userMessage, {int maxToolTurns = 4}) async {
     if (state.modelStatus != ModelStatus.ready) return;
     state = state.copyWith(
       busyLabel: () => 'Pensando…',
@@ -510,7 +637,7 @@ class AssistantController extends Notifier<AssistantState> {
 
       final reply = StringBuffer();
       await for (final response in chat.generateChatResponseWithTools(
-        maxToolTurns: 4,
+        maxToolTurns: maxToolTurns,
         onToolCall: (call) async {
           // Text streamed before a tool call is not part of the answer
           reply.clear();
@@ -518,7 +645,10 @@ class AssistantController extends Notifier<AssistantState> {
             busyLabel: () => _toolLabels[call.name] ?? 'Trabajando…',
             streamingText: () => '',
           );
-          final outcome = await tools.run(call.name, call.args);
+          final outcome = foodToolNames.contains(call.name)
+              ? await _food(householdId).run(call.name, call.args)
+              : await tools.run(call.name, call.args);
+          if (outcome.form != null) _showForm(outcome.form!);
           if (outcome.proposal != null) {
             final id = ++_proposalCounter;
             proposalIds.add(id);
@@ -556,7 +686,7 @@ class AssistantController extends Notifier<AssistantState> {
         streamingText: () => null,
         busyLabel: () => null,
       );
-      unawaited(_saveTurn(userMessage, proposalIds, full));
+      if (userMessage != null) unawaited(_saveTurn(userMessage, proposalIds, full));
     } catch (e) {
       debugPrint('Assistant turn failed: $e');
       // A failed turn can leave the model mid-conversation: start clean
@@ -577,7 +707,10 @@ class AssistantController extends Notifier<AssistantState> {
       categoryNames: [for (final c in categories) c.name],
     );
     _contextChars = prompt.length;
-    final chat = await _engine.openChat(systemInstruction: prompt);
+    final chat = await _engine.openChat(
+      systemInstruction: prompt,
+      tools: [...assistantToolSpecs, ...foodToolSpecs],
+    );
 
     // First chat after restoring a saved conversation: remind the model
     if (_replay.isNotEmpty) {
@@ -711,7 +844,7 @@ String buildSystemPrompt({
   final categories =
       categoryNames.isEmpty ? 'ninguna todavía' : categoryNames.join(', ');
   return '''
-Sos el asistente de gastos del hogar en "Nuestra App". Hablás en español rioplatense, breve y claro.
+Sos el asistente del hogar en "Nuestra App": ayudás con los gastos y con la comida. Hablás en español rioplatense, breve y claro.
 Hoy es $today (mes actual: $month). Moneda: pesos argentinos.
 Categorías del hogar: $categories.
 
@@ -721,7 +854,14 @@ REGLAS
 - Para registrar un gasto usá proponer_gasto. No queda guardado hasta que el usuario lo confirma en la tarjeta: decíselo.
 - Si falta un dato (monto o descripción), preguntalo antes de proponer.
 - Escribí los montos con formato argentino, por ejemplo \$ 15.000 o \$ 1.029,50.
-- Si te preguntan algo que no es sobre los gastos del hogar, respondé que por ahora solo ayudás con gastos.
+
+COMIDA
+- Recetas: usá buscar_recetas y ver_receta. Ya vienen filtradas por gustos y alergias. Nunca inventes recetas ni cantidades; si no hay, ofrecé anotar una propia (mostrar_formulario nueva_receta).
+- Si dicen que algo no les gusta, les encanta o les da alergia, usá guardar_preferencia.
+- Para armar el menú de la semana, mostrá el formulario armar_semana. Para cambiar una comida usá opciones_menu y poner_en_menu.
+- Pedido vago ("algo rico"): formulario aclarar_pedido. Cocinar con lo que hay: heladera. Vienen invitados: invitados. "¿Qué saben de nosotros?": repasar_preferencias. Productos de estación: de_estacion.
+- Cuando muestres un formulario, decí en una línea qué completar y esperá.
+- Si te preguntan algo que no es de gastos ni de comida, decí que por ahora ayudás con eso.
 
 ${A2uiBridge.compactInstructions}
 ''';

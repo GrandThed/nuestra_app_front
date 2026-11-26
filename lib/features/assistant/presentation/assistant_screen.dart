@@ -1,6 +1,8 @@
 import 'package:a2ui_flutter/a2ui_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
@@ -488,9 +490,30 @@ class _ChatViewState extends ConsumerState<_ChatView> {
           busy: state.isBusy,
           onSend: controller.send,
           onStop: controller.stop,
+          onPhoto: () => _pickRecipePhoto(context),
         ),
       ],
     );
+  }
+
+  /// A photo or screenshot of a recipe to add it to the household's recipes.
+  Future<void> _pickRecipePhoto(BuildContext context) async {
+    final source = await showModalBottomSheet<ImageSource>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          const ListTile(title: Text('Agregar una receta desde una imagen')),
+          ListTile(leading: const Icon(Icons.photo_library_outlined), title: const Text('Galería o captura'),
+              onTap: () => Navigator.pop(ctx, ImageSource.gallery)),
+          ListTile(leading: const Icon(Icons.photo_camera_outlined), title: const Text('Sacar una foto'),
+              onTap: () => Navigator.pop(ctx, ImageSource.camera)),
+        ]),
+      ),
+    );
+    if (source == null) return;
+    final file = await ImagePicker().pickImage(source: source, maxWidth: 1280, maxHeight: 1280, imageQuality: 85);
+    if (file == null) return;
+    await ref.read(assistantProvider.notifier).addRecipePhoto(await file.readAsBytes());
   }
 
   Widget _buildItem(AssistantItem item) {
@@ -502,6 +525,17 @@ class _ChatViewState extends ConsumerState<_ChatView> {
           child: A2uiSurface(key: ObjectKey(surface), surface: surface),
         ),
       ProposalItem() => _ProposalCard(item: item),
+      RecipeLinkItem(:final slug, :final servings) => Padding(
+          padding: const EdgeInsets.only(bottom: AppSizes.sm, right: 32),
+          child: Card(
+            child: ListTile(
+              leading: const Icon(Icons.menu_book_outlined),
+              title: const Text('Ver la receta'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/food/recipes/$slug${servings != null ? '?servings=$servings' : ''}'),
+            ),
+          ),
+        ),
       NoticeItem(:final text) => Padding(
           padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
           child: Text(
@@ -779,8 +813,9 @@ class _InputBar extends StatefulWidget {
   final bool busy;
   final void Function(String) onSend;
   final VoidCallback onStop;
+  final VoidCallback onPhoto;
 
-  const _InputBar({required this.busy, required this.onSend, required this.onStop});
+  const _InputBar({required this.busy, required this.onSend, required this.onStop, required this.onPhoto});
 
   @override
   State<_InputBar> createState() => _InputBarState();
@@ -866,6 +901,12 @@ class _InputBarState extends State<_InputBar> {
         ),
         child: Row(
           children: [
+            if (!widget.busy)
+              IconButton(
+                icon: const Icon(Icons.add_photo_alternate_outlined),
+                tooltip: 'Receta desde una foto',
+                onPressed: widget.onPhoto,
+              ),
             Expanded(
               child: TextField(
                 controller: _controller,

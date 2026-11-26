@@ -45,6 +45,25 @@ and answers can include **A2UI** cards rendered with `a2ui_flutter`.
   so it remembers context. No live sync yet: other members' new messages show
   up when the conversation is reopened.
 
+## Food (Comida)
+
+- **Tools** (`lib/features/food/assistant/food_tools.dart`): `buscar_recetas`,
+  `ver_receta`, `opciones_menu`, `poner_en_menu` (recipe id, free text or
+  "sobras"), `ver_menu`, `guardar_preferencia`, `mostrar_formulario`. Results
+  are already filtered by the household's preferences on the backend.
+- **Forms** (`lib/features/food/forms/`): 14 A2UI forms built in code
+  (`FoodForms`), shared by the chat and the Comida screens, handled by
+  `FoodFormHandler` (saves through the API, returns a summary the model
+  continues from). The first food request of a household without a profile
+  shows the profile form automatically, once per conversation.
+- **Weekly menu**: after the "Armar la semana" form, the app plans one day per
+  turn: the model picks from that day's `opciones_menu` and sets each slot,
+  so every turn stays small. The backend refuses picks that break a rule.
+- **Recipe photos**: a separate one-off chat with structured JSON output
+  (constrained decoding when the GPU supports it) reads the image; the
+  pre-filled "nueva receta" form lets the user fix it before saving.
+- Context is 8k tokens; the model is loaded once with image support.
+
 ## Platform setup
 
 - **Android**: `minSdk = 30` (Android 11+), arm64 only. Set in

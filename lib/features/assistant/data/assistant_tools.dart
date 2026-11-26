@@ -65,7 +65,10 @@ class ToolOutcome {
   final Map<String, dynamic> response;
   final ExpenseProposal? proposal;
 
-  const ToolOutcome(this.response, {this.proposal});
+  /// An A2UI form to show in the chat (built for a new surface id).
+  final List<Map<String, Object?>> Function(String surfaceId)? form;
+
+  const ToolOutcome(this.response, {this.proposal, this.form});
 }
 
 const _monthParam = {

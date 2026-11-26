@@ -204,8 +204,8 @@ class FoodFormHandler {
     try {
       await repo.savePreference(householdId, kind: kind, ingredient: name, memberUserId: member);
       return true;
-    } on ServerException {
-      return false;
+    } on ValidationException {
+      return false; // not in the ingredient catalog
     }
   }
 
@@ -282,7 +282,7 @@ class FoodFormHandler {
       final entry = await repo.setEntry(householdId, day, meal, recipeSlug: slug, freeText: text);
       return FormOutcome('Menú: ${mealLabels[meal]?.toLowerCase() ?? meal} del ${isoDate(day)} → ${entry.title}.',
           changed: const {FoodData.menu});
-    } on ServerException catch (e) {
+    } on AppException catch (e) {
       return FormOutcome('No la agregué: ${e.message}', done: false);
     }
   }

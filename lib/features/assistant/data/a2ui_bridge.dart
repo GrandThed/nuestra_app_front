@@ -131,6 +131,19 @@ Ejemplo:
     return result;
   }
 
+  /// Render a surface the app built itself (a form), returning it.
+  SurfaceModel<ComponentImplementation>? render(List<Map<String, Object?>> messages) {
+    _created.clear();
+    try {
+      renderer.processMessages(messages);
+    } catch (e) {
+      debugPrint('A2UI render error: $e');
+    }
+    final surface = _created.isEmpty ? null : _created.last;
+    _created.clear();
+    return surface;
+  }
+
   int _surfaceCounter = 0;
 
   /// The model tends to reuse ids like "t1" in every reply, and A2UI rejects

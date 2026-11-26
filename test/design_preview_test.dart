@@ -27,6 +27,10 @@ import 'package:nuestra_app/features/expenses/presentation/screens/expenses_scre
 import 'package:nuestra_app/features/household/data/models/household_model.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_state.dart';
+import 'package:nuestra_app/features/food/data/food_models.dart';
+import 'package:nuestra_app/features/food/presentation/food_providers.dart';
+import 'package:nuestra_app/features/food/presentation/food_screen.dart';
+import 'package:nuestra_app/features/food/presentation/recipe_detail_screen.dart';
 import 'package:nuestra_app/shared/widgets/main_shell.dart';
 import 'package:go_router/go_router.dart';
 
@@ -181,6 +185,8 @@ Future<void> _pumpScreen(
           GoRoute(path: '/expenses', builder: (_, _) => child),
           GoRoute(path: '/chat', builder: (_, _) => child),
           GoRoute(path: '/new', builder: (_, _) => child),
+          GoRoute(path: '/food', builder: (_, _) => child),
+          GoRoute(path: '/recipe', builder: (_, _) => child),
         ],
       ),
     ],
@@ -221,6 +227,24 @@ Future<void> _pumpScreen(
               ),
             ]),
         assistantProvider.overrideWith(() => _FakeAssistant(_assistantState())),
+        foodProfileProvider.overrideWith((ref) async => const FoodProfile(
+              servings: 3, weekdayMaxMinutes: 45, onboarded: true, meals: ['almuerzo', 'cena'])),
+        foodPreferencesProvider.overrideWith((ref) async => const [
+              FoodPreference(id: 'p1', kind: 'dislike', ingredientId: 'remolacha', ingredientName: 'remolacha'),
+              FoodPreference(id: 'p2', kind: 'allergy', allergen: 'gluten', memberId: 'u-beto', memberName: 'Beto'),
+              FoodPreference(id: 'p3', kind: 'like', ingredientId: 'berenjena', ingredientName: 'berenjena'),
+            ]),
+        menuWeekProvider.overrideWith((ref, monday) async => _week(monday)),
+        recipeSearchProvider.overrideWith((ref) async => const RecipeSearchResult([
+              RecipeSummary(slug: 'dal-de-lentejas-rojas', title: 'Dal de lentejas rojas', totalMinutes: 45,
+                  countryName: 'india', mainIngredients: ['lentejas rojas', 'cebolla', 'ajo'],
+                  dietTags: ['vegana', 'sin_tacc'], why: ['tiene berenjena, que les gusta']),
+              RecipeSummary(slug: 'tortilla-de-papas', title: 'Tortilla de papas', totalMinutes: 50,
+                  countryName: 'española', mainIngredients: ['papa', 'huevo'], omit: ['cebolla']),
+              RecipeSummary(slug: 'bizcochuelo-x', title: 'Bizcochuelo de la abuela', totalMinutes: 55,
+                  mainIngredients: ['huevo', 'azúcar'], householdRecipe: true),
+            ], 1)),
+        recipeDetailProvider.overrideWith((ref, args) async => _detail),
       ],
       child: RepaintBoundary(
         key: const Key('shot'),
@@ -238,6 +262,53 @@ Future<void> _pumpScreen(
   await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 300)));
   await tester.pumpAndSettle();
 }
+
+MenuWeekData _week(DateTime monday) {
+  String day(int i) {
+    final d = monday.add(Duration(days: i));
+    return '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+  }
+
+  return MenuWeekData(day(0), [for (var i = 0; i < 7; i++) day(i)], [
+    MenuEntry(id: 'e1', date: day(0), meal: 'cena', servings: 3,
+        recipe: const RecipeSummary(slug: 'dal-de-lentejas-rojas', title: 'Dal de lentejas rojas', totalMinutes: 45)),
+    MenuEntry(id: 'e2', date: day(1), meal: 'almuerzo', leftoverOfId: 'e1',
+        recipe: const RecipeSummary(slug: 'dal-de-lentejas-rojas', title: 'Dal de lentejas rojas')),
+    MenuEntry(id: 'e3', date: day(1), meal: 'cena', status: 'cooked', rating: 3,
+        recipe: const RecipeSummary(slug: 'tortilla-de-papas', title: 'Tortilla de papas', totalMinutes: 50)),
+    MenuEntry(id: 'e4', date: day(4), meal: 'cena', freeText: 'Comemos afuera'),
+  ]);
+}
+
+const _detail = RecipeDetail(
+  slug: 'tortilla-de-papas',
+  title: 'Tortilla de papas',
+  summary: 'Papas tiernas cocidas en aceite y cuajadas con huevo, con o sin cebolla.',
+  country: 'ES',
+  countryName: 'española',
+  mealTypes: ['almuerzo', 'cena'],
+  servings: 2,
+  baseServings: 4,
+  prepMinutes: 15,
+  cookMinutes: 35,
+  difficulty: 2,
+  dietTags: ['vegetariana', 'sin_tacc'],
+  allergens: ['huevo'],
+  ingredients: [
+    RecipeLine(ingredientId: 'papa', name: 'papa', unit: 'g', quantity: 500, display: '500 g', preparation: 'en láminas finas'),
+    RecipeLine(ingredientId: 'huevo', name: 'huevo', unit: 'unidad', quantity: 3, display: '3'),
+    RecipeLine(ingredientId: 'cebolla', name: 'cebolla', unit: 'unidad', quantity: 0.5, display: '½', optional: true, omit: true),
+    RecipeLine(ingredientId: 'sal', name: 'sal', unit: 'a_gusto', display: 'a gusto'),
+  ],
+  steps: [
+    RecipeStepItem(1, 'Cocinar las papas en el aceite a fuego medio-bajo, sin que se doren, hasta que estén tiernas.', 1200),
+    RecipeStepItem(2, 'Escurrir y mezclar con los huevos batidos y sal. Dejar reposar 5 minutos.', null),
+  ],
+  tips: ['Con la sartén bien caliente no se pega.'],
+  warnings: [],
+  reviewed: false,
+  householdRecipe: false,
+);
 
 void main() {
   setUpAll(() async {
@@ -280,6 +351,25 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Guardar compra en 6 cuotas'), findsOneWidget);
       await _snapshot(tester, 'nuevo_gasto_$suffix');
+    });
+
+    for (final tab in const ['Menú', 'Recetas', 'Preferencias']) {
+      testWidgets('Comida $tab ($suffix)', (tester) async {
+        await _pumpScreen(tester, child: const FoodScreen(), brightness: brightness, inShell: true, location: '/food');
+        await tester.tap(find.text(tab));
+        await tester.pumpAndSettle();
+        await _snapshot(tester, 'comida_${tab.toLowerCase().replaceAll('ú', 'u')}_$suffix');
+      });
+    }
+
+    testWidgets('Receta ($suffix)', (tester) async {
+      await _pumpScreen(tester,
+          child: const RecipeDetailScreen(slug: 'tortilla-de-papas', servings: 2),
+          brightness: brightness,
+          location: '/recipe');
+      expect(find.text('sacalo', findRichText: true), findsNothing);
+      expect(find.textContaining('sacalo', findRichText: true), findsOneWidget);
+      await _snapshot(tester, 'receta_$suffix');
     });
 
     testWidgets('Asistente compartido ($suffix)', (tester) async {
