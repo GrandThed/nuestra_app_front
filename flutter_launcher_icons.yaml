@@ -1,17 +1,22 @@
 flutter_launcher_icons:
+  # Source: house icon (wallet, recipes, assistant), black background removed
+  # and corners filled by a one-off script (Nov 2026).
   android: "launcher_icon"
-  ios: true
   image_path: "assets/icon/app_icon.png"
-  min_sdk_android: 21
+  min_sdk_android: 30
+
+  # Adaptive icon (Android 8+): the full tile as foreground, over its own blue
+  adaptive_icon_background: "#4D98EA"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  adaptive_icon_foreground_inset: 16
+
+  # iOS: no transparency allowed; corners filled with the tile's blue
+  ios: true
+  image_path_ios: "assets/icon/app_icon_ios.png"
   remove_alpha_ios: true
 
-  # Adaptive icon for Android 8.0+ (optional)
-  adaptive_icon_background: "#5B7B9A"
-  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
-
-  # Web favicon (optional)
   web:
     generate: true
     image_path: "assets/icon/app_icon.png"
-    background_color: "#5B7B9A"
-    theme_color: "#5B7B9A"
+    background_color: "#F7F4EE"
+    theme_color: "#2E6B4F"

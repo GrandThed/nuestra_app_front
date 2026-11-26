@@ -5,7 +5,8 @@ allprojects {
     }
 }
 
-// Force consistent JVM target for all subprojects (fixes receive_sharing_intent compatibility)
+// Force a consistent JVM target (17) for every plugin subproject, so Java and
+// Kotlin targets never mismatch. Kotlin 2.2+ needs compilerOptions here.
 subprojects {
     afterEvaluate {
         if (project.hasProperty("android")) {
@@ -17,8 +18,8 @@ subprojects {
             }
         }
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-            kotlinOptions {
-                jvmTarget = "17"
+            compilerOptions {
+                jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
             }
         }
     }
