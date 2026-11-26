@@ -47,6 +47,22 @@ class ApiConstants {
   static const String assistantMessages = '/api/assistant/messages';
   static String assistantMessage(String id) => '/api/assistant/messages/$id';
 
+  // Food: recipes, preferences, menus
+  static const String recipes = '/api/recipes';
+  static const String recipeSearch = '/api/recipes/search';
+  static const String seasonIngredients = '/api/recipes/ingredients/season';
+  static String recipe(String slug) => '/api/recipes/$slug';
+  static const String foodPreferences = '/api/recipes/preferences';
+  static String foodPreference(String id) => '/api/recipes/preferences/$id';
+  static const String foodProfile = '/api/menus/profile';
+  static const String menuWeek = '/api/menus/week';
+  static const String menuCandidates = '/api/menus/candidates';
+  static const String menuEntry = '/api/menus/entry';
+  static String menuEntryById(String id) => '/api/menus/entry/$id';
+  static const String menuCopyPrevious = '/api/menus/copy-previous';
+  static const String menuShopping = '/api/menus/shopping';
+  static const String menuShoppingCheck = '/api/menus/shopping/check';
+
   // Activity
   static const String activity = '/api/activity';
   static const String activityDigest = '/api/activity/digest';
