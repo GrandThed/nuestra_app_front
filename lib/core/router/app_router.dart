@@ -23,6 +23,9 @@ import 'package:nuestra_app/features/profile/presentation/screens/profile_screen
 import 'package:nuestra_app/features/settings/presentation/screens/settings_screen.dart';
 import 'package:nuestra_app/features/activity/presentation/screens/activity_feed_screen.dart';
 import 'package:nuestra_app/features/assistant/presentation/assistant_screen.dart';
+import 'package:nuestra_app/features/food/presentation/food_screen.dart';
+import 'package:nuestra_app/features/food/presentation/recipe_detail_screen.dart';
+import 'package:nuestra_app/features/food/presentation/shopping_screen.dart';
 
 /// Route names
 class AppRoutes {
@@ -40,6 +43,9 @@ class AppRoutes {
   // Main tabs
   static const String root = '/';
   static const String expenses = '/expenses';
+  static const String food = '/food';
+  static const String foodShopping = '/food/shopping';
+  static const String _foodRecipe = '/food/recipes/:slug';
   static const String chat = '/chat';
 
   /// The app's start screen. Gastos is the core feature.
@@ -232,6 +238,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const SettingsScreen(),
       ),
 
+      // Food: shopping list (?week=YYYY-MM-DD) and recipe detail (?servings=N)
+      GoRoute(
+        path: AppRoutes.foodShopping,
+        builder: (context, state) {
+          final week = DateTime.tryParse(state.uri.queryParameters['week'] ?? '') ?? DateTime.now();
+          return ShoppingScreen(monday: week);
+        },
+      ),
+      GoRoute(
+        path: AppRoutes._foodRecipe,
+        builder: (context, state) => RecipeDetailScreen(
+          slug: state.pathParameters['slug']!,
+          servings: int.tryParse(state.uri.queryParameters['servings'] ?? ''),
+        ),
+      ),
+
       // Activity feed (no shell)
       GoRoute(
         path: AppRoutes.activityFeed,
@@ -254,6 +276,14 @@ final routerProvider = Provider<GoRouter>((ref) {
             path: AppRoutes.expenses,
             pageBuilder: (context, state) => const NoTransitionPage(
               child: ExpensesScreen(),
+            ),
+          ),
+
+          // Food: menu, recipes, preferences
+          GoRoute(
+            path: AppRoutes.food,
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: FoodScreen(),
             ),
           ),
 

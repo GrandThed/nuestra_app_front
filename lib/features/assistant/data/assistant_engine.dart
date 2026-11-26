@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_edge_ai/flutter_edge_ai.dart';
@@ -22,8 +24,14 @@ class AssistantEngine {
   /// Approximate download size, for the UI.
   static const downloadSizeLabel = '2,6 GB';
 
-  /// Context window (prompt + history + reply), in tokens.
-  static const _contextTokens = 4096;
+  /// Context window (prompt + history + reply), in tokens. 8k leaves room
+  /// for the food and expense tools plus an image (~257 tokens).
+  static const _contextTokens = 8192;
+
+  /// Sampling shared by every chat: LiteRT-LM fixes the sampler on the first
+  /// generation of a model, so all sessions must use the same values.
+  static const _temperature = 0.3;
+  static const _topK = 40;
 
   bool get isSupportedPlatform =>
       !kIsWeb &&
@@ -67,16 +75,24 @@ class AssistantEngine {
   }
 
   /// Open a new conversation. Close it with [InferenceChat.close] when done.
+  /// Load the model once, with image input enabled: changing these settings
+  /// later would close and reload the whole model.
+  Future<InferenceModel> _loadModel() async {
+    await _ensureInitialized();
+    return _model ??= await FlutterEdgeAi.getActiveModel(
+      maxTokens: _contextTokens,
+      preferredBackend: PreferredBackend.gpu,
+      supportImage: true,
+      maxNumImages: 1,
+    );
+  }
+
   Future<InferenceChat> openChat({
     required String systemInstruction,
     List<AssistantToolSpec> tools = assistantToolSpecs,
   }) async {
-    await _ensureInitialized();
-    _model ??= await FlutterEdgeAi.getActiveModel(
-      maxTokens: _contextTokens,
-      preferredBackend: PreferredBackend.gpu,
-    );
-    return _model!.openChat(
+    final model = await _loadModel();
+    return model.openChat(
       systemInstruction: systemInstruction,
       tools: [
         for (final t in tools)
@@ -88,11 +104,78 @@ class AssistantEngine {
       ],
       // Without this the tool-call JSON comes back as plain text
       supportsFunctionCalls: true,
+      supportImage: true,
       modelType: ModelType.gemma4,
-      // Low temperature: answers are about numbers, not creativity
-      temperature: 0.3,
-      topK: 40,
+      temperature: _temperature,
+      topK: _topK,
     );
+  }
+
+  /// JSON shape of a recipe read from a photo.
+  static final _recipeFormat = ResponseFormat.jsonSchema({
+    'type': 'object',
+    'properties': {
+      'titulo': {'type': 'string'},
+      'porciones': {'type': 'integer'},
+      'minutos_preparacion': {'type': 'integer'},
+      'minutos_coccion': {'type': 'integer'},
+      'ingredientes': {
+        'type': 'array',
+        'items': {'type': 'string', 'description': 'Un ingrediente como en la imagen, ej: "200 g de azúcar"'},
+      },
+      'pasos': {'type': 'array', 'items': {'type': 'string'}},
+    },
+    'required': ['titulo', 'porciones', 'ingredientes', 'pasos'],
+    'additionalProperties': false,
+  }, name: 'receta');
+
+  /// Read a recipe from a photo or screenshot, on the phone. Uses a separate
+  /// one-off chat with structured output (no tools). Returns the decoded JSON
+  /// ({titulo, porciones, ingredientes, pasos, ...}) for the user to review.
+  Future<Map<String, dynamic>> extractRecipeFromImage(Uint8List imageBytes) async {
+    final model = await _loadModel();
+    // Constrained decoding is not available on every GPU: then ask for JSON
+    // in the prompt and parse it leniently.
+    final constrained = model.refusalFor(_recipeFormat) == null;
+    final chat = await model.openChat(
+      supportImage: true,
+      responseFormat: constrained ? _recipeFormat : null,
+      modelType: ModelType.gemma4,
+      temperature: _temperature,
+      topK: _topK,
+      systemInstruction: 'Leés recetas de cocina en imágenes y devolvés solo JSON con: '
+          'titulo, porciones (número), minutos_preparacion, minutos_coccion, '
+          'ingredientes (lista de textos tal como aparecen) y pasos (lista de textos). '
+          'Respondé en español. No inventes datos que no estén en la imagen.',
+    );
+    try {
+      await chat.addQueryChunk(Message.withImage(
+        text: 'Extraé la receta de esta imagen.',
+        imageBytes: imageBytes,
+        isUser: true,
+      ));
+      final buffer = StringBuffer();
+      await for (final response in chat.generateChatResponseAsync()) {
+        if (response is TextResponse) buffer.write(response.token);
+      }
+      return decodeRecipeJson('$buffer');
+    } finally {
+      await chat.close();
+    }
+  }
+
+  /// Parse the model's JSON, tolerating text or code fences around it.
+  static Map<String, dynamic> decodeRecipeJson(String text) {
+    final start = text.indexOf('{');
+    final end = text.lastIndexOf('}');
+    if (start < 0 || end <= start) {
+      throw const FormatException('No encontré una receta en la imagen');
+    }
+    final decoded = jsonDecode(text.substring(start, end + 1));
+    if (decoded is! Map<String, dynamic>) {
+      throw const FormatException('No encontré una receta en la imagen');
+    }
+    return decoded;
   }
 
   Future<void> _closeModel() async {

@@ -23,6 +23,12 @@ const _destinations = [
     AppRoutes.expenses,
   ),
   _Destination(
+    Icons.restaurant_menu_outlined,
+    Icons.restaurant_menu,
+    'Comida',
+    AppRoutes.food,
+  ),
+  _Destination(
     Icons.auto_awesome_outlined,
     Icons.auto_awesome,
     AppStrings.assistant,
