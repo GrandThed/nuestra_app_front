@@ -6,9 +6,12 @@ import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/constants/app_strings.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
+import 'package:nuestra_app/core/theme/text_styles.dart';
 import 'package:nuestra_app/features/expenses/data/models/expense_model.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_state.dart';
+import 'package:nuestra_app/features/expenses/presentation/widgets/fixed_expense_suggestions.dart';
+import 'package:nuestra_app/core/utils/money_format.dart';
 
 /// Expenses screen - Expense tracking and splitting
 class ExpensesScreen extends ConsumerStatefulWidget {
@@ -19,7 +22,7 @@ class ExpensesScreen extends ConsumerStatefulWidget {
 }
 
 class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
-  final _currencyFormat = NumberFormat.currency(locale: 'es_AR', symbol: '\$');
+  final _currencyFormat = const MoneyFormat();
   final _searchController = TextEditingController();
   bool _isSearching = false;
   String _searchQuery = '';
@@ -465,9 +468,10 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
             selectedCategoryId,
           ),
       },
-      floatingActionButton: FloatingActionButton(
+      floatingActionButton: FloatingActionButton.extended(
         onPressed: _navigateToAddExpense,
-        child: const Icon(Icons.add),
+        icon: const Icon(Icons.add),
+        label: const Text('Gasto'),
       ),
     );
   }
@@ -480,7 +484,6 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     int selectedYear,
     String? selectedCategoryId,
   ) {
-    final total = filteredExpenses.fold(0.0, (sum, e) => sum + e.amount);
     final monthName = DateFormat.MMMM(
       'es',
     ).format(DateTime(selectedYear, selectedMonth));
@@ -490,7 +493,17 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
       child: Column(
         children: [
           // Month selector and total
-          _buildHeader(monthName, selectedYear, total),
+          _buildHeader(
+            monthName,
+            selectedYear,
+            filteredExpenses,
+            isFiltered: selectedCategoryId != null,
+          ),
+          // Fixed expenses from previous months not loaded yet this month
+          FixedExpenseSuggestionsBanner(
+            month: selectedMonth,
+            year: selectedYear,
+          ),
           // Category filter chips - use allExpenses for counts
           if (categories.isNotEmpty)
             _buildCategoryChips(categories, allExpenses, selectedCategoryId),
@@ -506,77 +519,86 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     );
   }
 
-  Widget _buildHeader(String monthName, int year, double total) {
+  Widget _buildHeader(
+    String monthName,
+    int year,
+    List<ExpenseModel> expenses, {
+    required bool isFiltered,
+  }) {
     final colorScheme = Theme.of(context).colorScheme;
+    final total = expenses.fold(0.0, (sum, e) => sum + e.amount);
+
+    // Who paid how much this month, biggest first
+    final byPayer = <String, double>{};
+    for (final e in expenses) {
+      byPayer[e.paidBy.name] = (byPayer[e.paidBy.name] ?? 0) + e.amount;
+    }
+    final payers = byPayer.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
 
     return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSizes.md,
-        vertical: AppSizes.sm,
+      padding: const EdgeInsets.fromLTRB(
+        AppSizes.md,
+        0,
+        AppSizes.md,
+        AppSizes.sm,
       ),
-      child: Row(
+      child: SizedBox(
+        width: double.infinity,
+        child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Month selector
-          InkWell(
-            onTap: _showMonthPicker,
-            borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSizes.md,
-                vertical: AppSizes.sm,
-              ),
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                border: Border.all(
-                  color: colorScheme.outlineVariant,
-                ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.calendar_today,
-                    size: 18,
-                    color: colorScheme.primary,
-                  ),
-                  const SizedBox(width: AppSizes.sm),
-                  Text(
-                    '${monthName.capitalize()} $year',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
+          Material(
+            color: colorScheme.surfaceContainerLow,
+            shape: StadiumBorder(
+              side: BorderSide(color: colorScheme.outlineVariant),
+            ),
+            child: InkWell(
+              onTap: _showMonthPicker,
+              customBorder: const StadiumBorder(),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(14, 6, 8, 6),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${monthName.capitalize()} $year',
+                      style: Theme.of(context).textTheme.labelMedium,
                     ),
-                  ),
-                  const SizedBox(width: AppSizes.xs),
-                  Icon(Icons.arrow_drop_down, color: colorScheme.onSurfaceVariant),
-                ],
+                    Icon(
+                      Icons.arrow_drop_down,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
-          const Spacer(),
-          // Total
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                'Total',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              Text(
-                _currencyFormat.format(total),
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-            ],
+          const SizedBox(height: AppSizes.md),
+          Text(
+            isFiltered ? 'Total de la categoría' : 'Total del mes',
+            style: Theme.of(context)
+                .textTheme
+                .bodySmall
+                ?.copyWith(color: colorScheme.onSurfaceVariant),
           ),
+          _BigAmount(amount: total, size: 38, color: colorScheme.onSurface),
+          if (payers.length > 1)
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                payers
+                    .map((p) => '${p.key} ${_currencyFormat.format(p.value)}')
+                    .join(' · '),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: colorScheme.onSurfaceVariant),
+              ),
+            ),
         ],
+        ),
       ),
     );
   }
@@ -656,7 +678,8 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.all(AppSizes.md),
+      // Bottom room so the "+ Gasto" button never covers the last amount
+      padding: const EdgeInsets.fromLTRB(AppSizes.md, 0, AppSizes.md, 96),
       itemCount: groupedExpenses.length,
       itemBuilder: (context, index) {
         final dateKey = groupedExpenses.keys.elementAt(index);
@@ -692,12 +715,21 @@ class _ExpensesScreenState extends ConsumerState<ExpensesScreen> {
                 ],
               ),
             ),
-            // Expenses for this date
-            ...dayExpenses.map(
-              (expense) => _ExpenseItemTile(
-                expense: expense,
-                currencyFormat: _currencyFormat,
-                onTap: () => _navigateToExpenseDetail(expense),
+            // Expenses for this date, in one card
+            Card(
+              clipBehavior: Clip.antiAlias,
+              child: Column(
+                children: [
+                  for (var i = 0; i < dayExpenses.length; i++) ...[
+                    if (i > 0)
+                      const Divider(indent: AppSizes.md, endIndent: AppSizes.md),
+                    _ExpenseItemTile(
+                      expense: dayExpenses[i],
+                      currencyFormat: _currencyFormat,
+                      onTap: () => _navigateToExpenseDetail(dayExpenses[i]),
+                    ),
+                  ],
+                ],
               ),
             ),
             const SizedBox(height: AppSizes.sm),
@@ -779,20 +811,13 @@ class _CategoryChip extends StatelessWidget {
             Text(label),
             if (count > 0) ...[
               const SizedBox(width: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isSelected ? colorScheme.surface : colorScheme.primary,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  count.toString(),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color:
-                        isSelected ? colorScheme.primary : colorScheme.onPrimary,
-                  ),
+              Text(
+                '$count',
+                style: TextStyle(
+                  color: (isSelected
+                          ? colorScheme.onPrimaryContainer
+                          : colorScheme.onSurfaceVariant)
+                      .withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -800,10 +825,14 @@ class _CategoryChip extends StatelessWidget {
         ),
         selected: isSelected,
         onSelected: (_) => onTap(),
-        selectedColor: colorScheme.primaryContainer,
-        backgroundColor: colorScheme.surfaceContainerHighest,
+        side: isSelected
+            ? BorderSide.none
+            : BorderSide(color: colorScheme.outlineVariant),
         labelStyle: TextStyle(
-          color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
+          color: isSelected
+              ? colorScheme.onPrimaryContainer
+              : colorScheme.onSurfaceVariant,
+          fontWeight: FontWeight.w600,
         ),
         showCheckmark: false,
       ),
@@ -813,7 +842,7 @@ class _CategoryChip extends StatelessWidget {
 
 class _ExpenseItemTile extends StatelessWidget {
   final ExpenseModel expense;
-  final NumberFormat currencyFormat;
+  final MoneyFormat currencyFormat;
   final VoidCallback onTap;
 
   const _ExpenseItemTile({
@@ -822,106 +851,176 @@ class _ExpenseItemTile extends StatelessWidget {
     required this.onTap,
   });
 
+  static final _installmentSuffix = RegExp(r'\s*\(cuota (\d+)/(\d+)\)\s*$');
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    final settled = expense.allSettled;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: AppSizes.sm),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-      ),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSizes.md),
-          child: Row(
-            children: [
-              // Category icon
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: colorScheme.primaryContainer.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  expense.category?.icon ?? '💰',
-                  style: const TextStyle(fontSize: 20),
-                ),
+    // "Heladera (cuota 2/6)" shows as "Heladera" + a "2/6" tag
+    final match = _installmentSuffix.firstMatch(expense.description);
+    final description = match != null
+        ? expense.description.substring(0, match.start)
+        : expense.description;
+    final installment = expense.installmentNumber != null &&
+            expense.installmentCount != null
+        ? '${expense.installmentNumber}/${expense.installmentCount}'
+        : match != null
+            ? '${match[1]}/${match[2]}'
+            : null;
+
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSizes.md,
+          vertical: 12,
+        ),
+        child: Row(
+          children: [
+            // Category emoji on a sand tile
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(AppSizes.radiusMd),
               ),
-              const SizedBox(width: AppSizes.md),
-              // Description and category
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      expense.description,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+              alignment: Alignment.center,
+              child: Text(
+                expense.category?.icon ?? '💰',
+                style: const TextStyle(fontSize: 19),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          description,
+                          style: textTheme.titleSmall?.copyWith(
+                            color: settled
+                                ? colorScheme.onSurfaceVariant
+                                : colorScheme.onSurface,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 2),
-                    Row(
-                      children: [
-                        Text(
-                          expense.paidBy.name,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: colorScheme.onSurfaceVariant,
+                      if (installment != null) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 1,
+                          ),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            'cuota $installment',
+                            style: textTheme.labelSmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
                         ),
                       ],
-                    ),
-                  ],
-                ),
-              ),
-              // Amount and status
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    currencyFormat.format(expense.amount),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.onSurface,
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 2),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      color:
-                          expense.allSettled
-                              ? AppColors.success.withValues(alpha: 0.1)
-                              : AppColors.warning.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      expense.allSettled ? 'Saldado' : 'Pendiente',
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w500,
-                        color:
-                            expense.allSettled ? AppColors.success : AppColors.warning,
+                  Row(
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: AppColors.memberColor(expense.paidBy.id),
+                          shape: BoxShape.circle,
+                        ),
                       ),
-                    ),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          expense.paidBy.name,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
-            ],
-          ),
+            ),
+            const SizedBox(width: AppSizes.sm),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  currencyFormat.format(expense.amount),
+                  style: AppTextStyles.amount(
+                    color: settled
+                        ? colorScheme.onSurfaceVariant
+                        : colorScheme.onSurface,
+                  ),
+                ),
+                if (settled)
+                  Text(
+                    '✓ saldado',
+                    style: textTheme.labelSmall?.copyWith(
+                      color: colorScheme.success,
+                    ),
+                  ),
+              ],
+            ),
+          ],
         ),
+      ),
+    );
+  }
+}
+
+/// Month total and other big amounts: "$" and cents smaller and muted,
+/// Fraunces with tabular figures.
+class _BigAmount extends StatelessWidget {
+  final double amount;
+  final double size;
+  final Color color;
+
+  const _BigAmount({
+    required this.amount,
+    required this.size,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final muted = Theme.of(context).colorScheme.outline;
+    final whole = NumberFormat.decimalPattern('es_AR').format(amount.truncate());
+    final cents = ((amount - amount.truncate()) * 100).round();
+    final big = AppTextStyles.bigAmount(size: size, color: color);
+    return Text.rich(
+      TextSpan(
+        children: [
+          TextSpan(
+            text: '\$ ',
+            style: big.copyWith(fontSize: size * 0.55, color: muted),
+          ),
+          TextSpan(text: whole, style: big),
+          if (cents > 0)
+            TextSpan(
+              text: ',${cents.toString().padLeft(2, '0')}',
+              style: big.copyWith(fontSize: size * 0.5, color: muted),
+            ),
+        ],
       ),
     );
   }

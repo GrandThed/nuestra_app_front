@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:nuestra_app/app.dart';
-
-// Conditional import for share intent (mobile only)
-import 'main_mobile.dart' if (dart.library.html) 'main_web.dart' as platform_main;
 
 // Log function that works in both debug and release on web
 void _log(String message) {
@@ -38,6 +36,16 @@ void main() async {
     WidgetsFlutterBinding.ensureInitialized();
     _log('[main] WidgetsFlutterBinding initialized');
 
+    // Fonts are bundled in assets/google_fonts: never download them
+    GoogleFonts.config.allowRuntimeFetching = false;
+    LicenseRegistry.addLicense(() async* {
+      for (final family in ['Figtree', 'Fraunces']) {
+        final text =
+            await rootBundle.loadString('assets/google_fonts/$family-OFL.txt');
+        yield LicenseEntryWithLineBreaks(['google_fonts'], text);
+      }
+    });
+
     // Initialize Hive for local storage
     await Hive.initFlutter();
     _log('[main] Hive initialized');
@@ -64,12 +72,8 @@ void main() async {
       );
     }
 
-    _log('[main] About to create app wrapper');
-    final wrappedApp = platform_main.createAppWrapper(const App());
-    _log('[main] App wrapper created');
-
     _log('[main] About to run app');
-    runApp(ProviderScope(child: wrappedApp));
+    runApp(const ProviderScope(child: App()));
     _log('[main] runApp called');
   } catch (e, stack) {
     _log('[main] FATAL ERROR: $e');

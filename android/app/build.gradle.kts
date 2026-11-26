@@ -24,7 +24,8 @@ android {
         applicationId = "com.householdhub.nuestra_app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // On-device Gemma (LiteRT-LM via flutter_edge_ai) needs Android 11+ (API 30), arm64 only
+        minSdk = 30
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

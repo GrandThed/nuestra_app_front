@@ -9,6 +9,7 @@ import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_state.dart';
 import 'package:nuestra_app/shared/widgets/web_content_constraint.dart';
+import 'package:nuestra_app/core/utils/money_format.dart';
 
 /// Screen for viewing and managing expense details
 class ExpenseDetailScreen extends ConsumerStatefulWidget {
@@ -22,7 +23,7 @@ class ExpenseDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ExpenseDetailScreenState extends ConsumerState<ExpenseDetailScreen> {
-  final _currencyFormat = NumberFormat.currency(locale: 'es_AR', symbol: '\$');
+  final _currencyFormat = const MoneyFormat();
   final _dateFormat = DateFormat('EEEE, d MMMM yyyy', 'es');
 
   ExpenseModel? _getExpense() {

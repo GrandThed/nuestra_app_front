@@ -5,6 +5,36 @@ import 'package:nuestra_app/core/constants/app_strings.dart';
 import 'package:nuestra_app/core/router/app_router.dart';
 import 'package:nuestra_app/core/utils/responsive.dart';
 
+/// A top-level destination in the shell navigation.
+class _Destination {
+  final IconData icon;
+  final IconData selectedIcon;
+  final String label;
+  final String route;
+
+  const _Destination(this.icon, this.selectedIcon, this.label, this.route);
+}
+
+const _destinations = [
+  _Destination(
+    Icons.account_balance_wallet_outlined,
+    Icons.account_balance_wallet,
+    AppStrings.expenses,
+    AppRoutes.expenses,
+  ),
+  _Destination(
+    Icons.auto_awesome_outlined,
+    Icons.auto_awesome,
+    AppStrings.assistant,
+    AppRoutes.chat,
+  ),
+];
+
+int _selectedIndex(String location) {
+  final index = _destinations.indexWhere((d) => location.startsWith(d.route));
+  return index < 0 ? 0 : index;
+}
+
 /// Main shell widget with adaptive navigation:
 /// - Compact (<600dp): bottom NavigationBar
 /// - Medium (600–840dp): NavigationRail (icons only)
@@ -42,47 +72,19 @@ class _WideLayout extends StatelessWidget {
         children: [
           NavigationRail(
             extended: isExpanded,
-            selectedIndex: _getSelectedIndex(location),
-            onDestinationSelected: (index) => _onItemTapped(context, index),
+            selectedIndex: _selectedIndex(location),
+            onDestinationSelected: (index) =>
+                context.go(_destinations[index].route),
             labelType: isExpanded
                 ? NavigationRailLabelType.none
                 : NavigationRailLabelType.all,
-            destinations: const [
-              NavigationRailDestination(
-                icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home),
-                label: Text(AppStrings.home),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.dashboard_outlined),
-                selectedIcon: Icon(Icons.dashboard),
-                label: Text(AppStrings.boards),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.restaurant_menu_outlined),
-                selectedIcon: Icon(Icons.restaurant_menu),
-                label: Text(AppStrings.recipes),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.auto_awesome_outlined),
-                selectedIcon: Icon(Icons.auto_awesome),
-                label: Text(AppStrings.assistant),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.checklist_outlined),
-                selectedIcon: Icon(Icons.checklist),
-                label: Text(AppStrings.wishlists),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.account_balance_wallet_outlined),
-                selectedIcon: Icon(Icons.account_balance_wallet),
-                label: Text(AppStrings.expenses),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.calendar_month_outlined),
-                selectedIcon: Icon(Icons.calendar_month),
-                label: Text(AppStrings.calendar),
-              ),
+            destinations: [
+              for (final d in _destinations)
+                NavigationRailDestination(
+                  icon: Icon(d.icon),
+                  selectedIcon: Icon(d.selectedIcon),
+                  label: Text(d.label),
+                ),
             ],
           ),
           const VerticalDivider(thickness: 1, width: 1),
@@ -121,35 +123,6 @@ class _WideLayout extends StatelessWidget {
       child: child,
     );
   }
-
-  int _getSelectedIndex(String location) {
-    if (location.startsWith(AppRoutes.boards)) return 1;
-    if (location.startsWith(AppRoutes.recipes)) return 2;
-    if (location.startsWith(AppRoutes.chat)) return 3;
-    if (location.startsWith(AppRoutes.wishlists)) return 4;
-    if (location.startsWith(AppRoutes.expenses)) return 5;
-    if (location.startsWith(AppRoutes.calendar)) return 6;
-    return 0;
-  }
-
-  void _onItemTapped(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        context.go(AppRoutes.home);
-      case 1:
-        context.go(AppRoutes.boards);
-      case 2:
-        context.go(AppRoutes.recipes);
-      case 3:
-        context.go(AppRoutes.chat);
-      case 4:
-        context.go(AppRoutes.wishlists);
-      case 5:
-        context.go(AppRoutes.expenses);
-      case 6:
-        context.go(AppRoutes.calendar);
-    }
-  }
 }
 
 class _BottomNavBar extends StatelessWidget {
@@ -160,58 +133,16 @@ class _BottomNavBar extends StatelessWidget {
     final location = GoRouterState.of(context).matchedLocation;
 
     return NavigationBar(
-      selectedIndex: _getSelectedIndex(location),
-      onDestinationSelected: (index) => _onItemTapped(context, index),
-      destinations: const [
-        NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home),
-          label: AppStrings.home,
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.dashboard_outlined),
-          selectedIcon: Icon(Icons.dashboard),
-          label: AppStrings.boards,
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.auto_awesome_outlined),
-          selectedIcon: Icon(Icons.auto_awesome),
-          label: AppStrings.assistant,
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.checklist_outlined),
-          selectedIcon: Icon(Icons.checklist),
-          label: AppStrings.wishlists,
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.account_balance_wallet_outlined),
-          selectedIcon: Icon(Icons.account_balance_wallet),
-          label: AppStrings.expenses,
-        ),
+      selectedIndex: _selectedIndex(location),
+      onDestinationSelected: (index) => context.go(_destinations[index].route),
+      destinations: [
+        for (final d in _destinations)
+          NavigationDestination(
+            icon: Icon(d.icon),
+            selectedIcon: Icon(d.selectedIcon),
+            label: d.label,
+          ),
       ],
     );
-  }
-
-  int _getSelectedIndex(String location) {
-    if (location.startsWith(AppRoutes.boards)) return 1;
-    if (location.startsWith(AppRoutes.chat)) return 2;
-    if (location.startsWith(AppRoutes.wishlists)) return 3;
-    if (location.startsWith(AppRoutes.expenses)) return 4;
-    return 0;
-  }
-
-  void _onItemTapped(BuildContext context, int index) {
-    switch (index) {
-      case 0:
-        context.go(AppRoutes.home);
-      case 1:
-        context.go(AppRoutes.boards);
-      case 2:
-        context.go(AppRoutes.chat);
-      case 3:
-        context.go(AppRoutes.wishlists);
-      case 4:
-        context.go(AppRoutes.expenses);
-    }
   }
 }

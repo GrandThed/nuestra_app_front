@@ -21,13 +21,7 @@ class AppStrings {
   static const String income = 'Ingreso mensual';
 
   // Navigation
-  static const String home = 'Inicio';
-  static const String boards = 'Tableros';
-  static const String recipes = 'Recetas';
-  static const String menus = 'Menús';
-  static const String wishlists = 'Listas';
   static const String expenses = 'Gastos';
-  static const String calendar = 'Calendario';
   static const String settings = 'Configuración';
   static const String profile = 'Perfil';
   static const String assistant = 'Asistente';
@@ -57,12 +51,7 @@ class AppStrings {
   static const String errorNotFound = 'No encontrado';
 
   // Empty states
-  static const String emptyBoards = 'No hay tableros aún';
-  static const String emptyRecipes = 'No hay recetas aún';
-  static const String emptyMenus = 'No hay menús aún';
-  static const String emptyWishlists = 'Lista vacía';
   static const String emptyExpenses = 'No hay gastos registrados';
-  static const String emptyEvents = 'No hay eventos';
 
   // Meal types
   static const String breakfast = 'Desayuno';

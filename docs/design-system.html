@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yerba y Miel — Nuestra App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+<style>
+  /* ============ TOKENS ============ */
+  :root {
+    --bg: #F7F4EE; --surface: #FFFFFF; --surface-variant: #EFEBE3; --border: #DDD7CC;
+    --ink: #1C2420; --ink-2: #56615B; --ink-3: #7A847E;
+    --primary: #2E6B4F; --on-primary: #FFFFFF; --primary-container: #D6EADD; --on-primary-container: #0F3523;
+    --accent: #A85A22; --accent-container: #F7E4D1; --on-accent-container: #57290A;
+    --success: #2C7A4E; --warning: #8C5B10; --warning-container: #FAEED3;
+    --danger: #B13D2B; --danger-container: #F8DFD9; --info: #2E6590;
+    --m1: #2E6B4F; --m2: #A85A22; --m3: #3B67A0; --m4: #8E4A78; --m5: #5F7426; --m6: #B13D2B;
+    --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 24px;
+    --shadow-float: 0 8px 24px rgba(28, 36, 32, .12);
+    --font-ui: 'Figtree', system-ui, sans-serif;
+    --font-display: 'Fraunces', Georgia, serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1411; --surface: #161C18; --surface-variant: #202823; --border: #323C35;
+      --ink: #ECE8E0; --ink-2: #AEB6B0; --ink-3: #89938C;
+      --primary: #82C8A1; --on-primary: #0A2A1A; --primary-container: #1F4A35; --on-primary-container: #CDEBDA;
+      --accent: #E8A877; --accent-container: #4A2B14; --on-accent-container: #F9E2CE;
+      --success: #82C8A1; --warning: #E5BA62; --warning-container: #3D2E10;
+      --danger: #F0907E; --danger-container: #4A1E17; --info: #93BDE2;
+      --shadow-float: 0 8px 24px rgba(0, 0, 0, .45);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1411; --surface: #161C18; --surface-variant: #202823; --border: #323C35;
+    --ink: #ECE8E0; --ink-2: #AEB6B0; --ink-3: #89938C;
+    --primary: #82C8A1; --on-primary: #0A2A1A; --primary-container: #1F4A35; --on-primary-container: #CDEBDA;
+    --accent: #E8A877; --accent-container: #4A2B14; --on-accent-container: #F9E2CE;
+    --success: #82C8A1; --warning: #E5BA62; --warning-container: #3D2E10;
+    --danger: #F0907E; --danger-container: #4A1E17; --info: #93BDE2;
+    --shadow-float: 0 8px 24px rgba(0, 0, 0, .45);
+  }
+
+  /* ============ PAGE ============ */
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-ui); font-size: 15px; line-height: 1.5; }
+  .page { max-width: 1120px; margin: 0 auto; padding: 32px 16px 80px; }
+  header.top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+  h1 { font-family: var(--font-display); font-weight: 600; font-size: 44px; line-height: 1.05; margin: 0 0 8px; letter-spacing: -.01em; }
+  h2 { font-family: var(--font-display); font-weight: 600; font-size: 28px; margin: 56px 0 6px; }
+  h3 { font-size: 15px; font-weight: 700; margin: 24px 0 10px; color: var(--ink-2); text-transform: uppercase; letter-spacing: .06em; }
+  p.lead { font-size: 18px; color: var(--ink-2); max-width: 680px; margin: 0; }
+  .muted { color: var(--ink-2); }
+  .small { font-size: 13px; }
+  code { font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; background: var(--surface-variant); padding: 1px 5px; border-radius: 4px; }
+  .toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; background: var(--surface); }
+  .toggle button { border: 0; background: transparent; color: var(--ink-2); font: 600 13px var(--font-ui); padding: 8px 14px; cursor: pointer; }
+  .toggle button[aria-pressed="true"] { background: var(--primary-container); color: var(--on-primary-container); }
+
+  .principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: 28px; }
+  .principle { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px; }
+  .principle b { display: block; font-size: 16px; margin-bottom: 4px; }
+
+  /* swatches */
+  .swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .sw { border: 1px solid var(--border); border-radius: var(--r-md); overflow: hidden; background: var(--surface); }
+  .sw .chip { height: 56px; display: flex; align-items: flex-end; padding: 6px 8px; font-size: 12px; font-weight: 600; }
+  .sw .meta { padding: 8px; font-size: 12px; }
+  .sw .meta b { display: block; font-size: 13px; }
+
+  /* type */
+  .type-row { display: grid; grid-template-columns: 170px 1fr; gap: 16px; align-items: baseline; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .type-row .spec { font-size: 12px; color: var(--ink-2); }
+  .tabular { font-variant-numeric: tabular-nums; }
+
+  /* scales */
+  .scale { display: flex; gap: 14px; flex-wrap: wrap; align-items: flex-end; }
+  .space-box { background: var(--primary-container); border-radius: 3px; }
+  .radius-box { width: 72px; height: 56px; background: var(--surface); border: 1px solid var(--ink-3); }
+
+  /* ============ COMPONENTS (app look) ============ */
+  .grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px; }
+  .btn { font: 600 15px var(--font-ui); border-radius: var(--r-md); padding: 12px 20px; border: 1px solid transparent; cursor: pointer; }
+  .btn-filled { background: var(--primary); color: var(--on-primary); }
+  .btn-tonal { background: var(--primary-container); color: var(--on-primary-container); }
+  .btn-outline { background: transparent; color: var(--primary); border-color: var(--border); }
+  .btn-text { background: transparent; color: var(--primary); padding: 12px 10px; }
+  .btn-danger { background: transparent; color: var(--danger); padding: 12px 10px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .chip-f { white-space: nowrap; font: 600 13px var(--font-ui); border-radius: 999px; padding: 6px 12px; border: 1px solid var(--border); background: var(--surface); color: var(--ink-2); }
+  .chip-f.on { background: var(--primary-container); color: var(--on-primary-container); border-color: transparent; }
+  .chip-f .n { opacity: .7; margin-left: 4px; }
+
+  .amount { font-family: var(--font-display); font-weight: 600; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+  .amount .cur { font-size: .55em; color: var(--ink-3); margin-right: 3px; vertical-align: .35em; font-family: var(--font-ui); font-weight: 600; }
+  .amount .cents { font-size: .5em; color: var(--ink-3); vertical-align: .55em; margin-left: 1px; }
+
+  .exp { display: grid; grid-template-columns: 40px 1fr auto; gap: 12px; align-items: center; padding: 10px 0; }
+  .exp + .exp { border-top: 1px solid var(--border); }
+  .cat { width: 40px; height: 40px; border-radius: 12px; background: var(--surface-variant); display: grid; place-items: center; font-size: 19px; }
+  .exp .desc { font-weight: 600; line-height: 1.25; }
+  .exp .sub { font-size: 12.5px; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+  .exp .amt { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+  .exp .amt small { display: block; font-weight: 600; font-size: 11.5px; color: var(--success); }
+  .exp.settled .desc, .exp.settled .amt { color: var(--ink-2); }
+  .tag { font: 700 11px var(--font-ui); padding: 1px 6px; border-radius: 6px; background: var(--surface-variant); color: var(--ink-2); }
+
+  .budget { margin: 10px 0; }
+  .budget .head { display: flex; justify-content: space-between; font-size: 13.5px; margin-bottom: 6px; }
+  .bar { height: 8px; border-radius: 999px; background: var(--surface-variant); overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 999px; }
+
+  .banner { display: flex; gap: 12px; align-items: center; background: var(--accent-container); color: var(--on-accent-container); border-radius: var(--r-md); padding: 12px 14px; }
+  .banner .spark { color: var(--accent); font-size: 18px; }
+  .banner b { display: block; }
+  .banner .sub { font-size: 12.5px; opacity: .85; }
+  .banner .go { margin-left: auto; font-weight: 700; color: var(--accent); }
+
+  .bubble { max-width: 84%; padding: 10px 14px; border-radius: 16px; margin: 6px 0; font-size: 14.5px; }
+  .bubble.me { margin-left: auto; background: var(--primary-container); color: var(--on-primary-container); border-bottom-right-radius: 6px; }
+  .bubble.ai { background: var(--surface-variant); border-bottom-left-radius: 6px; }
+  .proposal { border: 1.5px solid var(--accent); border-radius: var(--r-lg); padding: 14px; background: var(--surface); margin: 8px 0; max-width: 88%; }
+  .proposal .k { font: 700 11px var(--font-ui); text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+  .a2ui-card { border: 1px solid var(--border); border-radius: var(--r-lg); padding: 14px; background: var(--surface); max-width: 88%; margin: 8px 0; }
+  .a2ui-card .line { display: flex; justify-content: space-between; font-size: 14px; padding: 3px 0; font-variant-numeric: tabular-nums; }
+
+  /* ============ PHONES ============ */
+  .phones { display: flex; gap: 22px; overflow-x: auto; padding: 8px 2px 18px; scroll-snap-type: x mandatory; }
+  .phone { flex: 0 0 300px; scroll-snap-align: start; height: 690px; position: relative; border-radius: 34px; border: 8px solid #1C2420; background: var(--bg); overflow: hidden; display: flex; flex-direction: column; box-shadow: var(--shadow-float); }
+  :root[data-theme="dark"] .phone { border-color: #2A332D; }
+  .scr { flex: 1; overflow: hidden; padding: 14px 14px 0; display: flex; flex-direction: column; }
+  .appbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .appbar .t { font-family: var(--font-display); font-size: 24px; font-weight: 600; }
+  .icons { color: var(--ink-2); font-size: 17px; letter-spacing: 8px; }
+  .month { font: 600 13px var(--font-ui); border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px; background: var(--surface); }
+  .hero { padding: 10px 2px 12px; }
+  .hero .lbl { font-size: 12.5px; color: var(--ink-2); }
+  .list-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 2px 12px; margin-top: 10px; }
+  .nav { display: flex; justify-content: space-around; padding: 8px 0 14px; background: var(--surface); border-top: 1px solid var(--border); }
+  .nav span { display: flex; flex-direction: column; align-items: center; font-size: 11.5px; font-weight: 600; color: var(--ink-2); gap: 3px; }
+  .nav span i { font-style: normal; font-size: 17px; padding: 3px 18px; border-radius: 999px; }
+  .nav span.on { color: var(--ink); }
+  .nav span.on i { background: var(--primary-container); color: var(--on-primary-container); }
+  .fab { position: absolute; right: 14px; bottom: 74px; background: var(--primary); color: var(--on-primary); font-weight: 700; border-radius: 16px; padding: 12px 16px; box-shadow: var(--shadow-float); font-size: 14px; }
+  .field { border: 1px solid var(--border); border-radius: var(--r-md); padding: 10px 12px; background: var(--surface); margin: 8px 0; font-size: 14px; }
+  .field .l { font-size: 11.5px; color: var(--ink-2); display: block; }
+  .switch { width: 38px; height: 22px; border-radius: 999px; background: var(--primary); position: relative; display: inline-block; }
+  .switch::after { content: ""; position: absolute; right: 3px; top: 3px; width: 16px; height: 16px; border-radius: 50%; background: var(--on-primary); }
+  .stepper { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; }
+  .stepper b { width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--border); display: grid; place-items: center; color: var(--primary); font-weight: 700; }
+  .composer { display: flex; gap: 8px; align-items: center; padding: 10px 0 12px; }
+  .composer .in { flex: 1; border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 9px 14px; color: var(--ink-3); font-size: 14px; }
+  .composer .send { width: 38px; height: 38px; border-radius: 50%; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; font-weight: 700; }
+
+  table.map { border-collapse: collapse; width: 100%; font-size: 13.5px; background: var(--surface); border-radius: var(--r-md); overflow: hidden; border: 1px solid var(--border); }
+  table.map th, table.map td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.map th { background: var(--surface-variant); font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-2); }
+  .decide { margin-top: 56px; background: var(--accent-container); color: var(--on-accent-container); border-radius: var(--r-lg); padding: 20px; }
+  .decide h2 { margin-top: 0; }
+  .decide li { margin: 4px 0; }
+  @media (max-width: 560px) { h1 { font-size: 34px; } .type-row { grid-template-columns: 1fr; gap: 4px; } }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="top">
+  <div>
+    <div class="small muted">Nuestra App · propuesta de sistema de diseño · v0.1</div>
+    <h1>Yerba y Miel</h1>
+    <p class="lead">Un sistema cálido y calmo para la plata del hogar. El verde yerba marca lo que es de ustedes y está confirmado. La miel marca lo que la app propone: gastos fijos sugeridos y el asistente.</p>
+  </div>
+  <div class="toggle" role="group" aria-label="Tema">
+    <button type="button" data-set="light">Claro</button>
+    <button type="button" data-set="auto">Sistema</button>
+    <button type="button" data-set="dark">Oscuro</button>
+  </div>
+</header>
+
+<div class="principles">
+  <div class="principle"><b>Calma ante los números</b><span class="muted">Fondo papel, superficies planas con bordes finos y sin sombras salvo lo que flota. El rojo es solo para errores y presupuestos pasados, nunca decoración.</span></div>
+  <div class="principle"><b>Lo tuyo y lo sugerido</b><span class="muted">Yerba = acciones y datos confirmados. Miel = propuestas de la app (sugerencias, asistente, gastos por confirmar). Se reconoce de un vistazo qué falta revisar.</span></div>
+  <div class="principle"><b>Números primero</b><span class="muted">Los montos usan cifras tabulares para que se alineen. El total del mes es lo más grande de la pantalla. Los centavos y el signo $ van más chicos.</span></div>
+</div>
+
+<h2>Color</h2>
+<p class="muted small">Todos los pares de texto pasan WCAG AA (≥ 4,5:1), verificado en claro y oscuro. Los valores de la tarjeta cambian con el tema.</p>
+<h3>Base</h3>
+<div class="swatches" id="sw-base"></div>
+<h3>Marca</h3>
+<div class="swatches" id="sw-brand"></div>
+<h3>Estados</h3>
+<div class="swatches" id="sw-status"></div>
+<h3>Miembros del hogar</h3>
+<p class="muted small">Seis colores para identificar quién pagó (punto en cada gasto, avatar). Todos con iniciales blancas a ≥ 5:1.</p>
+<div class="row" id="members"></div>
+
+<h2>Tipografía</h2>
+<p class="muted small"><b>Fraunces</b> (serif suave) solo para títulos de pantalla y montos grandes. <b>Figtree</b> para todo lo demás. Ambas en Google Fonts (el paquete <code>google_fonts</code> ya está en la app).</p>
+<div class="type-row"><div class="spec">Display · Fraunces 600 · 40/44<br>total del mes</div><div class="amount" style="font-size:40px"><span class="cur">$</span>412.380<span class="cents">,50</span></div></div>
+<div class="type-row"><div class="spec">Headline · Fraunces 600 · 26/32<br>título de pantalla</div><div style="font-family:var(--font-display);font-size:26px;font-weight:600">Gastos</div></div>
+<div class="type-row"><div class="spec">Title · Figtree 700 · 18/24</div><div style="font-size:18px;font-weight:700">Gastos fijos detectados</div></div>
+<div class="type-row"><div class="spec">Body large · Figtree 500 · 16/24</div><div style="font-size:16px;font-weight:500">Internet Fibertel</div></div>
+<div class="type-row"><div class="spec">Body · Figtree 400 · 14/20</div><div style="font-size:14px">Se pagaron en los meses anteriores y todavía no están cargados.</div></div>
+<div class="type-row"><div class="spec">Label · Figtree 600 · 13/16</div><div style="font-size:13px;font-weight:600">Pagado por Ana · 12 nov</div></div>
+<div class="type-row"><div class="spec">Caption · Figtree 500 · 12/16</div><div style="font-size:12px;font-weight:500;color:var(--ink-2)">pagado 4 de los últimos 6 meses</div></div>
+<div class="type-row"><div class="spec">Montos en listas · Figtree 700<br>cifras tabulares</div><div class="tabular" style="font-weight:700;font-size:15px">$ 22.000<br>$ 101.600<br>$ 1.029,50</div></div>
+
+<h2>Espacio, radios y elevación</h2>
+<h3>Espaciado (grilla de 4)</h3>
+<div class="scale">
+  <div><div class="space-box" style="width:4px;height:40px"></div><div class="small muted">4 xs</div></div>
+  <div><div class="space-box" style="width:8px;height:40px"></div><div class="small muted">8 sm</div></div>
+  <div><div class="space-box" style="width:12px;height:40px"></div><div class="small muted">12</div></div>
+  <div><div class="space-box" style="width:16px;height:40px"></div><div class="small muted">16 md</div></div>
+  <div><div class="space-box" style="width:24px;height:40px"></div><div class="small muted">24 lg</div></div>
+  <div><div class="space-box" style="width:32px;height:40px"></div><div class="small muted">32 xl</div></div>
+  <div><div class="space-box" style="width:48px;height:40px"></div><div class="small muted">48 xxl</div></div>
+</div>
+<p class="muted small">Coincide con <code>AppSizes</code> actual: no cambia ningún número de espaciado.</p>
+<h3>Radios</h3>
+<div class="scale">
+  <div><div class="radius-box" style="border-radius:8px"></div><div class="small muted">8 · chips, campos chicos</div></div>
+  <div><div class="radius-box" style="border-radius:12px"></div><div class="small muted">12 · botones, campos, banners</div></div>
+  <div><div class="radius-box" style="border-radius:16px"></div><div class="small muted">16 · tarjetas</div></div>
+  <div><div class="radius-box" style="border-radius:24px"></div><div class="small muted">24 · hojas inferiores</div></div>
+  <div><div class="radius-box" style="border-radius:999px"></div><div class="small muted">pill · filtros, navegación</div></div>
+</div>
+<h3>Elevación</h3>
+<p class="muted small">Dos niveles. <b>Plano</b>: tarjetas, listas y campos, con borde de 1 px y sin sombra. <b>Flota</b>: botón de agregar, hojas y diálogos, con una sombra suave. Nada más.</p>
+
+<h2>Componentes</h2>
+<div class="grid2">
+  <div class="panel">
+    <h3 style="margin-top:0">Botones</h3>
+    <div class="row"><button class="btn btn-filled">Guardar gasto</button><button class="btn btn-tonal">Revisar</button></div>
+    <div class="row" style="margin-top:10px"><button class="btn btn-outline">Exportar</button><button class="btn btn-text">Cancelar</button><button class="btn btn-danger">Eliminar</button></div>
+    <p class="muted small">Uno solo relleno por pantalla (la acción principal). Eliminar es texto rojo, nunca un botón rojo relleno.</p>
+    <h3>Filtros</h3>
+    <div class="row"><span class="chip-f on">Todos<span class="n">24</span></span><span class="chip-f">🛒 Súper<span class="n">9</span></span><span class="chip-f">💡 Servicios<span class="n">4</span></span><span class="chip-f">🏠 Hogar<span class="n">2</span></span></div>
+  </div>
+
+  <div class="panel">
+    <h3 style="margin-top:0">Gasto en lista</h3>
+    <div class="exp"><div class="cat">🛒</div><div><div class="desc">Supermercado Coto</div><div class="sub"><span class="dot" style="background:var(--m1)"></span>Ana · 23 nov</div></div><div class="amt">$ 48.210</div></div>
+    <div class="exp"><div class="cat">🧊</div><div><div class="desc">Heladera <span class="tag">cuota 2/6</span></div><div class="sub"><span class="dot" style="background:var(--m3)"></span>Beto · 20 nov</div></div><div class="amt">$ 100.000</div></div>
+    <div class="exp settled"><div class="cat">💡</div><div><div class="desc">Luz Edenor</div><div class="sub"><span class="dot" style="background:var(--m1)"></span>Ana · 12 nov</div></div><div class="amt">$ 35.000<small>✓ saldado</small></div></div>
+    <p class="muted small">"(cuota 2/6)" de la descripción se muestra como etiqueta. Saldado = texto atenuado + check verde.</p>
+  </div>
+
+  <div class="panel">
+    <h3 style="margin-top:0">Presupuesto</h3>
+    <div class="budget"><div class="head"><span>🍽️ Restaurantes</span><span class="tabular muted">$ 32.000 de $ 80.000</span></div><div class="bar"><i style="width:40%;background:var(--primary)"></i></div></div>
+    <div class="budget"><div class="head"><span>🛒 Supermercado</span><span class="tabular" style="color:var(--warning);font-weight:600">$ 86.400 de $ 100.000</span></div><div class="bar"><i style="width:86%;background:var(--warning)"></i></div></div>
+    <div class="budget"><div class="head"><span>🎬 Entretenimiento</span><span class="tabular" style="color:var(--danger);font-weight:600">$ 41.000 de $ 35.000</span></div><div class="bar"><i style="width:100%;background:var(--danger)"></i></div></div>
+    <p class="muted small">Yerba hasta 80 %, ámbar de 80 a 100 %, rojo pasado el límite.</p>
+  </div>
+
+  <div class="panel">
+    <h3 style="margin-top:0">Sugerencia de la app (miel)</h3>
+    <div class="banner"><span class="spark">✦</span><div><b>3 gastos fijos para cargar</b><span class="sub">Se repiten todos los meses · $ 557.000</span></div><span class="go">Revisar</span></div>
+    <h3>Asistente</h3>
+    <div class="bubble me">¿Cuánto gastamos este mes?</div>
+    <div class="bubble ai">Van $ 158.600 en noviembre. El súper es lo más grande.</div>
+    <div class="proposal"><div class="k">Por confirmar</div><div class="amount" style="font-size:26px"><span class="cur">$</span>15.000</div><div>Nafta · 🚗 Transporte · hoy</div><div class="row" style="justify-content:flex-end;margin-top:6px"><button class="btn btn-text">Descartar</button><button class="btn btn-filled" style="padding:8px 16px">Guardar</button></div></div>
+    <p class="muted small">Todo lo que la app propone y espera tu OK lleva miel. Al confirmarlo pasa a yerba.</p>
+  </div>
+</div>
+
+<h2>Pantallas</h2>
+<p class="muted small">Así se verían las tres pantallas principales. Deslizá en móvil.</p>
+<div class="phones" id="phones">
+  <!-- Gastos -->
+  <div class="phone"><div class="scr">
+    <div class="appbar"><span class="t">Gastos</span><span class="icons">⌕ ⋮</span></div>
+    <div class="row"><span class="month">Noviembre 2026 ▾</span></div>
+    <div class="hero"><div class="lbl">Total del mes</div><div class="amount" style="font-size:38px"><span class="cur">$</span>412.380</div><div class="small muted">Ana $ 247.400 · Beto $ 164.980</div></div>
+    <div class="banner"><span class="spark">✦</span><div><b>3 gastos fijos para cargar</b><span class="sub">$ 557.000</span></div><span class="go">Revisar</span></div>
+    <div class="row" style="margin-top:12px;flex-wrap:nowrap;overflow:hidden"><span class="chip-f on">Todos</span><span class="chip-f">🛒 Súper</span><span class="chip-f">💡 Servicios</span></div>
+    <div class="list-card">
+      <div class="exp"><div class="cat">🛒</div><div><div class="desc">Supermercado</div><div class="sub"><span class="dot" style="background:var(--m1)"></span>Ana · 23 nov</div></div><div class="amt">$ 48.210</div></div>
+      <div class="exp"><div class="cat">🧊</div><div><div class="desc">Heladera <span class="tag">2/6</span></div><div class="sub"><span class="dot" style="background:var(--m3)"></span>Beto · 20 nov</div></div><div class="amt">$ 100.000</div></div>
+      <div class="exp settled"><div class="cat">💡</div><div><div class="desc">Luz Edenor</div><div class="sub"><span class="dot" style="background:var(--m1)"></span>Ana · 12 nov</div></div><div class="amt">$ 35.000<small>✓ saldado</small></div></div>
+    </div>
+    <div style="height:64px"></div><div class="fab">＋ Gasto</div>
+  </div><div class="nav"><span class="on"><i>◫</i>Gastos</span><span><i>✦</i>Asistente</span></div></div>
+
+  <!-- Nuevo gasto -->
+  <div class="phone"><div class="scr">
+    <div class="appbar"><span class="t">Nuevo gasto</span><span class="icons">✕</span></div>
+    <div style="text-align:center;padding:14px 0 6px"><div class="lbl small muted">Total</div><div class="amount" style="font-size:40px;color:var(--primary)"><span class="cur">$</span>600.000</div></div>
+    <div class="field"><span class="l">Descripción</span>Heladera</div>
+    <div class="field" style="display:flex;justify-content:space-between"><span><span class="l">Fecha</span>Hoy, 26 nov</span><span class="muted">›</span></div>
+    <div class="field">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:600">💳 En cuotas</span><span class="stepper"><b>−</b>6<b>+</b><span class="switch"></span></span></div>
+      <div class="small muted" style="margin-top:4px">6 cuotas de $ 100.000 desde noviembre</div>
+    </div>
+    <div class="small muted" style="margin:10px 0 6px;font-weight:600">Categoría</div>
+    <div class="row"><span class="chip-f">🛒 Súper</span><span class="chip-f on">🏠 Hogar</span><span class="chip-f">💡 Servicios</span><span class="chip-f">＋ Nueva</span></div>
+    <div style="flex:1"></div>
+    <button class="btn btn-filled" style="width:100%;margin-bottom:14px">Guardar compra en 6 cuotas</button>
+  </div></div>
+
+  <!-- Asistente -->
+  <div class="phone"><div class="scr">
+    <div class="appbar"><span class="t">Asistente</span><span class="icons">✎ ⋮</span></div>
+    <div class="bubble me">¿Cuánto gastamos este mes?</div>
+    <div class="a2ui-card"><div style="font-weight:700;margin-bottom:4px">Noviembre 2026</div><div class="line"><span>Supermercado</span><span>$ 101.600</span></div><div class="line"><span>Servicios</span><span>$ 57.000</span></div><div class="line" style="border-top:1px solid var(--border);margin-top:4px;padding-top:6px;font-weight:700"><span>Total</span><span>$ 158.600</span></div><div style="margin-top:8px;color:var(--primary);font-weight:700;font-size:14px">Ver gastos ›</div></div>
+    <div class="bubble me">Anotá 15000 de nafta</div>
+    <div class="proposal"><div class="k">Por confirmar</div><div class="amount" style="font-size:24px"><span class="cur">$</span>15.000</div><div class="small">Nafta · Transporte · hoy</div><div class="row" style="justify-content:flex-end"><button class="btn btn-text" style="padding:6px 8px">Descartar</button><button class="btn btn-filled" style="padding:6px 14px">Guardar</button></div></div>
+    <div style="flex:1"></div>
+    <div class="composer"><span class="in">Escribí tu pregunta</span><span class="composer send">➤</span></div>
+  </div><div class="nav"><span><i>◫</i>Gastos</span><span class="on"><i>✦</i>Asistente</span></div></div>
+</div>
+
+<h2>Cómo se aplica en Flutter</h2>
+<p class="muted small">Todo entra por el tema (Material 3), así las pantallas existentes lo toman sin reescribirse. Archivos: <code>app_colors.dart</code>, <code>app_theme.dart</code>, <code>text_styles.dart</code>, más ajustes puntuales en Gastos, Nuevo gasto y Asistente.</p>
+<table class="map">
+  <tr><th>Token</th><th>ColorScheme / tema</th><th>Dónde se ve</th></tr>
+  <tr><td>yerba</td><td><code>primary</code>, <code>primaryContainer</code></td><td>Botón principal, filtro activo, navegación, mis mensajes</td></tr>
+  <tr><td>miel</td><td><code>tertiary</code>, <code>tertiaryContainer</code></td><td>Banner de gastos fijos, tarjeta "por confirmar", ícono del asistente</td></tr>
+  <tr><td>papel / superficie</td><td><code>surface</code>, <code>surfaceContainer*</code>, <code>scaffoldBackgroundColor</code></td><td>Fondos, tarjetas, burbujas del asistente</td></tr>
+  <tr><td>tinta 1/2/3</td><td><code>onSurface</code>, <code>onSurfaceVariant</code>, <code>outline</code></td><td>Texto principal, secundario, terciario</td></tr>
+  <tr><td>estados</td><td><code>error</code> + <code>AppColors.success/warning</code></td><td>Saldado, presupuesto, errores</td></tr>
+  <tr><td>Fraunces / Figtree</td><td><code>displayLarge…headlineSmall</code> / resto del <code>TextTheme</code></td><td>Títulos y montos grandes / todo lo demás</td></tr>
+  <tr><td>tabular</td><td><code>AppTextStyles.amount</code> con <code>FontFeature.tabularFigures()</code></td><td>Todos los montos</td></tr>
+  <tr><td>radios</td><td><code>CardTheme</code> 16, botones 12, chips pill, <code>BottomSheetTheme</code> 24</td><td>Todo el app</td></tr>
+</table>
+
+<div class="decide">
+  <h2>Para decidir</h2>
+  <ul>
+    <li><b>Nombre y paleta:</b> ¿yerba + miel les gusta, o prefieren otro color principal?</li>
+    <li><b>Fraunces en títulos y montos:</b> le da carácter. La alternativa es usar Figtree para todo, más neutro.</li>
+    <li><b>Modo oscuro:</b> incluido, sigue la configuración del teléfono.</li>
+    <li>Si lo aprueban, lo aplico en la app y les paso capturas de las pantallas reales.</li>
+  </ul>
+</div>
+</div>
+
+<script>
+  // Swatches
+  const groups = {
+    'sw-base': [['bg', 'Papel (fondo)'], ['surface', 'Superficie'], ['surface-variant', 'Arena'], ['border', 'Borde'], ['ink', 'Tinta'], ['ink-2', 'Tinta 2'], ['ink-3', 'Tinta 3']],
+    'sw-brand': [['primary', 'Yerba'], ['primary-container', 'Yerba suave'], ['accent', 'Miel'], ['accent-container', 'Miel suave']],
+    'sw-status': [['success', 'Saldado'], ['warning', 'Atención'], ['warning-container', 'Atención suave'], ['danger', 'Error / pasado'], ['danger-container', 'Error suave'], ['info', 'Info']],
+  };
+  const lum = (hex) => {
+    const c = hex.replace('#', '').match(/../g).map(v => parseInt(v, 16) / 255).map(v => v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const contrast = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((m, n) => n - m); return (x + 0.05) / (y + 0.05); };
+  function renderSwatches() {
+    const css = getComputedStyle(document.documentElement);
+    const v = (name) => css.getPropertyValue('--' + name).trim();
+    for (const [id, items] of Object.entries(groups)) {
+      const el = document.getElementById(id);
+      el.innerHTML = '';
+      for (const [token, label] of items) {
+        const hex = v(token).toUpperCase();
+        const textOn = contrast(hex, '#FFFFFF') > contrast(hex, '#1C2420') ? '#FFFFFF' : '#1C2420';
+        const vsSurface = contrast(hex, v('surface')).toFixed(1);
+        el.insertAdjacentHTML('beforeend',
+          `<div class="sw"><div class="chip" style="background:${hex};color:${textOn}">${label}</div>` +
+          `<div class="meta"><b>${hex}</b>--${token}<br><span class="muted">${vsSurface}:1 sobre superficie</span></div></div>`);
+      }
+    }
+    const members = document.getElementById('members');
+    members.innerHTML = '';
+    ['Ana', 'Beto', 'Caro', 'Dani', 'Eli', 'Fede'].forEach((n, i) => {
+      members.insertAdjacentHTML('beforeend',
+        `<span class="row" style="gap:6px"><span style="width:32px;height:32px;border-radius:50%;background:var(--m${i + 1});color:#fff;display:grid;place-items:center;font-weight:700">${n[0]}</span><span class="small">${v('m' + (i + 1)).toUpperCase()}</span></span>`);
+    });
+  }
+
+  // Theme toggle (remembered per viewer when storage is available)
+  const buttons = document.querySelectorAll('.toggle button');
+  function setTheme(mode) {
+    if (mode === 'auto') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', mode);
+    buttons.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.set === mode)));
+    try { localStorage.setItem('yerba-theme', mode); } catch (e) {}
+    renderSwatches();
+  }
+  buttons.forEach(b => b.addEventListener('click', () => setTheme(b.dataset.set)));
+  let saved = new URLSearchParams(location.search).get('theme');
+  if (!saved) { try { saved = localStorage.getItem('yerba-theme') || 'auto'; } catch (e) { saved = 'auto'; } }
+  setTheme(saved);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderSwatches);
+</script>
+</body>
+</html>

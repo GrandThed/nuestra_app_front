@@ -136,7 +136,11 @@ class ExpenseRepository {
         response['data']['expense'] as Map<String, dynamic>);
   }
 
-  /// Create a new expense
+  /// Create a new expense.
+  ///
+  /// With [installments] > 1, [amount] is the total price: the backend
+  /// creates one expense per month starting at [date] ("<description>
+  /// (cuota i/N)") and this returns the first one.
   Future<ExpenseModel> createExpense({
     required String householdId,
     required String description,
@@ -146,6 +150,7 @@ class ExpenseRepository {
     String? categoryId,
     String? receiptUrl,
     String? paidById,
+    int? installments,
   }) async {
     final response = await _dioClient.post<Map<String, dynamic>>(
       ApiConstants.expenses,
@@ -158,6 +163,8 @@ class ExpenseRepository {
         if (categoryId != null) 'categoryId': categoryId,
         if (receiptUrl != null) 'receiptUrl': receiptUrl,
         if (paidById != null) 'paidById': paidById,
+        if (installments != null && installments > 1)
+          'installments': installments,
       },
     );
 
@@ -471,6 +478,64 @@ class ExpenseRepository {
         .map((t) => ExpenseTrendModel.fromJson(t as Map<String, dynamic>))
         .toList();
   }
+
+  // ==================== PREDICTIONS ====================
+
+  /// Fixed expenses detected from previous months that are not loaded yet
+  /// for [month]/[year].
+  Future<List<ExpensePredictionModel>> getPredictions(
+    String householdId, {
+    required int month,
+    required int year,
+  }) async {
+    final response = await _dioClient.get<Map<String, dynamic>>(
+      ApiConstants.expensePredictions,
+      queryParameters: {
+        'householdId': householdId,
+        'month': month.toString(),
+        'year': year.toString(),
+      },
+    );
+
+    final predictions =
+        response['data']['predictions'] as List<dynamic>? ?? [];
+    return predictions
+        .map((p) => ExpensePredictionModel.fromJson(p as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Create the accepted suggestions as expenses in one request.
+  Future<List<ExpenseModel>> applyPredictions(
+    String householdId,
+    List<ExpensePredictionModel> items,
+  ) async {
+    final response = await _dioClient.post<Map<String, dynamic>>(
+      ApiConstants.expensePredictionsApply,
+      data: {
+        'householdId': householdId,
+        'items': [
+          for (final p in items)
+            {
+              'description': p.description,
+              'amount': p.suggestedAmount,
+              'date': _calendarDate(p.suggestedDate),
+              if (p.categoryId != null) 'categoryId': p.categoryId,
+              if (p.paidById != null) 'paidById': p.paidById,
+            },
+        ],
+      },
+    );
+
+    final expenses = response['data']['expenses'] as List<dynamic>? ?? [];
+    return expenses
+        .map((e) => ExpenseModel.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// Send a calendar date the way the rest of the app does (no timezone),
+  /// so it is stored as that day regardless of the phone's timezone.
+  String _calendarDate(DateTime date) =>
+      DateTime(date.year, date.month, date.day).toIso8601String();
 
   // ==================== CSV EXPORT ====================
 

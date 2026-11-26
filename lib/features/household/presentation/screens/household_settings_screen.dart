@@ -995,8 +995,8 @@ class _HouseholdSettingsScreenState
         title: const Text('Eliminar hogar'),
         content: Text(
           '¿Estás seguro que deseas eliminar "${household.name}"? '
-          'Se borrarán permanentemente todos los tableros, recetas, menús, '
-          'gastos, listas de deseos y eventos del calendario. '
+          'Se borrarán permanentemente todos los gastos, '
+          'presupuestos y el historial del asistente. '
           'Esta acción no se puede deshacer.',
         ),
         actions: [

@@ -23,7 +23,8 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
   final _joinFormKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _codeController = TextEditingController();
-  String _selectedHemisphere = 'south'; // Default for Argentina
+  // Only used by the removed seasonal-produce feature; kept for the API
+  static const _hemisphere = 'south';
 
   @override
   void dispose() {
@@ -206,44 +207,6 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
                           textCapitalization: TextCapitalization.words,
                         ),
                         const SizedBox(height: AppSizes.md),
-
-                        // Hemisphere selection
-                        Text(
-                          'Hemisferio',
-                          style: Theme.of(context).textTheme.titleSmall,
-                        ),
-                        const SizedBox(height: AppSizes.xs),
-                        Text(
-                          'Usado para mostrar vegetales de temporada',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .onSurfaceVariant,
-                              ),
-                        ),
-                        const SizedBox(height: AppSizes.sm),
-                        SegmentedButton<String>(
-                          segments: const [
-                            ButtonSegment(
-                              value: 'south',
-                              label: Text('Sur'),
-                              icon: Icon(Icons.south),
-                            ),
-                            ButtonSegment(
-                              value: 'north',
-                              label: Text('Norte'),
-                              icon: Icon(Icons.north),
-                            ),
-                          ],
-                          selected: {_selectedHemisphere},
-                          onSelectionChanged: isLoading
-                              ? null
-                              : (selected) {
-                                  setState(
-                                      () => _selectedHemisphere = selected.first);
-                                },
-                        ),
-                        const SizedBox(height: AppSizes.md),
                         OutlinedButton(
                           onPressed: isLoading ? null : _submitCreate,
                           child: const Text('Crear Hogar'),
@@ -271,7 +234,7 @@ class _HouseholdSetupScreenState extends ConsumerState<HouseholdSetupScreen> {
     if (_createFormKey.currentState!.validate()) {
       ref.read(householdProvider.notifier).createHousehold(
             name: _nameController.text.trim(),
-            hemisphere: _selectedHemisphere,
+            hemisphere: _hemisphere,
           );
     }
   }

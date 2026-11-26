@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/features/expenses/data/models/expense_model.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_state.dart';
+import 'package:nuestra_app/core/utils/money_format.dart';
 
 /// Screen for viewing expense trends over multiple months
 class ExpenseTrendsScreen extends ConsumerStatefulWidget {
@@ -17,7 +17,7 @@ class ExpenseTrendsScreen extends ConsumerStatefulWidget {
 }
 
 class _ExpenseTrendsScreenState extends ConsumerState<ExpenseTrendsScreen> {
-  final _currencyFormat = NumberFormat.currency(locale: 'es_AR', symbol: '\$');
+  final _currencyFormat = const MoneyFormat();
 
   final List<String> _monthNames = [
     'Ene',
@@ -250,7 +250,7 @@ class _ExpenseTrendsScreenState extends ConsumerState<ExpenseTrendsScreen> {
 class _TrendMonthCard extends StatelessWidget {
   final ExpenseTrendModel trend;
   final String monthLabel;
-  final NumberFormat currencyFormat;
+  final MoneyFormat currencyFormat;
   final double maxTotal;
   final double? monthChange;
   final Color Function(int index) categoryColorResolver;

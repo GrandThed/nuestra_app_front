@@ -1,127 +1,72 @@
+import 'dart:ui' show FontFeature;
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:nuestra_app/core/constants/app_colors.dart';
-import 'package:nuestra_app/core/constants/app_sizes.dart';
 
-/// Custom text styles
+/// "Yerba y Miel" type: Fraunces (soft serif) for screen titles and big
+/// amounts, Figtree for everything else. Amounts always use tabular figures
+/// so they line up in lists.
 class AppTextStyles {
   AppTextStyles._();
 
-  // Display
-  static final TextStyle displayLarge = GoogleFonts.plusJakartaSans(
-    fontSize: 32,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-    height: 1.2,
-  );
+  static const _tabular = [FontFeature.tabularFigures()];
 
-  static final TextStyle displayMedium = GoogleFonts.plusJakartaSans(
-    fontSize: 28,
-    fontWeight: FontWeight.bold,
-    color: AppColors.textPrimary,
-    height: 1.2,
-  );
+  /// Text theme for a given base (light or dark), colors come from the theme.
+  static TextTheme textTheme(TextTheme base) {
+    final ui = GoogleFonts.figtreeTextTheme(base);
+    TextStyle display(TextStyle? s, double size, double height) =>
+        GoogleFonts.fraunces(
+          textStyle: s,
+          fontSize: size,
+          height: height / size,
+          fontWeight: FontWeight.w600,
+          letterSpacing: -0.2,
+        );
+    return ui.copyWith(
+      displayLarge: display(ui.displayLarge, 40, 44),
+      displayMedium: display(ui.displayMedium, 34, 40),
+      displaySmall: display(ui.displaySmall, 30, 36),
+      headlineLarge: display(ui.headlineLarge, 28, 34),
+      headlineMedium: display(ui.headlineMedium, 26, 32),
+      headlineSmall: display(ui.headlineSmall, 22, 28),
+      titleLarge: ui.titleLarge?.copyWith(fontSize: 18, height: 24 / 18, fontWeight: FontWeight.w700),
+      titleMedium: ui.titleMedium?.copyWith(fontSize: 16, height: 22 / 16, fontWeight: FontWeight.w600),
+      titleSmall: ui.titleSmall?.copyWith(fontSize: 14, height: 20 / 14, fontWeight: FontWeight.w600),
+      bodyLarge: ui.bodyLarge?.copyWith(fontSize: 16, height: 24 / 16, fontWeight: FontWeight.w500),
+      bodyMedium: ui.bodyMedium?.copyWith(fontSize: 14, height: 20 / 14),
+      bodySmall: ui.bodySmall?.copyWith(fontSize: 12, height: 16 / 12, fontWeight: FontWeight.w500),
+      labelLarge: ui.labelLarge?.copyWith(fontSize: 15, fontWeight: FontWeight.w600, letterSpacing: 0),
+      labelMedium: ui.labelMedium?.copyWith(fontSize: 13, fontWeight: FontWeight.w600, letterSpacing: 0),
+      labelSmall: ui.labelSmall?.copyWith(fontSize: 11.5, fontWeight: FontWeight.w600, letterSpacing: 0),
+    );
+  }
 
-  // Headlines
-  static final TextStyle headlineLarge = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontXxl,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-    height: 1.3,
-  );
+  /// Screen title in app bars (Fraunces).
+  static TextStyle screenTitle(Color color) => GoogleFonts.fraunces(
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+        color: color,
+        letterSpacing: -0.2,
+      );
 
-  static final TextStyle headlineMedium = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontXl,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-    height: 1.3,
-  );
+  /// Big amount (month total, new expense, confirmation cards): Fraunces,
+  /// tabular figures.
+  static TextStyle bigAmount({required double size, required Color color}) =>
+      GoogleFonts.fraunces(
+        fontSize: size,
+        fontWeight: FontWeight.w600,
+        color: color,
+        height: 1.1,
+        letterSpacing: -0.3,
+        fontFeatures: _tabular,
+      );
 
-  static final TextStyle headlineSmall = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontLg,
-    fontWeight: FontWeight.w600,
-    color: AppColors.textPrimary,
-    height: 1.3,
-  );
-
-  // Titles
-  static final TextStyle titleLarge = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontLg,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
-
-  static final TextStyle titleMedium = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontMd,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
-
-  static final TextStyle titleSmall = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontSm,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
-    height: 1.4,
-  );
-
-  // Body
-  static final TextStyle bodyLarge = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontMd,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
-    height: 1.5,
-  );
-
-  static final TextStyle bodyMedium = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontSm,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textPrimary,
-    height: 1.5,
-  );
-
-  static final TextStyle bodySmall = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontXs,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textSecondary,
-    height: 1.5,
-  );
-
-  // Labels
-  static final TextStyle labelLarge = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontSm,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textPrimary,
-    letterSpacing: 0.5,
-  );
-
-  static final TextStyle labelMedium = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontXs,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
-    letterSpacing: 0.5,
-  );
-
-  static final TextStyle labelSmall = GoogleFonts.plusJakartaSans(
-    fontSize: 10,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textTertiary,
-    letterSpacing: 0.5,
-  );
-
-  // Button
-  static final TextStyle button = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontMd,
-    fontWeight: FontWeight.w600,
-    letterSpacing: 0.5,
-  );
-
-  // Caption
-  static final TextStyle caption = GoogleFonts.plusJakartaSans(
-    fontSize: AppSizes.fontXs,
-    fontWeight: FontWeight.normal,
-    color: AppColors.textTertiary,
-    height: 1.4,
-  );
+  /// Amount in lists and rows: Figtree bold, tabular figures.
+  static TextStyle amount({double size = 15, Color? color}) =>
+      GoogleFonts.figtree(
+        fontSize: size,
+        fontWeight: FontWeight.w700,
+        color: color,
+        fontFeatures: _tabular,
+      );
 }

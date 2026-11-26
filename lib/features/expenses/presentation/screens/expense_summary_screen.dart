@@ -8,6 +8,7 @@ import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/features/expenses/data/models/expense_model.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_state.dart';
+import 'package:nuestra_app/core/utils/money_format.dart';
 
 /// Screen for viewing expense summary with balances and settlements
 class ExpenseSummaryScreen extends ConsumerStatefulWidget {
@@ -26,7 +27,7 @@ class ExpenseSummaryScreen extends ConsumerStatefulWidget {
 }
 
 class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
-  final _currencyFormat = NumberFormat.currency(locale: 'es_AR', symbol: '\$');
+  final _currencyFormat = const MoneyFormat();
   late int _selectedMonth;
   late int _selectedYear;
 
@@ -563,7 +564,7 @@ class _ExpenseSummaryScreenState extends ConsumerState<ExpenseSummaryScreen> {
 
 class _BalanceRow extends StatelessWidget {
   final MemberBalanceModel balance;
-  final NumberFormat currencyFormat;
+  final MoneyFormat currencyFormat;
 
   const _BalanceRow({
     required this.balance,
@@ -633,7 +634,7 @@ class _BalanceRow extends StatelessWidget {
 
 class _SettlementRow extends StatelessWidget {
   final SettlementModel settlement;
-  final NumberFormat currencyFormat;
+  final MoneyFormat currencyFormat;
 
   const _SettlementRow({
     required this.settlement,
@@ -707,7 +708,7 @@ class _SettlementRow extends StatelessWidget {
 
 class _ExpenseListTile extends StatelessWidget {
   final ExpenseModel expense;
-  final NumberFormat currencyFormat;
+  final MoneyFormat currencyFormat;
   final bool isSettled;
 
   const _ExpenseListTile({
@@ -812,7 +813,7 @@ class _SettlementBreakdownSheet extends StatelessWidget {
 
   final String monthLabel;
   final List<ExpenseModel> expenses;
-  final NumberFormat currencyFormat;
+  final MoneyFormat currencyFormat;
   final VoidCallback onSettle;
 
   @override

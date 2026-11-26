@@ -44,7 +44,7 @@ final class ExpensesNotifierProvider
   }
 }
 
-String _$expensesNotifierHash() => r'd1910a249bb3f363945cc4ccf89b1f93244cc738';
+String _$expensesNotifierHash() => r'cfd7db0aaef32a9aae7956b6930678179867f93f';
 
 /// Notifier for expenses operations (categories + expenses combined)
 
@@ -544,6 +544,59 @@ final class RecentExpensesForSuggestionsProvider
 
 String _$recentExpensesForSuggestionsHash() =>
     r'6cb24a84ee44a6dfa7265edb02a7783a0b6a8f71';
+
+/// Fixed expenses (services, rent, subscriptions) detected from previous
+/// months that are not loaded yet for the month selected in Gastos.
+/// Errors resolve to an empty list: suggestions are optional.
+
+@ProviderFor(expensePredictions)
+final expensePredictionsProvider = ExpensePredictionsProvider._();
+
+/// Fixed expenses (services, rent, subscriptions) detected from previous
+/// months that are not loaded yet for the month selected in Gastos.
+/// Errors resolve to an empty list: suggestions are optional.
+
+final class ExpensePredictionsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<ExpensePredictionModel>>,
+          List<ExpensePredictionModel>,
+          FutureOr<List<ExpensePredictionModel>>
+        >
+    with
+        $FutureModifier<List<ExpensePredictionModel>>,
+        $FutureProvider<List<ExpensePredictionModel>> {
+  /// Fixed expenses (services, rent, subscriptions) detected from previous
+  /// months that are not loaded yet for the month selected in Gastos.
+  /// Errors resolve to an empty list: suggestions are optional.
+  ExpensePredictionsProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'expensePredictionsProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$expensePredictionsHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<ExpensePredictionModel>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<ExpensePredictionModel>> create(Ref ref) {
+    return expensePredictions(ref);
+  }
+}
+
+String _$expensePredictionsHash() =>
+    r'ee7f31c5468b99794ebecd8568256615016861cb';
 
 /// Utility provider for exporting expenses as CSV
 /// Returns the CSV string or null on error

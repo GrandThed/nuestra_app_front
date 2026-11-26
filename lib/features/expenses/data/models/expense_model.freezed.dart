@@ -843,7 +843,10 @@ $ExpenseUserModelCopyWith<$Res>? get user {
 /// @nodoc
 mixin _$ExpenseModel {
 
- String get id; String get householdId; String get description;@DecimalConverter() double get amount; String get currency; DateTime get date; String? get receiptUrl; ExpenseCategoryModel? get category; ExpenseUserModel get paidBy; List<ExpenseSplitModel> get splits; bool get allSettled; DateTime? get createdAt; String? get recurringExpenseId; String? get linkedWishlistItemId;
+ String get id; String get householdId; String get description;@DecimalConverter() double get amount; String get currency; DateTime get date; String? get receiptUrl; ExpenseCategoryModel? get category; ExpenseUserModel get paidBy; List<ExpenseSplitModel> get splits; bool get allSettled; DateTime? get createdAt; String? get recurringExpenseId;/// Shared by every cuota of a purchase paid in installments.
+ String? get installmentGroupId;/// 1-based cuota number, e.g. 2 in "cuota 2/6".
+ int? get installmentNumber;/// Total cuotas of the purchase, e.g. 6 in "cuota 2/6".
+ int? get installmentCount;
 /// Create a copy of ExpenseModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -856,16 +859,16 @@ $ExpenseModelCopyWith<ExpenseModel> get copyWith => _$ExpenseModelCopyWithImpl<E
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExpenseModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.description, description) || other.description == description)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.date, date) || other.date == date)&&(identical(other.receiptUrl, receiptUrl) || other.receiptUrl == receiptUrl)&&(identical(other.category, category) || other.category == category)&&(identical(other.paidBy, paidBy) || other.paidBy == paidBy)&&const DeepCollectionEquality().equals(other.splits, splits)&&(identical(other.allSettled, allSettled) || other.allSettled == allSettled)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.recurringExpenseId, recurringExpenseId) || other.recurringExpenseId == recurringExpenseId)&&(identical(other.linkedWishlistItemId, linkedWishlistItemId) || other.linkedWishlistItemId == linkedWishlistItemId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExpenseModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.description, description) || other.description == description)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.date, date) || other.date == date)&&(identical(other.receiptUrl, receiptUrl) || other.receiptUrl == receiptUrl)&&(identical(other.category, category) || other.category == category)&&(identical(other.paidBy, paidBy) || other.paidBy == paidBy)&&const DeepCollectionEquality().equals(other.splits, splits)&&(identical(other.allSettled, allSettled) || other.allSettled == allSettled)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.recurringExpenseId, recurringExpenseId) || other.recurringExpenseId == recurringExpenseId)&&(identical(other.installmentGroupId, installmentGroupId) || other.installmentGroupId == installmentGroupId)&&(identical(other.installmentNumber, installmentNumber) || other.installmentNumber == installmentNumber)&&(identical(other.installmentCount, installmentCount) || other.installmentCount == installmentCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,householdId,description,amount,currency,date,receiptUrl,category,paidBy,const DeepCollectionEquality().hash(splits),allSettled,createdAt,recurringExpenseId,linkedWishlistItemId);
+int get hashCode => Object.hash(runtimeType,id,householdId,description,amount,currency,date,receiptUrl,category,paidBy,const DeepCollectionEquality().hash(splits),allSettled,createdAt,recurringExpenseId,installmentGroupId,installmentNumber,installmentCount);
 
 @override
 String toString() {
-  return 'ExpenseModel(id: $id, householdId: $householdId, description: $description, amount: $amount, currency: $currency, date: $date, receiptUrl: $receiptUrl, category: $category, paidBy: $paidBy, splits: $splits, allSettled: $allSettled, createdAt: $createdAt, recurringExpenseId: $recurringExpenseId, linkedWishlistItemId: $linkedWishlistItemId)';
+  return 'ExpenseModel(id: $id, householdId: $householdId, description: $description, amount: $amount, currency: $currency, date: $date, receiptUrl: $receiptUrl, category: $category, paidBy: $paidBy, splits: $splits, allSettled: $allSettled, createdAt: $createdAt, recurringExpenseId: $recurringExpenseId, installmentGroupId: $installmentGroupId, installmentNumber: $installmentNumber, installmentCount: $installmentCount)';
 }
 
 
@@ -876,7 +879,7 @@ abstract mixin class $ExpenseModelCopyWith<$Res>  {
   factory $ExpenseModelCopyWith(ExpenseModel value, $Res Function(ExpenseModel) _then) = _$ExpenseModelCopyWithImpl;
 @useResult
 $Res call({
- String id, String householdId, String description,@DecimalConverter() double amount, String currency, DateTime date, String? receiptUrl, ExpenseCategoryModel? category, ExpenseUserModel paidBy, List<ExpenseSplitModel> splits, bool allSettled, DateTime? createdAt, String? recurringExpenseId, String? linkedWishlistItemId
+ String id, String householdId, String description,@DecimalConverter() double amount, String currency, DateTime date, String? receiptUrl, ExpenseCategoryModel? category, ExpenseUserModel paidBy, List<ExpenseSplitModel> splits, bool allSettled, DateTime? createdAt, String? recurringExpenseId, String? installmentGroupId, int? installmentNumber, int? installmentCount
 });
 
 
@@ -893,7 +896,7 @@ class _$ExpenseModelCopyWithImpl<$Res>
 
 /// Create a copy of ExpenseModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? householdId = null,Object? description = null,Object? amount = null,Object? currency = null,Object? date = null,Object? receiptUrl = freezed,Object? category = freezed,Object? paidBy = null,Object? splits = null,Object? allSettled = null,Object? createdAt = freezed,Object? recurringExpenseId = freezed,Object? linkedWishlistItemId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? householdId = null,Object? description = null,Object? amount = null,Object? currency = null,Object? date = null,Object? receiptUrl = freezed,Object? category = freezed,Object? paidBy = null,Object? splits = null,Object? allSettled = null,Object? createdAt = freezed,Object? recurringExpenseId = freezed,Object? installmentGroupId = freezed,Object? installmentNumber = freezed,Object? installmentCount = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,householdId: null == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
@@ -908,8 +911,10 @@ as ExpenseUserModel,splits: null == splits ? _self.splits : splits // ignore: ca
 as List<ExpenseSplitModel>,allSettled: null == allSettled ? _self.allSettled : allSettled // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,recurringExpenseId: freezed == recurringExpenseId ? _self.recurringExpenseId : recurringExpenseId // ignore: cast_nullable_to_non_nullable
-as String?,linkedWishlistItemId: freezed == linkedWishlistItemId ? _self.linkedWishlistItemId : linkedWishlistItemId // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,installmentGroupId: freezed == installmentGroupId ? _self.installmentGroupId : installmentGroupId // ignore: cast_nullable_to_non_nullable
+as String?,installmentNumber: freezed == installmentNumber ? _self.installmentNumber : installmentNumber // ignore: cast_nullable_to_non_nullable
+as int?,installmentCount: freezed == installmentCount ? _self.installmentCount : installmentCount // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 /// Create a copy of ExpenseModel
@@ -1012,10 +1017,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String householdId,  String description, @DecimalConverter()  double amount,  String currency,  DateTime date,  String? receiptUrl,  ExpenseCategoryModel? category,  ExpenseUserModel paidBy,  List<ExpenseSplitModel> splits,  bool allSettled,  DateTime? createdAt,  String? recurringExpenseId,  String? linkedWishlistItemId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String householdId,  String description, @DecimalConverter()  double amount,  String currency,  DateTime date,  String? receiptUrl,  ExpenseCategoryModel? category,  ExpenseUserModel paidBy,  List<ExpenseSplitModel> splits,  bool allSettled,  DateTime? createdAt,  String? recurringExpenseId,  String? installmentGroupId,  int? installmentNumber,  int? installmentCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ExpenseModel() when $default != null:
-return $default(_that.id,_that.householdId,_that.description,_that.amount,_that.currency,_that.date,_that.receiptUrl,_that.category,_that.paidBy,_that.splits,_that.allSettled,_that.createdAt,_that.recurringExpenseId,_that.linkedWishlistItemId);case _:
+return $default(_that.id,_that.householdId,_that.description,_that.amount,_that.currency,_that.date,_that.receiptUrl,_that.category,_that.paidBy,_that.splits,_that.allSettled,_that.createdAt,_that.recurringExpenseId,_that.installmentGroupId,_that.installmentNumber,_that.installmentCount);case _:
   return orElse();
 
 }
@@ -1033,10 +1038,10 @@ return $default(_that.id,_that.householdId,_that.description,_that.amount,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String householdId,  String description, @DecimalConverter()  double amount,  String currency,  DateTime date,  String? receiptUrl,  ExpenseCategoryModel? category,  ExpenseUserModel paidBy,  List<ExpenseSplitModel> splits,  bool allSettled,  DateTime? createdAt,  String? recurringExpenseId,  String? linkedWishlistItemId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String householdId,  String description, @DecimalConverter()  double amount,  String currency,  DateTime date,  String? receiptUrl,  ExpenseCategoryModel? category,  ExpenseUserModel paidBy,  List<ExpenseSplitModel> splits,  bool allSettled,  DateTime? createdAt,  String? recurringExpenseId,  String? installmentGroupId,  int? installmentNumber,  int? installmentCount)  $default,) {final _that = this;
 switch (_that) {
 case _ExpenseModel():
-return $default(_that.id,_that.householdId,_that.description,_that.amount,_that.currency,_that.date,_that.receiptUrl,_that.category,_that.paidBy,_that.splits,_that.allSettled,_that.createdAt,_that.recurringExpenseId,_that.linkedWishlistItemId);}
+return $default(_that.id,_that.householdId,_that.description,_that.amount,_that.currency,_that.date,_that.receiptUrl,_that.category,_that.paidBy,_that.splits,_that.allSettled,_that.createdAt,_that.recurringExpenseId,_that.installmentGroupId,_that.installmentNumber,_that.installmentCount);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -1050,10 +1055,10 @@ return $default(_that.id,_that.householdId,_that.description,_that.amount,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String householdId,  String description, @DecimalConverter()  double amount,  String currency,  DateTime date,  String? receiptUrl,  ExpenseCategoryModel? category,  ExpenseUserModel paidBy,  List<ExpenseSplitModel> splits,  bool allSettled,  DateTime? createdAt,  String? recurringExpenseId,  String? linkedWishlistItemId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String householdId,  String description, @DecimalConverter()  double amount,  String currency,  DateTime date,  String? receiptUrl,  ExpenseCategoryModel? category,  ExpenseUserModel paidBy,  List<ExpenseSplitModel> splits,  bool allSettled,  DateTime? createdAt,  String? recurringExpenseId,  String? installmentGroupId,  int? installmentNumber,  int? installmentCount)?  $default,) {final _that = this;
 switch (_that) {
 case _ExpenseModel() when $default != null:
-return $default(_that.id,_that.householdId,_that.description,_that.amount,_that.currency,_that.date,_that.receiptUrl,_that.category,_that.paidBy,_that.splits,_that.allSettled,_that.createdAt,_that.recurringExpenseId,_that.linkedWishlistItemId);case _:
+return $default(_that.id,_that.householdId,_that.description,_that.amount,_that.currency,_that.date,_that.receiptUrl,_that.category,_that.paidBy,_that.splits,_that.allSettled,_that.createdAt,_that.recurringExpenseId,_that.installmentGroupId,_that.installmentNumber,_that.installmentCount);case _:
   return null;
 
 }
@@ -1065,7 +1070,7 @@ return $default(_that.id,_that.householdId,_that.description,_that.amount,_that.
 @JsonSerializable()
 
 class _ExpenseModel implements ExpenseModel {
-  const _ExpenseModel({required this.id, required this.householdId, required this.description, @DecimalConverter() required this.amount, this.currency = 'ARS', required this.date, this.receiptUrl, this.category, required this.paidBy, final  List<ExpenseSplitModel> splits = const [], this.allSettled = false, this.createdAt, this.recurringExpenseId, this.linkedWishlistItemId}): _splits = splits;
+  const _ExpenseModel({required this.id, required this.householdId, required this.description, @DecimalConverter() required this.amount, this.currency = 'ARS', required this.date, this.receiptUrl, this.category, required this.paidBy, final  List<ExpenseSplitModel> splits = const [], this.allSettled = false, this.createdAt, this.recurringExpenseId, this.installmentGroupId, this.installmentNumber, this.installmentCount}): _splits = splits;
   factory _ExpenseModel.fromJson(Map<String, dynamic> json) => _$ExpenseModelFromJson(json);
 
 @override final  String id;
@@ -1087,7 +1092,12 @@ class _ExpenseModel implements ExpenseModel {
 @override@JsonKey() final  bool allSettled;
 @override final  DateTime? createdAt;
 @override final  String? recurringExpenseId;
-@override final  String? linkedWishlistItemId;
+/// Shared by every cuota of a purchase paid in installments.
+@override final  String? installmentGroupId;
+/// 1-based cuota number, e.g. 2 in "cuota 2/6".
+@override final  int? installmentNumber;
+/// Total cuotas of the purchase, e.g. 6 in "cuota 2/6".
+@override final  int? installmentCount;
 
 /// Create a copy of ExpenseModel
 /// with the given fields replaced by the non-null parameter values.
@@ -1102,16 +1112,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExpenseModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.description, description) || other.description == description)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.date, date) || other.date == date)&&(identical(other.receiptUrl, receiptUrl) || other.receiptUrl == receiptUrl)&&(identical(other.category, category) || other.category == category)&&(identical(other.paidBy, paidBy) || other.paidBy == paidBy)&&const DeepCollectionEquality().equals(other._splits, _splits)&&(identical(other.allSettled, allSettled) || other.allSettled == allSettled)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.recurringExpenseId, recurringExpenseId) || other.recurringExpenseId == recurringExpenseId)&&(identical(other.linkedWishlistItemId, linkedWishlistItemId) || other.linkedWishlistItemId == linkedWishlistItemId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExpenseModel&&(identical(other.id, id) || other.id == id)&&(identical(other.householdId, householdId) || other.householdId == householdId)&&(identical(other.description, description) || other.description == description)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.date, date) || other.date == date)&&(identical(other.receiptUrl, receiptUrl) || other.receiptUrl == receiptUrl)&&(identical(other.category, category) || other.category == category)&&(identical(other.paidBy, paidBy) || other.paidBy == paidBy)&&const DeepCollectionEquality().equals(other._splits, _splits)&&(identical(other.allSettled, allSettled) || other.allSettled == allSettled)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.recurringExpenseId, recurringExpenseId) || other.recurringExpenseId == recurringExpenseId)&&(identical(other.installmentGroupId, installmentGroupId) || other.installmentGroupId == installmentGroupId)&&(identical(other.installmentNumber, installmentNumber) || other.installmentNumber == installmentNumber)&&(identical(other.installmentCount, installmentCount) || other.installmentCount == installmentCount));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,householdId,description,amount,currency,date,receiptUrl,category,paidBy,const DeepCollectionEquality().hash(_splits),allSettled,createdAt,recurringExpenseId,linkedWishlistItemId);
+int get hashCode => Object.hash(runtimeType,id,householdId,description,amount,currency,date,receiptUrl,category,paidBy,const DeepCollectionEquality().hash(_splits),allSettled,createdAt,recurringExpenseId,installmentGroupId,installmentNumber,installmentCount);
 
 @override
 String toString() {
-  return 'ExpenseModel(id: $id, householdId: $householdId, description: $description, amount: $amount, currency: $currency, date: $date, receiptUrl: $receiptUrl, category: $category, paidBy: $paidBy, splits: $splits, allSettled: $allSettled, createdAt: $createdAt, recurringExpenseId: $recurringExpenseId, linkedWishlistItemId: $linkedWishlistItemId)';
+  return 'ExpenseModel(id: $id, householdId: $householdId, description: $description, amount: $amount, currency: $currency, date: $date, receiptUrl: $receiptUrl, category: $category, paidBy: $paidBy, splits: $splits, allSettled: $allSettled, createdAt: $createdAt, recurringExpenseId: $recurringExpenseId, installmentGroupId: $installmentGroupId, installmentNumber: $installmentNumber, installmentCount: $installmentCount)';
 }
 
 
@@ -1122,7 +1132,7 @@ abstract mixin class _$ExpenseModelCopyWith<$Res> implements $ExpenseModelCopyWi
   factory _$ExpenseModelCopyWith(_ExpenseModel value, $Res Function(_ExpenseModel) _then) = __$ExpenseModelCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String householdId, String description,@DecimalConverter() double amount, String currency, DateTime date, String? receiptUrl, ExpenseCategoryModel? category, ExpenseUserModel paidBy, List<ExpenseSplitModel> splits, bool allSettled, DateTime? createdAt, String? recurringExpenseId, String? linkedWishlistItemId
+ String id, String householdId, String description,@DecimalConverter() double amount, String currency, DateTime date, String? receiptUrl, ExpenseCategoryModel? category, ExpenseUserModel paidBy, List<ExpenseSplitModel> splits, bool allSettled, DateTime? createdAt, String? recurringExpenseId, String? installmentGroupId, int? installmentNumber, int? installmentCount
 });
 
 
@@ -1139,7 +1149,7 @@ class __$ExpenseModelCopyWithImpl<$Res>
 
 /// Create a copy of ExpenseModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? householdId = null,Object? description = null,Object? amount = null,Object? currency = null,Object? date = null,Object? receiptUrl = freezed,Object? category = freezed,Object? paidBy = null,Object? splits = null,Object? allSettled = null,Object? createdAt = freezed,Object? recurringExpenseId = freezed,Object? linkedWishlistItemId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? householdId = null,Object? description = null,Object? amount = null,Object? currency = null,Object? date = null,Object? receiptUrl = freezed,Object? category = freezed,Object? paidBy = null,Object? splits = null,Object? allSettled = null,Object? createdAt = freezed,Object? recurringExpenseId = freezed,Object? installmentGroupId = freezed,Object? installmentNumber = freezed,Object? installmentCount = freezed,}) {
   return _then(_ExpenseModel(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,householdId: null == householdId ? _self.householdId : householdId // ignore: cast_nullable_to_non_nullable
@@ -1154,8 +1164,10 @@ as ExpenseUserModel,splits: null == splits ? _self._splits : splits // ignore: c
 as List<ExpenseSplitModel>,allSettled: null == allSettled ? _self.allSettled : allSettled // ignore: cast_nullable_to_non_nullable
 as bool,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,recurringExpenseId: freezed == recurringExpenseId ? _self.recurringExpenseId : recurringExpenseId // ignore: cast_nullable_to_non_nullable
-as String?,linkedWishlistItemId: freezed == linkedWishlistItemId ? _self.linkedWishlistItemId : linkedWishlistItemId // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,installmentGroupId: freezed == installmentGroupId ? _self.installmentGroupId : installmentGroupId // ignore: cast_nullable_to_non_nullable
+as String?,installmentNumber: freezed == installmentNumber ? _self.installmentNumber : installmentNumber // ignore: cast_nullable_to_non_nullable
+as int?,installmentCount: freezed == installmentCount ? _self.installmentCount : installmentCount // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -1179,6 +1191,329 @@ $ExpenseUserModelCopyWith<$Res> get paidBy {
   
   return $ExpenseUserModelCopyWith<$Res>(_self.paidBy, (value) {
     return _then(_self.copyWith(paidBy: value));
+  });
+}
+}
+
+
+/// @nodoc
+mixin _$ExpensePredictionModel {
+
+ String get key; String get description; String? get lastDescription; String? get categoryId; ExpenseCategoryModel? get category; String? get paidById;@DecimalConverter() double get suggestedAmount;@DecimalConverter() double get averageAmount;@DecimalConverter() double get lastAmount; DateTime get suggestedDate; int get dayOfMonth; int get monthsSeen; int get lookbackMonths; bool get isFixedService;@DecimalConverter() double get confidence;
+/// Create a copy of ExpensePredictionModel
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$ExpensePredictionModelCopyWith<ExpensePredictionModel> get copyWith => _$ExpensePredictionModelCopyWithImpl<ExpensePredictionModel>(this as ExpensePredictionModel, _$identity);
+
+  /// Serializes this ExpensePredictionModel to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ExpensePredictionModel&&(identical(other.key, key) || other.key == key)&&(identical(other.description, description) || other.description == description)&&(identical(other.lastDescription, lastDescription) || other.lastDescription == lastDescription)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.category, category) || other.category == category)&&(identical(other.paidById, paidById) || other.paidById == paidById)&&(identical(other.suggestedAmount, suggestedAmount) || other.suggestedAmount == suggestedAmount)&&(identical(other.averageAmount, averageAmount) || other.averageAmount == averageAmount)&&(identical(other.lastAmount, lastAmount) || other.lastAmount == lastAmount)&&(identical(other.suggestedDate, suggestedDate) || other.suggestedDate == suggestedDate)&&(identical(other.dayOfMonth, dayOfMonth) || other.dayOfMonth == dayOfMonth)&&(identical(other.monthsSeen, monthsSeen) || other.monthsSeen == monthsSeen)&&(identical(other.lookbackMonths, lookbackMonths) || other.lookbackMonths == lookbackMonths)&&(identical(other.isFixedService, isFixedService) || other.isFixedService == isFixedService)&&(identical(other.confidence, confidence) || other.confidence == confidence));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,key,description,lastDescription,categoryId,category,paidById,suggestedAmount,averageAmount,lastAmount,suggestedDate,dayOfMonth,monthsSeen,lookbackMonths,isFixedService,confidence);
+
+@override
+String toString() {
+  return 'ExpensePredictionModel(key: $key, description: $description, lastDescription: $lastDescription, categoryId: $categoryId, category: $category, paidById: $paidById, suggestedAmount: $suggestedAmount, averageAmount: $averageAmount, lastAmount: $lastAmount, suggestedDate: $suggestedDate, dayOfMonth: $dayOfMonth, monthsSeen: $monthsSeen, lookbackMonths: $lookbackMonths, isFixedService: $isFixedService, confidence: $confidence)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $ExpensePredictionModelCopyWith<$Res>  {
+  factory $ExpensePredictionModelCopyWith(ExpensePredictionModel value, $Res Function(ExpensePredictionModel) _then) = _$ExpensePredictionModelCopyWithImpl;
+@useResult
+$Res call({
+ String key, String description, String? lastDescription, String? categoryId, ExpenseCategoryModel? category, String? paidById,@DecimalConverter() double suggestedAmount,@DecimalConverter() double averageAmount,@DecimalConverter() double lastAmount, DateTime suggestedDate, int dayOfMonth, int monthsSeen, int lookbackMonths, bool isFixedService,@DecimalConverter() double confidence
+});
+
+
+$ExpenseCategoryModelCopyWith<$Res>? get category;
+
+}
+/// @nodoc
+class _$ExpensePredictionModelCopyWithImpl<$Res>
+    implements $ExpensePredictionModelCopyWith<$Res> {
+  _$ExpensePredictionModelCopyWithImpl(this._self, this._then);
+
+  final ExpensePredictionModel _self;
+  final $Res Function(ExpensePredictionModel) _then;
+
+/// Create a copy of ExpensePredictionModel
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? key = null,Object? description = null,Object? lastDescription = freezed,Object? categoryId = freezed,Object? category = freezed,Object? paidById = freezed,Object? suggestedAmount = null,Object? averageAmount = null,Object? lastAmount = null,Object? suggestedDate = null,Object? dayOfMonth = null,Object? monthsSeen = null,Object? lookbackMonths = null,Object? isFixedService = null,Object? confidence = null,}) {
+  return _then(_self.copyWith(
+key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,lastDescription: freezed == lastDescription ? _self.lastDescription : lastDescription // ignore: cast_nullable_to_non_nullable
+as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
+as String?,category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as ExpenseCategoryModel?,paidById: freezed == paidById ? _self.paidById : paidById // ignore: cast_nullable_to_non_nullable
+as String?,suggestedAmount: null == suggestedAmount ? _self.suggestedAmount : suggestedAmount // ignore: cast_nullable_to_non_nullable
+as double,averageAmount: null == averageAmount ? _self.averageAmount : averageAmount // ignore: cast_nullable_to_non_nullable
+as double,lastAmount: null == lastAmount ? _self.lastAmount : lastAmount // ignore: cast_nullable_to_non_nullable
+as double,suggestedDate: null == suggestedDate ? _self.suggestedDate : suggestedDate // ignore: cast_nullable_to_non_nullable
+as DateTime,dayOfMonth: null == dayOfMonth ? _self.dayOfMonth : dayOfMonth // ignore: cast_nullable_to_non_nullable
+as int,monthsSeen: null == monthsSeen ? _self.monthsSeen : monthsSeen // ignore: cast_nullable_to_non_nullable
+as int,lookbackMonths: null == lookbackMonths ? _self.lookbackMonths : lookbackMonths // ignore: cast_nullable_to_non_nullable
+as int,isFixedService: null == isFixedService ? _self.isFixedService : isFixedService // ignore: cast_nullable_to_non_nullable
+as bool,confidence: null == confidence ? _self.confidence : confidence // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+/// Create a copy of ExpensePredictionModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ExpenseCategoryModelCopyWith<$Res>? get category {
+    if (_self.category == null) {
+    return null;
+  }
+
+  return $ExpenseCategoryModelCopyWith<$Res>(_self.category!, (value) {
+    return _then(_self.copyWith(category: value));
+  });
+}
+}
+
+
+/// Adds pattern-matching-related methods to [ExpensePredictionModel].
+extension ExpensePredictionModelPatterns on ExpensePredictionModel {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _ExpensePredictionModel value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _ExpensePredictionModel() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _ExpensePredictionModel value)  $default,){
+final _that = this;
+switch (_that) {
+case _ExpensePredictionModel():
+return $default(_that);}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _ExpensePredictionModel value)?  $default,){
+final _that = this;
+switch (_that) {
+case _ExpensePredictionModel() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String key,  String description,  String? lastDescription,  String? categoryId,  ExpenseCategoryModel? category,  String? paidById, @DecimalConverter()  double suggestedAmount, @DecimalConverter()  double averageAmount, @DecimalConverter()  double lastAmount,  DateTime suggestedDate,  int dayOfMonth,  int monthsSeen,  int lookbackMonths,  bool isFixedService, @DecimalConverter()  double confidence)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _ExpensePredictionModel() when $default != null:
+return $default(_that.key,_that.description,_that.lastDescription,_that.categoryId,_that.category,_that.paidById,_that.suggestedAmount,_that.averageAmount,_that.lastAmount,_that.suggestedDate,_that.dayOfMonth,_that.monthsSeen,_that.lookbackMonths,_that.isFixedService,_that.confidence);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String key,  String description,  String? lastDescription,  String? categoryId,  ExpenseCategoryModel? category,  String? paidById, @DecimalConverter()  double suggestedAmount, @DecimalConverter()  double averageAmount, @DecimalConverter()  double lastAmount,  DateTime suggestedDate,  int dayOfMonth,  int monthsSeen,  int lookbackMonths,  bool isFixedService, @DecimalConverter()  double confidence)  $default,) {final _that = this;
+switch (_that) {
+case _ExpensePredictionModel():
+return $default(_that.key,_that.description,_that.lastDescription,_that.categoryId,_that.category,_that.paidById,_that.suggestedAmount,_that.averageAmount,_that.lastAmount,_that.suggestedDate,_that.dayOfMonth,_that.monthsSeen,_that.lookbackMonths,_that.isFixedService,_that.confidence);}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String key,  String description,  String? lastDescription,  String? categoryId,  ExpenseCategoryModel? category,  String? paidById, @DecimalConverter()  double suggestedAmount, @DecimalConverter()  double averageAmount, @DecimalConverter()  double lastAmount,  DateTime suggestedDate,  int dayOfMonth,  int monthsSeen,  int lookbackMonths,  bool isFixedService, @DecimalConverter()  double confidence)?  $default,) {final _that = this;
+switch (_that) {
+case _ExpensePredictionModel() when $default != null:
+return $default(_that.key,_that.description,_that.lastDescription,_that.categoryId,_that.category,_that.paidById,_that.suggestedAmount,_that.averageAmount,_that.lastAmount,_that.suggestedDate,_that.dayOfMonth,_that.monthsSeen,_that.lookbackMonths,_that.isFixedService,_that.confidence);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _ExpensePredictionModel implements ExpensePredictionModel {
+  const _ExpensePredictionModel({required this.key, required this.description, this.lastDescription, this.categoryId, this.category, this.paidById, @DecimalConverter() required this.suggestedAmount, @DecimalConverter() required this.averageAmount, @DecimalConverter() required this.lastAmount, required this.suggestedDate, required this.dayOfMonth, required this.monthsSeen, required this.lookbackMonths, this.isFixedService = false, @DecimalConverter() required this.confidence});
+  factory _ExpensePredictionModel.fromJson(Map<String, dynamic> json) => _$ExpensePredictionModelFromJson(json);
+
+@override final  String key;
+@override final  String description;
+@override final  String? lastDescription;
+@override final  String? categoryId;
+@override final  ExpenseCategoryModel? category;
+@override final  String? paidById;
+@override@DecimalConverter() final  double suggestedAmount;
+@override@DecimalConverter() final  double averageAmount;
+@override@DecimalConverter() final  double lastAmount;
+@override final  DateTime suggestedDate;
+@override final  int dayOfMonth;
+@override final  int monthsSeen;
+@override final  int lookbackMonths;
+@override@JsonKey() final  bool isFixedService;
+@override@DecimalConverter() final  double confidence;
+
+/// Create a copy of ExpensePredictionModel
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ExpensePredictionModelCopyWith<_ExpensePredictionModel> get copyWith => __$ExpensePredictionModelCopyWithImpl<_ExpensePredictionModel>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$ExpensePredictionModelToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ExpensePredictionModel&&(identical(other.key, key) || other.key == key)&&(identical(other.description, description) || other.description == description)&&(identical(other.lastDescription, lastDescription) || other.lastDescription == lastDescription)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.category, category) || other.category == category)&&(identical(other.paidById, paidById) || other.paidById == paidById)&&(identical(other.suggestedAmount, suggestedAmount) || other.suggestedAmount == suggestedAmount)&&(identical(other.averageAmount, averageAmount) || other.averageAmount == averageAmount)&&(identical(other.lastAmount, lastAmount) || other.lastAmount == lastAmount)&&(identical(other.suggestedDate, suggestedDate) || other.suggestedDate == suggestedDate)&&(identical(other.dayOfMonth, dayOfMonth) || other.dayOfMonth == dayOfMonth)&&(identical(other.monthsSeen, monthsSeen) || other.monthsSeen == monthsSeen)&&(identical(other.lookbackMonths, lookbackMonths) || other.lookbackMonths == lookbackMonths)&&(identical(other.isFixedService, isFixedService) || other.isFixedService == isFixedService)&&(identical(other.confidence, confidence) || other.confidence == confidence));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,key,description,lastDescription,categoryId,category,paidById,suggestedAmount,averageAmount,lastAmount,suggestedDate,dayOfMonth,monthsSeen,lookbackMonths,isFixedService,confidence);
+
+@override
+String toString() {
+  return 'ExpensePredictionModel(key: $key, description: $description, lastDescription: $lastDescription, categoryId: $categoryId, category: $category, paidById: $paidById, suggestedAmount: $suggestedAmount, averageAmount: $averageAmount, lastAmount: $lastAmount, suggestedDate: $suggestedDate, dayOfMonth: $dayOfMonth, monthsSeen: $monthsSeen, lookbackMonths: $lookbackMonths, isFixedService: $isFixedService, confidence: $confidence)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$ExpensePredictionModelCopyWith<$Res> implements $ExpensePredictionModelCopyWith<$Res> {
+  factory _$ExpensePredictionModelCopyWith(_ExpensePredictionModel value, $Res Function(_ExpensePredictionModel) _then) = __$ExpensePredictionModelCopyWithImpl;
+@override @useResult
+$Res call({
+ String key, String description, String? lastDescription, String? categoryId, ExpenseCategoryModel? category, String? paidById,@DecimalConverter() double suggestedAmount,@DecimalConverter() double averageAmount,@DecimalConverter() double lastAmount, DateTime suggestedDate, int dayOfMonth, int monthsSeen, int lookbackMonths, bool isFixedService,@DecimalConverter() double confidence
+});
+
+
+@override $ExpenseCategoryModelCopyWith<$Res>? get category;
+
+}
+/// @nodoc
+class __$ExpensePredictionModelCopyWithImpl<$Res>
+    implements _$ExpensePredictionModelCopyWith<$Res> {
+  __$ExpensePredictionModelCopyWithImpl(this._self, this._then);
+
+  final _ExpensePredictionModel _self;
+  final $Res Function(_ExpensePredictionModel) _then;
+
+/// Create a copy of ExpensePredictionModel
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? key = null,Object? description = null,Object? lastDescription = freezed,Object? categoryId = freezed,Object? category = freezed,Object? paidById = freezed,Object? suggestedAmount = null,Object? averageAmount = null,Object? lastAmount = null,Object? suggestedDate = null,Object? dayOfMonth = null,Object? monthsSeen = null,Object? lookbackMonths = null,Object? isFixedService = null,Object? confidence = null,}) {
+  return _then(_ExpensePredictionModel(
+key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,lastDescription: freezed == lastDescription ? _self.lastDescription : lastDescription // ignore: cast_nullable_to_non_nullable
+as String?,categoryId: freezed == categoryId ? _self.categoryId : categoryId // ignore: cast_nullable_to_non_nullable
+as String?,category: freezed == category ? _self.category : category // ignore: cast_nullable_to_non_nullable
+as ExpenseCategoryModel?,paidById: freezed == paidById ? _self.paidById : paidById // ignore: cast_nullable_to_non_nullable
+as String?,suggestedAmount: null == suggestedAmount ? _self.suggestedAmount : suggestedAmount // ignore: cast_nullable_to_non_nullable
+as double,averageAmount: null == averageAmount ? _self.averageAmount : averageAmount // ignore: cast_nullable_to_non_nullable
+as double,lastAmount: null == lastAmount ? _self.lastAmount : lastAmount // ignore: cast_nullable_to_non_nullable
+as double,suggestedDate: null == suggestedDate ? _self.suggestedDate : suggestedDate // ignore: cast_nullable_to_non_nullable
+as DateTime,dayOfMonth: null == dayOfMonth ? _self.dayOfMonth : dayOfMonth // ignore: cast_nullable_to_non_nullable
+as int,monthsSeen: null == monthsSeen ? _self.monthsSeen : monthsSeen // ignore: cast_nullable_to_non_nullable
+as int,lookbackMonths: null == lookbackMonths ? _self.lookbackMonths : lookbackMonths // ignore: cast_nullable_to_non_nullable
+as int,isFixedService: null == isFixedService ? _self.isFixedService : isFixedService // ignore: cast_nullable_to_non_nullable
+as bool,confidence: null == confidence ? _self.confidence : confidence // ignore: cast_nullable_to_non_nullable
+as double,
+  ));
+}
+
+/// Create a copy of ExpensePredictionModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ExpenseCategoryModelCopyWith<$Res>? get category {
+    if (_self.category == null) {
+    return null;
+  }
+
+  return $ExpenseCategoryModelCopyWith<$Res>(_self.category!, (value) {
+    return _then(_self.copyWith(category: value));
   });
 }
 }

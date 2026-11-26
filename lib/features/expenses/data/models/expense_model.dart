@@ -96,11 +96,45 @@ sealed class ExpenseModel with _$ExpenseModel {
     @Default(false) bool allSettled,
     DateTime? createdAt,
     String? recurringExpenseId,
-    String? linkedWishlistItemId,
+
+    /// Shared by every cuota of a purchase paid in installments.
+    String? installmentGroupId,
+
+    /// 1-based cuota number, e.g. 2 in "cuota 2/6".
+    int? installmentNumber,
+
+    /// Total cuotas of the purchase, e.g. 6 in "cuota 2/6".
+    int? installmentCount,
   }) = _ExpenseModel;
 
   factory ExpenseModel.fromJson(Map<String, dynamic> json) =>
       _$ExpenseModelFromJson(json);
+}
+
+/// A fixed expense (service, rent, subscription) detected from previous
+/// months and suggested for the selected month.
+@freezed
+sealed class ExpensePredictionModel with _$ExpensePredictionModel {
+  const factory ExpensePredictionModel({
+    required String key,
+    required String description,
+    String? lastDescription,
+    String? categoryId,
+    ExpenseCategoryModel? category,
+    String? paidById,
+    @DecimalConverter() required double suggestedAmount,
+    @DecimalConverter() required double averageAmount,
+    @DecimalConverter() required double lastAmount,
+    required DateTime suggestedDate,
+    required int dayOfMonth,
+    required int monthsSeen,
+    required int lookbackMonths,
+    @Default(false) bool isFixedService,
+    @DecimalConverter() required double confidence,
+  }) = _ExpensePredictionModel;
+
+  factory ExpensePredictionModel.fromJson(Map<String, dynamic> json) =>
+      _$ExpensePredictionModelFromJson(json);
 }
 
 /// Model for expense period (month/year)

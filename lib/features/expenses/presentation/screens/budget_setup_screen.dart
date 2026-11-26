@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/utils/currency_input_formatter.dart';
 import 'package:nuestra_app/features/expenses/data/models/expense_model.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_state.dart';
+import 'package:nuestra_app/core/utils/money_format.dart';
 
 /// Screen for setting up and viewing monthly budgets per category
 class BudgetSetupScreen extends ConsumerStatefulWidget {
@@ -17,7 +17,7 @@ class BudgetSetupScreen extends ConsumerStatefulWidget {
 }
 
 class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
-  final _currencyFormat = NumberFormat.currency(locale: 'es_AR', symbol: '\$');
+  final _currencyFormat = const MoneyFormat();
   late int _selectedMonth;
   late int _selectedYear;
 
@@ -454,7 +454,7 @@ class _BudgetSetupScreenState extends ConsumerState<BudgetSetupScreen> {
 /// Card widget for displaying budget status for a single category
 class _BudgetCategoryCard extends StatelessWidget {
   final BudgetStatusModel budget;
-  final NumberFormat currencyFormat;
+  final MoneyFormat currencyFormat;
   final Color budgetColor;
   final VoidCallback onTap;
 

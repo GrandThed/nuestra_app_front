@@ -90,7 +90,9 @@ _ExpenseModel _$ExpenseModelFromJson(
       ? null
       : DateTime.parse(json['createdAt'] as String),
   recurringExpenseId: json['recurringExpenseId'] as String?,
-  linkedWishlistItemId: json['linkedWishlistItemId'] as String?,
+  installmentGroupId: json['installmentGroupId'] as String?,
+  installmentNumber: (json['installmentNumber'] as num?)?.toInt(),
+  installmentCount: (json['installmentCount'] as num?)?.toInt(),
 );
 
 Map<String, dynamic> _$ExpenseModelToJson(_ExpenseModel instance) =>
@@ -108,8 +110,52 @@ Map<String, dynamic> _$ExpenseModelToJson(_ExpenseModel instance) =>
       'allSettled': instance.allSettled,
       'createdAt': instance.createdAt?.toIso8601String(),
       'recurringExpenseId': instance.recurringExpenseId,
-      'linkedWishlistItemId': instance.linkedWishlistItemId,
+      'installmentGroupId': instance.installmentGroupId,
+      'installmentNumber': instance.installmentNumber,
+      'installmentCount': instance.installmentCount,
     };
+
+_ExpensePredictionModel _$ExpensePredictionModelFromJson(
+  Map<String, dynamic> json,
+) => _ExpensePredictionModel(
+  key: json['key'] as String,
+  description: json['description'] as String,
+  lastDescription: json['lastDescription'] as String?,
+  categoryId: json['categoryId'] as String?,
+  category: json['category'] == null
+      ? null
+      : ExpenseCategoryModel.fromJson(json['category'] as Map<String, dynamic>),
+  paidById: json['paidById'] as String?,
+  suggestedAmount: const DecimalConverter().fromJson(json['suggestedAmount']),
+  averageAmount: const DecimalConverter().fromJson(json['averageAmount']),
+  lastAmount: const DecimalConverter().fromJson(json['lastAmount']),
+  suggestedDate: DateTime.parse(json['suggestedDate'] as String),
+  dayOfMonth: (json['dayOfMonth'] as num).toInt(),
+  monthsSeen: (json['monthsSeen'] as num).toInt(),
+  lookbackMonths: (json['lookbackMonths'] as num).toInt(),
+  isFixedService: json['isFixedService'] as bool? ?? false,
+  confidence: const DecimalConverter().fromJson(json['confidence']),
+);
+
+Map<String, dynamic> _$ExpensePredictionModelToJson(
+  _ExpensePredictionModel instance,
+) => <String, dynamic>{
+  'key': instance.key,
+  'description': instance.description,
+  'lastDescription': instance.lastDescription,
+  'categoryId': instance.categoryId,
+  'category': instance.category,
+  'paidById': instance.paidById,
+  'suggestedAmount': const DecimalConverter().toJson(instance.suggestedAmount),
+  'averageAmount': const DecimalConverter().toJson(instance.averageAmount),
+  'lastAmount': const DecimalConverter().toJson(instance.lastAmount),
+  'suggestedDate': instance.suggestedDate.toIso8601String(),
+  'dayOfMonth': instance.dayOfMonth,
+  'monthsSeen': instance.monthsSeen,
+  'lookbackMonths': instance.lookbackMonths,
+  'isFixedService': instance.isFixedService,
+  'confidence': const DecimalConverter().toJson(instance.confidence),
+};
 
 _ExpensePeriodModel _$ExpensePeriodModelFromJson(Map<String, dynamic> json) =>
     _ExpensePeriodModel(

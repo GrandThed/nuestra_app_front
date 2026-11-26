@@ -226,7 +226,11 @@ class ExpensesNotifier extends _$ExpensesNotifier {
 
   // ==================== EXPENSE OPERATIONS ====================
 
-  /// Create a new expense
+  /// Create a new expense.
+  ///
+  /// With [installments] > 1, [amount] is the total price and the backend
+  /// creates one cuota per month starting at [date]. Only the first cuota
+  /// falls in [date]'s month, so it is the only one added to the list here.
   Future<ExpenseModel?> createExpense({
     required String description,
     required double amount,
@@ -235,6 +239,7 @@ class ExpensesNotifier extends _$ExpensesNotifier {
     String? categoryId,
     String? receiptUrl,
     String? paidById,
+    int? installments,
   }) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) return null;
@@ -249,7 +254,11 @@ class ExpensesNotifier extends _$ExpensesNotifier {
         categoryId: categoryId,
         receiptUrl: receiptUrl,
         paidById: paidById,
+        installments: installments,
       );
+
+      // A new expense can change what is still worth suggesting
+      ref.invalidate(expensePredictionsProvider);
 
       // Add to current list if in the same month/year
       final currentState = state;
@@ -274,6 +283,39 @@ class ExpensesNotifier extends _$ExpensesNotifier {
       return null;
     } catch (e) {
       debugPrint('Error creating expense: $e');
+      return null;
+    }
+  }
+
+  /// Load the accepted fixed-expense suggestions. Returns how many were
+  /// created, or null on error.
+  Future<int?> applyPredictions(List<ExpensePredictionModel> items) async {
+    final householdId = ref.read(currentHouseholdIdProvider);
+    if (householdId == null || items.isEmpty) return null;
+
+    try {
+      final created = await _repository.applyPredictions(householdId, items);
+      ref.invalidate(expensePredictionsProvider);
+
+      final currentState = state;
+      if (currentState is ExpensesStateLoaded) {
+        final inMonth = created.where((e) =>
+            e.date.month == currentState.selectedMonth &&
+            e.date.year == currentState.selectedYear);
+        state = ExpensesState.loaded(
+          categories: currentState.categories,
+          expenses: [...inMonth, ...currentState.expenses],
+          selectedMonth: currentState.selectedMonth,
+          selectedYear: currentState.selectedYear,
+          selectedCategoryId: currentState.selectedCategoryId,
+        );
+      }
+      return created.length;
+    } on AppException catch (e) {
+      debugPrint('Error applying predictions: ${e.message}');
+      return null;
+    } catch (e) {
+      debugPrint('Error applying predictions: $e');
       return null;
     }
   }
@@ -377,6 +419,7 @@ class ExpensesNotifier extends _$ExpensesNotifier {
 
     try {
       await _repository.deleteExpense(id);
+      ref.invalidate(expensePredictionsProvider);
       return true;
     } on AppException catch (e) {
       debugPrint('Error deleting expense: ${e.message}');
@@ -887,6 +930,32 @@ Future<List<ExpenseModel>> recentExpensesForSuggestions(Ref ref) async {
     );
   } catch (e) {
     debugPrint('Error loading recent expenses for suggestions: $e');
+    return [];
+  }
+}
+
+/// Fixed expenses (services, rent, subscriptions) detected from previous
+/// months that are not loaded yet for the month selected in Gastos.
+/// Errors resolve to an empty list: suggestions are optional.
+@riverpod
+Future<List<ExpensePredictionModel>> expensePredictions(Ref ref) async {
+  final householdId = ref.watch(currentHouseholdIdProvider);
+  if (householdId == null) return [];
+
+  final period = ref.watch(
+    expensesProvider.select(
+      (s) => s is ExpensesStateLoaded ? (s.selectedMonth, s.selectedYear) : null,
+    ),
+  );
+  if (period == null) return [];
+  final (month, year) = period;
+
+  try {
+    return await ref
+        .read(expenseRepositoryProvider)
+        .getPredictions(householdId, month: month, year: year);
+  } catch (e) {
+    debugPrint('Error loading expense predictions: $e');
     return [];
   }
 }

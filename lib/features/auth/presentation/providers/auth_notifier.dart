@@ -10,16 +10,9 @@ import 'package:nuestra_app/features/activity/presentation/providers/activity_no
 import 'package:nuestra_app/features/auth/data/repositories/auth_repository.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 import 'package:nuestra_app/features/auth/data/models/user_model.dart';
-import 'package:nuestra_app/features/boards/presentation/providers/boards_notifier.dart';
-import 'package:nuestra_app/features/calendar/presentation/providers/calendar_notifier.dart';
-import 'package:nuestra_app/features/chat/presentation/providers/chat_notifier.dart';
+import 'package:nuestra_app/features/assistant/presentation/assistant_controller.dart';
 import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
-import 'package:nuestra_app/features/home/presentation/providers/home_card_order_notifier.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
-import 'package:nuestra_app/features/menus/presentation/providers/menus_notifier.dart';
-import 'package:nuestra_app/features/recipes/presentation/providers/recipes_notifier.dart';
-import 'package:nuestra_app/features/tasks/presentation/providers/tasks_notifier.dart';
-import 'package:nuestra_app/features/wishlists/presentation/providers/wishlists_notifier.dart';
 
 part 'auth_notifier.g.dart';
 
@@ -216,31 +209,13 @@ class AuthNotifier extends _$AuthNotifier {
     ref.invalidate(householdProvider);
     ref.invalidate(activeInviteProvider);
     ref.invalidate(authTokenProvider);
-    ref.invalidate(boardsProvider);
-    ref.invalidate(boardDetailProvider);
-    ref.invalidate(tagsProvider);
-    ref.invalidate(recipesProvider);
-    ref.invalidate(recipeDetailProvider);
-    ref.invalidate(seasonalVegetablesProvider);
-    ref.invalidate(seasonalFruitsProvider);
-    ref.invalidate(menuPlansProvider);
-    ref.invalidate(upcomingMealsProvider);
-    ref.invalidate(menuPlanDetailProvider);
-    ref.invalidate(currentMenuPlanIdProvider);
-    ref.invalidate(mealHistoryProvider);
-    ref.invalidate(wishlistsProvider);
-    ref.invalidate(purchaseHistoryProvider);
     ref.invalidate(expensesProvider);
     ref.invalidate(expenseSummaryProvider);
     ref.invalidate(recurringExpensesProvider);
     ref.invalidate(budgetProvider);
     ref.invalidate(expenseTrendsProvider);
-    ref.invalidate(calendarProvider);
-    ref.invalidate(timelineProvider);
-    ref.invalidate(chatProvider);
-    ref.invalidate(tasksProvider);
+    ref.invalidate(assistantProvider);
     ref.invalidate(activityFeedProvider);
-    ref.invalidate(homeCardOrderProvider);
   }
 
   /// Clear error and go back to unauthenticated

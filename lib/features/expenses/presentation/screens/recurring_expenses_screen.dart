@@ -12,6 +12,7 @@ import 'package:nuestra_app/features/expenses/presentation/providers/expenses_st
 import 'package:nuestra_app/features/household/data/models/household_model.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_state.dart';
+import 'package:nuestra_app/core/utils/money_format.dart';
 
 /// Screen for managing recurring expenses
 class RecurringExpensesScreen extends ConsumerStatefulWidget {
@@ -24,7 +25,7 @@ class RecurringExpensesScreen extends ConsumerStatefulWidget {
 
 class _RecurringExpensesScreenState
     extends ConsumerState<RecurringExpensesScreen> {
-  final _currencyFormat = NumberFormat.currency(locale: 'es_AR', symbol: '\$');
+  final _currencyFormat = const MoneyFormat();
   final _dateFormat = DateFormat('dd/MM/yyyy');
   bool _isGenerating = false;
 
@@ -449,7 +450,7 @@ class _RecurringExpensesScreenState
 /// Card for displaying a single recurring expense
 class _RecurringExpenseCard extends StatelessWidget {
   final RecurringExpenseModel expense;
-  final NumberFormat currencyFormat;
+  final MoneyFormat currencyFormat;
   final DateFormat dateFormat;
   final String recurrenceLabel;
   final IconData recurrenceIcon;
@@ -627,7 +628,7 @@ class _RecurringExpenseCard extends StatelessWidget {
 
 /// Bottom sheet for adding a new recurring expense
 class _AddRecurringExpenseSheet extends ConsumerStatefulWidget {
-  final NumberFormat currencyFormat;
+  final MoneyFormat currencyFormat;
   final Future<void> Function(
     String description,
     double amount,

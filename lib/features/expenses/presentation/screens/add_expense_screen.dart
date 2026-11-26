@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
+import 'package:nuestra_app/core/theme/text_styles.dart';
 import 'package:nuestra_app/core/utils/currency_input_formatter.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.dart';
 import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
@@ -12,6 +14,7 @@ import 'package:nuestra_app/features/expenses/presentation/providers/expenses_st
 import 'package:nuestra_app/features/household/data/models/household_model.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_state.dart';
+import 'package:nuestra_app/core/utils/money_format.dart';
 
 /// Screen for adding a new expense
 class AddExpenseScreen extends ConsumerStatefulWidget {
@@ -32,9 +35,18 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   String? _selectedPaidById;
   bool _isLoading = false;
 
+  /// Bought in cuotas: the amount is the total, split into monthly expenses.
+  bool _inInstallments = false;
+  int _installments = 3;
+  static const _maxInstallments = 60;
+
   @override
   void initState() {
     super.initState();
+    // Keep the "N cuotas de $X" preview in sync with the amount
+    _amountController.addListener(() {
+      if (_inInstallments && mounted) setState(() {});
+    });
     Future.microtask(() {
       // Load household to get members
       final householdId = ref.read(currentHouseholdIdProvider);
@@ -74,8 +86,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
   /// loaded by [recentExpensesForSuggestionsProvider], falling back to the
   /// currently loaded month if that hasn't finished loading yet.
   List<ExpenseModel> _recentExpenses() {
-    final recent =
-        ref.read(recentExpensesForSuggestionsProvider).asData?.value;
+    final recent = ref.read(recentExpensesForSuggestionsProvider).asData?.value;
     if (recent != null && recent.isNotEmpty) return recent;
 
     final state = ref.read(expensesProvider);
@@ -104,10 +115,11 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     // Dismiss the suggestions dropdown after picking one.
     _descriptionFocusNode?.unfocus();
 
-    final matches = _recentExpenses()
-        .where((e) => e.description == selection && e.category != null)
-        .toList()
-      ..sort((a, b) => b.date.compareTo(a.date));
+    final matches =
+        _recentExpenses()
+            .where((e) => e.description == selection && e.category != null)
+            .toList()
+          ..sort((a, b) => b.date.compareTo(a.date));
 
     if (matches.isEmpty) return;
 
@@ -132,18 +144,21 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
 
     if (amount == null || amount <= 0) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Monto invalido')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Monto inválido')));
       return;
     }
 
-    final expense = await ref.read(expensesProvider.notifier).createExpense(
+    final expense = await ref
+        .read(expensesProvider.notifier)
+        .createExpense(
           description: _descriptionController.text.trim(),
           amount: amount,
           date: _selectedDate,
           categoryId: _selectedCategoryId,
           paidById: _selectedPaidById,
+          installments: _inInstallments ? _installments : null,
         );
 
     setState(() => _isLoading = false);
@@ -152,7 +167,13 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       if (expense != null) {
         context.pop();
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Gasto registrado')),
+          SnackBar(
+            content: Text(
+              _inInstallments
+                  ? 'Compra en $_installments cuotas registrada'
+                  : 'Gasto registrado',
+            ),
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -169,7 +190,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: const Text('Nueva categoria'),
+        title: const Text('Nueva categoría'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -216,12 +237,86 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               if (mounted && result != null) {
                 setState(() => _selectedCategoryId = result.id);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Categoria creada')),
+                  const SnackBar(content: Text('Categoría creada')),
                 );
               }
             },
             child: const Text('Crear'),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInstallmentsRow(ColorScheme colorScheme) {
+    final total = CurrencyInputFormatter.parse(_amountController.text) ?? 0;
+    // Same rounding as the backend: whole cents, last cuota absorbs the rest
+    final perInstallment = (total * 100 / _installments).floor() / 100;
+    final currency = const MoneyFormat();
+    final firstMonth = DateFormat.MMMM('es').format(_selectedDate);
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(AppSizes.md, 4, AppSizes.sm, 10),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(AppSizes.radiusMd),
+        border: Border.all(color: colorScheme.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.credit_card,
+                size: 20,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: AppSizes.sm),
+              const Expanded(child: Text('En cuotas')),
+              if (_inInstallments) ...[
+                IconButton(
+                  icon: const Icon(Icons.remove_circle_outline),
+                  tooltip: 'Menos cuotas',
+                  visualDensity: VisualDensity.compact,
+                  onPressed: _installments > 2
+                      ? () => setState(() => _installments--)
+                      : null,
+                ),
+                Text(
+                  '$_installments',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline),
+                  tooltip: 'Más cuotas',
+                  visualDensity: VisualDensity.compact,
+                  onPressed: _installments < _maxInstallments
+                      ? () => setState(() => _installments++)
+                      : null,
+                ),
+              ],
+              Switch(
+                value: _inInstallments,
+                onChanged: (value) => setState(() => _inInstallments = value),
+              ),
+            ],
+          ),
+          if (_inInstallments)
+            Padding(
+              padding: const EdgeInsets.only(left: 28),
+              child: Text(
+                total > 0
+                    ? '$_installments cuotas de ${currency.format(perInstallment)}'
+                          ' desde $firstMonth. El monto es el total.'
+                    : 'Ingresá el monto total: se divide en $_installments '
+                          'gastos mensuales desde $firstMonth.',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
         ],
       ),
     );
@@ -233,62 +328,90 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
     ref.watch(recentExpensesForSuggestionsProvider);
     final expensesState = ref.watch(expensesProvider);
     final householdState = ref.watch(householdProvider);
-    final categories = expensesState is ExpensesStateLoaded ? expensesState.categories : <ExpenseCategoryModel>[];
-    final members = householdState is HouseholdStateLoaded ? householdState.household.members ?? [] : <MemberModel>[];
+    final categories = expensesState is ExpensesStateLoaded
+        ? expensesState.categories
+        : <ExpenseCategoryModel>[];
+    final members = householdState is HouseholdStateLoaded
+        ? householdState.household.members ?? []
+        : <MemberModel>[];
     final colorScheme = Theme.of(context).colorScheme;
     final dateFormat = DateFormat('EEEE, d MMMM yyyy', 'es');
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Nuevo gasto'),
-      ),
+      appBar: AppBar(title: const Text('Nuevo gasto')),
       body: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(AppSizes.lg),
           children: [
-            // Amount field
-            TextFormField(
-              controller: _amountController,
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              textInputAction: TextInputAction.next,
-              onFieldSubmitted: (_) {
-                _descriptionFocusNode?.requestFocus();
-              },
-              inputFormatters: [
-                CurrencyInputFormatter(),
-              ],
-              style: TextStyle(
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.primary,
-              ),
+            // Amount: "$" sits right next to the centered number
+            Text(
+              _inInstallments ? 'Total de la compra' : 'Monto',
               textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                prefixText: '\$ ',
-                prefixStyle: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary.withValues(alpha: 0.5),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '\$',
+                  style: AppTextStyles.bigAmount(
+                    size: 24,
+                    color: colorScheme.outline,
+                  ),
                 ),
-                hintText: '0.00',
-                hintStyle: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                const SizedBox(width: 6),
+                Flexible(
+                  child: IntrinsicWidth(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minWidth: 60),
+                      child: TextFormField(
+                        controller: _amountController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                          decimal: true,
+                        ),
+                        textInputAction: TextInputAction.next,
+                        onFieldSubmitted: (_) {
+                          _descriptionFocusNode?.requestFocus();
+                        },
+                        inputFormatters: [CurrencyInputFormatter()],
+                        style: AppTextStyles.bigAmount(
+                          size: 40,
+                          color: colorScheme.primary,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: '0',
+                          hintStyle: AppTextStyles.bigAmount(
+                            size: 40,
+                            color: colorScheme.outlineVariant,
+                          ),
+                          filled: false,
+                          isDense: true,
+                          contentPadding: EdgeInsets.zero,
+                          border: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          focusedErrorBorder: InputBorder.none,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Ingresá el monto';
+                          }
+                          final amount = CurrencyInputFormatter.parse(value);
+                          if (amount == null || amount <= 0) {
+                            return 'Monto inválido';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                  ),
                 ),
-                border: InputBorder.none,
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Ingresa el monto';
-                }
-                final amount = CurrencyInputFormatter.parse(value);
-                if (amount == null || amount <= 0) {
-                  return 'Monto invalido';
-                }
-                return null;
-              },
+              ],
             ),
             const SizedBox(height: AppSizes.xl),
 
@@ -301,37 +424,45 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                 return _getDescriptionSuggestions(textEditingValue.text);
               },
               onSelected: _applyDescriptionSelection,
-              fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
-                // Store the focus node reference for keyboard navigation
-                _descriptionFocusNode = focusNode;
+              fieldViewBuilder:
+                  (
+                    context,
+                    textEditingController,
+                    focusNode,
+                    onFieldSubmitted,
+                  ) {
+                    // Store the focus node reference for keyboard navigation
+                    _descriptionFocusNode = focusNode;
 
-                // Sync the external controller with the autocomplete's controller
-                textEditingController.text = _descriptionController.text;
-                textEditingController.addListener(() {
-                  if (_descriptionController.text != textEditingController.text) {
-                    _descriptionController.text = textEditingController.text;
-                  }
-                });
+                    // Sync the external controller with the autocomplete's controller
+                    textEditingController.text = _descriptionController.text;
+                    textEditingController.addListener(() {
+                      if (_descriptionController.text !=
+                          textEditingController.text) {
+                        _descriptionController.text =
+                            textEditingController.text;
+                      }
+                    });
 
-                return TextFormField(
-                  controller: textEditingController,
-                  focusNode: focusNode,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: const InputDecoration(
-                    labelText: 'Descripcion',
-                    hintText: 'Ej: Compras del supermercado',
-                    prefixIcon: Icon(Icons.description_outlined),
-                    border: OutlineInputBorder(),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Ingresa una descripcion';
-                    }
-                    return null;
+                    return TextFormField(
+                      controller: textEditingController,
+                      focusNode: focusNode,
+                      textCapitalization: TextCapitalization.sentences,
+                      decoration: const InputDecoration(
+                        labelText: 'Descripción',
+                        hintText: 'Ej: Compras del supermercado',
+                        prefixIcon: Icon(Icons.description_outlined),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Ingresá una descripción';
+                        }
+                        return null;
+                      },
+                      onFieldSubmitted: (_) => onFieldSubmitted(),
+                    );
                   },
-                  onFieldSubmitted: (_) => onFieldSubmitted(),
-                );
-              },
               optionsViewBuilder: (context, onSelected, options) {
                 return Align(
                   alignment: Alignment.topLeft,
@@ -339,7 +470,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                     elevation: 4,
                     borderRadius: BorderRadius.circular(AppSizes.radiusSm),
                     child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxHeight: 200, maxWidth: 300),
+                      constraints: const BoxConstraints(
+                        maxHeight: 200,
+                        maxWidth: 300,
+                      ),
                       child: ListView.builder(
                         padding: EdgeInsets.zero,
                         shrinkWrap: true,
@@ -375,25 +509,38 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               Wrap(
                 spacing: AppSizes.sm,
                 runSpacing: AppSizes.sm,
-                children: members.map((member) => ChoiceChip(
-                      avatar: member.avatarUrl != null
-                          ? CircleAvatar(
-                              backgroundImage: NetworkImage(member.avatarUrl!),
-                              radius: 12,
-                            )
-                          : CircleAvatar(
-                              radius: 12,
-                              backgroundColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
-                              child: Text(
-                                member.name.isNotEmpty ? member.name[0].toUpperCase() : '?',
-                                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                children: members
+                    .map(
+                      (member) => ChoiceChip(
+                        avatar: member.avatarUrl != null
+                            ? CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                  member.avatarUrl!,
+                                ),
+                                radius: 12,
+                              )
+                            : CircleAvatar(
+                                radius: 12,
+                                backgroundColor:
+                                    AppColors.memberColor(member.userId),
+                                child: Text(
+                                  member.name.isNotEmpty
+                                      ? member.name[0].toUpperCase()
+                                      : '?',
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
-                      label: Text(member.name),
-                      selected: _selectedPaidById == member.userId,
-                      onSelected: (_) => setState(() => _selectedPaidById = member.userId),
-                      selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
-                    )).toList(),
+                        label: Text(member.name),
+                        selected: _selectedPaidById == member.userId,
+                        onSelected: (_) =>
+                            setState(() => _selectedPaidById = member.userId),
+                      ),
+                    )
+                    .toList(),
               ),
               const SizedBox(height: AppSizes.lg),
             ],
@@ -409,15 +556,21 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               trailing: const Icon(Icons.chevron_right),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(AppSizes.radiusSm),
-                side: BorderSide(color: colorScheme.outline.withValues(alpha: 0.3)),
+                side: BorderSide(
+                  color: colorScheme.outline.withValues(alpha: 0.3),
+                ),
               ),
               onTap: _selectDate,
             ),
+            const SizedBox(height: AppSizes.sm),
+
+            // Installments (cuotas): kept compact, it is the rare case
+            _buildInstallmentsRow(colorScheme),
             const SizedBox(height: AppSizes.lg),
 
             // Category selector
             Text(
-              'Categoria',
+              'Categoría',
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
@@ -431,22 +584,25 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
               children: [
                 // No category option
                 ChoiceChip(
-                  label: const Text('Sin categoria'),
+                  label: const Text('Sin categoría'),
                   selected: _selectedCategoryId == null,
                   onSelected: (_) => setState(() => _selectedCategoryId = null),
-                  selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
                 ),
                 // Category options
-                ...categories.map((category) => ChoiceChip(
-                      avatar: category.icon != null
-                          ? Text(category.icon!, style: const TextStyle(fontSize: 14))
-                          : null,
-                      label: Text(category.name),
-                      selected: _selectedCategoryId == category.id,
-                      onSelected: (_) =>
-                          setState(() => _selectedCategoryId = category.id),
-                      selectedColor: colorScheme.primaryContainer.withValues(alpha: 0.2),
-                    )),
+                ...categories.map(
+                  (category) => ChoiceChip(
+                    avatar: category.icon != null
+                        ? Text(
+                            category.icon!,
+                            style: const TextStyle(fontSize: 14),
+                          )
+                        : null,
+                    label: Text(category.name),
+                    selected: _selectedCategoryId == category.id,
+                    onSelected: (_) =>
+                        setState(() => _selectedCategoryId = category.id),
+                  ),
+                ),
                 // Add new category
                 ActionChip(
                   avatar: const Icon(Icons.add, size: 18),
@@ -479,9 +635,10 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                       color: Colors.white,
                     ),
                   )
-                : const Text(
-                    'Guardar gasto',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                : Text(
+                    _inInstallments
+                        ? 'Guardar compra en $_installments cuotas'
+                        : 'Guardar gasto',
                   ),
           ),
         ),
