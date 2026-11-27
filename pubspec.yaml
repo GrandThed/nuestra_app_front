@@ -119,6 +119,7 @@ flutter:
   # at runtime (Figtree + Fraunces, SIL Open Font License).
   assets:
     - assets/google_fonts/
+    - assets/images/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

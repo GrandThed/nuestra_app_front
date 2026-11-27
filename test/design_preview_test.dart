@@ -27,6 +27,7 @@ import 'package:nuestra_app/features/expenses/presentation/screens/expenses_scre
 import 'package:nuestra_app/features/household/data/models/household_model.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_state.dart';
+import 'package:nuestra_app/features/auth/presentation/screens/login_screen.dart';
 import 'package:nuestra_app/features/food/data/food_models.dart';
 import 'package:nuestra_app/features/food/presentation/food_providers.dart';
 import 'package:nuestra_app/features/food/presentation/food_screen.dart';
@@ -82,6 +83,9 @@ class _FakeAuth extends AuthNotifier {
   AuthState build() => const AuthState.authenticated(
         UserModel(id: 'u-ana', email: 'ana@test.local', name: 'Ana'),
       );
+
+  @override
+  Future<void> initializeGoogleSignIn() async {}
 }
 
 class _FakeHousehold extends HouseholdNotifier {
@@ -187,6 +191,7 @@ Future<void> _pumpScreen(
           GoRoute(path: '/new', builder: (_, _) => child),
           GoRoute(path: '/food', builder: (_, _) => child),
           GoRoute(path: '/recipe', builder: (_, _) => child),
+          GoRoute(path: '/login', builder: (_, _) => child),
         ],
       ),
     ],
@@ -370,6 +375,13 @@ void main() {
       expect(find.text('sacalo', findRichText: true), findsNothing);
       expect(find.textContaining('sacalo', findRichText: true), findsOneWidget);
       await _snapshot(tester, 'receta_$suffix');
+    });
+
+    testWidgets('Login ($suffix)', (tester) async {
+      await _pumpScreen(tester, child: const LoginScreen(), brightness: brightness, location: '/login');
+      await tester.pumpAndSettle();
+      expect(find.text('Continuar con Google'), findsOneWidget);
+      await _snapshot(tester, 'login_$suffix');
     });
 
     testWidgets('Asistente compartido ($suffix)', (tester) async {
