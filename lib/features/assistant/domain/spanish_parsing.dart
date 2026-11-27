@@ -9,7 +9,7 @@ library;
 double? parseAmountAr(String text) {
   final t = text.toLowerCase().replaceAll(' ', ' ');
   final m = RegExp(
-    r'(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:[.,]\d+)?)\s*(k\b|lucas?\b|mil\b|palos?\b|millones?\b|mill[oó]n\b|m\b)?',
+    r'(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d{1,3}(?:,\d{3})+(?:\.\d{1,2})?|\d+(?:[.,]\d+)?)\s*(k\b|lucas?\b|mil\b|palos?\b|millones?\b|mill[oó]n\b|m\b)?',
   ).firstMatch(t);
   if (m == null) return null;
   var number = m[1]!;
@@ -19,6 +19,10 @@ double? parseAmountAr(String text) {
   if (RegExp(r'^\d{1,3}(\.\d{3})+(,\d{1,2})?$').hasMatch(number)) {
     // Thousands with dots, optional decimals with a comma: 1.029,50
     value = double.tryParse(number.replaceAll('.', '').replaceAll(',', '.'));
+  } else if (RegExp(r'^\d{1,3}(,\d{3})+(\.\d{1,2})?$').hasMatch(number)) {
+    // Thousands with commas (keyboard or model in US style): 75,000 / 1,029.50.
+    // Nobody writes pesos with three decimals.
+    value = double.tryParse(number.replaceAll(',', ''));
   } else if (number.contains(',')) {
     // Decimal comma: 1029,5 / 1,5 (palos)
     value = double.tryParse(number.replaceAll(',', '.'));

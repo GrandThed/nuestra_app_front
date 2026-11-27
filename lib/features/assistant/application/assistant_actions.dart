@@ -146,7 +146,7 @@ class AssistantActions {
 
   /// "7.000 de nafta ayer": amount, date and category read in code.
   Future<Output> _draft(AssistantRequest r, String message) async {
-    final amount = parseAmountAr(r.amount) ?? amountInMessage(message);
+    final amount = amountFor(r.amount, message);
     final date = parseDateEs(r.date, now()) ?? parseDateEs(message, now()) ?? DateTime(now().year, now().month, now().day);
     final description = _capitalize(r.description.isNotEmpty ? r.description : _descriptionFrom(message));
     // How the household filed it before wins over the model's guess
@@ -161,7 +161,7 @@ class AssistantActions {
   }
 
   Output _patch(AssistantRequest r, String message) {
-    final amount = parseAmountAr(r.amount) ?? (r.amount.isEmpty ? null : amountInMessage(message));
+    final amount = r.amount.isEmpty ? null : amountFor(r.amount, message);
     return DraftPatch(
       amount: amount,
       date: r.date.isEmpty ? null : parseDateEs(r.date, now()),
@@ -406,6 +406,22 @@ double? amountInMessage(String message) {
       .replaceAll(RegExp(r'\b\d{1,2} de [a-záéíóú]+\b', caseSensitive: false), ' ')
       .replaceAll(RegExp(r'\b\d+ cuotas?\b', caseSensitive: false), ' ');
   return parseAmountAr(cleaned);
+}
+
+/// The amount the user wrote. The model only points at which number it is:
+/// its copy can change the punctuation ("75.000" → "75,000"), so the number
+/// with the same digits is read from the message itself.
+double? amountFor(String copied, String message) {
+  final digits = copied.replaceAll(RegExp(r'\D'), '');
+  if (digits.isNotEmpty) {
+    // Each number in the message with the word after it ("75.000", "15 lucas")
+    for (final n in RegExp(r'\d[\d.,]*(?:\s*[a-zA-Zóñ]+)?').allMatches(message)) {
+      final token = n[0]!;
+      if (token.replaceAll(RegExp(r'\D'), '') == digits) return parseAmountAr(token);
+    }
+  }
+  // The copy matches nothing the user wrote: the message wins
+  return amountInMessage(message) ?? parseAmountAr(copied);
 }
 
 /// "gasté 7000 en nafta" → "nafta": a fallback when the model gave none.

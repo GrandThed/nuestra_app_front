@@ -344,4 +344,22 @@ void main() {
       );
     });
   });
+
+  group('amount from the message', () {
+    test('commas as thousands', () {
+      expect(parseAmountAr('75,000'), 75000);
+      expect(parseAmountAr('1,000,000'), 1000000);
+      expect(parseAmountAr('1,029.50'), 1029.5);
+      expect(parseAmountAr('1,5 palos'), 1500000);
+      expect(parseAmountAr('99,90'), 99.9);
+    });
+
+    test('the user wrote it, the model only points at it', () {
+      expect(amountFor('75,000', 'gasté 75.000 de nafta'), 75000);
+      expect(amountFor('75.00', 'gasté 75.000 de nafta'), 75000);
+      expect(amountFor('15', 'ayer 15 lucas en el súper'), 15000);
+      expect(amountFor('5.000', 'el 15 pagué 5.000 de luz'), 5000);
+      expect(amountFor('2500', 'nafta'), 2500);
+    });
+  });
 }
