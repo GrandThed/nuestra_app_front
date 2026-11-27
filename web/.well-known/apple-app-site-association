@@ -1,0 +1,10 @@
+{
+  "applinks": {
+    "details": [
+      {
+        "appIDs": ["HC6PK32L79.ar.codecave.nuestra"],
+        "components": [{ "/": "/join/*" }]
+      }
+    ]
+  }
+}

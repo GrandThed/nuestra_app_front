@@ -3,6 +3,12 @@ server {
     root /usr/share/nginx/html;
     index index.html;
 
+    # iOS universal links (invite links /join/*)
+    location = /.well-known/apple-app-site-association {
+        default_type application/json;
+        try_files $uri =404;
+    }
+
     location / {
         try_files $uri $uri/ /index.html;
     }
