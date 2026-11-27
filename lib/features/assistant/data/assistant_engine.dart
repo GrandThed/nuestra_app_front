@@ -8,6 +8,19 @@ import 'package:nuestra_app/features/assistant/domain/assistant_request.dart';
 import 'package:nuestra_app/features/assistant/data/resumable_download.dart';
 import 'package:path_provider/path_provider.dart';
 
+/// The on-device engine failed and is not used again until the app restarts.
+/// A native engine that failed once can abort the whole app when it is called
+/// again (seen on an iPhone 14), so a restart is the only safe retry.
+class AssistantUnavailableException implements Exception {
+  const AssistantUnavailableException();
+
+  static const message =
+      'El asistente tuvo un problema. Cierra la app y vuelve a abrirla para usarlo de nuevo.';
+
+  @override
+  String toString() => message;
+}
+
 /// Runs Gemma 4 E2B on the phone through LiteRT-LM (flutter_edge_ai).
 ///
 /// The model (~2.6 GB, Apache-2.0, no Hugging Face token needed) is
@@ -44,10 +57,77 @@ class AssistantEngine {
   Future<void>? _initializing;
   InferenceModel? _model;
 
+  /// The load in progress, shared by every caller: two loads of the 2.6 GB
+  /// model at once would not fit in memory.
+  Future<InferenceModel>? _loading;
+
+  /// Set after the engine failed; every later call throws
+  /// [AssistantUnavailableException] instead of touching the engine.
+  bool _failed = false;
+
+  /// True while [stop] is interrupting a generation: the error that follows
+  /// is the user's stop, not a failure.
+  bool _stopping = false;
+
+  /// One engine operation at a time (chat, JSON, recipe photo, uninstall):
+  /// sessions never open or close while another one is running.
+  Future<void> _queue = Future.value();
+
+  /// Wait for the previous operation, then run. Call the returned function
+  /// when done.
+  Future<void Function()> _acquire() async {
+    final previous = _queue;
+    final done = Completer<void>();
+    _queue = done.future;
+    await previous;
+    return done.complete;
+  }
+
+  /// Whether the engine failed in this run of the app.
+  bool get isUnavailable => _failed;
+
+  /// Errors about the input or the answer, not about the engine: the engine
+  /// is still fine after them.
+  static bool _isInputError(Object e) =>
+      e is FormatException ||
+      e is ContextLimitException ||
+      e is IncompleteStructuredOutputException ||
+      e is NonConformingStructuredOutputException ||
+      e is ResponseFormatUnsupportedException ||
+      e is ImageProcessingException ||
+      e is ImageTokenizationException ||
+      e is AssistantUnavailableException;
+
+  /// Run [task] alone, after the previous operation. An engine error marks
+  /// the engine as failed and is rethrown as [AssistantUnavailableException].
+  Future<T> _guarded<T>(String what, Future<T> Function() task) async {
+    if (_failed) throw const AssistantUnavailableException();
+    final release = await _acquire();
+    try {
+      if (_failed) throw const AssistantUnavailableException();
+      return await task();
+    } catch (e, st) {
+      throw _onError(what, e, st);
+    } finally {
+      release();
+    }
+  }
+
+  Object _onError(String what, Object e, StackTrace st) {
+    if (_isInputError(e) || _stopping) return e;
+    debugPrint('AssistantEngine: $what failed, disabling the engine: $e\n$st');
+    _failed = true;
+    return const AssistantUnavailableException();
+  }
+
   Future<void> _ensureInitialized() {
     return _initializing ??= FlutterEdgeAi.initialize(
       inferenceEngines: const [LiteRtLmEngine()],
-    );
+    ).catchError((Object e) {
+      // Let a later call try again instead of keeping the failed future
+      _initializing = null;
+      throw e;
+    });
   }
 
   Future<bool> isInstalled() async {
@@ -104,25 +184,45 @@ class AssistantEngine {
   }
 
   /// Delete the downloaded model to free space.
+  /// Works even after the engine failed (it never loads the model).
   Future<void> uninstall() async {
-    await _ensureInitialized();
-    await _closeModel();
-    await FlutterEdgeAi.uninstallModel(_modelId);
-    // A file registered with fromFile is ours to delete
-    await (await _download()).delete();
+    final release = await _acquire();
+    try {
+      await _ensureInitialized();
+      try {
+        await _closeModel();
+      } catch (e) {
+        debugPrint('AssistantEngine: could not close the model: $e');
+      }
+      await FlutterEdgeAi.uninstallModel(_modelId);
+      // A file registered with fromFile is ours to delete
+      await (await _download()).delete();
+    } finally {
+      release();
+    }
   }
 
   /// Open a new conversation. Close it with [InferenceChat.close] when done.
   /// Load the model once, with image input enabled: changing these settings
   /// later would close and reload the whole model.
   Future<InferenceModel> _loadModel() async {
-    await _ensureInitialized();
-    return _model ??= await FlutterEdgeAi.getActiveModel(
-      maxTokens: _contextTokens,
-      preferredBackend: PreferredBackend.gpu,
-      supportImage: true,
-      maxNumImages: 1,
-    );
+    final model = _model;
+    if (model != null) return model;
+    return _loading ??= () async {
+      try {
+        await _ensureInitialized();
+        final loaded = await FlutterEdgeAi.getActiveModel(
+          maxTokens: _contextTokens,
+          preferredBackend: PreferredBackend.gpu,
+          supportImage: true,
+          maxNumImages: 1,
+        );
+        _model = loaded;
+        return loaded;
+      } finally {
+        _loading = null;
+      }
+    }();
   }
 
   /// Answer with JSON that follows [schema]: one short, separate session per
@@ -134,7 +234,15 @@ class AssistantEngine {
     required String message,
     required Map<String, Object?> schema,
     String name = 'respuesta',
-  }) async {
+  }) =>
+      _guarded('readJson', () => _readJson(instructions, message, schema, name));
+
+  Future<Map<String, dynamic>?> _readJson(
+    String instructions,
+    String message,
+    Map<String, Object?> schema,
+    String name,
+  ) async {
     final model = await _loadModel();
     final format = ResponseFormat.jsonSchema(schema, name: name);
     final constrained = model.refusalFor(format) == null;
@@ -155,7 +263,11 @@ class AssistantEngine {
       return decodeJsonObject('$buffer');
     } finally {
       _current = null;
-      await chat.close();
+      try {
+        await chat.close();
+      } catch (e) {
+        debugPrint('AssistantEngine: could not close the chat: $e');
+      }
     }
   }
 
@@ -166,15 +278,19 @@ class AssistantEngine {
     required List<(bool, String)> history,
     required String message,
   }) async* {
-    final model = await _loadModel();
-    final chat = await model.openChat(
-      systemInstruction: instructions,
-      modelType: ModelType.gemma4,
-      temperature: _temperature,
-      topK: _topK,
-    );
-    _current = chat;
+    if (_failed) throw const AssistantUnavailableException();
+    final release = await _acquire();
+    InferenceChat? chat;
     try {
+      if (_failed) throw const AssistantUnavailableException();
+      final model = await _loadModel();
+      chat = await model.openChat(
+        systemInstruction: instructions,
+        modelType: ModelType.gemma4,
+        temperature: _temperature,
+        topK: _topK,
+      );
+      _current = chat;
       if (history.isNotEmpty) {
         await chat.clearHistory(replayHistory: [
           for (final (isUser, text) in history) Message.text(text: text, isUser: isUser),
@@ -184,9 +300,16 @@ class AssistantEngine {
       await for (final response in chat.generateChatResponseAsync()) {
         if (response is TextResponse) yield response.token;
       }
+    } catch (e, st) {
+      throw _onError('reply', e, st);
     } finally {
       _current = null;
-      await chat.close();
+      try {
+        await chat?.close();
+      } catch (e) {
+        debugPrint('AssistantEngine: could not close the chat: $e');
+      }
+      release();
     }
   }
 
@@ -195,10 +318,17 @@ class AssistantEngine {
 
   /// Stop whatever is being generated.
   Future<void> stop() async {
+    final chat = _current;
+    if (chat == null) return;
+    _stopping = true;
     try {
-      await _current?.stopGeneration();
+      await chat.stopGeneration();
     } catch (e) {
       debugPrint('Could not stop generation: $e');
+    } finally {
+      // The stopped turn ends on the engine's thread; give its error time to
+      // arrive before errors count as failures again.
+      unawaited(Future<void>.delayed(const Duration(seconds: 2), () => _stopping = false));
     }
   }
 
@@ -223,7 +353,10 @@ class AssistantEngine {
   /// Read a recipe from a photo or screenshot, on the phone. Uses a separate
   /// one-off chat with structured output (no tools). Returns the decoded JSON
   /// ({titulo, porciones, ingredientes, pasos, ...}) for the user to review.
-  Future<Map<String, dynamic>> extractRecipeFromImage(Uint8List imageBytes) async {
+  Future<Map<String, dynamic>> extractRecipeFromImage(Uint8List imageBytes) =>
+      _guarded('extractRecipeFromImage', () => _extractRecipe(imageBytes));
+
+  Future<Map<String, dynamic>> _extractRecipe(Uint8List imageBytes) async {
     final model = await _loadModel();
     // Constrained decoding is not available on every GPU: then ask for JSON
     // in the prompt and parse it leniently.
@@ -251,7 +384,11 @@ class AssistantEngine {
       }
       return decodeRecipeJson('$buffer');
     } finally {
-      await chat.close();
+      try {
+        await chat.close();
+      } catch (e) {
+        debugPrint('AssistantEngine: could not close the chat: $e');
+      }
     }
   }
 

@@ -72,7 +72,11 @@ Future<void> addRecipeFromPhoto(BuildContext context, WidgetRef ref) async {
   try {
     recipe = await engine.extractRecipeFromImage(bytes);
   } catch (e) {
-    problem = e is FormatException ? e.message : 'No pude leer la imagen: $e';
+    problem = switch (e) {
+      FormatException(:final message) => message,
+      AssistantUnavailableException() => AssistantUnavailableException.message,
+      _ => 'No pude leer la imagen: $e',
+    };
   }
   if (!context.mounted) return;
   Navigator.of(context, rootNavigator: true).pop();

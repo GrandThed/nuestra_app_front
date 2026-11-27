@@ -421,7 +421,9 @@ class AssistantController extends Notifier<AssistantState> {
       }
     } catch (e) {
       debugPrint('Assistant turn failed: $e');
-      _append(const Notice('Algo salió mal con el asistente. Intenta de nuevo.'));
+      _append(Notice(e is AssistantUnavailableException
+          ? AssistantUnavailableException.message
+          : 'Algo salió mal con el asistente. Intenta de nuevo.'));
     } finally {
       _idle();
       unawaited(_save(message, keys));
@@ -744,7 +746,11 @@ Si te piden algo que no sea del hogar, responde corto y amable.''';
       final json = await _engine.extractRecipeFromImage(bytes);
       _showForm((id) => recipeFormFromExtraction(id, json));
     } catch (e) {
-      _append(Notice(e is FormatException ? e.message : 'No pude leer la imagen.'));
+      _append(Notice(switch (e) {
+        FormatException(:final message) => message,
+        AssistantUnavailableException() => AssistantUnavailableException.message,
+        _ => 'No pude leer la imagen.',
+      }));
     } finally {
       _idle();
     }
