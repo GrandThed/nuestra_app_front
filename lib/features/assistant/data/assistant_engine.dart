@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_edge_ai/flutter_edge_ai.dart';
 import 'package:flutter_edge_ai_litertlm/flutter_edge_ai_litertlm.dart';
-import 'package:nuestra_app/features/assistant/data/assistant_tools.dart';
+import 'package:nuestra_app/features/assistant/domain/assistant_request.dart';
 import 'package:nuestra_app/features/assistant/data/resumable_download.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -127,28 +125,81 @@ class AssistantEngine {
     );
   }
 
-  Future<InferenceChat> openChat({
-    required String systemInstruction,
-    List<AssistantToolSpec> tools = assistantToolSpecs,
+  /// Answer with JSON that follows [schema]: one short, separate session per
+  /// call (nothing from earlier calls leaks in). Constrained decoding makes
+  /// the model unable to write anything else; on GPUs that can't constrain,
+  /// the prompt asks for JSON and the answer is read leniently.
+  Future<Map<String, dynamic>?> readJson({
+    required String instructions,
+    required String message,
+    required Map<String, Object?> schema,
+    String name = 'respuesta',
   }) async {
     final model = await _loadModel();
-    return model.openChat(
-      systemInstruction: systemInstruction,
-      tools: [
-        for (final t in tools)
-          Tool(
-            name: t.name,
-            description: t.description,
-            parameters: t.parameters,
-          ),
-      ],
-      // Without this the tool-call JSON comes back as plain text
-      supportsFunctionCalls: true,
-      supportImage: true,
+    final format = ResponseFormat.jsonSchema(schema, name: name);
+    final constrained = model.refusalFor(format) == null;
+    final chat = await model.openChat(
+      systemInstruction: instructions,
+      responseFormat: constrained ? format : null,
       modelType: ModelType.gemma4,
       temperature: _temperature,
       topK: _topK,
     );
+    _current = chat;
+    try {
+      await chat.addQueryChunk(Message.text(text: message, isUser: true));
+      final buffer = StringBuffer();
+      await for (final response in chat.generateChatResponseAsync()) {
+        if (response is TextResponse) buffer.write(response.token);
+      }
+      return decodeJsonObject('$buffer');
+    } finally {
+      _current = null;
+      await chat.close();
+    }
+  }
+
+  /// A free-text answer, streamed token by token. [history] is the recent
+  /// conversation as (isUser, text), oldest first.
+  Stream<String> reply({
+    required String instructions,
+    required List<(bool, String)> history,
+    required String message,
+  }) async* {
+    final model = await _loadModel();
+    final chat = await model.openChat(
+      systemInstruction: instructions,
+      modelType: ModelType.gemma4,
+      temperature: _temperature,
+      topK: _topK,
+    );
+    _current = chat;
+    try {
+      if (history.isNotEmpty) {
+        await chat.clearHistory(replayHistory: [
+          for (final (isUser, text) in history) Message.text(text: text, isUser: isUser),
+        ]);
+      }
+      await chat.addQueryChunk(Message.text(text: message, isUser: true));
+      await for (final response in chat.generateChatResponseAsync()) {
+        if (response is TextResponse) yield response.token;
+      }
+    } finally {
+      _current = null;
+      await chat.close();
+    }
+  }
+
+  /// The session generating right now, to stop it.
+  InferenceChat? _current;
+
+  /// Stop whatever is being generated.
+  Future<void> stop() async {
+    try {
+      await _current?.stopGeneration();
+    } catch (e) {
+      debugPrint('Could not stop generation: $e');
+    }
   }
 
   /// JSON shape of a recipe read from a photo.
@@ -205,18 +256,8 @@ class AssistantEngine {
   }
 
   /// Parse the model's JSON, tolerating text or code fences around it.
-  static Map<String, dynamic> decodeRecipeJson(String text) {
-    final start = text.indexOf('{');
-    final end = text.lastIndexOf('}');
-    if (start < 0 || end <= start) {
-      throw const FormatException('No encontré una receta en la imagen');
-    }
-    final decoded = jsonDecode(text.substring(start, end + 1));
-    if (decoded is! Map<String, dynamic>) {
-      throw const FormatException('No encontré una receta en la imagen');
-    }
-    return decoded;
-  }
+  static Map<String, dynamic> decodeRecipeJson(String text) =>
+      decodeJsonObject(text) ?? (throw const FormatException('No encontré una receta en la imagen'));
 
   Future<void> _closeModel() async {
     final model = _model;

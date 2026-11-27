@@ -1,26 +1,23 @@
 import 'package:a2ui_flutter/a2ui_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:nuestra_app/core/constants/app_colors.dart';
 import 'package:nuestra_app/core/constants/app_sizes.dart';
 import 'package:nuestra_app/core/constants/app_strings.dart';
-import 'package:nuestra_app/core/theme/text_styles.dart';
 import 'package:nuestra_app/features/assistant/data/assistant_engine.dart';
 import 'package:nuestra_app/features/assistant/data/assistant_history_repository.dart';
 import 'package:nuestra_app/features/assistant/presentation/assistant_controller.dart';
-import 'package:nuestra_app/core/utils/money_format.dart';
+import 'package:nuestra_app/features/assistant/presentation/chat_cards.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
-final _currency = const MoneyFormat();
-
 const _starterPrompts = [
+  'Gasté 15.000 de nafta',
   '¿Cuánto gastamos este mes?',
-  '¿Qué gastos fijos faltan cargar?',
-  'Gastos del súper de este mes',
-  'Anotá 15000 de nafta',
+  '¿Qué gastos fijos faltan?',
+  'Una receta con pollo',
+  'Armá el menú de la semana',
 ];
 
 /// "ahora", "hace 5 min", "hace 2 h", "ayer", "3 nov".
@@ -39,8 +36,9 @@ String _relativeTime(DateTime? when, DateTime now) {
   return DateFormat('d MMM', 'es').format(when);
 }
 
-/// The on-device assistant (Gemma 4 + A2UI cards), with conversations
-/// shared by the household.
+/// The on-device assistant (Gemma 4): the model reads what you ask, the app
+/// answers with cards built from your data. Conversations are shared by the
+/// household.
 class AssistantScreen extends ConsumerWidget {
   const AssistantScreen({super.key});
 
@@ -63,7 +61,7 @@ class AssistantScreen extends ConsumerWidget {
             IconButton(
               icon: const Icon(Icons.edit_square),
               tooltip: 'Nueva conversación',
-              onPressed: state.isBusy || state.items.isEmpty
+              onPressed: state.isBusy || state.entries.isEmpty
                   ? null
                   : controller.newConversation,
             ),
@@ -224,7 +222,7 @@ class _ConversationsSheet extends ConsumerWidget {
                     ListTile(
                       leading: const Icon(Icons.chat_bubble_outline),
                       title: Text(
-                        state.items.isEmpty
+                        state.entries.isEmpty
                             ? 'Conversación nueva'
                             : 'Conversación actual',
                       ),
@@ -470,21 +468,20 @@ class _ChatViewState extends ConsumerState<_ChatView> {
     final streaming = state.streamingText;
 
     final Widget body;
-    if (state.items.isEmpty && state.loadingHistory) {
+    if (state.entries.isEmpty && state.loadingHistory) {
       body = const Center(child: CircularProgressIndicator());
-    } else if (state.items.isEmpty && !state.isBusy) {
+    } else if (state.entries.isEmpty && !state.isBusy) {
       body = _EmptyChat(onPick: controller.send);
     } else {
       body = ListView(
         controller: _scroll,
-        padding: const EdgeInsets.all(AppSizes.md),
+        padding: const EdgeInsets.fromLTRB(AppSizes.md, AppSizes.md, AppSizes.md, AppSizes.sm),
         children: [
-          for (final item in state.items) _buildItem(item),
-          if (state.isBusy)
-            _AssistantBubble(
-              text: (streaming == null || streaming.isEmpty) ? null : streaming,
-              status: state.busyLabel,
-            ),
+          for (final entry in state.entries) _buildEntry(entry),
+          if (streaming != null && streaming.isNotEmpty)
+            AssistantTextView(text: streaming)
+          else if (state.status != null)
+            StatusView(state.status!),
         ],
       );
     }
@@ -522,28 +519,18 @@ class _ChatViewState extends ConsumerState<_ChatView> {
     await ref.read(assistantProvider.notifier).addRecipePhoto(await file.readAsBytes());
   }
 
-  Widget _buildItem(AssistantItem item) {
+  Widget _buildEntry(ChatEntry entry) {
+    final item = entry.item;
     return switch (item) {
-      UserItem() => _UserBubble(item: item),
-      AssistantTextItem(:final text) => _AssistantBubble(text: text),
-      SurfaceItem(:final surface) => Padding(
-          padding: const EdgeInsets.only(bottom: AppSizes.sm, right: 32),
+      UserMessage() => _UserBubble(item: item),
+      AssistantText(:final text) => AssistantTextView(text: text),
+      DataCard() => DataCardView(key: ValueKey(entry.key), entryKey: entry.key, card: item),
+      FormCard(:final surface) => Padding(
+          padding: const EdgeInsets.only(bottom: AppSizes.md, right: 24),
           child: A2uiSurface(key: ObjectKey(surface), surface: surface),
         ),
-      ProposalItem() => _ProposalCard(item: item),
-      RecipeLinkItem(:final slug, :final servings) => Padding(
-          padding: const EdgeInsets.only(bottom: AppSizes.sm, right: 32),
-          child: Card(
-            child: ListTile(
-              leading: const Icon(Icons.menu_book_outlined),
-              title: const Text('Ver la receta'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => context.push('/food/recipes/$slug${servings != null ? '?servings=$servings' : ''}'),
-            ),
-          ),
-        ),
-      NoticeItem(:final text) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSizes.sm),
+      Notice(:final text) => Padding(
+          padding: const EdgeInsets.only(bottom: AppSizes.md),
           child: Text(
             text,
             textAlign: TextAlign.center,
@@ -564,6 +551,7 @@ class _EmptyChat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSizes.xl),
@@ -572,9 +560,11 @@ class _EmptyChat extends StatelessWidget {
           children: [
             Icon(Icons.auto_awesome, size: 40, color: colorScheme.tertiary),
             const SizedBox(height: AppSizes.md),
+            Text('¿En qué te ayudo?', style: text.headlineSmall, textAlign: TextAlign.center),
+            const SizedBox(height: AppSizes.xs),
             Text(
-              'Preguntame por los gastos del hogar',
-              style: Theme.of(context).textTheme.headlineSmall,
+              'Contame un gasto, preguntame cuánto gastaron o pedime una receta.',
+              style: text.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSizes.lg),
@@ -597,7 +587,7 @@ class _EmptyChat extends StatelessWidget {
 /// A household member's message. Yours in yerba; other members' in a quiet
 /// green-grey with their name on top.
 class _UserBubble extends StatelessWidget {
-  final UserItem item;
+  final UserMessage item;
 
   const _UserBubble({required this.item});
 
@@ -605,41 +595,33 @@ class _UserBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final background = item.isMine
-        ? colorScheme.primaryContainer
-        : colorScheme.secondaryContainer;
-    final foreground = item.isMine
-        ? colorScheme.onPrimaryContainer
-        : colorScheme.onSecondaryContainer;
+    final mine = item.authorName == null;
+    final background = mine ? colorScheme.primaryContainer : colorScheme.secondaryContainer;
+    final foreground = mine ? colorScheme.onPrimaryContainer : colorScheme.onSecondaryContainer;
 
     return Align(
       alignment: Alignment.centerRight,
       child: Padding(
-        padding: const EdgeInsets.only(bottom: AppSizes.sm, left: 48),
+        padding: const EdgeInsets.only(bottom: AppSizes.md, left: 48),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            if (!item.isMine)
+            if (!mine)
               Padding(
                 padding: const EdgeInsets.only(right: 6, bottom: 2),
                 child: Text(
                   item.authorName!,
-                  style: textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+                  style: textTheme.labelSmall?.copyWith(color: colorScheme.onSurfaceVariant),
                 ),
               ),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 10,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: background,
                 borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(AppSizes.radiusLg),
-                  topRight: Radius.circular(AppSizes.radiusLg),
-                  bottomLeft: Radius.circular(AppSizes.radiusLg),
+                  topLeft: Radius.circular(18),
+                  topRight: Radius.circular(18),
+                  bottomLeft: Radius.circular(18),
                   bottomRight: Radius.circular(6),
                 ),
               ),
@@ -647,170 +629,16 @@ class _UserBubble extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (item.fromAction) ...[
-                    Icon(Icons.touch_app, size: 16, color: foreground),
+                    Icon(Icons.check, size: 16, color: foreground),
                     const SizedBox(width: AppSizes.xs),
                   ],
-                  Flexible(
-                    child: Text(item.text, style: TextStyle(color: foreground)),
-                  ),
+                  Flexible(child: Text(item.text, style: textTheme.bodyLarge?.copyWith(color: foreground))),
                 ],
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class _AssistantBubble extends StatelessWidget {
-  final String? text;
-  final String? status;
-
-  const _AssistantBubble({this.text, this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: AppSizes.sm, right: 48),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-        decoration: BoxDecoration(
-          color: colorScheme.surfaceContainerHighest,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(AppSizes.radiusLg),
-            topRight: Radius.circular(AppSizes.radiusLg),
-            bottomRight: Radius.circular(AppSizes.radiusLg),
-            bottomLeft: Radius.circular(6),
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (text != null) SelectableText(text!),
-            if (status != null)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    width: 12,
-                    height: 12,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: colorScheme.tertiary,
-                    ),
-                  ),
-                  const SizedBox(width: AppSizes.sm),
-                  Text(
-                    status!,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                  ),
-                ],
-              ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Confirmation card for an expense the model proposed (honey: the app is
-/// proposing; turns green once saved).
-class _ProposalCard extends ConsumerWidget {
-  final ProposalItem item;
-
-  const _ProposalCard({required this.item});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.read(assistantProvider.notifier);
-    final p = item.proposal;
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final pending = item.status == ProposalStatus.pending ||
-        item.status == ProposalStatus.saving;
-    final accent = pending ? colorScheme.tertiary : colorScheme.outlineVariant;
-
-    return Container(
-      margin: const EdgeInsets.only(bottom: AppSizes.sm, right: 32),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerLow,
-        borderRadius: BorderRadius.circular(AppSizes.radiusLg),
-        border: Border.all(color: accent, width: pending ? 1.5 : 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            pending ? 'POR CONFIRMAR' : 'NUEVO GASTO',
-            style: textTheme.labelSmall?.copyWith(
-              color: pending ? colorScheme.tertiary : colorScheme.onSurfaceVariant,
-              letterSpacing: 0.6,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: AppSizes.xs),
-          Text(
-            _currency.format(p.amount),
-            style: AppTextStyles.bigAmount(size: 26, color: colorScheme.onSurface),
-          ),
-          Text(p.description, style: textTheme.bodyLarge),
-          Text(
-            '${p.categoryName ?? 'Sin categoría'} · '
-            '${DateFormat('d MMM', 'es').format(p.date)}',
-            style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
-          ),
-          const SizedBox(height: AppSizes.sm),
-          switch (item.status) {
-            ProposalStatus.pending => Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => controller.cancelProposal(item.id),
-                    child: const Text('Descartar'),
-                  ),
-                  const SizedBox(width: AppSizes.sm),
-                  FilledButton(
-                    onPressed: () => controller.confirmProposal(item.id),
-                    child: const Text('Guardar'),
-                  ),
-                ],
-              ),
-            ProposalStatus.saving => const LinearProgressIndicator(),
-            ProposalStatus.saved =>
-              _Status(Icons.check_circle, 'Guardado', colorScheme.success),
-            ProposalStatus.cancelled =>
-              _Status(Icons.block, 'Descartado', colorScheme.onSurfaceVariant),
-            ProposalStatus.failed =>
-              _Status(Icons.error_outline, 'No se pudo guardar', colorScheme.error),
-          },
-        ],
-      ),
-    );
-  }
-}
-
-class _Status extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color color;
-
-  const _Status(this.icon, this.label, this.color);
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: color),
-        const SizedBox(width: AppSizes.xs),
-        Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600)),
-      ],
     );
   }
 }
@@ -922,7 +750,7 @@ class _InputBarState extends State<_InputBar> {
                 onChanged: (_) => setState(() {}),
                 onSubmitted: (_) => _send(),
                 decoration: InputDecoration(
-                  hintText: _listening ? 'Escuchando…' : 'Escribí tu pregunta',
+                  hintText: _listening ? 'Escuchando…' : 'Escribile al asistente',
                   isDense: true,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: AppSizes.md,

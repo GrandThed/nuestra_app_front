@@ -13,8 +13,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:nuestra_app/core/theme/app_theme.dart';
-import 'package:nuestra_app/features/assistant/data/a2ui_bridge.dart';
-import 'package:nuestra_app/features/assistant/data/assistant_tools.dart';
 import 'package:nuestra_app/features/assistant/presentation/assistant_controller.dart';
 import 'package:nuestra_app/features/assistant/presentation/assistant_screen.dart';
 import 'package:nuestra_app/features/auth/data/models/user_model.dart';
@@ -116,35 +114,48 @@ class _FakeAssistant extends AssistantController {
   AssistantState build() => _state;
 }
 
-AssistantState _assistantState() {
-  final bridge = A2uiBridge(onAction: (_) {});
-  final instructions = A2uiBridge.compactInstructions;
-  final card = bridge
-      .parseReply(instructions.substring(instructions.lastIndexOf('<a2ui-json>')))
-      .whereType<ReplySurface>()
-      .single
-      .surface;
-  return AssistantState(
-    modelStatus: ModelStatus.ready,
-    conversationId: 'c1',
-    items: [
-      const UserItem('¿Cuánto gastamos este mes?'),
-      const AssistantTextItem('Van \$ 158.600 en noviembre:'),
-      SurfaceItem(card),
-      const UserItem('Anotá 15000 de nafta', authorName: 'Beto'),
-      ProposalItem(
-        1,
-        ExpenseProposal(
-          description: 'Nafta',
-          amount: 15000,
-          date: DateTime(2026, 11, 26),
-          categoryName: 'Transporte',
+AssistantState _assistantState() => AssistantState(
+      modelStatus: ModelStatus.ready,
+      conversationId: 'c1',
+      entries: [
+        const ChatEntry(1, UserMessage('Gasté 7.000 de nafta')),
+        ChatEntry(
+          2,
+          ExpenseDraftCard(
+            description: 'Nafta',
+            amount: 7000,
+            date: DateTime.now(),
+            categoryId: 'c-tr',
+            categoryName: 'Transporte',
+          ),
         ),
-        ProposalStatus.pending,
-      ),
-    ],
-  );
-}
+        const ChatEntry(3, UserMessage('¿Cuánto gastamos de nafta este mes?', authorName: 'Beto')),
+        ChatEntry(
+          4,
+          SpendingCard(
+            title: 'Nafta · noviembre',
+            year: 2026,
+            month: 11,
+            total: 14500,
+            count: 2,
+            rows: [
+              ExpenseRow(DateTime(2026, 11, 20), 'Nafta YPF', 8000, 'Beto', 'Transporte'),
+              ExpenseRow(DateTime(2026, 11, 2), 'Nafta', 6500, 'Ana', 'Transporte'),
+            ],
+          ),
+        ),
+        const ChatEntry(5, UserMessage('Una receta con lentejas')),
+        const ChatEntry(
+          6,
+          RecipesCard(title: 'Recetas con lentejas', excluded: 1, recipes: [
+            RecipeRow('dal-de-lentejas-rojas', 'Dal de lentejas rojas', 45, 'india · lentejas, cebolla, ajo'),
+            RecipeRow('guiso-de-lentejas', 'Guiso de lentejas', 70, 'sin morrón'),
+          ]),
+        ),
+        const ChatEntry(7, UserMessage('gracias!')),
+        const ChatEntry(8, AssistantText('¡De nada! Si querés, armamos el menú de la semana con esas recetas.')),
+      ],
+    );
 
 Future<void> _loadIconFont() async {
   final flutterRoot = Platform.environment['FLUTTER_ROOT'] ??
@@ -402,8 +413,8 @@ void main() {
         inShell: true,
         location: '/chat',
       );
-      expect(find.text('Beto'), findsWidgets);
-      expect(find.text('POR CONFIRMAR'), findsOneWidget);
+      expect(find.text('Beto', skipOffstage: false), findsWidgets);
+      expect(find.text('GASTO PARA GUARDAR', skipOffstage: false), findsOneWidget);
       await _snapshot(tester, 'asistente_$suffix');
     });
   }

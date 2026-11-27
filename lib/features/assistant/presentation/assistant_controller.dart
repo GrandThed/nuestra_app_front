@@ -1,258 +1,194 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:a2ui_core/a2ui_core.dart';
-import 'package:a2ui_flutter/a2ui_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_edge_ai/flutter_edge_ai.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-import 'package:nuestra_app/features/assistant/data/a2ui_bridge.dart';
-import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.dart';
-import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
+import 'package:nuestra_app/core/utils/money_format.dart';
+import 'package:nuestra_app/features/assistant/application/assistant_actions.dart';
+import 'package:nuestra_app/features/assistant/application/week_planner.dart';
 import 'package:nuestra_app/features/assistant/data/assistant_engine.dart';
 import 'package:nuestra_app/features/assistant/data/assistant_history_repository.dart';
-import 'package:nuestra_app/features/assistant/data/assistant_tools.dart';
+import 'package:nuestra_app/features/assistant/data/form_surfaces.dart';
+import 'package:nuestra_app/features/assistant/domain/assistant_request.dart';
+import 'package:nuestra_app/features/assistant/domain/chat_items.dart';
+import 'package:nuestra_app/features/assistant/domain/spanish_parsing.dart';
+import 'package:nuestra_app/features/auth/presentation/providers/auth_notifier.dart';
+import 'package:nuestra_app/features/auth/presentation/providers/auth_state.dart';
 import 'package:nuestra_app/features/expenses/data/repositories/expense_repository.dart';
-import 'package:nuestra_app/features/food/assistant/food_tools.dart';
+import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
+import 'package:nuestra_app/features/food/data/food_models.dart';
 import 'package:nuestra_app/features/food/data/food_repository.dart';
 import 'package:nuestra_app/features/food/forms/food_form_handler.dart';
 import 'package:nuestra_app/features/food/forms/food_forms.dart';
 import 'package:nuestra_app/features/food/presentation/food_providers.dart';
 import 'package:nuestra_app/features/food/presentation/recipe_photo_flow.dart';
-import 'package:nuestra_app/features/expenses/presentation/providers/expenses_notifier.dart';
 import 'package:nuestra_app/features/household/presentation/providers/household_notifier.dart';
+
+export 'package:nuestra_app/features/assistant/domain/chat_items.dart';
 
 // ==================== STATE ====================
 
 /// Where the on-device model is.
-enum ModelStatus {
-  /// Web or desktop: the model only runs on Android/iOS.
-  unsupported,
-  checking,
-  notInstalled,
-  downloading,
-  ready,
-  failed,
-}
+enum ModelStatus { unsupported, checking, notInstalled, downloading, ready, failed }
 
-/// One entry in the conversation.
-sealed class AssistantItem {
-  const AssistantItem();
-}
-
-class UserItem extends AssistantItem {
-  final String text;
-
-  /// True when it came from tapping a button on a card, not from typing.
-  final bool fromAction;
-
-  /// Name of the household member who wrote it; null when it was you.
-  final String? authorName;
-
-  const UserItem(this.text, {this.fromAction = false, this.authorName});
-
-  bool get isMine => authorName == null;
-}
-
-class AssistantTextItem extends AssistantItem {
-  final String text;
-  const AssistantTextItem(this.text);
-}
-
-class SurfaceItem extends AssistantItem {
-  final SurfaceModel<ComponentImplementation> surface;
-  const SurfaceItem(this.surface);
-}
-
-enum ProposalStatus { pending, saving, saved, cancelled, failed }
-
-/// An expense the model proposed; saved only after the user confirms.
-class ProposalItem extends AssistantItem {
-  final int id;
-  final ExpenseProposal proposal;
-  final ProposalStatus status;
-
-  /// Id of the stored history message, once saved in the backend.
-  final String? messageId;
-
-  const ProposalItem(this.id, this.proposal, this.status, {this.messageId});
-
-  ProposalItem withStatus(ProposalStatus s) =>
-      ProposalItem(id, proposal, s, messageId: messageId);
-
-  ProposalItem withMessageId(String? m) =>
-      ProposalItem(id, proposal, status, messageId: m);
-}
-
-/// A recipe the user can open from the chat (after a form or a search).
-class RecipeLinkItem extends AssistantItem {
-  final String slug;
-  final int? servings;
-  const RecipeLinkItem(this.slug, {this.servings});
-}
-
-/// A note from the app (errors, context resets). Not saved in history.
-class NoticeItem extends AssistantItem {
-  final String text;
-  const NoticeItem(this.text);
+/// An item in the conversation, with a key that survives updates (a card
+/// changing status keeps its place and its widget).
+class ChatEntry {
+  final int key;
+  final ChatItem item;
+  const ChatEntry(this.key, this.item);
 }
 
 class AssistantState {
   final ModelStatus modelStatus;
   final int downloadPercent;
   final String? error;
-  final List<AssistantItem> items;
-
-  /// The saved conversation is being loaded from the backend.
+  final List<ChatEntry> entries;
   final bool loadingHistory;
-
-  /// The conversation open on this phone.
   final String? conversationId;
-
-  /// The household's conversations (most recent activity first), as of the
-  /// last refresh.
   final List<ConversationSummary> conversations;
 
-  /// Reply text streaming in (UI blocks hidden), null when idle.
-  final String? streamingText;
+  /// What the assistant is doing ("Entendiendo…"), null when idle.
+  final String? status;
 
-  /// What the assistant is doing right now ("Revisando tus gastos…").
-  final String? busyLabel;
+  /// A reply being written, shown as it streams.
+  final String? streamingText;
 
   const AssistantState({
     this.modelStatus = ModelStatus.checking,
     this.downloadPercent = 0,
     this.error,
-    this.items = const [],
+    this.entries = const [],
     this.loadingHistory = false,
     this.conversationId,
     this.conversations = const [],
+    this.status,
     this.streamingText,
-    this.busyLabel,
   });
 
-  bool get isBusy => busyLabel != null;
+  bool get isBusy => status != null;
 
   AssistantState copyWith({
     ModelStatus? modelStatus,
     int? downloadPercent,
     String? Function()? error,
-    List<AssistantItem>? items,
+    List<ChatEntry>? entries,
     bool? loadingHistory,
     String? conversationId,
     List<ConversationSummary>? conversations,
+    String? Function()? status,
     String? Function()? streamingText,
-    String? Function()? busyLabel,
-  }) {
-    return AssistantState(
-      modelStatus: modelStatus ?? this.modelStatus,
-      downloadPercent: downloadPercent ?? this.downloadPercent,
-      error: error != null ? error() : this.error,
-      items: items ?? this.items,
-      loadingHistory: loadingHistory ?? this.loadingHistory,
-      conversationId: conversationId ?? this.conversationId,
-      conversations: conversations ?? this.conversations,
-      streamingText: streamingText != null ? streamingText() : this.streamingText,
-      busyLabel: busyLabel != null ? busyLabel() : this.busyLabel,
-    );
-  }
+  }) =>
+      AssistantState(
+        modelStatus: modelStatus ?? this.modelStatus,
+        downloadPercent: downloadPercent ?? this.downloadPercent,
+        error: error != null ? error() : this.error,
+        entries: entries ?? this.entries,
+        loadingHistory: loadingHistory ?? this.loadingHistory,
+        conversationId: conversationId ?? this.conversationId,
+        conversations: conversations ?? this.conversations,
+        status: status != null ? status() : this.status,
+        streamingText: streamingText != null ? streamingText() : this.streamingText,
+      );
 }
 
 // ==================== CONTROLLER ====================
 
-final assistantProvider =
-    NotifierProvider<AssistantController, AssistantState>(AssistantController.new);
+final assistantProvider = NotifierProvider<AssistantController, AssistantState>(AssistantController.new);
 
-/// Runs the on-device assistant conversation and keeps its history in the
-/// backend (private to the user).
+/// The household assistant.
+///
+/// Each message goes through the same steps:
+/// 1. "sí" / "no" with an expense waiting on screen save or discard it
+///    (no model involved);
+/// 2. the model reads the message into an [AssistantRequest] (constrained
+///    JSON: it can only classify and copy text);
+/// 3. [AssistantActions] runs it with the app's data and returns cards;
+/// 4. only small talk and open questions get an answer written by the model.
+/// The turn is then saved in the household's conversation.
 class AssistantController extends Notifier<AssistantState> {
   final _engine = AssistantEngine.instance;
-  A2uiBridge? _bridge;
-  InferenceChat? _chat;
+  FormSurfaces? _forms;
   CancelToken? _downloadCancel;
-  int _proposalCounter = 0;
-
+  AssistantActions? _actions;
   String _conversationId = AssistantHistoryRepository.newConversationId();
+  int _keys = 0;
+  bool _stopRequested = false;
 
-  /// Previous turns to feed the model when the chat is first opened after
-  /// loading a saved conversation, so it remembers what was said.
-  List<Message> _replay = const [];
-
-  /// Rough size of the conversation in characters, to reset the context
-  /// before it overflows the model's window (8k tokens ≈ 32k chars).
-  int _contextChars = 0;
-  static const _contextBudgetChars = 24000;
-
-  /// Food tools keep state per conversation (first-time profile question).
-  FoodToolExecutor? _foodTools;
-  int _formCounter = 0;
-
-  /// How much of a saved conversation is replayed into a new chat.
-  static const _replayBudgetChars = 3000;
-
-  static const _toolLabels = {
-    'resumen_del_mes': 'Calculando el resumen…',
-    'listar_gastos': 'Revisando tus gastos…',
-    'gastos_fijos_sugeridos': 'Buscando gastos fijos…',
-    'proponer_gasto': 'Preparando el gasto…',
-    'buscar_recetas': 'Buscando recetas…',
-    'ver_receta': 'Leyendo la receta…',
-    'opciones_menu': 'Viendo opciones…',
-    'poner_en_menu': 'Armando el menú…',
-    'ver_menu': 'Mirando el menú…',
-    'guardar_preferencia': 'Guardando…',
-    'mostrar_formulario': 'Preparando el formulario…',
-  };
-
-  FoodToolExecutor _food(String householdId) => _foodTools ??= FoodToolExecutor(
-        ref.read(foodRepositoryProvider),
-        householdId,
-        members: ref.read(foodMembersProvider),
-      );
-
-  /// Show an app-built form in the chat.
-  void _showForm(List<Map<String, Object?>> Function(String surfaceId) build) {
-    final surface = _ui.render(build('form-${DateTime.now().millisecondsSinceEpoch}-${++_formCounter}'));
-    if (surface != null) _append(SurfaceItem(surface));
-  }
-
-  AssistantHistoryRepository get _history =>
-      ref.read(assistantHistoryRepositoryProvider);
+  AssistantHistoryRepository get _history => ref.read(assistantHistoryRepositoryProvider);
+  FormSurfaces get _surfaces => _forms ??= FormSurfaces(onAction: _onFormAction);
+  String? get _householdId => ref.read(currentHouseholdIdProvider);
 
   @override
   AssistantState build() {
-    ref.onDispose(_disposeConversation);
-    if (!_engine.isSupportedPlatform) {
-      return const AssistantState(modelStatus: ModelStatus.unsupported);
-    }
+    ref.onDispose(_dispose);
+    if (!_engine.isSupportedPlatform) return const AssistantState(modelStatus: ModelStatus.unsupported);
     Future.microtask(_checkInstalled);
     Future.microtask(_loadHistory);
     // The household may arrive after startup (saved login restored first)
     ref.listen(currentHouseholdIdProvider, (previous, next) {
-      if (next != null && next != previous && !state.isBusy) unawaited(_loadHistory());
+      if (next != null && next != previous && !state.isBusy) {
+        _actions = null;
+        unawaited(_loadHistory());
+      }
     });
     return const AssistantState(loadingHistory: true);
   }
 
-  A2uiBridge get _ui => _bridge ??= A2uiBridge(onAction: _onSurfaceAction);
-
   Future<void> _checkInstalled() async {
     try {
       final installed = await _engine.isInstalled();
-      // An interrupted download continues where it stopped
       final partial = installed ? 0 : await _engine.downloadedPercent();
       state = state.copyWith(
         modelStatus: installed ? ModelStatus.ready : ModelStatus.notInstalled,
         downloadPercent: partial,
       );
     } catch (e) {
-      state = state.copyWith(
-        modelStatus: ModelStatus.failed,
-        error: () => 'No se pudo iniciar el asistente: $e',
-      );
+      state = state.copyWith(modelStatus: ModelStatus.failed, error: () => 'No se pudo iniciar el asistente: $e');
     }
+  }
+
+  Future<AssistantActions> _actionsFor(String householdId) async {
+    final existing = _actions;
+    if (existing != null && existing.householdId == householdId) return existing;
+    final categories =
+        await ref.read(expenseRepositoryProvider).getCategories(householdId).catchError((_) => <Never>[]);
+    return _actions = AssistantActions(
+      expenses: ref.read(expenseRepositoryProvider),
+      food: ref.read(foodRepositoryProvider),
+      householdId: householdId,
+      categories: categories,
+      members: ref.read(foodMembersProvider),
+    );
+  }
+
+  // ---------- Entries ----------
+
+  int _append(ChatItem item) {
+    final key = ++_keys;
+    state = state.copyWith(entries: [...state.entries, ChatEntry(key, item)]);
+    return key;
+  }
+
+  ChatItem? _item(int key) => state.entries.where((e) => e.key == key).firstOrNull?.item;
+
+  void _replace(int key, ChatItem item) {
+    state = state.copyWith(entries: [
+      for (final e in state.entries) e.key == key ? ChatEntry(key, item) : e,
+    ]);
+  }
+
+  void _idle() => state = state.copyWith(status: () => null, streamingText: () => null);
+
+  /// The expense waiting on screen, if any (the most recent open one).
+  ({int key, ExpenseDraftCard draft})? get _openDraft {
+    for (final e in state.entries.reversed) {
+      final item = e.item;
+      if (item is ExpenseDraftCard) return item.isOpen ? (key: e.key, draft: item) : null;
+    }
+    return null;
   }
 
   // ---------- History ----------
@@ -262,180 +198,140 @@ class AssistantController extends Notifier<AssistantState> {
     return auth is AuthStateAuthenticated ? auth.user.id : null;
   }
 
-  /// On startup, reopen the conversation this phone had open (or the
-  /// household's latest the first time). Another member starting a new chat
-  /// does not change it: theirs only shows first in the conversation list.
   Future<void> _loadHistory() async {
-    final householdId = ref.read(currentHouseholdIdProvider);
+    final householdId = _householdId;
     if (householdId == null) {
       state = state.copyWith(loadingHistory: false);
       return;
     }
     final current = await _history.readCurrentConversationId(householdId);
-    await _openConversation(householdId, conversationId: current);
+    await _open(householdId, conversationId: current);
     unawaited(refreshConversations());
   }
 
-  /// Load a conversation into the screen and prepare its replay. With no
-  /// [conversationId], loads the household's latest one; if there is none,
-  /// starts an empty conversation.
-  Future<void> _openConversation(
-    String householdId, {
-    String? conversationId,
-  }) async {
+  Future<void> _open(String householdId, {String? conversationId}) async {
     state = state.copyWith(loadingHistory: true);
     try {
-      final saved = await _history.loadConversation(
-        householdId,
-        conversationId: conversationId,
-      );
-      // A remembered id with no messages yet is still this phone's chat
-      _conversationId = saved.conversationId ??
-          conversationId ??
-          AssistantHistoryRepository.newConversationId();
-      final items = <AssistantItem>[];
-      for (final m in saved.messages) {
-        items.addAll(_itemsFromStored(m));
-      }
-      _replay =
-          replayFromHistory(saved.messages, budgetChars: _replayBudgetChars);
+      final saved = await _history.loadConversation(householdId, conversationId: conversationId);
+      _conversationId = saved.conversationId ?? conversationId ?? AssistantHistoryRepository.newConversationId();
       state = state.copyWith(
-        items: items,
+        entries: [
+          for (final m in saved.messages)
+            if (_fromStored(m) case final item?) ChatEntry(++_keys, item),
+        ],
         conversationId: _conversationId,
         loadingHistory: false,
       );
     } catch (e) {
       debugPrint('Could not load assistant history: $e');
       _conversationId = conversationId ?? _conversationId;
-      state = state.copyWith(
-        conversationId: _conversationId,
-        loadingHistory: false,
-      );
+      state = state.copyWith(conversationId: _conversationId, loadingHistory: false);
     }
     await _history.saveCurrentConversationId(householdId, _conversationId);
   }
 
-  /// Reload the household's conversation list (e.g. when opening it).
+  /// Stored message → chat item. Reads the old format too (model replies
+  /// with A2UI blocks, "proposal" messages).
+  ChatItem? _fromStored(StoredMessage m) {
+    if (m.role == 'user') {
+      final author = m.author;
+      final mine = author == null || author.id == _myUserId;
+      return UserMessage(m.content, authorName: mine ? null : author.name, fromAction: m.metadata?['fromAction'] == true);
+    }
+    switch (m.kind) {
+      case 'card':
+        return DataCard.fromJson((m.metadata?['card'] as Map?)?.cast<String, dynamic>() ?? const {}, messageId: m.id);
+      case 'proposal':
+        final p = (m.metadata?['proposal'] as Map?)?.cast<String, dynamic>();
+        if (p == null) return null;
+        const statuses = {'saved': 'saved', 'cancelled': 'discarded', 'failed': 'failed'};
+        return ExpenseDraftCard.fromJson(
+          {...p, 'status': statuses[m.metadata?['status']] ?? 'pending'},
+          messageId: m.id,
+        );
+      default:
+        final text = stripOldCards(m.content);
+        return text.isEmpty ? null : AssistantText(text);
+    }
+  }
+
   Future<void> refreshConversations() async {
-    final householdId = ref.read(currentHouseholdIdProvider);
+    final householdId = _householdId;
     if (householdId == null) return;
     try {
-      final list = await _history.listConversations(householdId);
-      state = state.copyWith(conversations: list);
+      state = state.copyWith(conversations: await _history.listConversations(householdId));
     } catch (e) {
       debugPrint('Could not load conversation list: $e');
     }
   }
 
-  /// Open another conversation of the household (from the list).
   Future<void> switchConversation(String conversationId) async {
-    final householdId = ref.read(currentHouseholdIdProvider);
+    final householdId = _householdId;
     if (householdId == null || state.isBusy) return;
-    await _disposeConversation();
-    await _openConversation(householdId, conversationId: conversationId);
+    _surfaces.reset();
+    _actions?.profileAsked = false;
+    await _open(householdId, conversationId: conversationId);
   }
 
-  List<AssistantItem> _itemsFromStored(StoredMessage m) {
-    if (m.role == 'user') {
-      final author = m.author;
-      final mine = author == null || author.id == _myUserId;
-      return [
-        UserItem(
-          m.content,
-          fromAction: m.metadata?['fromAction'] == true,
-          authorName: mine ? null : author.name,
-        ),
-      ];
-    }
-    if (m.kind == 'proposal') {
-      final proposal = ExpenseProposal.tryFromJson(m.metadata?['proposal']);
-      if (proposal == null) return const [];
-      final status = ProposalStatus.values
-              .where((s) => s.name == m.metadata?['status'])
-              .firstOrNull ??
-          ProposalStatus.pending;
-      return [
-        ProposalItem(
-          ++_proposalCounter,
-          proposal,
-          // A save interrupted by closing the app is still unconfirmed
-          status == ProposalStatus.saving ? ProposalStatus.pending : status,
-          messageId: m.id,
-        ),
-      ];
-    }
-    return [
-      for (final part in _ui.parseReply(m.content))
-        switch (part) {
-          ReplyText(:final text) => AssistantTextItem(text),
-          ReplySurface(:final surface) => SurfaceItem(surface),
-        },
-    ];
+  Future<void> newConversation() async {
+    if (state.isBusy) return;
+    _surfaces.reset();
+    _actions?.profileAsked = false;
+    _conversationId = AssistantHistoryRepository.newConversationId();
+    state = state.copyWith(entries: const [], conversationId: _conversationId);
+    final householdId = _householdId;
+    if (householdId != null) await _history.saveCurrentConversationId(householdId, _conversationId);
   }
 
-  /// Save a finished turn; proposals get their stored ids back.
-  Future<void> _saveTurn(
-    StoredMessage userMessage,
-    List<int> proposalIds,
-    String reply,
-  ) async {
-    final householdId = ref.read(currentHouseholdIdProvider);
+  /// Save what was just said: the user's message (if any) and the cards and
+  /// replies given by [keys]. Cards get their stored ids back.
+  Future<void> _save(String? userText, List<int> keys, {bool fromAction = false}) async {
+    final householdId = _householdId;
     if (householdId == null) return;
-
-    final proposals = [
-      for (final id in proposalIds)
-        if (_proposal(id) case final p?) p,
-    ];
-    try {
-      final saved = await _history.append(
-        householdId: householdId,
-        conversationId: _conversationId,
-        messages: [
-          userMessage,
-          for (final p in proposals)
-            StoredMessage(
-              role: 'assistant',
-              content: '',
-              metadata: _proposalMetadata(p),
-            ),
-          StoredMessage(
-            role: 'assistant',
-            content: reply,
-            metadata: const {'kind': 'reply'},
-          ),
-        ],
-      );
-      for (var i = 0; i < proposals.length && i + 1 < saved.length; i++) {
-        final current = _proposal(proposals[i].id);
-        if (current == null) continue;
-        _replaceProposal(current.withMessageId(saved[i + 1].id));
-        // Confirmed or discarded while the turn was being saved
-        if (current.status != proposals[i].status) {
-          unawaited(_saveProposalStatus(current.withMessageId(saved[i + 1].id)));
-        }
+    final saved = <(int?, Map<String, dynamic>?)>[];
+    final messages = <StoredMessage>[];
+    if (userText != null) {
+      messages.add(StoredMessage(role: 'user', content: userText, metadata: fromAction ? const {'fromAction': true} : null));
+      saved.add((null, null));
+    }
+    for (final key in keys) {
+      final item = _item(key);
+      if (item is DataCard) {
+        final json = item.toJson();
+        messages.add(StoredMessage(role: 'assistant', content: item.summary, metadata: {'kind': 'card', 'card': json}));
+        saved.add((key, json));
+      } else if (item is AssistantText) {
+        messages.add(StoredMessage(role: 'assistant', content: item.text, metadata: const {'kind': 'reply'}));
+        saved.add((null, null));
       }
-      // The list shows this conversation first now
+    }
+    if (messages.isEmpty) return;
+    try {
+      final stored = await _history.append(householdId: householdId, conversationId: _conversationId, messages: messages);
+      for (var i = 0; i < saved.length && i < stored.length; i++) {
+        final (key, json) = saved[i];
+        final id = stored[i].id;
+        if (key == null || id == null) continue;
+        final current = _item(key);
+        if (current is! DataCard) continue;
+        final withId = current.withMessageId(id);
+        _replace(key, withId);
+        // Changed (saved, discarded...) while this was being stored
+        if ('${withId.toJson()}' != '$json') unawaited(_saveCard(withId));
+      }
       unawaited(refreshConversations());
     } catch (e) {
       debugPrint('Could not save assistant turn: $e');
     }
   }
 
-  Map<String, dynamic> _proposalMetadata(ProposalItem p) => {
-        'kind': 'proposal',
-        'status': p.status == ProposalStatus.saving
-            ? ProposalStatus.pending.name
-            : p.status.name,
-        'proposal': p.proposal.toJson(),
-      };
-
-  Future<void> _saveProposalStatus(ProposalItem p) async {
-    final messageId = p.messageId;
-    if (messageId == null) return;
+  Future<void> _saveCard(DataCard card) async {
+    final id = card.messageId;
+    if (id == null) return;
     try {
-      await _history.updateMetadata(messageId, _proposalMetadata(p));
+      await _history.updateMetadata(id, {'kind': 'card', 'card': card.toJson()});
     } catch (e) {
-      debugPrint('Could not save proposal status: $e');
+      debugPrint('Could not update card: $e');
     }
   }
 
@@ -444,10 +340,7 @@ class AssistantController extends Notifier<AssistantState> {
   Future<void> downloadModel() async {
     if (state.modelStatus == ModelStatus.downloading) return;
     _downloadCancel = CancelToken();
-    state = state.copyWith(
-      modelStatus: ModelStatus.downloading,
-      error: () => null,
-    );
+    state = state.copyWith(modelStatus: ModelStatus.downloading, error: () => null);
     try {
       await _engine.install(
         onProgress: (p) => state = state.copyWith(downloadPercent: p),
@@ -469,406 +362,410 @@ class AssistantController extends Notifier<AssistantState> {
   void cancelDownload() => _downloadCancel?.cancel('cancelado por el usuario');
 
   Future<void> deleteModel() async {
-    await _closeChat();
     await _engine.uninstall();
-    // The conversation history stays in the backend
-    state = state.copyWith(modelStatus: ModelStatus.notInstalled);
+    state = state.copyWith(modelStatus: ModelStatus.notInstalled, downloadPercent: 0);
   }
 
-  // ---------- Conversation ----------
-
-  /// Start a new conversation on this phone. The previous one stays in the
-  /// household's list; nobody else's screen changes.
-  Future<void> newConversation() async {
-    if (state.isBusy) return;
-    await _disposeConversation();
-    _conversationId = AssistantHistoryRepository.newConversationId();
-    _replay = const [];
-    _foodTools = null;
-    state = state.copyWith(
-      items: const [],
-      conversationId: _conversationId,
-      streamingText: () => null,
-      busyLabel: () => null,
-    );
-    final householdId = ref.read(currentHouseholdIdProvider);
-    if (householdId != null) {
-      await _history.saveCurrentConversationId(householdId, _conversationId);
-    }
-  }
+  // ---------- Messages ----------
 
   Future<void> send(String text) async {
-    final trimmed = text.trim();
-    if (trimmed.isEmpty || state.isBusy) return;
-    _append(UserItem(trimmed));
-    await _runTurn(trimmed, StoredMessage(role: 'user', content: trimmed));
-  }
+    final message = text.trim();
+    final householdId = _householdId;
+    if (message.isEmpty || state.isBusy || householdId == null) return;
+    _stopRequested = false;
+    _append(UserMessage(message));
 
-  /// A button on a card was tapped. Food forms are handled in code; other
-  /// buttons are told to the model, like a user message.
-  void _onSurfaceAction(A2uiRendererAction action) {
-    if (state.isBusy) return;
-    if (FoodFormHandler.handles(action.name)) {
-      unawaited(_handleForm(action));
-      return;
-    }
-    final label = action.userMessage ?? action.name.replaceAll('_', ' ');
-    final context = action.context.isEmpty ? '' : ' ${jsonEncode(action.context)}';
-    final modelText = '[El usuario tocó "${action.name}" en la tarjeta$context]';
-    _append(UserItem(label, fromAction: true));
-    unawaited(_runTurn(
-      modelText,
-      StoredMessage(
-        role: 'user',
-        content: label,
-        metadata: {'fromAction': true, 'modelText': modelText},
-      ),
-    ));
-  }
-
-  /// Run a submitted food form, then let the model continue from its summary.
-  Future<void> _handleForm(A2uiRendererAction action) async {
-    state = state.copyWith(busyLabel: () => 'Guardando…');
-    final FormOutcome outcome;
-    try {
-      outcome = await ref.read(foodFormHandlerProvider).handle(action);
-    } catch (e) {
-      _finishWithNotice('No se pudo enviar el formulario: $e');
-      return;
-    }
-    refreshFood(ref.invalidate, outcome.changed);
-    state = state.copyWith(busyLabel: () => null);
-
-    if (action.name == FoodFormAction.cancelar) {
-      _append(const NoticeItem('Cancelado.'));
-      return;
-    }
-    _append(UserItem(outcome.summary, fromAction: true));
-    if (outcome.next != null) _showForm(outcome.next!);
-    final recipe = outcome.openRecipe;
-    if (recipe != null) _append(RecipeLinkItem(recipe.slug, servings: recipe.servings));
-    if (!outcome.done) return;
-
-    if (action.name == FoodFormAction.armarSemana) {
-      await _planWeek(action.context);
-      return;
-    }
-    final modelText = '[Formulario enviado] ${outcome.summary}';
-    await _runTurn(
-      modelText,
-      StoredMessage(role: 'user', content: outcome.summary, metadata: {'fromAction': true, 'modelText': modelText}),
-    );
-  }
-
-  /// Plan the week one day at a time: each turn the model looks at that
-  /// day's options and picks (small turns fit the phone's context).
-  Future<void> _planWeek(Map<String, dynamic> form) async {
-    final householdId = ref.read(currentHouseholdIdProvider);
-    if (householdId == null || state.modelStatus != ModelStatus.ready) {
-      _append(const NoticeItem('El asistente necesita el modelo descargado para armar el menú.'));
-      return;
-    }
-    final days = [for (final d in form['dias'] as List? ?? const []) '$d']..sort();
-    final meals = [for (final m in form['comidas'] as List? ?? const []) '$m'];
-    final servings = (form['porciones'] as num?)?.round();
-    final leftovers = form['sobras'] == true;
-    final notes = '${form['notas'] ?? ''}'.trim();
-    final food = _food(householdId)..planningServings = servings;
-    const names = ['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'];
-
-    for (final iso in days) {
-      final day = DateTime.parse(iso);
-      final dayName = '${names[day.weekday - 1]} ${day.day}';
-      _append(NoticeItem('Armando el $dayName…'));
-      final message = '[Planificación del menú] Elegí ${meals.join(' y ')} para el $dayName ($iso). '
-          'Para cada comida llamá opciones_menu y después poner_en_menu con el id que más convenga. '
-          '${leftovers ? 'Si el día anterior hubo cena, podés poner "sobras" en el almuerzo. ' : ''}'
-          '${notes.isEmpty ? '' : 'Tené en cuenta: $notes. '}'
-          'Respondé en una línea qué elegiste.';
-      // A fresh context per day keeps every turn small
-      if (_contextChars > _contextBudgetChars ~/ 2) await _closeChat();
-      await _runTurn(message, null, maxToolTurns: meals.length * 2 + 2);
-    }
-    food.planningServings = null;
-    refreshFood(ref.invalidate, const {FoodData.menu});
-    _append(const AssistantTextItem('Listo: el menú quedó en la pestaña Comida. Podés cambiar cualquier comida tocándola.'));
-  }
-
-  /// A photo or screenshot of a recipe sent in the chat: read it on the
-  /// phone and show the pre-filled form to review it.
-  Future<void> addRecipePhoto(Uint8List bytes) async {
-    if (state.isBusy || state.modelStatus != ModelStatus.ready) return;
-    _append(const UserItem('📷 Foto de una receta', fromAction: true));
-    state = state.copyWith(busyLabel: () => 'Leyendo la receta…', streamingText: () => '');
-    try {
-      final json = await _engine.extractRecipeFromImage(bytes);
-      state = state.copyWith(busyLabel: () => null, streamingText: () => null);
-      _append(const AssistantTextItem('La leí: revisala y guardala.'));
-      _showForm((id) => recipeFormFromExtraction(id, json));
-    } catch (e) {
-      _finishWithNotice(e is FormatException ? e.message : 'No pude leer la imagen.');
-    }
-  }
-
-  Future<void> _runTurn(String message, StoredMessage? userMessage, {int maxToolTurns = 4}) async {
-    if (state.modelStatus != ModelStatus.ready) return;
-    state = state.copyWith(
-      busyLabel: () => 'Pensando…',
-      streamingText: () => '',
-    );
-
-    final householdId = ref.read(currentHouseholdIdProvider);
-    if (householdId == null) {
-      _finishWithNotice('No hay un hogar seleccionado.');
-      return;
-    }
-    final tools = AssistantToolExecutor(
-      ref.read(expenseRepositoryProvider),
-      householdId,
-    );
-    final proposalIds = <int>[];
-
-    try {
-      if (_contextChars + message.length > _contextBudgetChars && _chat != null) {
-        await _closeChat();
-        _append(const NoticeItem(
-          'La conversación era larga: el asistente empezó de nuevo y no '
-          'recuerda los mensajes anteriores.',
-        ));
+    // 1. "sí" / "no" answer the expense on screen
+    final open = _openDraft;
+    if (open != null && (isYes(message) || isNo(message))) {
+      unawaited(_save(message, const []));
+      if (isYes(message)) {
+        await confirmDraft(open.key);
+      } else {
+        discardDraft(open.key);
       }
-      final chat = _chat ??= await _openChat(householdId);
-      _contextChars += message.length;
+      return;
+    }
+    if (state.modelStatus != ModelStatus.ready) {
+      _append(const Notice('El asistente necesita el modelo descargado.'));
+      return;
+    }
 
-      await chat.addQueryChunk(Message.text(text: message, isUser: true));
+    final keys = <int>[];
+    try {
+      // 2. Read the message
+      state = state.copyWith(status: () => 'Entendiendo…', streamingText: () => null);
+      final actions = await _actionsFor(householdId);
+      final request = await _read(message, actions, open?.draft);
+      debugPrint('Assistant request: $request');
+      if (_stopRequested) return;
 
-      final reply = StringBuffer();
-      await for (final response in chat.generateChatResponseWithTools(
-        maxToolTurns: maxToolTurns,
-        onToolCall: (call) async {
-          // Text streamed before a tool call is not part of the answer
-          reply.clear();
-          state = state.copyWith(
-            busyLabel: () => _toolLabels[call.name] ?? 'Trabajando…',
-            streamingText: () => '',
-          );
-          final outcome = foodToolNames.contains(call.name)
-              ? await _food(householdId).run(call.name, call.args)
-              : await tools.run(call.name, call.args);
-          if (outcome.form != null) _showForm(outcome.form!);
-          if (outcome.proposal != null) {
-            final id = ++_proposalCounter;
-            proposalIds.add(id);
-            _append(ProposalItem(id, outcome.proposal!, ProposalStatus.pending));
-          }
-          _contextChars += jsonEncode(outcome.response).length;
-          state = state.copyWith(busyLabel: () => 'Escribiendo…');
-          return outcome.response;
-        },
-        onMaxToolTurns: () => debugPrint('Assistant hit the tool-turn limit'),
-      )) {
-        if (response is TextResponse) {
-          reply.write(response.token);
-          state = state.copyWith(
-            streamingText: () => A2uiBridge.visibleWhileStreaming('$reply'),
-          );
+      // 3. Run it
+      state = state.copyWith(status: () => _statusFor(request.action));
+      for (final output in await actions.run(request, message)) {
+        switch (output) {
+          case CardOut(:final card):
+            keys.add(_append(card));
+          case TextOut(:final text):
+            keys.add(_append(AssistantText(text)));
+          case FormOut(:final form):
+            _showForm(form);
+          case DraftPatch():
+            final key = _applyPatch(output, open);
+            if (key != null) keys.add(key);
+          case ChatOut():
+            // 4. Small talk: the model answers in its own words
+            final key = await _chat(message);
+            if (key != null) keys.add(key);
         }
       }
-
-      final full = '$reply';
-      _contextChars += full.length;
-      final parts = _ui.parseReply(full);
-      final newItems = <AssistantItem>[
-        for (final part in parts)
-          switch (part) {
-            ReplyText(:final text) => AssistantTextItem(text),
-            ReplySurface(:final surface) => SurfaceItem(surface),
-          },
-      ];
-      if (newItems.isEmpty) {
-        newItems.add(const AssistantTextItem('No tengo una respuesta para eso.'));
-      }
-      state = state.copyWith(
-        items: [...state.items, ...newItems],
-        streamingText: () => null,
-        busyLabel: () => null,
-      );
-      if (userMessage != null) unawaited(_saveTurn(userMessage, proposalIds, full));
     } catch (e) {
       debugPrint('Assistant turn failed: $e');
-      // A failed turn can leave the model mid-conversation: start clean
-      await _closeChat();
-      _finishWithNotice('Algo salió mal con el asistente. Probá de nuevo.');
+      _append(const Notice('Algo salió mal con el asistente. Probá de nuevo.'));
+    } finally {
+      _idle();
+      unawaited(_save(message, keys));
     }
   }
 
-  void stop() => _chat?.stopGeneration();
+  static String _statusFor(RequestAction a) => switch (a) {
+        RequestAction.anotarGasto || RequestAction.corregirGasto => 'Preparando el gasto…',
+        RequestAction.consultarGastos || RequestAction.resumenMes => 'Sumando los gastos…',
+        RequestAction.gastosFijos => 'Buscando gastos fijos…',
+        RequestAction.buscarReceta || RequestAction.cocinarConLoQueHay => 'Buscando recetas…',
+        RequestAction.verMenu || RequestAction.armarMenu || RequestAction.listaCompras => 'Mirando el menú…',
+        RequestAction.charlar => 'Escribiendo…',
+        _ => 'Un momento…',
+      };
 
-  Future<InferenceChat> _openChat(String householdId) async {
-    final categories = await ref
-        .read(expenseRepositoryProvider)
-        .getCategories(householdId)
-        .catchError((_) => <Never>[]);
-    final prompt = buildSystemPrompt(
-      now: DateTime.now(),
-      categoryNames: [for (final c in categories) c.name],
+  /// The model reads the message into a request. Unreadable → small talk.
+  Future<AssistantRequest> _read(String message, AssistantActions actions, ExpenseDraftCard? open) async {
+    final names = [for (final c in actions.categories) c.name];
+    final money = const MoneyFormat();
+    final json = await _engine.readJson(
+      instructions: requestPrompt(
+        categoryNames: names,
+        pendingExpense: open == null
+            ? null
+            : '${open.description}, ${open.amount == null ? 'sin monto' : money.format(open.amount!)}, '
+                '${open.categoryName ?? 'sin categoría'}',
+        lastAssistant: _lastAssistantLine(),
+      ),
+      message: message,
+      schema: requestSchema(names),
+      name: 'pedido',
     );
-    _contextChars = prompt.length;
-    final chat = await _engine.openChat(
-      systemInstruction: prompt,
-      tools: [...assistantToolSpecs, ...foodToolSpecs],
-    );
+    return json == null ? const AssistantRequest(RequestAction.charlar) : AssistantRequest.fromJson(json);
+  }
 
-    // First chat after restoring a saved conversation: remind the model
-    if (_replay.isNotEmpty) {
-      final replay = _replay;
-      _replay = const [];
-      try {
-        await chat.clearHistory(replayHistory: replay);
-        _contextChars += replay.fold(0, (sum, m) => sum + m.text.length);
-      } catch (e) {
-        // The chat restarts empty: the screen still shows the history
-        debugPrint('Could not replay saved conversation: $e');
+  String? _lastAssistantLine() {
+    for (final e in state.entries.reversed) {
+      final item = e.item;
+      final text = switch (item) {
+        AssistantText(:final text) => text,
+        DataCard() => item.summary,
+        _ => null,
+      };
+      if (text != null) return text.length > 140 ? '${text.substring(0, 140)}…' : text;
+    }
+    return null;
+  }
+
+  static const _chatInstructions = '''
+Sos el asistente de "Nuestra App", una app para organizar el hogar: gastos y comida.
+Respondé en español rioplatense, en 1 a 3 oraciones cortas.
+Escribí texto plano: sin markdown, sin asteriscos, sin listas.
+Nunca digas números, montos ni datos del hogar: no los tenés.
+Para hacer cosas, el usuario las pide directamente, por ejemplo: "anotá 5.000 de súper", "¿cuánto gastamos este mes?", "una receta con pollo", "armá el menú de la semana", "a Juan no le gusta la cebolla".
+Si te piden algo que no sea del hogar, respondé corto y amable.''';
+
+  /// A free answer, streamed. Returns the key of the text it added.
+  Future<int?> _chat(String message) async {
+    final history = <(bool, String)>[];
+    // The last few exchanges, without this message (added last)
+    final recent = state.entries.reversed.skip(1).take(6).toList().reversed;
+    for (final e in recent) {
+      final item = e.item;
+      switch (item) {
+        case UserMessage(:final text):
+          history.add((true, text));
+        case AssistantText(:final text):
+          history.add((false, text));
+        case DataCard():
+          history.add((false, '[${item.summary}]'));
+        default:
+          break;
       }
     }
-    return chat;
+    // The model expects the conversation to start with the user
+    while (history.isNotEmpty && !history.first.$1) {
+      history.removeAt(0);
+    }
+    final buffer = StringBuffer();
+    state = state.copyWith(streamingText: () => '');
+    await for (final token in _engine.reply(instructions: _chatInstructions, history: history, message: message)) {
+      buffer.write(token);
+      state = state.copyWith(streamingText: () => cleanModelText('$buffer'));
+    }
+    final text = cleanModelText('$buffer');
+    state = state.copyWith(streamingText: () => null);
+    if (text.isEmpty) return null;
+    return _append(AssistantText(text));
   }
 
-  // ---------- Expense proposals ----------
+  Future<void> stop() async {
+    _stopRequested = true;
+    await _engine.stop();
+  }
 
-  Future<void> confirmProposal(int id) async {
-    final item = _proposal(id);
-    if (item == null || item.status != ProposalStatus.pending) return;
-    _replaceProposal(item.withStatus(ProposalStatus.saving));
+  void _showForm(FormBuilder form) {
+    final surface = _surfaces.render(form);
+    if (surface != null) _append(FormCard(surface));
+  }
 
-    final p = item.proposal;
+  // ---------- Expense drafts ----------
+
+  int? _applyPatch(DraftPatch patch, ({int key, ExpenseDraftCard draft})? open) {
+    if (open == null || patch.isEmpty) {
+      _append(const Notice('No hay un gasto para corregir. Contame el gasto y lo preparo.'));
+      return null;
+    }
+    final updated = open.draft.copyWith(
+      amount: patch.amount == null ? null : () => patch.amount,
+      date: patch.date,
+      categoryId: patch.category == null ? null : () => patch.category!.id,
+      categoryName: patch.category == null ? null : () => patch.category!.name,
+      description: patch.description,
+    );
+    _replace(open.key, updated);
+    unawaited(_saveCard(updated));
+    return null;
+  }
+
+  /// Save the expense on the card with key [key], with the user's edits.
+  Future<void> confirmDraft(
+    int key, {
+    String? description,
+    double? amount,
+    DateTime? date,
+    String? Function()? categoryId,
+    String? Function()? categoryName,
+  }) async {
+    final current = _item(key);
+    if (current is! ExpenseDraftCard || !current.isOpen) return;
+    final draft = current.copyWith(
+      description: description,
+      amount: amount == null ? null : () => amount,
+      date: date,
+      categoryId: categoryId,
+      categoryName: categoryName,
+      status: DraftStatus.saving,
+    );
+    if (draft.amount == null || draft.amount! <= 0) {
+      _append(const Notice('Falta el monto: completalo en la tarjeta.'));
+      return;
+    }
+    _replace(key, draft);
     final saved = await ref.read(expensesProvider.notifier).createExpense(
-          description: p.description,
-          amount: p.amount,
-          date: p.date,
-          categoryId: p.categoryId,
+          description: draft.description,
+          amount: draft.amount!,
+          date: draft.date,
+          categoryId: draft.categoryId,
         );
-    final updated = (_proposal(id) ?? item).withStatus(
-      saved != null ? ProposalStatus.saved : ProposalStatus.failed,
+    final done = draft.copyWith(
+      status: saved != null ? DraftStatus.saved : DraftStatus.failed,
+      expenseId: saved?.id,
     );
-    _replaceProposal(updated);
-    if (updated.status == ProposalStatus.saved) {
-      unawaited(_saveProposalStatus(updated));
-    }
+    _replace(key, done);
+    unawaited(_saveCard(done));
   }
 
-  void cancelProposal(int id) {
-    final item = _proposal(id);
-    if (item == null || item.status != ProposalStatus.pending) return;
-    final updated = item.withStatus(ProposalStatus.cancelled);
-    _replaceProposal(updated);
-    unawaited(_saveProposalStatus(updated));
+  void discardDraft(int key) {
+    final current = _item(key);
+    if (current is! ExpenseDraftCard || !current.isOpen) return;
+    final done = current.copyWith(status: DraftStatus.discarded);
+    _replace(key, done);
+    unawaited(_saveCard(done));
   }
 
-  ProposalItem? _proposal(int id) =>
-      state.items.whereType<ProposalItem>().where((p) => p.id == id).firstOrNull;
+  // ---------- Food ----------
 
-  void _replaceProposal(ProposalItem updated) {
-    state = state.copyWith(items: [
-      for (final i in state.items)
-        if (i is ProposalItem && i.id == updated.id) updated else i,
-    ]);
-  }
-
-  // ---------- Helpers ----------
-
-  void _append(AssistantItem item) =>
-      state = state.copyWith(items: [...state.items, item]);
-
-  void _finishWithNotice(String text) {
-    state = state.copyWith(
-      items: [...state.items, NoticeItem(text)],
-      streamingText: () => null,
-      busyLabel: () => null,
-    );
-  }
-
-  Future<void> _closeChat() async {
-    final chat = _chat;
-    _chat = null;
-    _contextChars = 0;
+  Future<void> undoPreference(int key) async {
+    final current = _item(key);
+    if (current is! PreferenceCard || current.undone || current.preferenceId == null) return;
     try {
-      await chat?.close();
+      await ref.read(foodRepositoryProvider).deletePreference(current.preferenceId!);
+      final done = current.asUndone();
+      _replace(key, done);
+      refreshFood(ref.invalidate, const {FoodData.preferences});
+      unawaited(_saveCard(done));
     } catch (e) {
-      debugPrint('Error closing assistant chat: $e');
+      _append(Notice('No se pudo deshacer: $e'));
     }
   }
 
-  Future<void> _disposeConversation() async {
-    await _closeChat();
-    _bridge?.dispose();
-    _bridge = null;
+  /// "Armar con el asistente" from the menu screen: straight to the form.
+  Future<void> openWeekPlanner(DateTime monday) async {
+    final householdId = _householdId;
+    if (householdId == null || state.isBusy) return;
+    final actions = await _actionsFor(householdId);
+    final form = await actions.weekPlannerForm(monday);
+    if (form is FormOut) _showForm(form.form);
   }
-}
 
-/// The most recent turns of a saved conversation, as model messages, within
-/// [budgetChars]. Cards are dropped (only their surrounding text is kept) and
-/// proposals are summarized, so the replay stays small.
-List<Message> replayFromHistory(
-  List<StoredMessage> messages, {
-  required int budgetChars,
-}) {
-  final replay = <Message>[];
-  var used = 0;
-  for (final m in messages.reversed) {
-    final String text;
-    final bool isUser = m.role == 'user';
-    if (isUser) {
-      text = (m.metadata?['modelText'] as String?) ?? m.content;
-    } else if (m.kind == 'proposal') {
-      final p = ExpenseProposal.tryFromJson(m.metadata?['proposal']);
-      if (p == null) continue;
-      text = '[Propuse el gasto "${p.description}" por ${p.amount} '
-          '(${m.metadata?['status'] ?? 'pending'})]';
-    } else {
-      text = A2uiBridge.stripUiBlocks(m.content);
+  /// A food form was sent: run it in code, then show what comes next.
+  void _onFormAction(A2uiRendererAction action) {
+    if (state.isBusy || !FoodFormHandler.handles(action.name)) return;
+    unawaited(_handleForm(action));
+  }
+
+  Future<void> _handleForm(A2uiRendererAction action) async {
+    final householdId = _householdId;
+    if (householdId == null) return;
+    if (action.name == FoodFormAction.cancelar) {
+      _append(const Notice('Cancelado.'));
+      return;
     }
-    if (text.isEmpty) continue;
-    if (used + text.length > budgetChars) break;
-    used += text.length;
-    replay.add(Message.text(text: text, isUser: isUser));
+    state = state.copyWith(status: () => 'Guardando…');
+    final keys = <int>[];
+    String? summary;
+    try {
+      final outcome = await ref.read(foodFormHandlerProvider).handle(action);
+      refreshFood(ref.invalidate, outcome.changed);
+      summary = outcome.summary;
+      _append(UserMessage(outcome.summary, fromAction: true));
+      if (outcome.next != null) _showForm(outcome.next!);
+      final recipe = outcome.openRecipe;
+      if (recipe != null) {
+        keys.add(_append(LinkCard(
+          title: 'Abrir la receta',
+          subtitle: recipe.servings == null ? '' : 'Para ${recipe.servings} personas',
+          route: '/food/recipes/${recipe.slug}${recipe.servings == null ? '' : '?servings=${recipe.servings}'}',
+          icon: 'recipe',
+        )));
+      }
+      if (outcome.done) keys.addAll(await _afterForm(action, householdId));
+    } catch (e) {
+      _append(Notice('No se pudo enviar el formulario: $e'));
+    } finally {
+      _idle();
+      unawaited(_save(summary, keys, fromAction: true));
+    }
   }
-  // Start on a user turn so the model sees a well-formed conversation
-  final ordered = replay.reversed.toList();
-  while (ordered.isNotEmpty && !ordered.first.isUser) {
-    ordered.removeAt(0);
+
+  /// Forms whose answer leads to something: plan the week, search recipes.
+  Future<List<int>> _afterForm(A2uiRendererAction action, String householdId) async {
+    final c = action.context;
+    final actions = await _actionsFor(householdId);
+    String? first(String k) => switch (c[k]) {
+          final List l when l.isNotEmpty => '${l.first}',
+          final String s when s.isNotEmpty => s,
+          _ => null,
+        };
+    Output? output;
+    switch (action.name) {
+      case FoodFormAction.armarSemana:
+        return [await _planWeek(WeekPlanRequest.fromForm(c), householdId)];
+      case FoodFormAction.aclarar:
+        final time = first('tiempo');
+        final cuisine = first('cocina');
+        output = await actions.recipeSearch(
+          title: 'Ideas para vos',
+          mealType: first('comida'),
+          maxMinutes: time == null || time == 'sin_limite' ? null : int.tryParse(time),
+          query: cuisine == null || cuisine == 'cualquiera' ? null : cuisine,
+        );
+      case FoodFormAction.invitados:
+        output = await actions.recipeSearch(title: 'Ideas para los invitados');
+      default:
+        return const [];
+    }
+    return switch (output) {
+      CardOut(:final card) => [_append(card)],
+      TextOut(:final text) => [_append(AssistantText(text))],
+      _ => const [],
+    };
   }
-  return ordered;
+
+  Future<int> _planWeek(WeekPlanRequest request, String householdId) async {
+    final planner = WeekPlanner(
+      ref.read(foodRepositoryProvider),
+      householdId,
+      pick: state.modelStatus == ModelStatus.ready ? _pickRecipe : null,
+    );
+    final week = await planner.plan(
+      request,
+      onProgress: (day) => state = state.copyWith(status: () => 'Armando el $day…'),
+    );
+    refreshFood(ref.invalidate, const {FoodData.menu});
+    return _append(AssistantActions.menuCard(week));
+  }
+
+  /// The model chooses among the ranked options (its answer can only be one
+  /// of their ids).
+  Future<String?> _pickRecipe({
+    required String day,
+    required String meal,
+    required List<RecipeSummary> options,
+    required String notes,
+  }) async {
+    final list = [
+      for (final o in options)
+        '- ${o.slug}: ${o.title} (${o.totalMinutes} min${o.why.isEmpty ? '' : '; ${o.why.first}'})',
+    ].join('\n');
+    final json = await _engine.readJson(
+      instructions: 'Elegís una comida para el menú de una familia. Devolvé solo JSON {"receta": id}. '
+          'Preferí variedad y lo que les gusta.${notes.isEmpty ? '' : ' Pedido de la familia: $notes.'}',
+      message: '${mealLabels[meal] ?? meal} del $day. Opciones:\n$list',
+      schema: {
+        'type': 'object',
+        'properties': {
+          'receta': {
+            'type': 'string',
+            'enum': [for (final o in options) o.slug],
+          },
+        },
+        'required': ['receta'],
+        'additionalProperties': false,
+      },
+      name: 'eleccion',
+    );
+    return json?['receta'] as String?;
+  }
+
+  /// A photo or screenshot of a recipe: read on the phone, then a
+  /// pre-filled form to review it.
+  Future<void> addRecipePhoto(Uint8List bytes) async {
+    if (state.isBusy || state.modelStatus != ModelStatus.ready) return;
+    _append(const UserMessage('📷 Foto de una receta', fromAction: true));
+    state = state.copyWith(status: () => 'Leyendo la receta…');
+    try {
+      final json = await _engine.extractRecipeFromImage(bytes);
+      _showForm((id) => recipeFormFromExtraction(id, json));
+    } catch (e) {
+      _append(Notice(e is FormatException ? e.message : 'No pude leer la imagen.'));
+    } finally {
+      _idle();
+    }
+  }
+
+  void _dispose() {
+    _forms?.dispose();
+    _forms = null;
+  }
 }
 
-/// System prompt for the on-device model (Spanish, rioplatense).
-String buildSystemPrompt({
-  required DateTime now,
-  required List<String> categoryNames,
-}) {
-  final today = DateFormat("EEEE d 'de' MMMM 'de' y", 'es').format(now);
-  final month = DateFormat('yyyy-MM').format(now);
-  final categories =
-      categoryNames.isEmpty ? 'ninguna todavía' : categoryNames.join(', ');
-  return '''
-Sos el asistente del hogar en "Nuestra App": ayudás con los gastos y con la comida. Hablás en español rioplatense, breve y claro.
-Hoy es $today (mes actual: $month). Moneda: pesos argentinos.
-Categorías del hogar: $categories.
+/// Text from the model as the user should see it: no markdown marks (the
+/// model is told not to use them, but small models still do).
+String cleanModelText(String text) => text
+    .replaceAll(RegExp(r'\*\*|__'), '')
+    .replaceAllMapped(RegExp(r'(^|\s)\*(\S[^*]*?\S|\S)\*(?=\s|$|[.,;:!?])'), (m) => '${m[1]}${m[2]}')
+    .replaceAll(RegExp(r'^#{1,6}\s*', multiLine: true), '')
+    .replaceAll(RegExp(r'^\s*[*-]\s+', multiLine: true), '• ')
+    .replaceAll('`', '')
+    .trim();
 
-REGLAS
-- Para cualquier dato de gastos, presupuestos o gastos fijos usá las herramientas. Nunca inventes montos ni fechas.
-- Los meses se pasan como YYYY-MM.
-- Para registrar un gasto usá proponer_gasto. No queda guardado hasta que el usuario lo confirma en la tarjeta: decíselo.
-- Si falta un dato (monto o descripción), preguntalo antes de proponer.
-- Escribí los montos con formato argentino, por ejemplo \$ 15.000 o \$ 1.029,50.
-
-COMIDA
-- Recetas: usá buscar_recetas y ver_receta. Ya vienen filtradas por gustos y alergias. Nunca inventes recetas ni cantidades; si no hay, ofrecé anotar una propia (mostrar_formulario nueva_receta).
-- Si dicen que algo no les gusta, les encanta o les da alergia, usá guardar_preferencia.
-- Para armar el menú de la semana, mostrá el formulario armar_semana. Para cambiar una comida usá opciones_menu y poner_en_menu.
-- Pedido vago ("algo rico"): formulario aclarar_pedido. Cocinar con lo que hay: heladera. Vienen invitados: invitados. "¿Qué saben de nosotros?": repasar_preferencias. Productos de estación: de_estacion.
-- Cuando muestres un formulario, decí en una línea qué completar y esperá.
-- Si te preguntan algo que no es de gastos ni de comida, decí que por ahora ayudás con eso.
-
-${A2uiBridge.compactInstructions}
-''';
-}
+/// Old saved replies could carry A2UI blocks written by the model.
+String stripOldCards(String reply) => cleanModelText(reply
+    .replaceAll(RegExp(r'<a2ui[\s\S]*?</a2ui[^>]*>'), '')
+    .replaceAll(RegExp(r'<a2ui[\s\S]*$'), ''));

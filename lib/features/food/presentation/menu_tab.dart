@@ -85,7 +85,6 @@ class _WeekActions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dateLabel = DateFormat("d 'de' MMMM", 'es').format(monday);
     return Wrap(
       spacing: AppSizes.sm,
       runSpacing: AppSizes.sm,
@@ -94,7 +93,7 @@ class _WeekActions extends ConsumerWidget {
           icon: const Icon(Icons.auto_awesome, size: 18),
           label: const Text('Armar con el asistente'),
           onPressed: () {
-            ref.read(assistantProvider.notifier).send('Armá el menú de la semana del $dateLabel');
+            ref.read(assistantProvider.notifier).openWeekPlanner(monday);
             context.go(AppRoutes.chat);
           },
         ),
