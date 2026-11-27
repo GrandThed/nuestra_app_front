@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_edge_ai/flutter_edge_ai.dart';
 import 'package:flutter_edge_ai_litertlm/flutter_edge_ai_litertlm.dart';
 import 'package:nuestra_app/features/assistant/data/assistant_tools.dart';
+import 'package:nuestra_app/features/assistant/data/resumable_download.dart';
+import 'package:path_provider/path_provider.dart';
 
 /// Runs Gemma 4 E2B on the phone through LiteRT-LM (flutter_edge_ai).
 ///
@@ -54,17 +57,52 @@ class AssistantEngine {
     return FlutterEdgeAi.isModelInstalled(_modelId);
   }
 
-  /// Download (or resume) the model. [onProgress] gets 0-100.
-  /// Throws [DownloadCancelledException] when [cancelToken] is cancelled.
+  /// The model file is downloaded by the app itself (not by the plugin): the
+  /// plugin can't resume downloads from Hugging Face and starts 2.6 GB over
+  /// on any error. See [ResumableDownload].
+  Future<ResumableDownload> _download() async {
+    final dir = await getApplicationSupportDirectory();
+    return ResumableDownload(
+      url: Uri.parse(_variant.file.url),
+      target: File('${dir.path}/models/$_modelId'),
+      expectedBytes: _variant.file.sizeBytes,
+    );
+  }
+
+  /// How much of the model is already on the phone (0-100), to offer
+  /// continuing an interrupted download.
+  Future<int> downloadedPercent() async {
+    if (!isSupportedPlatform) return 0;
+    final download = await _download();
+    return (await download.downloadedBytes()) * 100 ~/ download.expectedBytes;
+  }
+
+  /// Download the model, continuing from what is already on the phone, then
+  /// register it with the plugin. [onProgress] gets 0-100.
+  /// Throws [DownloadCancelledException] when [cancelToken] is cancelled; the
+  /// downloaded part is kept.
   Future<void> install({
     required void Function(int percent) onProgress,
     CancelToken? cancelToken,
   }) async {
     await _ensureInitialized();
-    var builder =
-        FlutterEdgeAi.installModelFromCatalog(_variant).withProgress(onProgress);
-    if (cancelToken != null) builder = builder.withCancelToken(cancelToken);
-    await builder.install();
+    final download = await _download();
+    var lastPercent = -1;
+    try {
+      await download.run(
+        cancelled: cancelToken?.whenCancelled,
+        onProgress: (received, total) {
+          final percent = received * 100 ~/ total;
+          if (percent != lastPercent) onProgress(lastPercent = percent);
+        },
+      );
+    } on DownloadCancelled {
+      throw DownloadCancelledException('Descarga cancelada', StackTrace.current);
+    }
+    await FlutterEdgeAi.installModel(
+      modelType: _variant.modelType,
+      fileType: _variant.fileType,
+    ).fromFile(download.target.path).install();
   }
 
   /// Delete the downloaded model to free space.
@@ -72,6 +110,8 @@ class AssistantEngine {
     await _ensureInitialized();
     await _closeModel();
     await FlutterEdgeAi.uninstallModel(_modelId);
+    // A file registered with fromFile is ours to delete
+    await (await _download()).delete();
   }
 
   /// Open a new conversation. Close it with [InferenceChat.close] when done.

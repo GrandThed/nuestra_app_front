@@ -241,8 +241,11 @@ class AssistantController extends Notifier<AssistantState> {
   Future<void> _checkInstalled() async {
     try {
       final installed = await _engine.isInstalled();
+      // An interrupted download continues where it stopped
+      final partial = installed ? 0 : await _engine.downloadedPercent();
       state = state.copyWith(
         modelStatus: installed ? ModelStatus.ready : ModelStatus.notInstalled,
+        downloadPercent: partial,
       );
     } catch (e) {
       state = state.copyWith(
@@ -443,7 +446,6 @@ class AssistantController extends Notifier<AssistantState> {
     _downloadCancel = CancelToken();
     state = state.copyWith(
       modelStatus: ModelStatus.downloading,
-      downloadPercent: 0,
       error: () => null,
     );
     try {
@@ -457,7 +459,7 @@ class AssistantController extends Notifier<AssistantState> {
     } catch (e) {
       state = state.copyWith(
         modelStatus: ModelStatus.notInstalled,
-        error: () => 'La descarga falló: $e',
+        error: () => 'La descarga se cortó: $e\nLo descargado se guarda; tocá Continuar para seguir.',
       );
     } finally {
       _downloadCancel = null;

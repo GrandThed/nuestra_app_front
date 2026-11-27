@@ -398,6 +398,10 @@ class _SetupView extends ConsumerWidget {
               ),
               const SizedBox(height: AppSizes.sm),
               Text('Descargando… ${state.downloadPercent}%'),
+              Text(
+                'Si se corta, sigue desde donde quedó.',
+                style: TextStyle(color: colorScheme.onSurfaceVariant, fontSize: 12),
+              ),
               const SizedBox(height: AppSizes.sm),
               TextButton(
                 onPressed: controller.cancelDownload,
@@ -407,7 +411,9 @@ class _SetupView extends ConsumerWidget {
               FilledButton.icon(
                 onPressed: controller.downloadModel,
                 icon: const Icon(Icons.download),
-                label: Text('Descargar (${AssistantEngine.downloadSizeLabel})'),
+                label: Text(state.downloadPercent > 0
+                    ? 'Continuar descarga (${state.downloadPercent}%)'
+                    : 'Descargar (${AssistantEngine.downloadSizeLabel})'),
               ),
             if (state.error != null) ...[
               const SizedBox(height: AppSizes.md),
