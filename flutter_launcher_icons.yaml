@@ -1,16 +1,16 @@
 flutter_launcher_icons:
-  # Source: house icon (wallet, recipes, assistant), black background removed
-  # and corners filled by a one-off script (Nov 2026).
+  # Source: "two roofs" (two people sharing one home), drawn in code from
+  # assets/icon/app_icon.svg (Nov 2026).
   android: "launcher_icon"
   image_path: "assets/icon/app_icon.png"
   min_sdk_android: 30
 
-  # Adaptive icon (Android 8+): the full tile as foreground, over its own blue
-  adaptive_icon_background: "#4D98EA"
+  # Adaptive icon (Android 8+): the mark alone over the navy gradient
+  adaptive_icon_background: "assets/icon/app_icon_background.png"
   adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
   adaptive_icon_foreground_inset: 16
 
-  # iOS: no transparency allowed; corners filled with the tile's blue
+  # iOS: no transparency allowed; full-bleed square
   ios: true
   image_path_ios: "assets/icon/app_icon_ios.png"
   remove_alpha_ios: true
@@ -18,5 +18,5 @@ flutter_launcher_icons:
   web:
     generate: true
     image_path: "assets/icon/app_icon.png"
-    background_color: "#F7F4EE"
-    theme_color: "#2E6B4F"
+    background_color: "#1B1F3B"
+    theme_color: "#1B1F3B"

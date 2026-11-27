@@ -1,39 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Background -->
-  <rect width="512" height="512" rx="100" fill="#5B7B9A"/>
-
-  <!-- Left Person -->
-  <!-- Head -->
-  <circle cx="140" cy="180" r="45" fill="#FFFFFF"/>
-  <!-- Body -->
-  <path d="M140 225 L140 340 M100 270 L180 270 M140 340 L100 420 M140 340 L180 420"
-        stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" fill="none"/>
-
-  <!-- Right Person -->
-  <!-- Head -->
-  <circle cx="372" cy="180" r="45" fill="#FFFFFF"/>
-  <!-- Body -->
-  <path d="M372 225 L372 340 M332 270 L412 270 M372 340 L332 420 M372 340 L412 420"
-        stroke="#FFFFFF" stroke-width="22" stroke-linecap="round" fill="none"/>
-
-  <!-- Dog (centered, sitting) -->
-  <!-- Body -->
-  <ellipse cx="256" cy="360" rx="45" ry="35" fill="#FFFFFF"/>
-  <!-- Head -->
-  <circle cx="256" cy="300" r="32" fill="#FFFFFF"/>
-  <!-- Ears -->
-  <ellipse cx="230" cy="275" rx="12" ry="20" fill="#FFFFFF"/>
-  <ellipse cx="282" cy="275" rx="12" ry="20" fill="#FFFFFF"/>
-  <!-- Snout -->
-  <ellipse cx="256" cy="315" rx="15" ry="10" fill="#D4E1ED"/>
-  <!-- Nose -->
-  <ellipse cx="256" cy="310" rx="6" ry="4" fill="#5B7B9A"/>
-  <!-- Eyes -->
-  <circle cx="244" cy="295" r="4" fill="#5B7B9A"/>
-  <circle cx="268" cy="295" r="4" fill="#5B7B9A"/>
-  <!-- Tail -->
-  <path d="M300 355 Q330 340 320 310" stroke="#FFFFFF" stroke-width="12" stroke-linecap="round" fill="none"/>
-  <!-- Front legs -->
-  <rect x="238" y="380" width="12" height="35" rx="6" fill="#FFFFFF"/>
-  <rect x="262" y="380" width="12" height="35" rx="6" fill="#FFFFFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Nuestra App: two roofs, two people sharing one home -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1B1F3B"/><stop offset="1" stop-color="#2B2F5C"/>
+    </linearGradient>
+  </defs>
+  <rect width="100" height="100" rx="22.5" fill="url(#bg)"/>
+  <g fill="none" stroke-width="11" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 62 L40 38 L62 62" stroke="#7C83FF"/>
+    <path d="M38 62 L60 38 L82 62" stroke="#FF7A6B"/>
+    <path d="M38 62 L60 38 L82 62" stroke="#FFD1C9" mask="url(#shared)"/>
+  </g>
+  <mask id="shared"><path d="M18 62 L40 38 L62 62" fill="none" stroke="#fff" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></mask>
 </svg>
