@@ -10,6 +10,7 @@ import 'package:nuestra_app/features/assistant/data/assistant_engine.dart';
 import 'package:nuestra_app/features/assistant/data/assistant_history_repository.dart';
 import 'package:nuestra_app/features/assistant/presentation/assistant_controller.dart';
 import 'package:nuestra_app/features/assistant/presentation/chat_cards.dart';
+import 'package:nuestra_app/features/assistant/domain/reply_suggestion.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 const _starterPrompts = [
@@ -466,6 +467,9 @@ class _ChatViewState extends ConsumerState<_ChatView> {
     final state = widget.state;
     final controller = ref.read(assistantProvider.notifier);
     final streaming = state.streamingText;
+    final suggestion = state.isBusy || state.modelStatus != ModelStatus.ready
+        ? null
+        : replySuggestion([for (final e in state.entries) e.item], DateTime.now());
 
     final Widget body;
     if (state.entries.isEmpty && state.loadingHistory) {
@@ -481,7 +485,9 @@ class _ChatViewState extends ConsumerState<_ChatView> {
           if (streaming != null && streaming.isNotEmpty)
             AssistantTextView(text: streaming)
           else if (state.status != null)
-            StatusView(state.status!),
+            StatusView(state.status!)
+          else if (suggestion != null)
+            _Suggestion(text: suggestion, onTap: () => controller.send(suggestion)),
         ],
       );
     }
@@ -578,6 +584,32 @@ class _EmptyChat extends StatelessWidget {
               ],
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// The one reply the assistant suggests after its last card, on the user's
+/// side of the chat so it reads as "you could say this".
+class _Suggestion extends StatelessWidget {
+  final String text;
+  final VoidCallback onTap;
+
+  const _Suggestion({required this.text, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Align(
+      alignment: Alignment.centerRight,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: AppSizes.md, left: 48),
+        child: ActionChip(
+          avatar: Icon(Icons.auto_awesome, size: 16, color: colorScheme.tertiary),
+          label: Text(text),
+          tooltip: 'Enviar',
+          onPressed: onTap,
         ),
       ),
     );

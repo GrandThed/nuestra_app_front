@@ -6,6 +6,7 @@ import 'package:nuestra_app/features/assistant/application/week_planner.dart';
 import 'package:nuestra_app/features/assistant/data/assistant_history_repository.dart';
 import 'package:nuestra_app/features/assistant/domain/assistant_request.dart';
 import 'package:nuestra_app/features/assistant/domain/chat_items.dart';
+import 'package:nuestra_app/features/assistant/domain/reply_suggestion.dart';
 import 'package:nuestra_app/features/assistant/domain/spanish_parsing.dart';
 import 'package:nuestra_app/features/assistant/presentation/assistant_controller.dart'
     show cleanModelText, stripOldCards;
@@ -314,6 +315,33 @@ void main() {
       final food = _FakeFood(options: {'cena': [r('dal'), r('guiso')]});
       await WeekPlanner(food, 'h1').plan(WeekPlanRequest(days: [DateTime(2026, 11, 23)], meals: const ['cena']));
       expect(food.entries.single.recipe!.slug, 'dal');
+    });
+  });
+
+  group('reply suggestion', () {
+    final now = DateTime(2026, 11, 27);
+    ExpenseDraftCard draft(DraftStatus status, DateTime date) =>
+        ExpenseDraftCard(description: 'Nafta', amount: 7000, date: date, status: status);
+
+    test('one suggestion that follows the last card', () {
+      expect(replySuggestion([draft(DraftStatus.saved, now)], now), '¿Cuánto gastamos este mes?');
+      expect(replySuggestion([draft(DraftStatus.saved, DateTime(2026, 10, 30))], now),
+          '¿Cuánto gastamos el mes pasado?');
+      expect(replySuggestion([const MenuCard(weekStart: '2026-11-30', slots: [])], now), 'Pasame la lista de compras');
+      expect(replySuggestion([const RecipesCard(title: 'Con pollo', recipes: [])], now), 'Una receta rápida para hoy');
+    });
+
+    test('nothing while a card waits or after small talk', () {
+      expect(replySuggestion([draft(DraftStatus.pending, now)], now), isNull);
+      expect(replySuggestion([const UserMessage('hola'), const AssistantText('¡Hola!')], now), isNull);
+      expect(replySuggestion(const [], now), isNull);
+    });
+
+    test('never repeats what the user just asked', () {
+      expect(
+        replySuggestion([const UserMessage('Pasame la lista de compras'), const MenuCard(weekStart: '2026-11-30', slots: [])], now),
+        isNull,
+      );
     });
   });
 }
