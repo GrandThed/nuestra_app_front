@@ -300,7 +300,7 @@ class AssistantActions {
     if (result.recipes.isEmpty) {
       return TextOut('No encontré recetas así que respeten sus gustos'
           '${result.excluded > 0 ? ' (dejé afuera ${result.excluded} por sus preferencias)' : ''}. '
-          'Podés anotar una receta propia desde Comida → Recetas.');
+          'Puedes agregar una receta propia desde Comida → Recetas.');
     }
     return CardOut(RecipesCard(
       title: title,
@@ -336,7 +336,7 @@ class AssistantActions {
     final day = parseDateEs(r.date, now()) ?? now();
     final week = await food.week(householdId, day);
     if (week.entries.isEmpty) {
-      return const TextOut('Todavía no hay menú para esa semana. Decime "armá el menú" y lo hacemos.');
+      return const TextOut('Todavía no hay menú para esa semana. Pide "arma el menú de la semana" y lo preparo.');
     }
     return CardOut(menuCard(week));
   }

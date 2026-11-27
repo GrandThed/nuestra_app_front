@@ -352,7 +352,7 @@ class AssistantController extends Notifier<AssistantState> {
     } catch (e) {
       state = state.copyWith(
         modelStatus: ModelStatus.notInstalled,
-        error: () => 'La descarga se cortó: $e\nLo descargado se guarda; tocá Continuar para seguir.',
+        error: () => 'La descarga se cortó: $e\nLo descargado se guarda; toca Continuar para seguir.',
       );
     } finally {
       _downloadCancel = null;
@@ -421,7 +421,7 @@ class AssistantController extends Notifier<AssistantState> {
       }
     } catch (e) {
       debugPrint('Assistant turn failed: $e');
-      _append(const Notice('Algo salió mal con el asistente. Probá de nuevo.'));
+      _append(const Notice('Algo salió mal con el asistente. Intenta de nuevo.'));
     } finally {
       _idle();
       unawaited(_save(message, keys));
@@ -472,12 +472,13 @@ class AssistantController extends Notifier<AssistantState> {
   }
 
   static const _chatInstructions = '''
-Sos el asistente de "Nuestra App", una app para organizar el hogar: gastos y comida.
-Respondé en español rioplatense, en 1 a 3 oraciones cortas.
-Escribí texto plano: sin markdown, sin asteriscos, sin listas.
+Eres el asistente de "Nuestra App", una app para organizar el hogar: gastos y comida.
+Responde en español neutro, sin voseo ni modismos regionales, en 1 a 3 oraciones cortas.
+$argentineWords
+Escribe texto plano: sin markdown, sin asteriscos, sin listas.
 Nunca digas números, montos ni datos del hogar: no los tenés.
-Para hacer cosas, el usuario las pide directamente, por ejemplo: "anotá 5.000 de súper", "¿cuánto gastamos este mes?", "una receta con pollo", "armá el menú de la semana", "a Juan no le gusta la cebolla".
-Si te piden algo que no sea del hogar, respondé corto y amable.''';
+Para hacer cosas, el usuario las pide directamente, por ejemplo: "anota 5.000 de súper", "¿cuánto gastamos este mes?", "una receta con pollo", "arma el menú de la semana", "a Juan no le gusta la cebolla".
+Si te piden algo que no sea del hogar, responde corto y amable.''';
 
   /// A free answer, streamed. Returns the key of the text it added.
   Future<int?> _chat(String message) async {
@@ -527,7 +528,7 @@ Si te piden algo que no sea del hogar, respondé corto y amable.''';
 
   int? _applyPatch(DraftPatch patch, ({int key, ExpenseDraftCard draft})? open) {
     if (open == null || patch.isEmpty) {
-      _append(const Notice('No hay un gasto para corregir. Contame el gasto y lo preparo.'));
+      _append(const Notice('No hay un gasto para corregir. Escribe el gasto y lo preparo.'));
       return null;
     }
     final updated = open.draft.copyWith(
@@ -562,7 +563,7 @@ Si te piden algo que no sea del hogar, respondé corto y amable.''';
       status: DraftStatus.saving,
     );
     if (draft.amount == null || draft.amount! <= 0) {
-      _append(const Notice('Falta el monto: completalo en la tarjeta.'));
+      _append(const Notice('Falta el monto: complétalo en la tarjeta.'));
       return;
     }
     _replace(key, draft);
@@ -714,8 +715,8 @@ Si te piden algo que no sea del hogar, respondé corto y amable.''';
         '- ${o.slug}: ${o.title} (${o.totalMinutes} min${o.why.isEmpty ? '' : '; ${o.why.first}'})',
     ].join('\n');
     final json = await _engine.readJson(
-      instructions: 'Elegís una comida para el menú de una familia. Devolvé solo JSON {"receta": id}. '
-          'Preferí variedad y lo que les gusta.${notes.isEmpty ? '' : ' Pedido de la familia: $notes.'}',
+      instructions: 'Elige una comida para el menú de una familia. Devuelve solo JSON {"receta": id}. '
+          'Prefiere variedad y lo que les gusta.${notes.isEmpty ? '' : ' Pedido de la familia: $notes.'}',
       message: '${mealLabels[meal] ?? meal} del $day. Opciones:\n$list',
       schema: {
         'type': 'object',

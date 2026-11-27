@@ -27,8 +27,8 @@ String? replySuggestion(List<ChatItem> items, DateTime now) {
     MonthSummaryCard(:final year, :final month) =>
       year == now.year && month == now.month ? '¿Qué gastos fijos faltan?' : '¿Cuánto gastamos este mes?',
     FixedExpensesCard() => '¿Cuánto gastamos este mes?',
-    RecipesCard(:final recipes) => recipes.isEmpty ? 'Una receta rápida para hoy' : 'Armá el menú de la semana',
-    MenuCard() => 'Pasame la lista de compras',
+    RecipesCard(:final recipes) => recipes.isEmpty ? 'Una receta rápida para hoy' : 'Arma el menú de la semana',
+    MenuCard() => 'Muéstrame la lista de compras',
     PreferenceCard(:final undone) => undone ? null : 'Una receta para esta noche',
     _ => null,
   };

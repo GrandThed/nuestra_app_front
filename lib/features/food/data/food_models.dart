@@ -436,7 +436,7 @@ class ShoppingGroup {
     'almacen': 'Almacén',
     'liquido': 'Bebidas y líquidos',
     'otros': 'Otros',
-    'tenes_en_casa': '¿Tenés en casa?',
+    'tenes_en_casa': '¿Lo tienes en casa?',
   };
 
   String get label => labels[category] ?? category;

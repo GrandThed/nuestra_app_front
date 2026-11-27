@@ -150,7 +150,7 @@ class _Body extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(vertical: AppSizes.xs),
             child: Text(
-              r.origin == 'photo' ? 'Leída de una foto: revisá las cantidades.' : 'Receta sin revisar todavía.',
+              r.origin == 'photo' ? 'Leída de una foto: revisa las cantidades.' : 'Receta sin revisar todavía.',
               style: text.bodySmall?.copyWith(color: scheme.tertiary),
             ),
           ),

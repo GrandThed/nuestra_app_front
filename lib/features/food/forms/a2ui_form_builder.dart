@@ -98,7 +98,7 @@ class A2uiFormBuilder {
     Map<String, Object?> extra = const {},
     bool primary = true,
     String? requiredField,
-    String requiredMessage = 'Completá este dato',
+    String requiredMessage = 'Completa este dato',
   }) {
     final labelId = _id('label');
     _components.add({'id': labelId, 'component': 'Text', 'text': label});

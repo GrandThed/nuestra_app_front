@@ -33,7 +33,7 @@ Future<void> addRecipeFromPhoto(BuildContext context, WidgetRef ref) async {
   final messenger = ScaffoldMessenger.of(context);
   if (!engine.isSupportedPlatform || !await engine.isInstalled()) {
     messenger.showSnackBar(const SnackBar(
-      content: Text('Para leer fotos primero descargá el asistente (pestaña Asistente).'),
+      content: Text('Para leer fotos primero descarga el asistente (pestaña Asistente).'),
     ));
     return;
   }

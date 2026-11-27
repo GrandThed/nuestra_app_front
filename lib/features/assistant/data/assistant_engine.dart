@@ -234,14 +234,14 @@ class AssistantEngine {
       modelType: ModelType.gemma4,
       temperature: _temperature,
       topK: _topK,
-      systemInstruction: 'Leés recetas de cocina en imágenes y devolvés solo JSON con: '
+      systemInstruction: 'Lee recetas de cocina en imágenes y devuelve solo JSON con: '
           'titulo, porciones (número), minutos_preparacion, minutos_coccion, '
           'ingredientes (lista de textos tal como aparecen) y pasos (lista de textos). '
-          'Respondé en español. No inventes datos que no estén en la imagen.',
+          'Escribe en español neutro. $argentineWords No inventes datos que no estén en la imagen.',
     );
     try {
       await chat.addQueryChunk(Message.withImage(
-        text: 'Extraé la receta de esta imagen.',
+        text: 'Extrae la receta de esta imagen.',
         imageBytes: imageBytes,
         isUser: true,
       ));

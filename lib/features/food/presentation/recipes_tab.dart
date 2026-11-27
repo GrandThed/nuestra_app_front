@@ -84,7 +84,7 @@ class _RecipesTabState extends ConsumerState<RecipesTab> {
                 if (value.recipes.isEmpty)
                   const Padding(
                     padding: EdgeInsets.all(AppSizes.xl),
-                    child: Text('No encontré recetas. Probá con otra palabra o agregá una propia.',
+                    child: Text('No encontré recetas. Intenta con otra palabra o agrega una propia.',
                         textAlign: TextAlign.center),
                   ),
                 for (final r in value.recipes) RecipeCard(recipe: r),
@@ -107,7 +107,7 @@ class _RecipesTabState extends ConsumerState<RecipesTab> {
           ListTile(leading: const Icon(Icons.edit_note), title: const Text('Escribirla'),
               onTap: () => Navigator.pop(ctx, 'escribir')),
           ListTile(leading: const Icon(Icons.kitchen_outlined), title: const Text('¿Qué hay en la heladera?'),
-              subtitle: const Text('Buscar recetas con lo que tenés'), onTap: () => Navigator.pop(ctx, 'heladera')),
+              subtitle: const Text('Buscar recetas con lo que tienes'), onTap: () => Navigator.pop(ctx, 'heladera')),
           ListTile(leading: const Icon(Icons.eco_outlined), title: const Text('De estación'),
               onTap: () => Navigator.pop(ctx, 'estacion')),
         ]),

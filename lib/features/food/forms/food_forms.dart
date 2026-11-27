@@ -139,7 +139,7 @@ abstract final class FoodForms {
               fields: const ['dias', 'comidas', 'porciones', 'sobras', 'repetir', 'notas'],
               extra: {'semana': _iso(weekStart)},
               requiredField: 'dias',
-              requiredMessage: 'Elegí al menos un día'))
+              requiredMessage: 'Elige al menos un día'))
         .build();
   }
 
@@ -168,7 +168,7 @@ abstract final class FoodForms {
 
   /// 4. Cook with what's at home.
   static List<Map<String, Object?>> heladera(String surfaceId) => (A2uiFormBuilder(surfaceId)
-        ..title('¿Qué tenés para cocinar?')
+        ..title('¿Qué tienes para cocinar?')
         ..field('ingredientes', 'Ingredientes', multiline: true, placeholder: 'Ej: papas, huevos, cebolla')
         ..choice('comida', '¿Para qué comida?', _plannedMeals, initial: const ['cena'])
         ..choice('tiempo', 'Tiempo disponible', _timeOptions, initial: const ['45'])
@@ -179,10 +179,10 @@ abstract final class FoodForms {
   /// 5. A vague request ("algo rico").
   static List<Map<String, Object?>> aclararPedido(String surfaceId, {int servings = 2}) =>
       (A2uiFormBuilder(surfaceId)
-            ..title('Contame un poco más')
+            ..title('Cuéntame un poco más')
             ..choice('comida', '¿Para qué comida?', {..._plannedMeals, 'postre': 'Postre', 'snack': 'Para picar'},
                 initial: const ['cena'])
-            ..choice('tiempo', '¿Cuánto tiempo tenés?', _timeOptions, initial: const ['45'])
+            ..choice('tiempo', '¿Cuánto tiempo tienes?', _timeOptions, initial: const ['45'])
             ..choice('cocina', '¿De dónde?', {'cualquiera': 'Cualquiera', ..._cuisines}, initial: const ['cualquiera'])
             ..slider('personas', '¿Para cuántos?', 1, 12, initial: servings)
             ..button('Listo', FoodFormAction.aclarar, fields: const ['comida', 'tiempo', 'cocina', 'personas']))
@@ -198,7 +198,7 @@ abstract final class FoodForms {
   }) {
     final b = A2uiFormBuilder(surfaceId)
       ..title(title)
-      ..choice('receta', 'Elegí una', {for (final r in recipes) r.slug: _recipeLabel(r)},
+      ..choice('receta', 'Elige una', {for (final r in recipes) r.slug: _recipeLabel(r)},
           initial: recipes.isEmpty ? const [] : [recipes.first.slug], chips: false);
     if (day != null && meal != null) {
       b.buttonRow([
@@ -223,7 +223,7 @@ abstract final class FoodForms {
             ..title('${_plannedMeals[meal] ?? meal} del ${_weekdayLabels[day.weekday - 1].toLowerCase()} ${day.day}')
             ..choice('receta', 'Opciones que respetan sus gustos',
                 {for (final r in candidates) r.slug: _recipeLabel(r)}, chips: false)
-            ..field('texto', 'O escribí otra cosa', placeholder: 'Ej: comemos afuera, sobras, pizza')
+            ..field('texto', 'O escribe otra cosa', placeholder: 'Ej: comemos afuera, sobras, pizza')
             ..button('Cambiar', FoodFormAction.cambiarComida,
                 fields: const ['receta', 'texto'], extra: {'fecha': _iso(day), 'comida': meal}))
           .build();
@@ -269,10 +269,10 @@ abstract final class FoodForms {
     bool fromPhoto = false,
   }) =>
       (A2uiFormBuilder(surfaceId)
-            ..title(fromPhoto ? 'Revisá la receta de la foto' : 'Nueva receta')
+            ..title(fromPhoto ? 'Revisa la receta de la foto' : 'Nueva receta')
             ..text(
                 fromPhoto
-                    ? 'La leí de la imagen: corregí lo que haga falta antes de guardarla.'
+                    ? 'La leí de la imagen: corrige lo que haga falta antes de guardarla.'
                     : 'Un ingrediente por renglón, por ejemplo "200 g de azúcar".',
                 caption: true)
             ..field('titulo', 'Nombre', initial: title)
@@ -290,7 +290,7 @@ abstract final class FoodForms {
                 fields: const ['titulo', 'porciones', 'ingredientes', 'pasos', 'preparacion', 'coccion', 'comidas'],
                 extra: {'origen': fromPhoto ? 'photo' : 'manual'},
                 requiredField: 'titulo',
-                requiredMessage: 'Ponele un nombre'))
+                requiredMessage: 'Ponle un nombre'))
           .build();
 
   /// 12. Review (and delete) what the app knows about the household.
@@ -309,7 +309,7 @@ abstract final class FoodForms {
       b.text('Todavía no guardé gustos ni alergias.');
     } else {
       b
-        ..choice('borrar', 'Tildá lo que quieras borrar', {
+        ..choice('borrar', 'Marca lo que quieras borrar', {
           for (final p in prefs)
             p.id: '${kinds[p.kind] ?? p.kind}: ${p.label}${p.memberName != null ? ' (${p.memberName})' : ''}',
         }, multiple: true, chips: false)
@@ -340,9 +340,9 @@ abstract final class FoodForms {
   static List<Map<String, Object?>> deEstacion(String surfaceId, {required Map<String, String> ingredients}) =>
       (A2uiFormBuilder(surfaceId)
             ..title('De estación este mes')
-            ..choice('ingredientes', 'Elegí con qué querés cocinar', ingredients, multiple: true, filterable: true)
+            ..choice('ingredientes', 'Elige con qué quieres cocinar', ingredients, multiple: true, filterable: true)
             ..button('Buscar recetas', FoodFormAction.deEstacion,
-                fields: const ['ingredientes'], requiredField: 'ingredientes', requiredMessage: 'Elegí al menos uno'))
+                fields: const ['ingredientes'], requiredField: 'ingredientes', requiredMessage: 'Elige al menos uno'))
           .build();
 
   static String _recipeLabel(RecipeSummary r) => [

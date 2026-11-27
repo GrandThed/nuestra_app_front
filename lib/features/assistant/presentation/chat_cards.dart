@@ -292,7 +292,7 @@ class _ExpenseDraftViewState extends ConsumerState<ExpenseDraftView> {
           ]),
           if (card.status == DraftStatus.failed) ...[
             const SizedBox(height: 8),
-            _StatusLine(Icons.error_outline, 'No se pudo guardar. Probá de nuevo.', scheme.error),
+            _StatusLine(Icons.error_outline, 'No se pudo guardar. Intenta de nuevo.', scheme.error),
           ],
         ],
       ),

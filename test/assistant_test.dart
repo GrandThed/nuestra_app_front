@@ -327,7 +327,7 @@ void main() {
       expect(replySuggestion([draft(DraftStatus.saved, now)], now), '¿Cuánto gastamos este mes?');
       expect(replySuggestion([draft(DraftStatus.saved, DateTime(2026, 10, 30))], now),
           '¿Cuánto gastamos el mes pasado?');
-      expect(replySuggestion([const MenuCard(weekStart: '2026-11-30', slots: [])], now), 'Pasame la lista de compras');
+      expect(replySuggestion([const MenuCard(weekStart: '2026-11-30', slots: [])], now), 'Muéstrame la lista de compras');
       expect(replySuggestion([const RecipesCard(title: 'Con pollo', recipes: [])], now), 'Una receta rápida para hoy');
     });
 
@@ -339,7 +339,7 @@ void main() {
 
     test('never repeats what the user just asked', () {
       expect(
-        replySuggestion([const UserMessage('Pasame la lista de compras'), const MenuCard(weekStart: '2026-11-30', slots: [])], now),
+        replySuggestion([const UserMessage('Muéstrame la lista de compras'), const MenuCard(weekStart: '2026-11-30', slots: [])], now),
         isNull,
       );
     });

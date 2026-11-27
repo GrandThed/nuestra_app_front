@@ -66,7 +66,7 @@ class _WeekHeader extends ConsumerWidget {
               children: [
                 Text('${fmt.format(monday)} – ${fmt.format(sunday)}',
                     style: Theme.of(context).textTheme.titleMedium),
-                Text(isThisWeek ? 'Esta semana' : 'Tocá para volver a esta semana',
+                Text(isThisWeek ? 'Esta semana' : 'Toca para volver a esta semana',
                     style: Theme.of(context).textTheme.bodySmall),
               ],
             ),

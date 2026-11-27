@@ -18,7 +18,7 @@ const _starterPrompts = [
   '¿Cuánto gastamos este mes?',
   '¿Qué gastos fijos faltan?',
   'Una receta con pollo',
-  'Armá el menú de la semana',
+  'Arma el menú de la semana',
 ];
 
 /// "ahora", "hace 5 min", "hace 2 h", "ayer", "3 nov".
@@ -381,7 +381,7 @@ class _SetupView extends ConsumerWidget {
             const SizedBox(height: AppSizes.sm),
             Text(
               'Usa Gemma 4, un modelo de Google que corre en el teléfono: lo '
-              'que le preguntás se procesa acá y no se envía a ningún servicio '
+              'que le preguntas se procesa aquí y no se envía a ningún servicio '
               'de inteligencia artificial. Las conversaciones se comparten con '
               'tu hogar.\n\nSe descarga una sola vez '
               '(${AssistantEngine.downloadSizeLabel}); te recomendamos usar Wi-Fi.',
@@ -569,7 +569,7 @@ class _EmptyChat extends StatelessWidget {
             Text('¿En qué te ayudo?', style: text.headlineSmall, textAlign: TextAlign.center),
             const SizedBox(height: AppSizes.xs),
             Text(
-              'Contame un gasto, preguntame cuánto gastaron o pedime una receta.',
+              'Escribe un gasto, pregunta cuánto gastaron o pide una receta.',
               style: text.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
@@ -782,7 +782,7 @@ class _InputBarState extends State<_InputBar> {
                 onChanged: (_) => setState(() {}),
                 onSubmitted: (_) => _send(),
                 decoration: InputDecoration(
-                  hintText: _listening ? 'Escuchando…' : 'Escribile al asistente',
+                  hintText: _listening ? 'Escuchando…' : 'Escribe al asistente',
                   isDense: true,
                   contentPadding: const EdgeInsets.symmetric(
                     horizontal: AppSizes.md,

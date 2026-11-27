@@ -130,6 +130,12 @@ Map<String, Object?> requestSchema(List<String> categoryNames) => {
       'additionalProperties': false,
     };
 
+/// Argentine words for food and household things. The assistant writes
+/// neutral Spanish (no voseo, no regional slang) but uses these words, the
+/// ones the household and the recipe catalog use.
+const argentineWords = 'Usa las palabras de Argentina para comida y cosas de la casa: palta, frutilla, '
+    'choclo, zapallo, durazno, ananá, poroto, morrón, manteca, crema, heladera, nafta.';
+
 /// Instructions for reading a message. Short on purpose (the phone reads the
 /// whole prompt before answering) and built around examples, which a small
 /// model follows far better than rules.
@@ -140,9 +146,10 @@ String requestPrompt({
 }) {
   final categories = categoryNames.isEmpty ? '(ninguna)' : categoryNames.join(', ');
   return '''
-Leés un mensaje de una app de hogar (gastos y comida) y devolvés solo un JSON con lo que pide.
-Copiá montos, fechas y meses TAL CUAL los escribió (no los conviertas).
-Categorías de gastos del hogar: $categories. Elegí la que corresponda o "".
+Lee un mensaje de una app de hogar (gastos y comida) y devuelve solo un JSON con lo que pide.
+Copia montos, fechas y meses TAL CUAL los escribió (no los conviertas).
+Categorías de gastos del hogar: $categories. Elige la que corresponda o "".
+En descripciones, búsquedas e ingredientes usa las palabras de Argentina (palta, no aguacate; frutilla, no fresa; nafta, no gasolina).
 
 Acciones:
 anotar_gasto: cuenta algo que compró o pagó.
@@ -173,6 +180,9 @@ Ejemplos:
 "una receta con pollo para hoy" → {"accion":"buscar_receta","buscar":"pollo"}
 "tengo arroz, huevos y zapallo" → {"accion":"cocinar_con_lo_que_hay","ingredientes":["arroz","huevos","zapallo"]}
 "armame el menú de la semana" → {"accion":"armar_menu"}
+"arma el menú de la semana" → {"accion":"armar_menu"}
+"muéstrame la lista de compras" → {"accion":"lista_compras"}
+"una receta con aguacate" → {"accion":"buscar_receta","buscar":"palta"}
 "a Juan no le gusta la remolacha" → {"accion":"guardar_gusto","gusto":"no_le_gusta","ingrediente":"remolacha","persona":"Juan"}
 "hola, cómo andás" → {"accion":"charlar"}
 ${pendingExpense == null ? '' : '\nHay un gasto sin guardar en pantalla: $pendingExpense. Si el mensaje cambia un dato de ese gasto, es corregir_gasto.'}${lastAssistant == null ? '' : '\nLo último que dijo la app: "$lastAssistant"'}''';
