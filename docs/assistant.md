@@ -1,94 +1,94 @@
-# Asistente on-device (Gemma 4 + A2UI)
+# Asistente on-device (Gemma 4)
 
 The assistant runs **Gemma 4 E2B on the phone** through LiteRT-LM
-(`flutter_edge_ai` + `flutter_edge_ai_litertlm`). The backend has no chat or
-LLM code any more: the model calls the normal expenses REST API through tools,
-and answers can include **A2UI** cards rendered with `a2ui_flutter`.
+(`flutter_edge_ai` + `flutter_edge_ai_litertlm`). The backend has no LLM code:
+it only stores the household's conversations.
 
-## How it fits together
+## The rule: the model reads, the app answers
+
+A 2B model is good at understanding a short message and bad at numbers,
+choosing among many tools, and knowing what it did or did not do. The first
+version let it call 11 tools and write cards itself; it garbled amounts
+("7.000" → 7.00), claimed things were saved when they were not, leaked tool
+names and wrote markdown that was never rendered. So now:
+
+1. **"sí" / "no"** while an expense is waiting on screen saves or discards it,
+   in code (`isYes` / `isNo`). No model.
+2. The model **reads the message into an `AssistantRequest`**: one action
+   (`anotar_gasto`, `consultar_gastos`, `buscar_receta`, `armar_menu`, ...)
+   plus fields **copied as written** (`"monto": "7.000"`, `"fecha": "ayer"`).
+   Constrained JSON decoding (`ResponseFormat.jsonSchema`) means it cannot
+   answer anything else; the category is an enum of the household's names.
+   The prompt is short and built on examples.
+3. `AssistantActions` **runs the request with the app's data** and returns
+   cards. Amounts, dates and months are converted in code
+   (`spanish_parsing.dart`: "7.000" = 7000, "15 lucas", "1.029,50", "el
+   lunes", "el mes pasado"); totals and lists are computed from the API. The
+   category of a new expense comes first from how the household filed the
+   same description before.
+4. Only small talk (`charlar`) gets text written by the model: short, plain
+   text, told it has no data. Any markdown marks are stripped anyway.
+
+The **expense card is the confirmation**: it is editable (amount, description,
+date, category) and nothing asks again in text. "Guardado" only appears after
+the API saved it.
+
+## Pieces
 
 | Piece | File |
 |---|---|
-| Model download / chat with tools | `lib/features/assistant/data/assistant_engine.dart` |
-| Tools (≤3 args each) and amount parsing | `lib/features/assistant/data/assistant_tools.dart` |
-| A2UI prompt, parsing and rendering | `lib/features/assistant/data/a2ui_bridge.dart` |
-| Saved history (backend) | `lib/features/assistant/data/assistant_history_repository.dart` |
-| Conversation state, system prompt | `lib/features/assistant/presentation/assistant_controller.dart` |
-| Screen | `lib/features/assistant/presentation/assistant_screen.dart` |
+| Model download (resumable), `readJson`, `reply`, photo reading | `data/assistant_engine.dart`, `data/resumable_download.dart` |
+| What a message asks for: actions, schema, prompt | `domain/assistant_request.dart` |
+| Amounts, dates, months, yes/no in Argentine Spanish | `domain/spanish_parsing.dart` |
+| Chat items and cards (saved as JSON) | `domain/chat_items.dart` |
+| Request → cards with the app's data | `application/assistant_actions.dart` |
+| Week planning | `application/week_planner.dart` |
+| Food forms in the chat (A2UI, built by the app) | `data/form_surfaces.dart`, `lib/features/food/forms/` |
+| Conversation flow, history | `presentation/assistant_controller.dart` |
+| Screen and cards | `presentation/assistant_screen.dart`, `presentation/chat_cards.dart` |
 
-- **Model**: `LiteRtLmModels.gemma4E2bIt.generic`, file `gemma-4-E2B-it.litertlm`
-  (~2.6 GB, Apache-2.0, no Hugging Face token). Downloaded once on first use,
-  with progress and cancel. "Borrar el modelo del teléfono" frees the space.
-- **Tools**: `resumen_del_mes`, `listar_gastos`, `gastos_fijos_sugeridos`,
-  `proponer_gasto`. Writes never happen from the model: `proponer_gasto`
-  returns a proposal and the user confirms it on a card. Amounts go as strings
-  and are parsed strictly (`AssistantToolExecutor.parseAmount`), because small
-  on-device models can garble numbers (e.g. `1.0,293`).
-- **A2UI**: the library's generated schema prompt is ~31k characters (~8k
-  tokens), more than the 4k-token context. The model gets
-  `A2uiBridge.compactInstructions` instead (short rules + one worked example,
-  direct-JSON format, catalog pruned to Text/Row/Column/Card/List/Divider/Icon/
-  Button). Every block is still validated by `a2ui_agent`; invalid UI is
-  dropped and the text kept. Surface ids are made unique app-side.
-- **Context**: 4096 tokens. When the conversation gets long the chat is
-  reopened with a notice (the model forgets earlier turns; the screen keeps
-  them).
-- **History**: shared by the household and saved in the backend
-  (`/api/assistant`, table `ChatMessage` with a `conversationId`). Every
-  member sees every conversation and can continue it; messages show who wrote
-  them. Each turn stores the user message, any expense proposals (with their
-  confirmed/discarded status) and the raw model reply, so A2UI cards are
-  re-rendered on load. Which conversation is open is remembered **per phone**
-  (SharedPreferences): when another member starts a new chat it only appears
-  first in the "Conversaciones" list, it never switches your screen. On
-  opening a conversation its last ~3k characters are replayed into the model
-  so it remembers context. No live sync yet: other members' new messages show
-  up when the conversation is reopened.
+(paths under `lib/features/assistant/`)
 
-## Food (Comida)
+## Cards
 
-- **Tools** (`lib/features/food/assistant/food_tools.dart`): `buscar_recetas`,
-  `ver_receta`, `opciones_menu`, `poner_en_menu` (recipe id, free text or
-  "sobras"), `ver_menu`, `guardar_preferencia`, `mostrar_formulario`. Results
-  are already filtered by the household's preferences on the backend.
-- **Forms** (`lib/features/food/forms/`): 14 A2UI forms built in code
-  (`FoodForms`), shared by the chat and the Comida screens, handled by
-  `FoodFormHandler` (saves through the API, returns a summary the model
-  continues from). The first food request of a household without a profile
-  shows the profile form automatically, once per conversation.
-- **Weekly menu**: after the "Armar la semana" form, the app plans one day per
-  turn: the model picks from that day's `opciones_menu` and sets each slot,
-  so every turn stays small. The backend refuses picks that break a rule.
-- **Recipe photos**: a separate one-off chat with structured JSON output
-  (constrained decoding when the GPU supports it) reads the image; the
-  pre-filled "nueva receta" form lets the user fix it before saving.
-- Context is 8k tokens; the model is loaded once with image support.
+Gasto para guardar (editable), gastos de algo en un mes, resumen del mes (by
+category and by who paid), gastos fijos sin cargar, recetas, menú de la semana,
+preferencia guardada (with undo), and links (lista de compras, abrir receta).
+Each card stores a snapshot of its data, so a saved conversation looks the
+same when reopened; drafts keep their status (pending / saved / discarded).
+
+## Food
+
+- Recipe searches go to the catalog, already filtered by the household's
+  preferences. The first food request of a household without a profile shows
+  the profile form once per conversation.
+- Vague requests ("algo rico") show the "aclarar" form; "tengo arroz y huevos"
+  searches with those; with no ingredients, the "heladera" form.
+- **Weekly menu**: after the "armar la semana" form the app fills each slot:
+  the backend ranks the options that respect the rules, the model picks one
+  (its answer is constrained to those ids), a refused pick moves to the next
+  option, and "sobras" puts last night's dinner as lunch. Without the model it
+  takes the best ranked option.
+- **Recipe photos**: a one-off session with structured JSON output reads the
+  image; the pre-filled "nueva receta" form lets the user fix it.
+
+## History
+
+Shared by the household and saved in the backend (`/api/assistant`, table
+`ChatMessage` with a `conversationId`). Each turn stores the user's message,
+the cards (`metadata.kind = "card"`, `metadata.card = {type, ...}`) and model
+replies (`kind = "reply"`). Card status changes update the stored metadata.
+Old conversations (model replies with A2UI blocks, `kind = "proposal"`) are
+still read. The open conversation is remembered per phone.
 
 ## Platform setup
 
-- **Android**: `minSdk = 30` (Android 11+), arm64 only. Set in
-  `android/app/build.gradle.kts`. `INTERNET` permission is already declared.
-- **iOS** (not built yet in this repo; there is no `ios/Podfile` until the
-  first `pod install` on a Mac). Before building:
-  - `platform :ios, '15.0'` and `use_frameworks! :linkage => :static` in the
-    Podfile (or deployment target 15.0 with Swift Package Manager);
-  - entitlements `com.apple.developer.kernel.extended-virtual-addressing`,
-    `com.apple.developer.kernel.increased-memory-limit` (and
-    `increased-debugging-memory-limit` for debug).
-  - The simulator runs on CPU only.
-- **Web**: not enabled. The plugin's web support is a preview (WebGPU, E2B
-  only, extra JS files in `web/`); the screen shows "usalo desde la app".
+- **Android**: `minSdk = 30` (Android 11+), arm64 only.
+- **iOS** (not built yet): `platform :ios, '15.0'`, static frameworks, and the
+  extended-virtual-addressing / increased-memory-limit entitlements.
+- **Web**: not enabled (the screen says to use the phone app).
 
-## Known limits
-
-- Not run on a real device yet from this repo: compile and unit tests only.
-  Check speed and RAM on a mid-range phone before release (published numbers
-  are flagship-only).
-- Tool calling with E2B is not fully reliable (community evals around 70%);
-  the confirmation card and strict amount parsing are the safety net.
-
-## Future: recipes and weekly menu
+## Future
 
 `InferenceModel.openChat` accepts a `loraPath`, so a recipe fine-tune of
-Gemma 4 E2B (LoRA trained on world recipes) can ship as a small adapter file
-on top of the same base model, loaded only for the recipe / weekly-menu chat.
+Gemma 4 E2B can ship as a small adapter on top of the same base model.
