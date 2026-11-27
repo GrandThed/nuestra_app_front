@@ -55,7 +55,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
 			<key>CFBundleURLName</key>
-			<string>com.householdhub.nuestra_app</string>
+			<string>ar.codecave.nuestra</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>householdhub</string>
