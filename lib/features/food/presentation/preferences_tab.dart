@@ -42,6 +42,7 @@ class PreferencesTab extends ConsumerWidget {
         children: [
           if (profile.asData?.value.onboarded == false)
             Card(
+              margin: const EdgeInsets.only(bottom: AppSizes.sm),
               color: Theme.of(context).colorScheme.tertiaryContainer,
               child: ListTile(
                 leading: const Icon(Icons.auto_awesome),

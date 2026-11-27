@@ -17,6 +17,12 @@ class ExpensesNotifier extends _$ExpensesNotifier {
   @override
   ExpensesState build() {
     _repository = ref.watch(expenseRepositoryProvider);
+    // At startup the screen can open before the user's household is known
+    // (the saved login is restored first). Load as soon as it arrives, and
+    // again whenever the household changes.
+    ref.listen(currentHouseholdIdProvider, (previous, next) {
+      if (next != null && next != previous) loadExpenses(forceLoading: true);
+    });
     return const ExpensesState.initial();
   }
 
@@ -37,7 +43,8 @@ class ExpensesNotifier extends _$ExpensesNotifier {
   }) async {
     final householdId = ref.read(currentHouseholdIdProvider);
     if (householdId == null) {
-      state = const ExpensesState.error('No hay hogar seleccionado');
+      // Not known yet: keep loading, the listener in build() loads it
+      state = const ExpensesState.loading();
       return;
     }
 

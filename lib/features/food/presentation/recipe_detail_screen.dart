@@ -138,6 +138,7 @@ class _Body extends StatelessWidget {
         ]),
         if (r.warnings.isNotEmpty)
           Card(
+            margin: const EdgeInsets.symmetric(vertical: AppSizes.sm),
             color: scheme.errorContainer,
             child: ListTile(
               leading: Icon(Icons.warning_amber, color: scheme.onErrorContainer),
@@ -212,6 +213,7 @@ class _Body extends StatelessWidget {
           ),
         for (final tip in r.tips)
           Card(
+            margin: const EdgeInsets.only(top: AppSizes.sm),
             color: scheme.tertiaryContainer,
             child: ListTile(
               leading: Icon(Icons.lightbulb_outline, color: scheme.onTertiaryContainer),

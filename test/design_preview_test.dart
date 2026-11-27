@@ -9,6 +9,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:nuestra_app/core/theme/app_theme.dart';
@@ -375,6 +376,15 @@ void main() {
       expect(find.text('sacalo', findRichText: true), findsNothing);
       expect(find.textContaining('sacalo', findRichText: true), findsOneWidget);
       await _snapshot(tester, 'receta_$suffix');
+    });
+
+    testWidgets('Más ($suffix)', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      await _pumpScreen(tester, child: const ExpensesScreen(), brightness: brightness, inShell: true);
+      await tester.tap(find.text('Más'));
+      await tester.pumpAndSettle();
+      expect(find.text('Cerrar sesión'), findsOneWidget);
+      await _snapshot(tester, 'mas_$suffix');
     });
 
     testWidgets('Login ($suffix)', (tester) async {

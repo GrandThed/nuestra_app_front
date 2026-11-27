@@ -229,6 +229,10 @@ class AssistantController extends Notifier<AssistantState> {
     }
     Future.microtask(_checkInstalled);
     Future.microtask(_loadHistory);
+    // The household may arrive after startup (saved login restored first)
+    ref.listen(currentHouseholdIdProvider, (previous, next) {
+      if (next != null && next != previous && !state.isBusy) unawaited(_loadHistory());
+    });
     return const AssistantState(loadingHistory: true);
   }
 

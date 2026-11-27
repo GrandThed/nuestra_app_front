@@ -72,8 +72,9 @@ class AppRoutes {
 final rootNavigatorKey = GlobalKey<NavigatorState>();
 final shellNavigatorKey = GlobalKey<NavigatorState>();
 
-/// Custom back button dispatcher that navigates to home
-/// instead of closing the app when on a non-home shell route.
+/// Android back: first close whatever is open (bottom sheet, dialog, drawer,
+/// a screen pushed on top); only when there is nothing left to close on
+/// another tab, go to the start tab instead of closing the app.
 class ShellBackButtonDispatcher extends RootBackButtonDispatcher {
   late GoRouter _router;
 
@@ -81,12 +82,13 @@ class ShellBackButtonDispatcher extends RootBackButtonDispatcher {
 
   @override
   Future<bool> didPopRoute() async {
+    if (await super.didPopRoute()) return true;
     final path = _router.routeInformationProvider.value.uri.path;
     if (path != AppRoutes.home) {
       _router.go(AppRoutes.home);
       return true;
     }
-    return super.didPopRoute();
+    return false;
   }
 }
 
